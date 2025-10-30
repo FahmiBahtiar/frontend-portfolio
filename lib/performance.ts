@@ -1,0 +1,58 @@
+// Performance monitoring utilities for Next.js
+
+export const reportWebVitals = (metric: any) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(metric);
+  }
+  
+  // Send to analytics in production
+  if (process.env.NODE_ENV === 'production') {
+    // Example: Send to Google Analytics, Vercel Analytics, etc.
+    const { name, value, id } = metric;
+    
+    // You can send to your analytics service here
+    // Example: window.gtag?.('event', name, { value, metric_id: id });
+  }
+};
+
+// Measure component render time
+export const measurePerformance = (componentName: string, callback: () => void) => {
+  if (typeof window === 'undefined') return callback();
+  
+  const start = performance.now();
+  callback();
+  const end = performance.now();
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`${componentName} rendered in ${(end - start).toFixed(2)}ms`);
+  }
+};
+
+// Debounce helper for scroll/resize events
+export const debounce = <T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): ((...args: Parameters<T>) => void) => {
+  let timeout: NodeJS.Timeout;
+  
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
+
+// Throttle helper for high-frequency events
+export const throttle = <T extends (...args: any[]) => any>(
+  func: T,
+  limit: number
+): ((...args: Parameters<T>) => void) => {
+  let inThrottle: boolean;
+  
+  return (...args: Parameters<T>) => {
+    if (!inThrottle) {
+      func(...args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+};
