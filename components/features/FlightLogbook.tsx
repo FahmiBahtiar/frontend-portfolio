@@ -17,24 +17,25 @@ import {
 interface FlightEntry {
   id: string;
   callsign: string;
+  company: string; // Main display - company/organization name
   departure: {
-    airport: string;
+    role: string;
     code: string;
     date: string;
   };
   arrival: {
-    airport: string;
+    status: string;
     code: string;
     date: string;
   };
-  aircraft: string;
-  flightHours: number;
-  altitude: string;
-  weather: string;
-  crew: string[];
-  remarks: string;
-  achievements: string[];
+  projectName: string; // Secondary - project or department
+  duration: string; // in months
+  flightHours: string; // displayed as years
+  crew: string[]; // technologies
+  responsibilities: string[]; // what you did there
   color: string;
+  location: string;
+  category: string;
 }
 
 export function FlightLogbook() {
@@ -42,81 +43,143 @@ export function FlightLogbook() {
 
   const flightEntries: FlightEntry[] = [
     {
-      id: 'flight-1',
-      callsign: 'DEV-001',
+      id: 'work-1',
+      callsign: 'WRK-001',
+      company: 'Tech Solutions Inc.',
       departure: {
-        airport: 'Junior Developer',
-        code: 'JNR',
-        date: '2020-01-15'
+        role: 'Full Stack Developer',
+        code: 'FSD',
+        date: '2024-01-15'
       },
       arrival: {
-        airport: 'Senior Full Stack Developer',
-        code: 'SNR',
-        date: '2025-Present'
+        status: 'Current',
+        code: 'CUR',
+        date: 'Present'
       },
-      aircraft: 'Boeing 787 Dreamliner',
-      flightHours: 5.5,
-      altitude: 'FL350',
-      weather: 'Clear skies, smooth flight',
-      crew: ['React', 'Node.js', 'TypeScript', 'AWS'],
-      remarks: 'Long-haul transcontinental route with multiple waypoints. Excellent crew performance and system reliability.',
-      achievements: [
-        'Promoted to lead development team',
-        'Architected microservices for 1M+ users',
-        'Reduced deployment time by 70%'
+      projectName: 'E-Commerce Platform',
+      duration: '10',
+      flightHours: '10 mo',
+      crew: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Prisma', 'PostgreSQL'],
+      responsibilities: [
+        'Developed and maintained e-commerce platform serving 10k+ active users',
+        'Implemented real-time inventory management and order tracking system',
+        'Integrated payment gateways (Stripe, Midtrans) and shipping APIs',
+        'Led code reviews and mentored 3 junior developers'
       ],
+      location: 'Remote',
+      category: 'Development',
       color: 'purple'
     },
     {
-      id: 'flight-2',
-      callsign: 'DEV-002',
+      id: 'work-2',
+      callsign: 'WRK-002',
+      company: 'FinTech Solutions',
       departure: {
-        airport: 'Freelance Developer',
-        code: 'FRL',
-        date: '2019-03-10'
+        role: 'Backend Engineer',
+        code: 'BKE',
+        date: '2023-06-01'
       },
       arrival: {
-        airport: 'Full Stack Developer',
-        code: 'FST',
-        date: '2021-12-20'
+        status: 'Completed',
+        code: 'CMP',
+        date: '2023-12-31'
       },
-      aircraft: 'Airbus A320',
-      flightHours: 2.8,
-      altitude: 'FL280',
-      weather: 'Variable conditions',
-      crew: ['Vue.js', 'Python', 'Django', 'PostgreSQL'],
-      remarks: 'Medium-range regional operations. Successfully completed multiple client missions with high satisfaction ratings.',
-      achievements: [
-        'Completed 15+ production features',
-        'Improved test coverage to 90%',
-        'Led migration to cloud infrastructure'
+      projectName: 'Banking Integration',
+      duration: '7',
+      flightHours: '7 mo',
+      crew: ['Node.js', 'Express', 'MongoDB', 'Redis', 'Docker'],
+      responsibilities: [
+        'Integrated 5 major Indonesian bank APIs (BCA, Mandiri, BNI, BRI, Permata)',
+        'Built real-time transaction monitoring and reconciliation system',
+        'Implemented security protocols achieving SOC 2 compliance',
+        'Optimized database queries handling 100k+ daily transactions'
       ],
+      location: 'Jakarta',
+      category: 'Development',
+      color: 'cyan'
+    },
+    {
+      id: 'work-3',
+      callsign: 'WRK-003',
+      company: 'Startup Indonesia',
+      departure: {
+        role: 'Frontend Developer',
+        code: 'FED',
+        date: '2022-08-01'
+      },
+      arrival: {
+        status: 'Team Lead',
+        code: 'TLD',
+        date: '2023-05-31'
+      },
+      projectName: 'Analytics Dashboard',
+      duration: '10',
+      flightHours: '10 mo',
+      crew: ['React', 'D3.js', 'Chart.js', 'WebSocket', 'Material-UI'],
+      responsibilities: [
+        'Led frontend team of 4 developers in building analytics platform',
+        'Developed real-time data visualization with D3.js and Chart.js',
+        'Implemented WebSocket for live data streaming (1M+ data points/day)',
+        'Reduced initial load time by 65% through code splitting and lazy loading'
+      ],
+      location: 'Remote',
+      category: 'Leadership',
+      color: 'purple'
+    },
+    {
+      id: 'work-4',
+      callsign: 'WRK-004',
+      company: 'Freelance Projects',
+      departure: {
+        role: 'Full Stack Developer',
+        code: 'FSD',
+        date: '2021-01-01'
+      },
+      arrival: {
+        status: 'Multiple Clients',
+        code: 'MLC',
+        date: '2022-07-31'
+      },
+      projectName: 'Various Client Projects',
+      duration: '19',
+      flightHours: '1.5 yrs',
+      crew: ['React', 'Vue.js', 'Laravel', 'WordPress', 'MySQL'],
+      responsibilities: [
+        'Delivered 15+ projects for local businesses (restaurants, retail, services)',
+        'Built custom CMS and inventory management systems',
+        'Developed responsive websites and e-commerce solutions',
+        'Provided maintenance and technical support for ongoing projects'
+      ],
+      location: 'Various',
+      category: 'Freelance',
       color: 'orange'
     },
     {
-      id: 'flight-3',
-      callsign: 'DEV-003',
+      id: 'work-5',
+      callsign: 'WRK-005',
+      company: 'Open Source Community',
       departure: {
-        airport: 'Web Development Trainee',
-        code: 'TRN',
-        date: '2018-06-01'
+        role: 'Contributor',
+        code: 'CON',
+        date: '2020-03-01'
       },
       arrival: {
-        airport: 'Junior Developer',
-        code: 'JNR',
-        date: '2020-01-14'
+        status: 'Maintainer',
+        code: 'MNT',
+        date: 'Ongoing'
       },
-      aircraft: 'Cessna 172 Skyhawk',
-      flightHours: 1.5,
-      altitude: 'FL120',
-      weather: 'Training conditions',
-      crew: ['HTML', 'CSS', 'JavaScript', 'Bootstrap'],
-      remarks: 'Initial solo cross-country flight. Built strong foundation in web fundamentals and frontend technologies.',
-      achievements: [
-        'Earned commercial pilot license',
-        'Completed instrument rating',
-        'First solo responsive website deployment'
+      projectName: 'React UI Library',
+      duration: '56',
+      flightHours: '4+ yrs',
+      crew: ['React', 'TypeScript', 'Storybook', 'Jest', 'Rollup'],
+      responsibilities: [
+        'Core maintainer of popular React UI component library (5k+ stars)',
+        'Reviewed 200+ pull requests and mentored new contributors',
+        'Published 25+ releases with new components and bug fixes',
+        'Library used by 100+ companies including Fortune 500'
       ],
+      location: 'Remote',
+      category: 'Open Source',
       color: 'cyan'
     }
   ];
@@ -200,8 +263,8 @@ export function FlightLogbook() {
                         <Plane className="w-5 h-5" style={{ color: colors.main }} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-white font-mono truncate">{entry.callsign}</h4>
-                        <p className="text-white/50 text-sm font-mono">{entry.aircraft}</p>
+                        <h4 className="text-white font-bold text-lg truncate">{entry.company}</h4>
+                        <p className="text-white/50 text-sm truncate">{entry.projectName}</p>
                       </div>
                     </div>
 
@@ -211,7 +274,7 @@ export function FlightLogbook() {
                         <div className="flex items-center gap-2">
                           <MapPin className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
                           <span className="text-white/70 font-mono truncate">{entry.departure.code}</span>
-                          <span className="text-white/50 text-xs truncate">{entry.departure.airport}</span>
+                          <span className="text-white/50 text-xs truncate">{entry.departure.role}</span>
                         </div>
                       </div>
                       
@@ -224,7 +287,7 @@ export function FlightLogbook() {
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 justify-end">
-                          <span className="text-white/50 text-xs truncate">{entry.arrival.airport}</span>
+                          <span className="text-white/50 text-xs truncate">{entry.arrival.status}</span>
                           <span className="text-white/70 font-mono truncate">{entry.arrival.code}</span>
                           <MapPin className="w-3.5 h-3.5 text-orange-400 flex-shrink-0" />
                         </div>
@@ -242,8 +305,8 @@ export function FlightLogbook() {
                       }}
                     >
                       <div className="text-xs text-white/50 uppercase tracking-wider mb-1">Flight Hours</div>
-                      <div className="font-mono" style={{ color: colors.main }}>
-                        {entry.flightHours.toFixed(1)} yrs
+                      <div className="font-mono font-bold" style={{ color: colors.main }}>
+                        {entry.flightHours}
                       </div>
                     </div>
                   </div>
@@ -253,11 +316,11 @@ export function FlightLogbook() {
               {/* Flight Details - Main Content */}
               <div className="p-4 md:p-6">
                 {/* Quick Info Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
                     <div className="min-w-0">
-                      <div className="text-white/40 text-xs">Departure</div>
+                      <div className="text-white/40 text-xs">Start Date</div>
                       <div className="text-white/70 text-xs font-mono truncate">{entry.departure.date}</div>
                     </div>
                   </div>
@@ -265,24 +328,16 @@ export function FlightLogbook() {
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
                     <div className="min-w-0">
-                      <div className="text-white/40 text-xs">Arrival</div>
+                      <div className="text-white/40 text-xs">End Date</div>
                       <div className="text-white/70 text-xs font-mono truncate">{entry.arrival.date}</div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 text-sm">
-                    <Gauge className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
+                    <MapPin className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
                     <div className="min-w-0">
-                      <div className="text-white/40 text-xs">Altitude</div>
-                      <div className="text-white/70 text-xs font-mono truncate">{entry.altitude}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-sm">
-                    <CloudSun className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <div className="text-white/40 text-xs">Weather</div>
-                      <div className="text-white/70 text-xs font-mono truncate">{entry.weather}</div>
+                      <div className="text-white/40 text-xs">Location</div>
+                      <div className="text-white/70 text-xs font-mono truncate">{entry.location}</div>
                     </div>
                   </div>
                 </div>
@@ -301,7 +356,7 @@ export function FlightLogbook() {
                         className="pt-4 mt-4 border-t space-y-4"
                         style={{ borderTopColor: `${colors.main}20` }}
                       >
-                        {/* Remarks */}
+                        {/* Technologies */}
                         <div>
                           <div className="flex items-center gap-2 mb-2">
                             <div
@@ -309,23 +364,7 @@ export function FlightLogbook() {
                               style={{ backgroundColor: colors.main }}
                             />
                             <span className="text-xs uppercase tracking-wider" style={{ color: colors.main }}>
-                              Flight Remarks
-                            </span>
-                          </div>
-                          <p className="text-white/70 text-sm leading-relaxed pl-4">
-                            {entry.remarks}
-                          </p>
-                        </div>
-
-                        {/* Crew (Tech Stack) */}
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div
-                              className="w-1 h-4 rounded-full"
-                              style={{ backgroundColor: colors.main }}
-                            />
-                            <span className="text-xs uppercase tracking-wider" style={{ color: colors.main }}>
-                              Flight Crew
+                              Technologies
                             </span>
                           </div>
                           <div className="flex flex-wrap gap-2 pl-4">
@@ -348,32 +387,34 @@ export function FlightLogbook() {
                           </div>
                         </div>
 
-                        {/* Achievements */}
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div
-                              className="w-1 h-4 rounded-full"
-                              style={{ backgroundColor: colors.main }}
-                            />
-                            <span className="text-xs uppercase tracking-wider" style={{ color: colors.main }}>
-                              Mission Achievements
-                            </span>
+                        {/* Responsibilities */}
+                        {entry.responsibilities && entry.responsibilities.length > 0 && (
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <div
+                                className="w-1 h-4 rounded-full"
+                                style={{ backgroundColor: colors.main }}
+                              />
+                              <span className="text-xs uppercase tracking-wider" style={{ color: colors.main }}>
+                                Responsibilities
+                              </span>
+                            </div>
+                            <ul className="space-y-2 pl-4">
+                              {entry.responsibilities.map((responsibility, idx) => (
+                                <motion.li
+                                  key={idx}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: idx * 0.05 }}
+                                  className="flex items-start gap-2 text-sm text-white/60"
+                                >
+                                  <Award className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.main }} />
+                                  <span>{responsibility}</span>
+                                </motion.li>
+                              ))}
+                            </ul>
                           </div>
-                          <ul className="space-y-2 pl-4">
-                            {entry.achievements.map((achievement, idx) => (
-                              <motion.li
-                                key={idx}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: idx * 0.05 }}
-                                className="flex items-start gap-2 text-sm text-white/60"
-                              >
-                                <Award className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.main }} />
-                                <span>{achievement}</span>
-                              </motion.li>
-                            ))}
-                          </ul>
-                        </div>
+                        )}
                       </div>
                     </motion.div>
                   )}
@@ -407,21 +448,21 @@ export function FlightLogbook() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-400/20">
             <div className="text-3xl text-purple-400 mb-1 font-mono">
-              {flightEntries.reduce((sum, entry) => sum + entry.flightHours, 0).toFixed(1)}
+              {flightEntries.reduce((sum, entry) => sum + parseInt(entry.duration), 0)}+
             </div>
-            <div className="text-sm text-white/50 uppercase tracking-wider">Total Flight Years</div>
+            <div className="text-sm text-white/50 uppercase tracking-wider">Total Months Experience</div>
           </div>
 
           <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-500/5 border border-orange-400/20">
             <div className="text-3xl text-orange-400 mb-1 font-mono">{flightEntries.length}</div>
-            <div className="text-sm text-white/50 uppercase tracking-wider">Flight Missions</div>
+            <div className="text-sm text-white/50 uppercase tracking-wider">Projects Completed</div>
           </div>
 
           <div className="p-4 rounded-xl bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-400/20">
             <div className="text-3xl text-cyan-400 mb-1 font-mono">
               {flightEntries.reduce((sum, entry) => sum + entry.crew.length, 0)}
             </div>
-            <div className="text-sm text-white/50 uppercase tracking-wider">Crew Certifications</div>
+            <div className="text-sm text-white/50 uppercase tracking-wider">Technologies Mastered</div>
           </div>
         </div>
       </motion.div>

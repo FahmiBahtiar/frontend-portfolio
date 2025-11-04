@@ -1,11 +1,87 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Code2, Calendar, MapPin, User, Globe, Plane, Mountain, Terminal, ChevronDown } from 'lucide-react';
+import { Code2, Calendar, MapPin, User, Globe, Plane, Mountain, Terminal, ChevronDown, Loader2 } from 'lucide-react';
+
+interface LanyardData {
+  id: string;
+  serviceName: string;
+  serviceType: string;
+  passportLabel: string;
+  type: string;
+  countryCode: string;
+  passportNo: string;
+  surname: string;
+  givenNames: string;
+  nationality: string;
+  placeOfBirth: string;
+  sex: 'M' | 'F';
+  dateOfBirth: string;
+  dateOfIssue: string;
+  dateOfExpiry: string;
+  avatarUrl?: string;
+  backgroundColor: string;
+  textColor: string;
+  accentColor: string;
+}
 
 export function LanyardCard() {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [lanyardData, setLanyardData] = useState<LanyardData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchLanyardData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetch('/api/admin/about/lanyard');
+        if (!response.ok) {
+          throw new Error('Failed to fetch lanyard data');
+        }
+        const result = await response.json();
+        if (result.success && result.data) {
+          setLanyardData(result.data);
+        } else {
+          setError('No lanyard data available');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load lanyard data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLanyardData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="relative w-full max-w-3xl mx-auto flex flex-col items-center justify-center py-8 md:py-12 px-4 md:px-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex items-center gap-3 text-white">
+            <Loader2 className="w-6 h-6 animate-spin" />
+            <span>Loading passport...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !lanyardData) {
+    return (
+      <div className="relative w-full max-w-3xl mx-auto flex flex-col items-center justify-center py-8 md:py-12 px-4 md:px-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <p className="text-white/60 mb-4">Unable to load passport data</p>
+            <p className="text-white/40 text-sm">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full max-w-3xl mx-auto flex flex-col items-center justify-center py-8 md:py-12 px-4 md:px-8">
@@ -47,7 +123,7 @@ export function LanyardCard() {
               <div className="relative w-full h-full flex flex-col items-center justify-between p-6 md:p-12">
                 {/* Top: Country Name */}
                 <div className="text-center space-y-2">
-                  <h2 className="text-amber-300/90 tracking-[0.2em] md:tracking-[0.4em] text-sm md:text-lg">PORTFOLIO REPUBLIC</h2>
+                  <h2 className="text-amber-300/90 tracking-[0.2em] md:tracking-[0.4em] text-sm md:text-lg">{lanyardData.serviceName}</h2>
                 </div>
 
                 {/* Center: Garuda-style emblem */}
@@ -94,8 +170,8 @@ export function LanyardCard() {
                   <div className="mt-4 md:mt-6 relative">
                     <div className="w-32 md:w-48 h-0.5 bg-gradient-to-r from-transparent via-amber-400/50 to-transparent mb-2 md:mb-3" />
                     <div className="text-center space-y-1">
-                      <p className="text-amber-300/80 tracking-[0.15em] md:tracking-[0.3em] text-xs md:text-sm">PASPOR PORTFOLIO</p>
-                      <p className="text-amber-400/60 tracking-[0.15em] md:tracking-[0.25em] text-[10px] md:text-xs italic">SERVICE PASSPORT</p>
+                      <p className="text-amber-300/80 tracking-[0.15em] md:tracking-[0.3em] text-xs md:text-sm">{lanyardData.passportLabel}</p>
+                      <p className="text-amber-400/60 tracking-[0.15em] md:tracking-[0.25em] text-[10px] md:text-xs italic">{lanyardData.serviceType}</p>
                     </div>
                   </div>
                 </div>
@@ -137,13 +213,13 @@ export function LanyardCard() {
                 <div className="text-center mb-6 pb-4 border-b-2 border-blue-900/20">
                   <div className="flex items-center justify-center gap-3 mb-2">
                     <Globe className="w-6 h-6 text-blue-900" />
-                    <h3 className="text-blue-900 tracking-[0.2em]">PORTFOLIO REPUBLIC</h3>
+                    <h3 className="text-blue-900 tracking-[0.2em]">{lanyardData.serviceName}</h3>
                     <Globe className="w-6 h-6 text-blue-900" />
                   </div>
-                  <p className="text-blue-800 text-xs tracking-[0.3em]">SERVICE PASSPORT</p>
+                  <p className="text-blue-800 text-xs tracking-[0.3em]">{lanyardData.serviceType}</p>
                   <div className="mt-2 flex items-center justify-center gap-2">
                     <div className="w-12 h-px bg-blue-900/30" />
-                    <p className="text-blue-700/60 text-xs">PASPOR DINAS</p>
+                    <p className="text-blue-700/60 text-xs">{lanyardData.passportLabel}</p>
                     <div className="w-12 h-px bg-blue-900/30" />
                   </div>
                 </div>
@@ -153,10 +229,13 @@ export function LanyardCard() {
                   {/* Photo */}
                   <div className="flex-shrink-0">
                     <div className="relative w-32 h-40 bg-gradient-to-br from-slate-100 to-slate-200 rounded border-2 border-slate-300 overflow-hidden">
-                      {/* Photo placeholder */}
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300">
-                        <User className="w-16 h-16 text-slate-500" />
-                      </div>
+                      {lanyardData.avatarUrl ? (
+                        <img src={lanyardData.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300">
+                          <User className="w-16 h-16 text-slate-500" />
+                        </div>
+                      )}
                       
                       {/* Photo overlay pattern */}
                       <div className="absolute inset-0 opacity-10">
@@ -188,31 +267,31 @@ export function LanyardCard() {
                     {/* Type */}
                     <div>
                       <p className="text-blue-900/60 text-xs uppercase tracking-wide">Type / Tipe</p>
-                      <p className="text-blue-900">P (Service)</p>
+                      <p className="text-blue-900">{lanyardData.type}</p>
                     </div>
 
                     {/* Country Code */}
                     <div>
                       <p className="text-blue-900/60 text-xs uppercase tracking-wide">Country Code</p>
-                      <p className="text-blue-900">PRT</p>
+                      <p className="text-blue-900">{lanyardData.countryCode}</p>
                     </div>
 
                     {/* Passport No */}
                     <div>
                       <p className="text-blue-900/60 text-xs uppercase tracking-wide">Passport No.</p>
-                      <p className="text-blue-900 font-mono tracking-wider">PF2025001</p>
+                      <p className="text-blue-900 font-mono tracking-wider">{lanyardData.passportNo}</p>
                     </div>
 
                     {/* Surname */}
                     <div>
                       <p className="text-blue-900/60 text-xs uppercase tracking-wide">Surname / Nama Keluarga</p>
-                      <p className="text-blue-900 uppercase">YOUR SURNAME</p>
+                      <p className="text-blue-900 uppercase">{lanyardData.surname}</p>
                     </div>
 
                     {/* Given Names */}
                     <div>
                       <p className="text-blue-900/60 text-xs uppercase tracking-wide">Given Names / Nama Depan</p>
-                      <p className="text-blue-900 uppercase">YOUR GIVEN NAME</p>
+                      <p className="text-blue-900 uppercase">{lanyardData.givenNames}</p>
                     </div>
                   </div>
                 </div>
@@ -224,7 +303,7 @@ export function LanyardCard() {
                     <p className="text-blue-900/60 text-xs uppercase tracking-wide">Nationality</p>
                     <div className="flex items-center gap-1.5">
                       <Globe className="w-3.5 h-3.5 text-blue-700" />
-                      <p className="text-blue-900">Portfolio Republic</p>
+                      <p className="text-blue-900">{lanyardData.nationality}</p>
                     </div>
                   </div>
 
@@ -233,7 +312,7 @@ export function LanyardCard() {
                     <p className="text-blue-900/60 text-xs uppercase tracking-wide">Date of Birth</p>
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-blue-700" />
-                      <p className="text-blue-900">01 JAN 2000</p>
+                      <p className="text-blue-900">{lanyardData.dateOfBirth}</p>
                     </div>
                   </div>
 
@@ -242,26 +321,26 @@ export function LanyardCard() {
                     <p className="text-blue-900/60 text-xs uppercase tracking-wide">Place of Birth</p>
                     <div className="flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-blue-700" />
-                      <p className="text-blue-900">Jakarta, Indonesia</p>
+                      <p className="text-blue-900">{lanyardData.placeOfBirth}</p>
                     </div>
                   </div>
 
                   {/* Sex */}
                   <div>
                     <p className="text-blue-900/60 text-xs uppercase tracking-wide">Sex / Jenis Kelamin</p>
-                    <p className="text-blue-900">M / L</p>
+                    <p className="text-blue-900">{lanyardData.sex} / {lanyardData.sex === 'M' ? 'L' : 'P'}</p>
                   </div>
 
                   {/* Date of Issue */}
                   <div>
                     <p className="text-blue-900/60 text-xs uppercase tracking-wide">Date of Issue</p>
-                    <p className="text-blue-900">28 OCT 2020</p>
+                    <p className="text-blue-900">{lanyardData.dateOfIssue}</p>
                   </div>
 
                   {/* Date of Expiry */}
                   <div>
                     <p className="text-blue-900/60 text-xs uppercase tracking-wide">Date of Expiry</p>
-                    <p className="text-blue-900 text-red-700">28 OCT 2030</p>
+                    <p className="text-blue-900 text-red-700">{lanyardData.dateOfExpiry}</p>
                   </div>
                 </div>
 
@@ -275,8 +354,8 @@ export function LanyardCard() {
 
                 {/* Machine Readable Zone (MRZ) */}
                 <div className="bg-blue-900/5 rounded-lg p-3 font-mono text-xs leading-tight space-y-1">
-                  <div className="text-blue-900 tracking-wider">{"P<PRTFYOUR<<SURNAME<<<<<<<<<<<<<<<<<"}</div>
-                  <div className="text-blue-900 tracking-wider">{"PF2025001<PRT0001011M3010288<<<<<<<<<<2"}</div>
+                  <div className="text-blue-900 tracking-wider">{`P<${lanyardData.countryCode}${lanyardData.surname.padEnd(39, '<').slice(0, 39)}`}</div>
+                  <div className="text-blue-900 tracking-wider">{`${lanyardData.passportNo}<${lanyardData.countryCode}${lanyardData.dateOfBirth.replace(/\s/g, '')}${lanyardData.sex}${lanyardData.dateOfExpiry.replace(/\s/g, '')}${lanyardData.surname.slice(0, 3).toUpperCase()}<${Math.floor(Math.random() * 9)}${Math.floor(Math.random() * 9)}`}</div>
                 </div>
 
                 {/* Theme Icons at bottom right */}

@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { Sparkles, Github, Linkedin, Instagram, ExternalLink, Plane, Mountain, Code2, Compass } from 'lucide-react';
+import { HeroService } from '@/lib/services/hero';
+import { HeroProfile, SocialLink } from '@/lib/types/admin';
 
 interface TerminalHeroProps {
   onNavigate: (page: number) => void;
@@ -24,6 +26,15 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
   const [startTyping, setStartTyping] = useState(false);
   const [loginTime, setLoginTime] = useState('');
   const [isMounted, setIsMounted] = useState(false);
+  
+  // Hero profile data from API
+  const [heroProfile, setHeroProfile] = useState<HeroProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Social links data from API
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
+  const [socialLinksLoading, setSocialLinksLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   // State untuk subtitle yang sync dengan terminal output
   const [currentSubtitleLines, setCurrentSubtitleLines] = useState<string[]>(['Fahmi Bahtiar Adi N']);
@@ -59,26 +70,56 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
     social: false,
   });
 
-  const commands: Command[] = [
+  // Load hero profile data from API
+  useEffect(() => {
+    const loadHeroProfile = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await HeroService.getHeroProfile();
+        setHeroProfile(data);
+      } catch (error) {
+        setError('Connection Error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadHeroProfile();
+  }, []);
+
+  // Load social links data from API
+  useEffect(() => {
+    const loadSocialLinks = async () => {
+      try {
+        setSocialLinksLoading(true);
+        const data = await HeroService.getSocialLinks();
+        setSocialLinks(data);
+      } catch (error) {
+        // Error handled by UI state
+      } finally {
+        setSocialLinksLoading(false);
+      }
+    };
+
+    loadSocialLinks();
+  }, []);
+
+  // Generate commands based on hero profile data
+  const commands: Command[] = heroProfile ? [
     {
       input: 'whoami',
-      output: ['Fahmi Bahtiar Adi N'],
+      output: [heroProfile.name],
       color: 'text-green-400',
     },
     {
       input: 'cat profile.txt',
-      output: [
-        'Network & Telecom Student',
-        'Building innovative web solutions',
-        'Backend Developer',
-      ],
+      output: heroProfile.titles,
       color: 'text-cyan-400',
     },
     {
       input: 'cat passions.txt',
-      output: [
-        'Coding  •  Aviation  •  Mountaineering',
-      ],
+      output: [heroProfile.passions],
       color: 'text-purple-400',
     },
     {
@@ -88,6 +129,13 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
         'Click to continue →',
       ],
       color: 'text-yellow-400',
+    },
+  ] : [
+    // Fallback commands while loading
+    {
+      input: 'whoami',
+      output: ['Loading...'],
+      color: 'text-green-400',
     },
   ];
 
@@ -141,7 +189,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
           } else if (currentCommandIndex === 1) {
             // cat profile.txt - show subtitle and description (rotating text)
             setVisibleSections(prev => ({ ...prev, subtitle: true, description: true }));
-            setCurrentSubtitleLines(['Network & Telecom Student', 'Building innovative web solutions']);
+            setCurrentSubtitleLines(heroProfile?.titles || []);
             setCurrentSubtitleIndex(0);
           } else if (currentCommandIndex === 2) {
             // cat passions.txt - show passions/tech stack
@@ -228,6 +276,17 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
     <div 
       className="relative min-h-screen w-full flex items-center justify-center px-4 py-8 lg:py-12 pt-24 lg:pt-28 overflow-hidden"
     >
+      {/* Error State */}
+      {error && (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center max-w-md">
+            <div className="text-red-400 text-4xl mb-4">⚠️</div>
+            <p className="text-red-400 font-medium mb-2">Connection Error</p>
+            <p className="text-white/60 text-sm">{error}</p>
+          </div>
+        </div>
+      )}
+
       {/* Floating Aviation & Mountain Decorations */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Plane 1 - Top Right */}
@@ -353,6 +412,8 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
         </motion.div>
       </div>
 
+      {/* Main Content - Only show when no error */}
+      {!error && (
       <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center relative z-10">
         {/* Profile Card - Left Side */}
         <motion.div
@@ -371,7 +432,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6"
               >
                 <Sparkles className="w-4 h-4 text-blue-400" />
-                <span className="text-blue-400 text-sm">Ready to Innovate</span>
+                <span className="text-blue-400 text-sm">{heroProfile?.badge || ''}</span>
               </motion.div>
             )}
 
@@ -387,7 +448,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                   Hi, my name is
                 </h1>
                 <h1 className="bg-gradient-to-r from-blue-400 via-purple-400 to-blue-500 bg-clip-text text-transparent">
-                  Fahmi Bahtiar Adi Nugroho
+                  {heroProfile?.name}
                 </h1>
               </motion.div>
             )}
@@ -415,7 +476,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                 transition={{ duration: 0.25, ease: "easeOut" }}
                 className="text-slate-400 mb-8 leading-relaxed"
               >
-                Menciptakan Website Yang Inovatif, Fungsional, dan User-Friendly untuk Solusi Digital
+                {heroProfile?.description || ''}
               </motion.p>
             )}            {/* Aviation HUD Mini Grid */}
             {visibleSections.techStack && (
@@ -425,72 +486,63 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                 transition={{ duration: 0.25, ease: "easeOut" }}
                 className="grid grid-cols-3 gap-2 mb-8"
               >
-                {[
-                  { 
-                    Icon: Code2, 
-                    label: 'Development',
-                    callsign: 'ALPHA-01',
-                    borderColor: 'border-cyan-500/30',
-                    textColor: 'text-cyan-400',
-                    bgColor: 'bg-cyan-500/10'
-                  },
-                  { 
-                    Icon: Plane, 
-                    label: 'Aviation',
-                    callsign: 'BRAVO-02',
-                    borderColor: 'border-blue-500/30',
-                    textColor: 'text-blue-400',
-                    bgColor: 'bg-blue-500/10'
-                  },
-                  { 
-                    Icon: Mountain, 
-                    label: 'Mountaineering',
-                    callsign: 'CHARLIE-03',
-                    borderColor: 'border-emerald-500/30',
-                    textColor: 'text-emerald-400',
-                    bgColor: 'bg-emerald-500/10'
-                  }
-                ].map((item, idx) => (
-                  <motion.div
-                    key={item.callsign}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ 
-                      delay: idx * 0.05, 
-                      duration: 0.2,
-                      ease: "easeOut"
-                    }}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    className="relative"
-                  >
-                    {/* Mini HUD Card */}
-                    <div className={`relative bg-slate-900/40 backdrop-blur-sm border ${item.borderColor} rounded-lg p-3 overflow-hidden`}>
-                      
-                      {/* Corner Brackets */}
-                      <div className={`absolute top-0 left-0 w-2 h-2 border-t border-l ${item.borderColor}`} />
-                      <div className={`absolute top-0 right-0 w-2 h-2 border-t border-r ${item.borderColor}`} />
-                      <div className={`absolute bottom-0 left-0 w-2 h-2 border-b border-l ${item.borderColor}`} />
-                      <div className={`absolute bottom-0 right-0 w-2 h-2 border-b border-r ${item.borderColor}`} />
+                {(heroProfile?.techStack || []).map((item, idx) => {
+                  // Map icon names to components
+                  const iconMap: Record<string, any> = {
+                    Code2, Plane, Mountain
+                  };
+                  const IconComponent = iconMap[item.icon] || Code2;
+                  
+                  // Map colors based on icon
+                  const colorMap: Record<string, { border: string, text: string, bg: string }> = {
+                    Code2: { border: 'border-cyan-500/30', text: 'text-cyan-400', bg: 'bg-cyan-500/10' },
+                    Plane: { border: 'border-blue-500/30', text: 'text-blue-400', bg: 'bg-blue-500/10' },
+                    Mountain: { border: 'border-emerald-500/30', text: 'text-emerald-400', bg: 'bg-emerald-500/10' }
+                  };
+                  const colors = colorMap[item.icon] || colorMap.Code2;
 
-                      <div className="relative z-10 flex flex-col items-center text-center gap-2">
-                        {/* Icon */}
-                        <div className={`w-10 h-10 rounded ${item.bgColor} border ${item.borderColor} flex items-center justify-center`}>
-                          <item.Icon className={`w-5 h-5 ${item.textColor}`} />
-                        </div>
+                  return (
+                    <motion.div
+                      key={item.callsign}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ 
+                        delay: idx * 0.05, 
+                        duration: 0.2,
+                        ease: "easeOut"
+                      }}
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      className="relative"
+                    >
+                      {/* Mini HUD Card */}
+                      <div className={`relative bg-slate-900/40 backdrop-blur-sm border ${colors.border} rounded-lg p-3 overflow-hidden`}>
+                        
+                        {/* Corner Brackets */}
+                        <div className={`absolute top-0 left-0 w-2 h-2 border-t border-l ${colors.border}`} />
+                        <div className={`absolute top-0 right-0 w-2 h-2 border-t border-r ${colors.border}`} />
+                        <div className={`absolute bottom-0 left-0 w-2 h-2 border-b border-l ${colors.border}`} />
+                        <div className={`absolute bottom-0 right-0 w-2 h-2 border-b border-r ${colors.border}`} />
 
-                        {/* Callsign */}
-                        <div className={`text-[9px] font-mono ${item.textColor} tracking-wider`}>
-                          {item.callsign}
-                        </div>
+                        <div className="relative z-10 flex flex-col items-center text-center gap-2">
+                          {/* Icon */}
+                          <div className={`w-10 h-10 rounded ${colors.bg} border ${colors.border} flex items-center justify-center`}>
+                            <IconComponent className={`w-5 h-5 ${colors.text}`} />
+                          </div>
 
-                        {/* Label */}
-                        <div className="text-xs text-slate-300 leading-tight">
-                          {item.label}
+                          {/* Callsign */}
+                          <div className={`text-[9px] font-mono ${colors.text} tracking-wider`}>
+                            {item.callsign}
+                          </div>
+
+                          {/* Label */}
+                          <div className="text-xs text-slate-300 leading-tight">
+                            {item.label}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  );
+                })}
               </motion.div>
             )}
 
@@ -526,7 +578,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                   </div>
                   <div className="flex-1">
                     <div className="text-xs text-slate-500 font-mono uppercase tracking-wider">Status</div>
-                    <div className="text-sm text-green-400 font-mono">Available for Collaboration</div>
+                    <div className="text-sm text-green-400 font-mono">{heroProfile?.status || ''}</div>
                   </div>
                 </motion.div>
 
@@ -540,7 +592,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                   <Mountain className="w-4 h-4 text-cyan-400" />
                   <div className="flex-1">
                     <div className="text-xs text-slate-500 font-mono uppercase tracking-wider">Location</div>
-                    <div className="text-sm text-cyan-400 font-mono">Malang, Indonesia</div>
+                    <div className="text-sm text-cyan-400 font-mono">{heroProfile?.location || ''}</div>
                   </div>
                 </motion.div>
 
@@ -554,7 +606,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                   <Plane className="w-4 h-4 text-purple-400" />
                   <div className="flex-1">
                     <div className="text-xs text-slate-500 font-mono uppercase tracking-wider">Flight Level</div>
-                    <div className="text-sm text-purple-400 font-mono">FL030 • 3+ Years Experience</div>
+                    <div className="text-sm text-purple-400 font-mono">{heroProfile?.flightLevel || ''}</div>
                   </div>
                 </motion.div>
               </motion.div>
@@ -708,6 +760,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
         </div>
       </motion.div>
       </div>
+      )}
 
     </div>
   );

@@ -5,6 +5,11 @@ import { createPortal } from 'react-dom';
 import { motion, useInView, useMotionValue, useSpring, useTransform, AnimatePresence } from 'motion/react';
 import { GraduationCap, Award, Code2, Plane, Mountain, Trophy, Star, Calendar, MapPin, TrendingUp } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { Education } from '@/lib/types/admin';
+
+interface AltitudeTimelineProps {
+  educationRecords?: Education[];
+}
 
 interface TimelinePoint {
   id: string;
@@ -22,7 +27,7 @@ interface TimelinePoint {
 }
 
 // Education Journey Timeline - 4 Levels
-const timelineData: TimelinePoint[] = [
+const defaultTimelineData: TimelinePoint[] = [
   // Elementary School
   { 
     id: '1', 
@@ -96,11 +101,47 @@ const categoryColors = {
   university: { main: '#a78bfa', glow: 'rgba(167, 139, 250, 0.5)', bg: 'from-purple-400/20 to-pink-400/20', text: 'text-purple-300' },
 };
 
-export function AltitudeTimeline() {
+export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {}) {
   const [hoveredPoint, setHoveredPoint] = useState<string | null>(null);
   const [selectedPoint, setSelectedPoint] = useState<string | null>(null);
-  const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(-1);
-  const [showingTitle, setShowingTitle] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Convert education records to timeline points
+  const convertEducationToTimeline = (records: Education[]): TimelinePoint[] => {
+    if (!records || records.length === 0) return [];
+
+    return records.map((record, index) => {
+      // Map education order to timeline level
+      const levelMap: Record<number, 'elementary' | 'junior' | 'senior' | 'university'> = {
+        1: 'elementary',
+        2: 'junior',
+        3: 'senior',
+        4: 'university'
+      };
+
+      const level = levelMap[record.order] || 'university';
+      const altitude = Math.min(100, record.order * 25); // Use order for altitude
+
+      return {
+        id: record.id,
+        year: record.period,
+        month: 6, // Default to June
+        altitude,
+        title: record.degree,
+        subtitle: record.description || record.degree,
+        institution: record.institution,
+        level,
+        icon: GraduationCap,
+        badge: record.institution,
+        description: record.description,
+        gpa: record.gpa,
+      };
+    });
+  };
+
+  // Use education records if available, otherwise use default data
+  const timelineData = (educationRecords && educationRecords.length > 0) ? convertEducationToTimeline(educationRecords) : defaultTimelineData;
+  
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
   const waypointTimers = useRef<NodeJS.Timeout[]>([]);
@@ -251,6 +292,8 @@ export function AltitudeTimeline() {
     };
   };
 
+  const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(-1);
+  const [showingTitle, setShowingTitle] = useState(false);
   // Get current waypoint data
   const currentWaypoint = currentWaypointIndex >= 0 && currentWaypointIndex < timelineData.length 
     ? timelineData[currentWaypointIndex] 
@@ -307,16 +350,6 @@ export function AltitudeTimeline() {
       
       // Generate animation keyframes with pauses
       const { keyframes, times, totalDuration } = generateAnimationKeyframes(points.length);
-      
-      // Debug: Log animation config
-      console.log('Animation Config:', {
-        waypointCount: points.length,
-        keyframesLength: keyframes.length,
-        timesLength: times.length,
-        totalDuration,
-        keyframes,
-        times
-      });
       
       // Animate with requestAnimationFrame
       const startTime = Date.now();
@@ -990,7 +1023,8 @@ export function AltitudeTimeline() {
 
       {/* Hover Info Bar - Bottom Fixed */}
       <AnimatePresence>
-        {hoveredPoint && !selectedPoint && (() => {
+        {(() => {
+          if (!hoveredPoint || selectedPoint) return null;
           const point = points.find((p) => p.id === hoveredPoint);
           if (!point) return null;
           

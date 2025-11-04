@@ -8,84 +8,265 @@ import {
   Linkedin, 
   Github, 
   Instagram,
+  Twitter,
   Send,
   MapPin,
   Copy,
   Check,
-  Radar
+  Radar,
+  X,
+  Loader2
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface ContactFrequency {
   id: string;
   frequency: string;
   label: string;
   value: string;
-  icon: any;
+  icon: string;
   type: 'primary' | 'social';
   color: string;
   link?: string;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Page5ContactProps {
   onNavigate?: (sectionIndex: number) => void;
 }
 
+function ContactForm() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      const response = await fetch('/api/admin/communication/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          ipAddress: '', // Could be populated from request headers
+          userAgent: navigator.userAgent,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 p-6 md:p-8">
+        <div className="text-center mb-6">
+          <h3 className="text-xl md:text-2xl font-bold text-white mb-2">Send a Message</h3>
+          <p className="text-gray-400">Get in touch for collaborations, opportunities, or just to say hello!</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                Name *
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                placeholder="Your full name"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                Email *
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                placeholder="your.email@example.com"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-2">
+              Subject *
+            </label>
+            <input
+              type="text"
+              id="subject"
+              name="subject"
+              value={formData.subject}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+              placeholder="What's this about?"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+              Message *
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              required
+              rows={5}
+              className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 resize-none"
+              placeholder="Tell me about your project, idea, or just say hello..."
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-400">
+              * Required fields
+            </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  Send Message
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+
+        {/* Status Messages */}
+        {submitStatus === 'success' && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-6 p-4 bg-green-500/20 border border-green-500/30 rounded-lg"
+          >
+            <div className="flex items-center gap-2 text-green-400">
+              <Check className="w-5 h-5" />
+              <span className="font-medium">Message sent successfully!</span>
+            </div>
+            <p className="text-green-300 text-sm mt-1">
+              Thank you for reaching out. I'll get back to you as soon as possible.
+            </p>
+          </motion.div>
+        )}
+
+        {submitStatus === 'error' && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg"
+          >
+            <div className="flex items-center gap-2 text-red-400">
+              <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center">
+                <X className="w-3 h-3" />
+              </div>
+              <span className="font-medium">Failed to send message</span>
+            </div>
+            <p className="text-red-300 text-sm mt-1">
+              Something went wrong. Please try again or contact me directly.
+            </p>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [frequencies, setFrequencies] = useState<ContactFrequency[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const frequencies: ContactFrequency[] = [
-    // Primary Contacts (Emergency Frequencies)
-    {
-      id: 'email',
-      frequency: '121.5',
-      label: 'EMAIL',
-      value: 'your.email@example.com',
-      icon: Mail,
-      type: 'primary',
-      color: 'from-cyan-500 to-blue-500',
-    },
-    {
-      id: 'phone',
-      frequency: '118.1',
-      label: 'PHONE',
-      value: '+62 812 3456 7890',
-      icon: Phone,
-      type: 'primary',
-      color: 'from-emerald-500 to-teal-500',
-    },
-    // Social Media Frequencies
-    {
-      id: 'linkedin',
-      frequency: '132.4',
-      label: 'LINKEDIN',
-      value: '/in/yourprofile',
-      icon: Linkedin,
-      type: 'social',
-      color: 'from-blue-600 to-blue-400',
-      link: 'https://linkedin.com/in/yourprofile',
-    },
-    {
-      id: 'github',
-      frequency: '128.8',
-      label: 'GITHUB',
-      value: '@yourusername',
-      icon: Github,
-      type: 'social',
-      color: 'from-purple-600 to-pink-500',
-      link: 'https://github.com/yourusername',
-    },
-    {
-      id: 'instagram',
-      frequency: '136.2',
-      label: 'INSTAGRAM',
-      value: '@yourhandle',
-      icon: Instagram,
-      type: 'social',
-      color: 'from-pink-600 to-orange-500',
-      link: 'https://instagram.com/yourhandle',
-    },
-  ];
+  // Fetch contact frequencies on component mount
+  useEffect(() => {
+    fetchContactFrequencies();
+  }, []);
+
+  const fetchContactFrequencies = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('/api/contact-info');
+      if (!response.ok) {
+        throw new Error('Failed to fetch contact information');
+      }
+      const data = await response.json();
+      setFrequencies(Array.isArray(data) ? data : data.data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch contact information');
+      // Fallback to empty array
+      setFrequencies([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Icon mapping function
+  const getIconComponent = (iconName: string) => {
+    const iconMap: Record<string, any> = {
+      Mail,
+      Phone,
+      Linkedin,
+      Github,
+      Instagram,
+      Twitter,
+    };
+    return iconMap[iconName] || Mail;
+  };
 
   const handleCopy = (id: string, value: string) => {
     // Fallback method for copying text (compatible with all browsers)
@@ -208,66 +389,89 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            {frequencies.filter(f => f.type === 'primary').map((freq, index) => {
-              const Icon = freq.icon;
-              return (
-                <motion.div
-                  key={freq.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 + index * 0.1 }}
-                  whileHover={{ scale: 1.02 }}
-                  className="group relative"
+            {loading ? (
+              <div className="col-span-full flex items-center justify-center py-12">
+                <div className="flex items-center gap-3 text-slate-400">
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  <span>Loading frequencies...</span>
+                </div>
+              </div>
+            ) : error ? (
+              <div className="col-span-full text-center py-12">
+                <div className="text-red-400 mb-2">Failed to load contact information</div>
+                <button
+                  onClick={fetchContactFrequencies}
+                  className="text-sm text-red-300 hover:text-red-200 underline"
                 >
-                  {/* Glow effect on hover */}
-                  <div className={`absolute inset-0 rounded-xl bg-gradient-to-r ${freq.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300`} />
-                  
-                  <div className="relative p-6 md:p-8 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-white/20 transition-all">
-                    {/* Frequency Display */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 md:w-14 md:h-14 rounded-lg bg-gradient-to-br ${freq.color} flex items-center justify-center`}>
-                          <Icon className="w-6 h-6 md:w-7 md:h-7 text-white" />
-                        </div>
-                        <div>
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-2xl md:text-3xl text-white font-mono">{freq.frequency}</span>
-                            <span className="text-slate-400 text-sm">MHz</span>
+                  Try again
+                </button>
+              </div>
+            ) : frequencies.filter(f => f.type === 'primary').length === 0 ? (
+              <div className="col-span-full text-center py-12 text-slate-400">
+                No emergency frequencies configured
+              </div>
+            ) : (
+              frequencies.filter(f => f.type === 'primary').map((freq, index) => {
+                const Icon = getIconComponent(freq.icon);
+                return (
+                  <motion.div
+                    key={freq.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.6 + index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    className="group relative"
+                  >
+                    {/* Glow effect on hover */}
+                    <div className={`absolute inset-0 rounded-xl bg-gradient-to-r ${freq.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300`} />
+                    
+                    <div className="relative p-6 md:p-8 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-white/20 transition-all">
+                      {/* Frequency Display */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-12 h-12 md:w-14 md:h-14 rounded-lg bg-gradient-to-br ${freq.color} flex items-center justify-center`}>
+                            <Icon className="w-6 h-6 md:w-7 md:h-7 text-white" />
                           </div>
-                          <span className="text-xs md:text-sm text-slate-400 font-mono">{freq.label}</span>
+                          <div>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-2xl md:text-3xl text-white font-mono">{freq.frequency}</span>
+                              <span className="text-slate-400 text-sm">MHz</span>
+                            </div>
+                            <span className="text-xs md:text-sm text-slate-400 font-mono">{freq.label}</span>
+                          </div>
+                        </div>
+                        <Radio className="w-4 h-4 md:w-5 md:h-5 text-slate-500" />
+                      </div>
+
+                      {/* Value */}
+                      <div className="flex items-center justify-between gap-4 p-3 md:p-4 rounded-lg bg-black/20 border border-white/5">
+                        <span className="text-white font-mono text-sm md:text-base truncate">{freq.value}</span>
+                        <div className="flex gap-2 shrink-0">
+                          <button
+                            onClick={() => handleCopy(freq.id, freq.value)}
+                            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                            title="Copy"
+                          >
+                            {copiedId === freq.id ? (
+                              <Check className="w-4 h-4 text-emerald-400" />
+                            ) : (
+                              <Copy className="w-4 h-4 text-slate-400" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleContact(freq)}
+                            className={`px-4 py-2 rounded-lg bg-gradient-to-r ${freq.color} text-white hover:shadow-lg hover:shadow-${freq.color}/20 transition-all flex items-center gap-2`}
+                          >
+                            <Send className="w-4 h-4" />
+                            <span className="hidden md:inline">Connect</span>
+                          </button>
                         </div>
                       </div>
-                      <Radio className="w-4 h-4 md:w-5 md:h-5 text-slate-500" />
                     </div>
-
-                    {/* Value */}
-                    <div className="flex items-center justify-between gap-4 p-3 md:p-4 rounded-lg bg-black/20 border border-white/5">
-                      <span className="text-white font-mono text-sm md:text-base truncate">{freq.value}</span>
-                      <div className="flex gap-2 shrink-0">
-                        <button
-                          onClick={() => handleCopy(freq.id, freq.value)}
-                          className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-                          title="Copy"
-                        >
-                          {copiedId === freq.id ? (
-                            <Check className="w-4 h-4 text-emerald-400" />
-                          ) : (
-                            <Copy className="w-4 h-4 text-slate-400" />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => handleContact(freq)}
-                          className={`px-4 py-2 rounded-lg bg-gradient-to-r ${freq.color} text-white hover:shadow-lg hover:shadow-${freq.color}/20 transition-all flex items-center gap-2`}
-                        >
-                          <Send className="w-4 h-4" />
-                          <span className="hidden md:inline">Connect</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+                  </motion.div>
+                );
+              })
+            )}
           </div>
         </motion.div>
 
@@ -411,54 +615,105 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {frequencies.filter(f => f.type === 'social').map((freq, index) => {
-              const Icon = freq.icon;
-              return (
-                <motion.div
-                  key={freq.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.1 + index * 0.1 }}
-                  whileHover={{ y: -5 }}
-                  className="group relative cursor-pointer"
-                  onClick={() => handleContact(freq)}
+            {loading ? (
+              <div className="col-span-full flex items-center justify-center py-12">
+                <div className="flex items-center gap-3 text-slate-400">
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  <span>Loading frequencies...</span>
+                </div>
+              </div>
+            ) : error ? (
+              <div className="col-span-full text-center py-12">
+                <div className="text-red-400 mb-2">Failed to load contact information</div>
+                <button
+                  onClick={fetchContactFrequencies}
+                  className="text-sm text-red-300 hover:text-red-200 underline"
                 >
-                  {/* Glow effect on hover */}
-                  <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${freq.color} opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300`} />
-                  
-                  <div className="relative p-6 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-white/20 transition-all">
-                    {/* Frequency Gauge */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br ${freq.color} flex items-center justify-center`}>
-                        <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                  Try again
+                </button>
+              </div>
+            ) : frequencies.filter(f => f.type === 'social').length === 0 ? (
+              <div className="col-span-full text-center py-12 text-slate-400">
+                No navigation frequencies configured
+              </div>
+            ) : (
+              frequencies.filter(f => f.type === 'social').map((freq, index) => {
+                const Icon = getIconComponent(freq.icon);
+                return (
+                  <motion.div
+                    key={freq.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.1 + index * 0.1 }}
+                    whileHover={{ y: -5 }}
+                    className="group relative cursor-pointer"
+                    onClick={() => handleContact(freq)}
+                  >
+                    {/* Glow effect on hover */}
+                    <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${freq.color} opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300`} />
+                    
+                    <div className="relative p-6 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-white/20 transition-all">
+                      {/* Frequency Gauge */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br ${freq.color} flex items-center justify-center`}>
+                          <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                        </div>
+                        <div className="text-right">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-xl md:text-2xl text-white font-mono">{freq.frequency}</span>
+                            <span className="text-xs text-slate-400">MHz</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-xl md:text-2xl text-white font-mono">{freq.frequency}</span>
-                          <span className="text-xs text-slate-400">MHz</span>
+
+                      {/* Label & Value */}
+                      <div className="space-y-2">
+                        <div className="text-xs md:text-sm text-slate-400 font-mono">{freq.label}</div>
+                        <div className="text-white font-mono text-sm md:text-base truncate">{freq.value}</div>
+                      </div>
+
+                      {/* Status Indicator */}
+                      <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                        <span className="text-xs text-slate-500">STATUS</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                          <span className="text-xs text-emerald-400">ACTIVE</span>
                         </div>
                       </div>
                     </div>
-
-                    {/* Label & Value */}
-                    <div className="space-y-2">
-                      <div className="text-xs md:text-sm text-slate-400 font-mono">{freq.label}</div>
-                      <div className="text-white font-mono text-sm md:text-base truncate">{freq.value}</div>
-                    </div>
-
-                    {/* Status Indicator */}
-                    <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
-                      <span className="text-xs text-slate-500">STATUS</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                        <span className="text-xs text-emerald-400">ACTIVE</span>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+                  </motion.div>
+                );
+              })
+            )}
           </div>
+        </motion.div>
+
+        {/* Contact Form */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-2">
+              <motion.div
+                animate={{
+                  scale: [1, 1.2, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.2
+                }}
+                className="w-3 h-3 rounded-full bg-green-500"
+              />
+              <span className="text-green-400 font-mono text-sm md:text-base">CONTACT FORM</span>
+            </div>
+            <div className="flex-1 h-px bg-gradient-to-r from-green-500/50 to-transparent" />
+          </div>
+
+          <ContactForm />
         </motion.div>
       </div>
     </div>

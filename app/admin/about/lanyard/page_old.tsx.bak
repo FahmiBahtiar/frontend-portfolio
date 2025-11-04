@@ -1,0 +1,369 @@
+'use client';
+
+import { useState } from 'react';
+import { motion } from 'motion/react';
+import { CreditCard, Save, Globe, Edit3 } from 'lucide-react';
+import { ImageUpload } from '@/components/admin/ImageUpload';
+
+interface LanyardData {
+  id: string;
+  // Header
+  serviceName: string;
+  serviceType: string;
+  passportLabel: string;
+  
+  // Personal Info
+  type: string;
+  countryCode: string;
+  passportNo: string;
+  surname: string;
+  givenNames: string;
+  nationality: string;
+  placeOfBirth: string;
+  sex: 'M' | 'F';
+  dateOfBirth: string;
+  dateOfIssue: string;
+  dateOfExpiry: string;
+  
+  // Images
+  avatarUrl: string;
+  chipIconUrl: string;
+  
+  // Colors
+  backgroundColor: string;
+  textColor: string;
+  accentColor: string;
+}
+
+export default function LanyardCardPage() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Mock data - nanti akan diganti dengan data dari API
+  const [formData, setFormData] = useState<LanyardData>({
+    id: '1',
+    // Header
+    serviceName: 'PORTFOLIO REPUBLIC',
+    serviceType: 'SERVICE PASSPORT',
+    passportLabel: 'PASPOR DINAS',
+    
+    // Personal Info
+    type: 'P (Service)',
+    countryCode: 'PRT',
+    passportNo: 'PF2025001',
+    surname: 'YOUR SURNAME',
+    givenNames: 'YOUR GIVEN NAME',
+    nationality: '🌐 Portfolio Republic',
+    placeOfBirth: 'Jakarta, Indonesia',
+    sex: 'M',
+    dateOfBirth: '01 JAN 1990',
+    dateOfIssue: '01 OCT 2023',
+    dateOfExpiry: '01 OCT 2033',
+    
+    // Images
+    avatarUrl: '/images/avatar.jpg',
+    chipIconUrl: '/images/chip.png',
+    
+    // Colors
+    backgroundColor: '#f5e6d3',
+    textColor: '#1e3a8a',
+    accentColor: '#3b82f6',
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    setIsSaving(false);
+    setIsEditing(false);
+  };
+
+  const handleChange = (field: keyof LanyardData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/50">
+              <CreditCard className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Lanyard Card</h1>
+              <p className="text-white/60 text-sm mt-1">Manage your digital identity card</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {!isEditing ? (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Edit Card
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => setIsEditing(false)}
+                className="px-4 py-2 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={isSaving}
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all flex items-center gap-2 disabled:opacity-50"
+              >
+                <Save className="w-4 h-4" />
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Form Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-slate-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
+        >
+          <h2 className="text-xl font-bold text-white mb-6">Card Information</h2>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Personal Info */}
+            <div>
+              <label className="block text-sm font-medium text-white/80 mb-2">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={formData.fullName}
+                onChange={(e) => handleChange('fullName', e.target.value)}
+                disabled={!isEditing}
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all disabled:opacity-50"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-white/80 mb-2">
+                Job Title
+              </label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => handleChange('title', e.target.value)}
+                disabled={!isEditing}
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all disabled:opacity-50"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-white/80 mb-2">
+                Company
+              </label>
+              <input
+                type="text"
+                value={formData.company}
+                onChange={(e) => handleChange('company', e.target.value)}
+                disabled={!isEditing}
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all disabled:opacity-50"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-white/80 mb-2">
+                Location
+              </label>
+              <input
+                type="text"
+                value={formData.location}
+                onChange={(e) => handleChange('location', e.target.value)}
+                disabled={!isEditing}
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all disabled:opacity-50"
+              />
+            </div>
+
+            {/* Contact Info */}
+            <div className="pt-4 border-t border-white/10">
+              <h3 className="text-lg font-semibold text-white mb-4">Contact Details</h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-white/80 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleChange('email', e.target.value)}
+                    disabled={!isEditing}
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all disabled:opacity-50"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white/80 mb-2">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => handleChange('phone', e.target.value)}
+                    disabled={!isEditing}
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all disabled:opacity-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white/80 mb-2">
+                    Website
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.website}
+                    onChange={(e) => handleChange('website', e.target.value)}
+                    disabled={!isEditing}
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all disabled:opacity-50"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Design Customization */}
+            <div className="pt-4 border-t border-white/10">
+              <h3 className="text-lg font-semibold text-white mb-4">Card Design</h3>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-white/80 mb-2">
+                    Background
+                  </label>
+                  <input
+                    type="color"
+                    value={formData.backgroundColor}
+                    onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                    disabled={!isEditing}
+                    className="w-full h-12 rounded-xl bg-white/5 border border-white/10 cursor-pointer disabled:opacity-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white/80 mb-2">
+                    Text Color
+                  </label>
+                  <input
+                    type="color"
+                    value={formData.textColor}
+                    onChange={(e) => handleChange('textColor', e.target.value)}
+                    disabled={!isEditing}
+                    className="w-full h-12 rounded-xl bg-white/5 border border-white/10 cursor-pointer disabled:opacity-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white/80 mb-2">
+                    Accent Color
+                  </label>
+                  <input
+                    type="color"
+                    value={formData.accentColor}
+                    onChange={(e) => handleChange('accentColor', e.target.value)}
+                    disabled={!isEditing}
+                    className="w-full h-12 rounded-xl bg-white/5 border border-white/10 cursor-pointer disabled:opacity-50"
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
+        </motion.div>
+
+        {/* Preview & Upload Section */}
+        <div className="space-y-6">
+          {/* Avatar Upload */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-slate-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
+          >
+            <h2 className="text-xl font-bold text-white mb-4">Avatar Photo</h2>
+            <ImageUpload
+              value={formData.avatarUrl}
+              onChange={(url: string) => handleChange('avatarUrl', url)}
+              label="Upload Avatar"
+              aspectRatio="square"
+            />
+          </motion.div>
+
+          {/* QR Code Upload */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-slate-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
+          >
+            <h2 className="text-xl font-bold text-white mb-4">QR Code</h2>
+            <ImageUpload
+              value={formData.qrCodeUrl}
+              onChange={(url: string) => handleChange('qrCodeUrl', url)}
+              label="Upload QR Code"
+              aspectRatio="square"
+            />
+          </motion.div>
+
+          {/* Live Preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-slate-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
+          >
+            <h2 className="text-xl font-bold text-white mb-4">Preview</h2>
+            
+            {/* Card Preview */}
+            <div 
+              className="aspect-[1.6/1] rounded-xl p-6 shadow-2xl"
+              style={{ 
+                backgroundColor: formData.backgroundColor,
+                color: formData.textColor 
+              }}
+            >
+              <div className="flex items-start justify-between h-full">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold mb-1">{formData.fullName}</h3>
+                  <p className="text-sm opacity-80 mb-4">{formData.title}</p>
+                  <p className="text-xs opacity-60">{formData.company}</p>
+                  <p className="text-xs opacity-60">{formData.location}</p>
+                </div>
+                <div className="flex flex-col items-end gap-4">
+                  {formData.avatarUrl && (
+                    <div className="w-16 h-16 rounded-full bg-white/10 border-2" style={{ borderColor: formData.accentColor }} />
+                  )}
+                  {formData.qrCodeUrl && (
+                    <div className="w-20 h-20 bg-white rounded-lg p-1">
+                      <div className="w-full h-full bg-gray-300" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+}

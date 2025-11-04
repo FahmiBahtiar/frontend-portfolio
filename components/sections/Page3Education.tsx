@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { GraduationCap, Award, Code2, Plane, Mountain, Calendar, MapPin, Trophy, Star, ChevronDown, ChevronUp, CheckCircle2, ExternalLink } from 'lucide-react';
+import { GraduationCap, Award, Code2, Plane, Mountain, Calendar, MapPin, Trophy, Star, ChevronDown, ChevronUp, CheckCircle2, ExternalLink, Loader2 } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -10,6 +10,8 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { AltitudeTimeline } from '@/components/features/AltitudeTimeline';
+import { EducationService } from '@/lib/services/education';
+import { Education, Achievement } from '@/lib/types/admin';
 
 interface Page3EducationProps {
   onNavigate?: (sectionIndex: number) => void;
@@ -21,134 +23,57 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
     index: number;
   } | null>(null);
 
-  const education = [
-    {
-      degree: 'Bachelor of Network Engineering',
-      institution: 'University of Technology',
-      period: '2020 - 2024',
-      gpa: '3.85',
-      color: 'cyan',
-    },
-    {
-      degree: 'Aviation Ground School',
-      institution: 'Flight Training Academy',
-      period: '2022 - 2023',
-      gpa: 'Honor',
-      color: 'orange',
-    },
-    {
-      degree: 'Mountain Guide Certification',
-      institution: 'Alpine Training Institute',
-      period: '2021 - 2022',
-      gpa: 'Certified',
-      color: 'green',
-    },
-    {
-      degree: 'Advanced Web Development',
-      institution: 'Tech Bootcamp',
-      period: '2023',
-      gpa: 'Graduate',
-      color: 'blue',
-    },
-  ];
+  const [educationRecords, setEducationRecords] = useState<Education[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const achievements = {
-    developer: [
-      {
-        title: 'Full Stack Development Certification',
-        issuer: 'Tech Academy',
-        date: '2023',
-        icon: Code2,
-      },
-      {
-        title: 'React Advanced Patterns',
-        issuer: 'Online Platform',
-        date: '2023',
-        icon: Code2,
-      },
-      {
-        title: 'Winner - Hackathon 2023',
-        issuer: 'Tech Community',
-        date: '2023',
-        icon: Trophy,
-      },
-      {
-        title: 'AWS Cloud Practitioner',
-        issuer: 'Amazon Web Services',
-        date: '2024',
-        icon: Award,
-      },
-      {
-        title: 'Node.js Certification',
-        issuer: 'OpenJS Foundation',
-        date: '2024',
-        icon: Code2,
-      },
-    ],
-    aviation: [
-      {
-        title: 'Private Pilot License (PPL)',
-        issuer: 'Civil Aviation Authority',
-        date: '2023',
-        icon: Plane,
-      },
-      {
-        title: 'Radio Telephony Certificate',
-        issuer: 'Aviation Authority',
-        date: '2022',
-        icon: Plane,
-      },
-      {
-        title: 'Aviation Safety Course',
-        issuer: 'Flight School',
-        date: '2022',
-        icon: Award,
-      },
-      {
-        title: 'Instrument Rating',
-        issuer: 'Flight Academy',
-        date: '2024',
-        icon: Plane,
-      },
-    ],
-    mountaineering: [
-      {
-        title: 'Advanced Mountain Guide',
-        issuer: 'Mountain Federation',
-        date: '2023',
-        icon: Mountain,
-      },
-      {
-        title: 'First Aid & Rescue',
-        issuer: 'Outdoor Training',
-        date: '2022',
-        icon: Award,
-      },
-      {
-        title: '7 Summits Achievement',
-        issuer: 'Climbing Community',
-        date: '2023',
-        icon: Trophy,
-      },
-      {
-        title: 'Ice Climbing Certification',
-        issuer: 'Alpine Club',
-        date: '2024',
-        icon: Mountain,
-      },
-      {
-        title: 'Wilderness Survival Expert',
-        issuer: 'Outdoor Federation',
-        date: '2024',
-        icon: Award,
-      },
-      {
-        title: 'Rock Climbing Instructor',
-        issuer: 'Climbing Association',
-        date: '2023',
-        icon: Mountain,
-      },
-    ],
+  useEffect(() => {
+    const fetchEducationData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const [educationData, achievementsData] = await Promise.all([
+          EducationService.getEducationRecords(),
+          EducationService.getAchievements(),
+        ]);
+        setEducationRecords(educationData);
+        setAchievements(achievementsData);
+      } catch (err) {
+        setError('Unable to load education data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEducationData();
+  }, []);
+
+  // Group achievements by category
+  const achievementsByCategory = achievements.reduce((acc, achievement) => {
+    if (!acc[achievement.category]) {
+      acc[achievement.category] = [];
+    }
+    acc[achievement.category].push(achievement);
+    return acc;
+  }, {} as Record<string, Achievement[]>);
+
+  // Icon mapping function
+  const getIcon = (iconName: string) => {
+    const iconMap: Record<string, any> = {
+      Code2,
+      Plane,
+      Mountain,
+      Award,
+      Trophy,
+      Star,
+      GraduationCap,
+      Calendar,
+      MapPin,
+      CheckCircle2,
+      ExternalLink,
+    };
+    return iconMap[iconName] || Award;
   };
 
   const getColorClasses = (color: string) => {
@@ -170,7 +95,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
       gradient: 'from-cyan-500/10 to-blue-500/10',
       borderColor: 'border-cyan-400/30',
       textColor: 'text-cyan-400',
-      achievements: achievements.developer,
+      achievements: achievementsByCategory.developer || [],
     },
     {
       id: 'aviation',
@@ -180,7 +105,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
       gradient: 'from-orange-500/10 to-pink-500/10',
       borderColor: 'border-orange-400/30',
       textColor: 'text-orange-400',
-      achievements: achievements.aviation,
+      achievements: achievementsByCategory.aviation || [],
     },
     {
       id: 'mountaineering',
@@ -190,7 +115,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
       gradient: 'from-green-500/10 to-emerald-500/10',
       borderColor: 'border-green-400/30',
       textColor: 'text-green-400',
-      achievements: achievements.mountaineering,
+      achievements: achievementsByCategory.mountaineering || [],
     },
   ];
 
@@ -203,6 +128,28 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
       category,
     };
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full px-4 md:px-8 py-12 md:py-16 pt-24 lg:pt-28">
+        <div className="max-w-6xl mx-auto text-center">
+          <Loader2 className="w-10 h-10 mx-auto animate-spin text-cyan-400" />
+          <p className="text-white/70 mt-4">Loading education and achievement data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen w-full px-4 md:px-8 py-12 md:py-16 pt-24 lg:pt-28">
+        <div className="max-w-6xl mx-auto text-center">
+          <p className="text-red-400 mb-4">⚠️ {error}</p>
+          <p className="text-white/70">Please try refreshing the page or check back later.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full px-4 md:px-8 py-12 md:py-16 pt-24 lg:pt-28">
@@ -265,7 +212,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
           </motion.div>
 
           <div className="rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-6 md:p-8">
-            <AltitudeTimeline />
+            <AltitudeTimeline educationRecords={educationRecords} />
           </div>
         </motion.div>
 
@@ -338,10 +285,13 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                             >
                               <div className="flex items-start gap-3">
                                 <div className={`w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-/item-hover:scale-110 transition-transform`}>
-                                  <Icon className={`w-5 h-5 ${category.textColor}`} />
+                                  {(() => {
+                                    const AchievementIcon = getIcon(achievement.icon);
+                                    return <AchievementIcon className={`w-5 h-5 ${category.textColor}`} />;
+                                  })()}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className={`text-sm mb-0.5 transition-colors ${isSelected ? 'text-white' : 'text-white/80 group-hover/item:text-white'}`}>
+                                  <p className={`text-sm mb-0.5 transition-colors ${isSelected ? 'text-white' : 'text-white/80 group-hover:item:text-white'}`}>
                                     {achievement.title}
                                   </p>
                                   <p className="text-white/40 text-xs truncate">{achievement.issuer}</p>
@@ -386,7 +336,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                     {(() => {
                                       const detail = getSelectedAchievementDetail();
                                       if (!detail) return null;
-                                      const Icon = detail.achievement.icon;
+                                      const Icon = getIcon(detail.achievement.icon);
                                       return <Icon className={`w-10 h-10 ${category.textColor}`} />;
                                     })()}
                                   </div>
