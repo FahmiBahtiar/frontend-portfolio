@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# documentation (for development only)
+*.md
+!README.md
+
+# scripts
+*.py
+
+# testing
+/app/test
+/app/**/test

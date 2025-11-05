@@ -1,0 +1,25 @@
+# Documentation
+*.md
+!README.md
+
+# Scripts
+*.py
+
+# Testing
+/app/test
+/app/**/test
+
+# Development files
+.git
+.vscode
+.idea
+*.log
+*.lock
+
+# Environment files (use Vercel dashboard instead)
+.env.local
+.env.development.local
+
+# Cache directories
+.next/cache
+node_modules/.cache

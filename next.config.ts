@@ -16,7 +16,9 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['motion', 'lucide-react', '@radix-ui/react-accordion'],
   },
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === 'production' 
+      ? { exclude: ['error'] }
+      : false,
   },
   // Optimize JavaScript
   productionBrowserSourceMaps: false,

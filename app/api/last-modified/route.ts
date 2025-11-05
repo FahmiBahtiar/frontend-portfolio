@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(backendData);
       }
     } catch (backendError) {
-      console.log('Backend not available, using local calculation');
+      // Backend not available, using local calculation
     }
 
     // Fallback: Calculate from local files or use current date

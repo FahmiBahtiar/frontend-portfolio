@@ -22,14 +22,10 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
       try {
         setLoading(true);
         setError(null);
-        console.log('🔄 Fetching data from API...');
         const [passionsData, highlightsData] = await Promise.all([
           AboutService.getPassions(),
           AboutService.getHighlights(),
         ]);
-        console.log('✅ API call successful!');
-        console.log('Passions:', passionsData);
-        console.log('Highlights:', highlightsData);
         setPassions(passionsData);
         setHighlights(highlightsData);
       } catch (err) {
