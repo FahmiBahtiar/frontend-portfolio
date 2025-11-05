@@ -52,7 +52,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
       Target,
       Heart,
     };
-    return iconMap[iconName] || Code2;
+    return iconMap[iconName] || Code;
   };
 
   // Color mapping function
@@ -69,9 +69,9 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
     return colorMap[color] || colorMap.cyan;
   };
 
-  // Color mapping function for hex colors
+  // Color mapping function for hex colors (text only, no background)
   const getColorFromHex = (hexColor: string) => {
-    // Map hex colors to appropriate text colors
+    // Map hex colors to appropriate text colors only
     const colorMap: Record<string, string> = {
       '#00ffff': 'text-cyan-400', // cyan
       '#0080ff': 'text-blue-400', // blue
@@ -81,7 +81,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
       '#ffff00': 'text-yellow-400', // yellow
       '#ff00ff': 'text-pink-400', // pink
     };
-    return colorMap[hexColor] || 'text-cyan-400';
+    return colorMap[hexColor.toLowerCase()] || 'text-cyan-400';
   };
 
   // Convert named colors to RGB values for inline styles
@@ -253,7 +253,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                         />
                         
                         <div className="relative">
-                          <Icon className={`w-6 h-6 ${getColorFromHex(item.color)} mb-2`} />
+                          <Icon className={`w-6 h-6 ${getColorFromHex(item.color)} mb-2`} strokeWidth={2} />
                           <p className="text-white/50 text-xs mb-1">{item.label}</p>
                           <p className="text-white">{item.value}</p>
                         </div>
@@ -320,7 +320,11 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                                 border: `1px solid rgba(${getColorValue(passion.color)}, 0.3)`,
                               }}
                             >
-                              <Icon className={`w-6 h-6 ${getColorClasses(passion.color)}`} />
+                              <Icon 
+                                className={`w-6 h-6`}
+                                style={{ color: `rgb(${getColorValue(passion.color)})` }}
+                                strokeWidth={2}
+                              />
                             </div>
                           </div>
 
