@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Code2, Plane, Mountain, GraduationCap, Briefcase, Trophy, Target, Heart } from 'lucide-react';
+import { Code2, Plane, Mountain, GraduationCap, Briefcase, Trophy, Target, Heart, Code } from 'lucide-react';
 import { LanyardCard } from '@/components/features/LanyardCard';
 import { AboutService } from '@/lib/services/about';
 import { Passion, Highlight } from '@/lib/types/admin';
@@ -42,6 +42,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
   // Icon mapping function
   const getIcon = (iconName: string) => {
     const iconMap: Record<string, any> = {
+      Code,
       Code2,
       Plane,
       Mountain,
@@ -81,6 +82,44 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
       '#ff00ff': 'text-pink-400', // pink
     };
     return colorMap[hexColor] || 'text-cyan-400';
+  };
+
+  // Convert named colors to RGB values for inline styles
+  const getColorValue = (color: string) => {
+    const colorMap: Record<string, string> = {
+      cyan: '6, 182, 212',    // cyan-400
+      blue: '59, 130, 246',   // blue-400  
+      green: '34, 197, 94',   // green-400
+      purple: '147, 51, 234', // purple-400
+      orange: '251, 146, 60', // orange-400
+      yellow: '250, 204, 21', // yellow-400
+      pink: '236, 72, 153',   // pink-400
+    };
+    return colorMap[color] || colorMap.cyan;
+  };
+
+  // Handle gradient backgrounds
+  const getGradientColors = (gradient: string) => {
+    // For gradients like "from-cyan-500/20 to-blue-500/20"
+    if (gradient.includes('from-') && gradient.includes('to-')) {
+      // This is already a Tailwind gradient, convert to CSS
+      const fromMatch = gradient.match(/from-(\w+)-(\d+)/);
+      const toMatch = gradient.match(/to-(\w+)-(\d+)/);
+      
+      if (fromMatch && toMatch) {
+        const fromColor = getColorValue(fromMatch[1]);
+        const toColor = getColorValue(toMatch[1]);
+        const fromOpacity = parseInt(fromMatch[2]) / 100;
+        const toOpacity = parseInt(toMatch[2]) / 100;
+        
+        return `rgba(${fromColor}, ${fromOpacity}) 0%, rgba(${toColor}, ${toOpacity}) 100%`;
+      }
+    }
+    return `rgba(${getColorValue('cyan')}, 0.2) 0%, rgba(${getColorValue('blue')}, 0.2) 100%`;
+  };
+
+  const getSolidColor = (color: string) => {
+    return `rgba(${getColorValue(color)}, 0.2) 0%, rgba(${getColorValue(color)}, 0.1) 100%`;
   };
 
   const getGlowStyle = (hexColor: string) => {
@@ -247,13 +286,23 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                         className="relative p-5 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all group overflow-hidden"
                       >
                         {/* Background gradient */}
-                        <div className={`absolute inset-0 bg-gradient-to-br ${passion.gradient} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                        <div 
+                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          style={{
+                            background: passion.gradient.startsWith('from-') 
+                              ? `linear-gradient(135deg, ${getGradientColors(passion.gradient)})` 
+                              : `linear-gradient(135deg, ${getSolidColor(passion.gradient)})`
+                          }}
+                        />
                         
                         <div className="relative flex items-start gap-4">
                           {/* Icon */}
                           <div className="relative flex-shrink-0">
                             <motion.div
-                              className={`absolute inset-0 rounded-full blur-xl bg-${passion.color}-400/40`}
+                              className="absolute inset-0 rounded-full blur-xl"
+                              style={{
+                                backgroundColor: `rgba(${getColorValue(passion.color)}, 0.4)`,
+                              }}
                               animate={{
                                 scale: [1, 1.2, 1],
                                 opacity: [0.3, 0.6, 0.3]
@@ -264,7 +313,13 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                                 ease: 'easeInOut'
                               }}
                             />
-                            <div className={`relative w-12 h-12 rounded-full bg-${passion.color}-500/20 border border-${passion.color}-400/30 flex items-center justify-center`}>
+                            <div 
+                              className="relative w-12 h-12 rounded-full flex items-center justify-center"
+                              style={{
+                                backgroundColor: `rgba(${getColorValue(passion.color)}, 0.2)`,
+                                border: `1px solid rgba(${getColorValue(passion.color)}, 0.3)`,
+                              }}
+                            >
                               <Icon className={`w-6 h-6 ${getColorClasses(passion.color)}`} />
                             </div>
                           </div>
@@ -274,7 +329,12 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                             <div className="flex items-start justify-between gap-4 mb-2">
                               <h4 className="text-white">{passion.title}</h4>
                               <div className="text-right flex-shrink-0">
-                                <p className={`text-${passion.color}-400`}>{getStatsData(passion).value}</p>
+                                <p 
+                                  className="font-medium"
+                                  style={{ color: `rgb(${getColorValue(passion.color)})` }}
+                                >
+                                  {getStatsData(passion).value}
+                                </p>
                                 <p className="text-white/50 text-xs">{getStatsData(passion).label}</p>
                               </div>
                             </div>
