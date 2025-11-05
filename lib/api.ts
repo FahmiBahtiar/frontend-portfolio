@@ -1,6 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
+  TIMEOUT: 10000, // 10 seconds timeout
   ENDPOINTS: {
     // Hero Section
     HERO_PROFILE: '/api/admin/hero/profile',
@@ -52,7 +53,7 @@ export class ApiError extends Error {
   }
 }
 
-// Generic API fetch function
+// Generic API fetch function with timeout
 export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
@@ -67,8 +68,19 @@ export async function apiRequest<T>(
     ...options,
   };
 
+  // Create timeout promise
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => {
+      reject(new ApiError('Request timeout', 408));
+    }, API_CONFIG.TIMEOUT);
+  });
+
   try {
-    const response = await fetch(url, config);
+    // Race between fetch and timeout
+    const response = await Promise.race([
+      fetch(url, config),
+      timeoutPromise
+    ]) as Response;
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

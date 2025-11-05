@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo, memo } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'motion/react';
+import { HeroService } from '@/lib/services/hero';
 
 // Lazy load components untuk mengurangi initial bundle
 const LoadingScreen = dynamic(() => import('@/components/features/LoadingScreen').then(mod => ({ default: mod.LoadingScreen })), {
@@ -38,6 +39,13 @@ export default function HomePage() {
   ];
 
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Prefetch hero data early to avoid loading issues
+  useEffect(() => {
+    // Prefetch hero data immediately on mount
+    HeroService.getHeroProfile().catch(console.error);
+    HeroService.getSocialLinks().catch(console.error);
+  }, []);
 
   const handleLoadingComplete = () => {
     setIsLoading(false);

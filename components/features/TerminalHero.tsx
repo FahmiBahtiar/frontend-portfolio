@@ -78,35 +78,67 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
     social: false,
   });
 
-  // Load hero profile data from API
+  // Load hero profile data from API with retry mechanism
   useEffect(() => {
+    let retryCount = 0;
+    const maxRetries = 3;
+    const retryDelay = 1000; // 1 second
+
     const loadHeroProfile = async () => {
       try {
         setLoading(true);
         setError(null);
         const data = await HeroService.getHeroProfile();
         setHeroProfile(data);
+        retryCount = 0; // Reset on success
       } catch (error) {
-        setError('Connection Error');
+        console.error('Failed to load hero profile:', error);
+        
+        // Retry logic
+        if (retryCount < maxRetries) {
+          retryCount++;
+          console.log(`Retrying... (${retryCount}/${maxRetries})`);
+          setTimeout(loadHeroProfile, retryDelay * retryCount);
+        } else {
+          setError('Connection Error');
+          setLoading(false);
+        }
       } finally {
-        setLoading(false);
+        if (retryCount === 0) {
+          setLoading(false);
+        }
       }
     };
 
     loadHeroProfile();
   }, []);
 
-  // Load social links data from API
+  // Load social links data from API with retry mechanism
   useEffect(() => {
+    let retryCount = 0;
+    const maxRetries = 3;
+    const retryDelay = 1000;
+
     const loadSocialLinks = async () => {
       try {
         setSocialLinksLoading(true);
         const data = await HeroService.getSocialLinks();
         setSocialLinks(data);
+        retryCount = 0;
       } catch (error) {
-        // Error handled by UI state
+        console.error('Failed to load social links:', error);
+        
+        if (retryCount < maxRetries) {
+          retryCount++;
+          console.log(`Retrying social links... (${retryCount}/${maxRetries})`);
+          setTimeout(loadSocialLinks, retryDelay * retryCount);
+        } else {
+          setSocialLinksLoading(false);
+        }
       } finally {
-        setSocialLinksLoading(false);
+        if (retryCount === 0) {
+          setSocialLinksLoading(false);
+        }
       }
     };
 
@@ -187,14 +219,16 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
     },
   ];
 
-  // Delay start of typing animation
+  // Delay start of typing animation - wait for data to load
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setStartTyping(true);
-    }, 500); // Start typing 500ms after component mounts
-
-    return () => clearTimeout(timer);
-  }, []);
+    // Only start typing after hero profile is loaded
+    if (!loading && heroProfile) {
+      const timer = setTimeout(() => {
+        setStartTyping(true);
+      }, 200); // Reduced from 500ms to 200ms
+      return () => clearTimeout(timer);
+    }
+  }, [loading, heroProfile]);
 
   // Typing effect with RAF for smoother animation
   useEffect(() => {
@@ -209,7 +243,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
       // Use RAF for smoother timing
       let rafId: number;
       let startTime: number | null = null;
-      const typingDelay = 60; // Faster, smoother typing
+      const typingDelay = 35; // Faster typing - reduced from 60ms to 35ms
       
       const animate = (timestamp: number) => {
         if (!startTime) startTime = timestamp;
@@ -250,7 +284,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
         
         setCurrentCommandIndex(currentCommandIndex + 1);
         setCurrentCharIndex(0);
-      }, 250); // Faster transition between commands
+      }, 150); // Faster transition - reduced from 250ms to 150ms
       return () => clearTimeout(timeout);
     }
   }, [currentCharIndex, currentCommandIndex, isTyping, displayedCommands, commands, startTyping]);
@@ -280,7 +314,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
       setIsTypingSubtitle(true);
       let rafId: number;
       let startTime: number | null = null;
-      const typingDelay = 40; // Faster subtitle typing
+      const typingDelay = 25; // Faster subtitle typing - reduced from 40ms to 25ms
       
       const animate = (timestamp: number) => {
         if (!startTime) startTime = timestamp;
