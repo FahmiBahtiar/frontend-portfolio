@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Save, User, Sparkles, Plus, X, Loader2 } from 'lucide-react';
+import { Save, User, Sparkles, Plus, X, Loader2, GraduationCap, Briefcase, Trophy, Target } from 'lucide-react';
 import { ImageUpload } from '@/components/admin/ImageUpload';
 import { HeroService } from '@/lib/services/hero';
 import { HeroProfile } from '@/lib/types/admin';
@@ -307,7 +307,7 @@ export default function HeroProfilePage() {
                   Tech Stack
                 </label>
                 <p className="text-white/50 text-sm mb-3">
-                  Add your tech stack items with callsigns. Icon mapping: Code2 (Development), Plane (Aviation), Mountain (Mountaineering), Users (Team), Database (Backend), Globe (Web), Smartphone (Mobile), etc.
+                  Add your tech stack items with callsigns. Icon mapping: Code2 (Development), Plane (Aviation), Mountain (Mountaineering), GraduationCap (Education), Briefcase (Work), Trophy (Achievements), Target (Goals), Users (Team), Database (Backend), Globe (Web), Smartphone (Mobile), etc.
                 </p>
                 
                 {/* Current Tech Stack Items */}
@@ -336,6 +336,10 @@ export default function HeroProfilePage() {
                           {item.icon === 'Code2' && '💻 Development'}
                           {item.icon === 'Plane' && '✈️ Aviation'}
                           {item.icon === 'Mountain' && '🏔️ Mountaineering'}
+                          {item.icon === 'GraduationCap' && '🎓 Education'}
+                          {item.icon === 'Briefcase' && '💼 Work/Career'}
+                          {item.icon === 'Trophy' && '🏆 Achievements'}
+                          {item.icon === 'Target' && '🎯 Goals/Objectives'}
                           {item.icon === 'Users' && '👥 Team/Social'}
                           {item.icon === 'Database' && '🗄️ Backend/Data'}
                           {item.icon === 'Globe' && '🌐 Web/Internet'}
@@ -348,7 +352,7 @@ export default function HeroProfilePage() {
                           {item.icon === 'Heart' && '❤️ Personal'}
                           {item.icon === 'Star' && '⭐ Favorite'}
                           {item.icon === 'Zap' && '⚡ Energy/Power'}
-                          {!['Code2', 'Plane', 'Mountain', 'Users', 'Database', 'Globe', 'Smartphone', 'Palette', 'Camera', 'Music', 'Gamepad', 'Coffee', 'Heart', 'Star', 'Zap'].includes(item.icon) && '❓ Custom'}
+                          {!['Code2', 'Plane', 'Mountain', 'GraduationCap', 'Briefcase', 'Trophy', 'Target', 'Users', 'Database', 'Globe', 'Smartphone', 'Palette', 'Camera', 'Music', 'Gamepad', 'Coffee', 'Heart', 'Star', 'Zap'].includes(item.icon) && '❓ Custom'}
                         </div>
                       </div>
                       <button
@@ -398,7 +402,7 @@ export default function HeroProfilePage() {
                   {/* Icon Suggestions */}
                   <div className="text-xs text-slate-400">
                     <span className="font-medium">Available icons: </span>
-                    Code2 💻, Plane ✈️, Mountain 🏔️, Users 👥, Database 🗄️, Globe 🌐, Smartphone 📱, 
+                    Code2 💻, Plane ✈️, Mountain 🏔️, GraduationCap 🎓, Briefcase 💼, Trophy 🏆, Target 🎯, Users 👥, Database 🗄️, Globe 🌐, Smartphone 📱, 
                     Palette 🎨, Camera 📷, Music 🎵, Gamepad 🎮, Coffee ☕, Heart ❤️, Star ⭐, Zap ⚡
                   </div>
                 </div>
