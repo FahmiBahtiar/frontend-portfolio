@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Github,
@@ -506,30 +507,37 @@ export function AircraftHangar() {
       </div>
 
       {/* Detail Modal */}
-      <AnimatePresence>
-        {selectedItem && (
-          <>
-            {/* Backdrop */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {selectedItem && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
+              className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none"
+            >
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm pointer-events-auto"
               onClick={() => setSelectedItem(null)}
             />
 
             {/* Modal */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="fixed inset-4 md:inset-8 lg:inset-auto lg:left-1/2 lg:top-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-3xl z-50 flex items-center justify-center"
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-3xl pointer-events-auto"
             >
               {(() => {
                 const colors = getColorClasses(selectedItem.color);
 
                 return (
-                  <div className="relative w-full h-full lg:h-auto max-h-[90vh] flex flex-col rounded-2xl bg-gradient-to-br from-slate-900/98 to-slate-800/98 backdrop-blur-2xl border border-white/20 shadow-2xl overflow-hidden">
+                  <div className="relative w-full max-h-[90vh] flex flex-col rounded-2xl bg-gradient-to-br from-slate-900/98 to-slate-800/98 backdrop-blur-2xl border border-white/20 shadow-2xl overflow-hidden">
                     {/* Header */}
                     <div
                       className="sticky top-0 px-4 md:px-6 py-4 border-b z-10 backdrop-blur-xl"
@@ -755,9 +763,11 @@ export function AircraftHangar() {
                 );
               })()}
             </motion.div>
-          </>
+          </motion.div>
         )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }

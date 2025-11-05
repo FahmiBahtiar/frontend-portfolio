@@ -89,17 +89,12 @@ function ContactForm() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div>
       <div className="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 p-6 md:p-8">
-        <div className="text-center mb-6">
-          <h3 className="text-xl md:text-2xl font-bold text-white mb-2">Send a Message</h3>
-          <p className="text-gray-400">Get in touch for collaborations, opportunities, or just to say hello!</p>
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2 font-mono">
                 Name *
               </label>
               <input
@@ -109,12 +104,12 @@ function ContactForm() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-colors"
                 placeholder="Your full name"
               />
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2 font-mono">
                 Email *
               </label>
               <input
@@ -124,14 +119,14 @@ function ContactForm() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-colors"
                 placeholder="your.email@example.com"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="subject" className="block text-sm font-medium text-slate-300 mb-2 font-mono">
               Subject *
             </label>
             <input
@@ -139,15 +134,15 @@ function ContactForm() {
               id="subject"
               name="subject"
               value={formData.subject}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
-              placeholder="What's this about?"
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-colors"
+                placeholder="What's this about?"
             />
           </div>
 
           <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-2 font-mono">
               Message *
             </label>
             <textarea
@@ -157,29 +152,29 @@ function ContactForm() {
               onChange={handleChange}
               required
               rows={5}
-              className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 resize-none"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 resize-none transition-colors"
               placeholder="Tell me about your project, idea, or just say hello..."
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-400">
+          <div className="flex items-center justify-between pt-4 border-t border-white/5">
+            <div className="text-xs text-slate-500 font-mono">
               * Required fields
             </div>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:from-slate-600 disabled:to-slate-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed shadow-lg hover:shadow-green-500/20"
             >
               {isSubmitting ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Sending...
+                  <span className="font-mono">Sending...</span>
                 </>
               ) : (
                 <>
                   <Send className="w-4 h-4" />
-                  Send Message
+                  <span className="font-mono">Send Message</span>
                 </>
               )}
             </button>
@@ -230,10 +225,12 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
   const [frequencies, setFrequencies] = useState<ContactFrequency[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastModified, setLastModified] = useState<string>('2025-05-07');
 
   // Fetch contact frequencies on component mount
   useEffect(() => {
     fetchContactFrequencies();
+    fetchLastModified();
   }, []);
 
   const fetchContactFrequencies = async () => {
@@ -252,6 +249,23 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
       setFrequencies([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchLastModified = async () => {
+    try {
+      const response = await fetch('/api/last-modified');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.formattedDate) {
+          // Format: MM/DD/YYYY -> YYYY,MM,DD
+          const [month, day, year] = data.formattedDate.split('/');
+          setLastModified(`${year},${month},${day}`);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch last modified date:', err);
+      // Keep default date
     }
   };
 
@@ -385,7 +399,7 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
               />
               <span className="text-red-400 font-mono text-sm md:text-base">EMERGENCY FREQUENCIES</span>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-red-500/50 to-transparent" />
+            <div className="flex-1 h-1 bg-red-500 border-2 border-red-500" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -497,7 +511,7 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
               />
               <span className="text-purple-400 font-mono text-sm md:text-base">LIVE STATUS</span>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-purple-500/50 to-transparent" />
+            <div className="flex-1 h-1 bg-purple-500 border-2 border-red-500" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
@@ -595,9 +609,10 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.0 }}
+          className="mb-16 md:mb-20"
         >
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-[240px]">
               <motion.div
                 animate={{ 
                   scale: [1, 1.2, 1],
@@ -611,7 +626,7 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
               />
               <span className="text-cyan-400 font-mono text-sm md:text-base">NAVIGATION FREQUENCIES</span>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/50 to-transparent" />
+            <div className="flex-1 h-1 bg-cyan-500 border-2 border-red-500" />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -693,28 +708,31 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2 }}
+          className="mt-16 md:mt-20"
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center gap-2">
               <motion.div
-                animate={{
+                animate={{ 
                   scale: [1, 1.2, 1],
                 }}
-                transition={{
+                transition={{ 
                   duration: 2,
                   repeat: Infinity,
                   ease: "easeInOut",
                   delay: 0.2
                 }}
-                className="w-3 h-3 rounded-full bg-green-500"
+                className="w-3 h-3 rounded-full bg-emerald-500"
               />
-              <span className="text-green-400 font-mono text-sm md:text-base">CONTACT FORM</span>
+              <span className="text-emerald-400 font-mono text-sm md:text-base">CONTACT FORM</span>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-green-500/50 to-transparent" />
+            <div className="flex-1 h-1 bg-emerald-500 border-2 border-red-500" />
+          
           </div>
 
           <ContactForm />
         </motion.div>
+
       </div>
     </div>
   );

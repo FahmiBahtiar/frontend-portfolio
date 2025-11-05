@@ -186,7 +186,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
           <h3 className="text-white mb-8 flex items-center gap-3">
             <Mountain className="w-6 h-6 text-green-400" />
             Journey Timeline
-            <span className="text-white/40 text-sm ml-2">2020 → 2024</span>
+            <span className="text-white/40 text-sm ml-2">2012 → 2024</span>
           </h3>
           
           {/* Info banner */}

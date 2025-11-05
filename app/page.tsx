@@ -21,6 +21,7 @@ const Page5Contact = dynamic(() => import('@/components/sections/Page5Contact').
 const PageGallery = dynamic(() => import('@/components/sections/Page4Gallery').then(mod => ({ default: mod.PageGallery })), {
   ssr: false,
 });
+const Footer = dynamic(() => import('@/components/layout/Footer'));
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -130,6 +131,9 @@ export default function HomePage() {
             })}
           </div>
 
+          {/* Footer */}
+          <Footer />
+
           {/* Gallery Modal/Overlay */}
           <AnimatePresence mode="wait">
             {showGallery && (
@@ -166,8 +170,6 @@ export default function HomePage() {
             onGalleryToggle={handleGalleryToggle}
             totalSections={sections.length} 
           />
-
-
         </div>
       )}
     </>

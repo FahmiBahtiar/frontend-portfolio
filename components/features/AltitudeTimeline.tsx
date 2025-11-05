@@ -33,7 +33,7 @@ const defaultTimelineData: TimelinePoint[] = [
     id: '1', 
     year: '2006-2012', 
     month: 6, 
-    altitude: 20, 
+    altitude: 0, 
     title: 'Elementary School', 
     subtitle: 'Foundation Building', 
     institution: 'SD Negeri 1 Jakarta',
@@ -49,7 +49,7 @@ const defaultTimelineData: TimelinePoint[] = [
     id: '2', 
     year: '2012-2015', 
     month: 6, 
-    altitude: 45, 
+    altitude: 40, 
     title: 'Junior High School', 
     subtitle: 'Academic Excellence', 
     institution: 'SMP Negeri 5 Jakarta',
@@ -65,7 +65,7 @@ const defaultTimelineData: TimelinePoint[] = [
     id: '3', 
     year: '2015-2018', 
     month: 6, 
-    altitude: 70, 
+    altitude: 65, 
     title: 'Senior High School', 
     subtitle: 'STEM Specialization', 
     institution: 'SMA Negeri 8 Jakarta',
@@ -153,7 +153,12 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
   const lastProgress = useRef<number>(0); // Track last progress to prevent backward movement
   
   const climberProgress = useMotionValue(0);
-  const smoothProgress = useSpring(climberProgress, { stiffness: 40, damping: 25 });
+  const smoothProgress = useSpring(climberProgress, { 
+    stiffness: 60, 
+    damping: 20, 
+    mass: 0.5,
+    restDelta: 0.0001 
+  });
   const pathRef = useRef<SVGPathElement>(null);
   const climberAnimProgress = useMotionValue(0);
   const pathDrawProgress = useMotionValue(0); // For synchronized path drawing
@@ -225,25 +230,41 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
   const padding = { top: 40, right: 60, bottom: 80, left: 60 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
+  
+  // Define the actual visual area for plotting (0% should be at bottom minus labels)
+  const visualBottom = height - padding.bottom + 160; // Add 40px to go closer to actual bottom
+  const visualTop = padding.top;
+  const visualHeight = visualBottom - visualTop;
 
-  // Map data to coordinates (education timeline: 2006-2024)
+  // Extract start and end years from timeline data
+  const getYearFromRange = (yearRange: string, getStart = true): number => {
+    const years = yearRange.split('-').map(y => parseInt(y.trim()));
+    return getStart ? years[0] : (years[1] || years[0]);
+  };
+
+  // Map data to coordinates with equal spacing
   const points = timelineData.map((point, index) => {
-    // For education, we'll space them evenly across the timeline
-    const totalPoints = timelineData.length;
-    const x = padding.left + (index / (totalPoints - 1)) * chartWidth;
-    const y = padding.top + chartHeight - (point.altitude / 100) * chartHeight;
+    // Calculate x position with equal spacing between waypoints
+    const xProgress = index / (timelineData.length - 1);
+    const x = padding.left + xProgress * chartWidth;
+    // Use visualHeight so altitude 0 is at visualBottom
+    const y = visualBottom - (point.altitude / 100) * visualHeight;
     
     return { ...point, x, y };
   });
 
   // Function to detect which waypoint climber is near
-  const detectNearestWaypoint = (x: number, y: number) => {
-    const threshold = 10; // Distance threshold to consider "at waypoint"
+  const detectNearestWaypoint = (progress: number) => {
+    // Calculate which waypoint based on progress along the path
+    // Each waypoint segment is evenly distributed
+    const segmentSize = 1 / (points.length - 1);
+    const threshold = segmentSize * 0.12; // Slightly larger threshold for smooth motion - within 12% of segment
     
     for (let i = 0; i < points.length; i++) {
-      const point = points[i];
-      const distance = Math.sqrt(Math.pow(x - point.x, 2) + Math.pow(y - point.y, 2));
+      const waypointProgress = i / (points.length - 1);
+      const distance = Math.abs(progress - waypointProgress);
       
+      // Check if we're within threshold of this waypoint
       if (distance < threshold) {
         return i;
       }
@@ -300,6 +321,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
     : null;
 
   // Create transforms for climber position (at top level)
+  // Use smoothProgress for smooth movement
   const climberX = useTransform(smoothProgress, (p) => {
     if (!pathRef.current || points.length === 0) return points[0]?.x || 0;
     const clampedP = Math.max(0, Math.min(1, p));
@@ -386,7 +408,15 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
               progress = keyframes[0] * (normalizedTime / times[0]);
             } else {
               const t = (normalizedTime - times[i - 1]) / (times[i] - times[i - 1]);
-              progress = keyframes[i - 1] + (keyframes[i] - keyframes[i - 1]) * t;
+              const segmentProgress = keyframes[i - 1] + (keyframes[i] - keyframes[i - 1]) * t;
+              
+              // Snap to exact waypoint position when very close (within 0.5% of segment)
+              const targetWaypoint = keyframes[i];
+              if (Math.abs(segmentProgress - targetWaypoint) < 0.005) {
+                progress = targetWaypoint;
+              } else {
+                progress = segmentProgress;
+              }
             }
             foundSegment = true;
             break;
@@ -433,11 +463,10 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
       if (!pathRef.current) return;
       
       // Update climber position
-      const position = getPointAtProgress(progress);
       climberProgress.set(progress);
       
-      // Detect waypoint
-      const nearestIndex = detectNearestWaypoint(position.x, position.y);
+      // Detect waypoint based on progress value instead of position
+      const nearestIndex = detectNearestWaypoint(progress);
       
       if (nearestIndex !== -1 && nearestIndex !== lastWaypointIndex.current) {
         lastWaypointIndex.current = nearestIndex;
@@ -522,32 +551,32 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
 
       {/* Altitude Labels & Background Zones */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Elementary Zone */}
-        <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-cyan-400/5 to-transparent">
+        {/* Elementary Zone - 0-30% altitude (bottom 30%) */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-cyan-400/5 to-transparent" style={{ height: '30%' }}>
           <div className="absolute top-2 md:top-4 left-2 md:left-4 text-cyan-300/50 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2">
             <GraduationCap className="w-3 h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Base Camp • Elementary School</span>
             <span className="sm:hidden">Elementary</span>
           </div>
         </div>
-        {/* Junior Zone */}
-        <div className="absolute bottom-1/4 left-0 right-0 h-1/4 bg-gradient-to-t from-green-400/5 to-transparent">
+        {/* Junior Zone - 30-50% altitude */}
+        <div className="absolute left-0 right-0 bg-gradient-to-t from-green-400/5 to-transparent" style={{ bottom: '30%', height: '20%' }}>
           <div className="absolute top-2 md:top-4 left-2 md:left-4 text-green-300/50 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2">
             <Award className="w-3 h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Camp 1 • Junior High School</span>
             <span className="sm:hidden">Junior High</span>
           </div>
         </div>
-        {/* Senior Zone */}
-        <div className="absolute bottom-2/4 left-0 right-0 h-1/4 bg-gradient-to-t from-orange-400/5 to-transparent">
+        {/* Senior Zone - 50-75% altitude */}
+        <div className="absolute left-0 right-0 bg-gradient-to-t from-orange-400/5 to-transparent" style={{ bottom: '50%', height: '25%' }}>
           <div className="absolute top-2 md:top-4 left-2 md:left-4 text-orange-300/50 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2">
             <Trophy className="w-3 h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Camp 2 • Senior High School</span>
             <span className="sm:hidden">Senior High</span>
           </div>
         </div>
-        {/* University Zone */}
-        <div className="absolute top-0 left-0 right-0 h-1/4 bg-gradient-to-b from-purple-400/5 to-transparent">
+        {/* University Zone - 75-100% altitude (top 25%) */}
+        <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-purple-400/5 to-transparent" style={{ height: '25%' }}>
           <div className="absolute top-2 md:top-4 left-2 md:left-4 text-purple-300/50 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2">
             <Star className="w-3 h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Summit • University</span>
@@ -600,19 +629,19 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
 
           {/* Year labels */}
           <g>
-            {['2020', '2021', '2022', '2023', '2024'].map((year, index) => {
-              const x = padding.left + (index / 4) * chartWidth;
+            {points.map((point, index) => {
+              const endYear = getYearFromRange(point.year, false);
               return (
                 <text
-                  key={year}
-                  x={x}
+                  key={`year-${point.id}`}
+                  x={point.x}
                   y={height - padding.bottom + 30}
                   fill="white"
                   fontSize="14"
                   textAnchor="middle"
                   opacity="0.7"
                 >
-                  {year}
+                  {endYear}
                 </text>
               );
             })}

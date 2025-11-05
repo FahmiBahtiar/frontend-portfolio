@@ -23,11 +23,17 @@ export class EducationService {
   }
 
   static async updateEducationRecord(id: string, education: Partial<Education>): Promise<Education> {
+    // Only send updatable fields, exclude MongoDB internal fields
+    const updateData = Object.fromEntries(
+      Object.entries(education).filter(([key]) => 
+        !['id', 'createdAt', 'updatedAt', '__v'].includes(key)
+      )
+    );
     const response = await apiRequest<ApiResponse<Education>>(
       `${API_CONFIG.ENDPOINTS.EDUCATION}/records/${id}`,
       {
         method: 'PUT',
-        body: JSON.stringify(education),
+        body: JSON.stringify(updateData),
       }
     );
     return response.data;
