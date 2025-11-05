@@ -68,6 +68,33 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
     return colorMap[color] || colorMap.cyan;
   };
 
+  // Color mapping function for hex colors
+  const getColorFromHex = (hexColor: string) => {
+    // Map hex colors to appropriate text colors
+    const colorMap: Record<string, string> = {
+      '#00ffff': 'text-cyan-400', // cyan
+      '#0080ff': 'text-blue-400', // blue
+      '#00ff00': 'text-green-400', // green
+      '#8458fd': 'text-purple-400', // purple
+      '#ff8000': 'text-orange-400', // orange
+      '#ffff00': 'text-yellow-400', // yellow
+      '#ff00ff': 'text-pink-400', // pink
+    };
+    return colorMap[hexColor] || 'text-cyan-400';
+  };
+
+  const getGlowStyle = (hexColor: string) => {
+    return {
+      background: `linear-gradient(135deg, ${hexColor}00 0%, ${hexColor}00 100%)`,
+    };
+  };
+
+  const getHoverGlowStyle = (hexColor: string) => {
+    return {
+      background: `linear-gradient(135deg, ${hexColor}1a 0%, ${hexColor}0d 100%)`,
+    };
+  };
+
   // Helper function to get stats data
   const getStatsData = (passion: Passion) => {
     if (passion.stats) {
@@ -179,10 +206,15 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                         className="relative p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all group overflow-hidden"
                       >
                         {/* Glow effect */}
-                        <div className={`absolute inset-0 bg-gradient-to-br from-${item.color}-500/0 to-${item.color}-500/0 group-hover:from-${item.color}-500/10 group-hover:to-${item.color}-500/5 transition-all`} />
+                        <div 
+                          className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-all duration-300"
+                          style={{
+                            background: `linear-gradient(135deg, ${item.color}1a 0%, ${item.color}0d 100%)`
+                          }}
+                        />
                         
                         <div className="relative">
-                          <Icon className={`w-6 h-6 ${getColorClasses(item.color)} mb-2`} />
+                          <Icon className={`w-6 h-6 ${getColorFromHex(item.color)} mb-2`} />
                           <p className="text-white/50 text-xs mb-1">{item.label}</p>
                           <p className="text-white">{item.value}</p>
                         </div>
