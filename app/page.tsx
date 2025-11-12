@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo, memo } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'motion/react';
 import { HeroService } from '@/lib/services/hero';
+import { SpotifyService } from '@/lib/services/spotify';
 
 // Lazy load components untuk mengurangi initial bundle
 const LoadingScreen = dynamic(() => import('@/components/features/LoadingScreen').then(mod => ({ default: mod.LoadingScreen })), {
@@ -29,6 +30,8 @@ export default function HomePage() {
   const [activeSection, setActiveSection] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
   const [sectionsLoaded, setSectionsLoaded] = useState(false);
+  const [isApiLoaded, setIsApiLoaded] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const sections = [
     { id: 'hero', name: 'Hero', component: Page1Hero },
@@ -42,9 +45,34 @@ export default function HomePage() {
 
   // Prefetch hero data early to avoid loading issues
   useEffect(() => {
-    // Prefetch hero data immediately on mount
-    HeroService.getHeroProfile().catch(console.error);
-    HeroService.getSocialLinks().catch(console.error);
+    const prefetchData = async () => {
+      try {
+        setApiError(null);
+        // Prefetch all required API data
+        await Promise.all([
+          HeroService.getHeroProfile(),
+          HeroService.getSocialLinks(),
+          SpotifyService.getNowPlaying(),
+        ]);
+        setIsApiLoaded(true);
+      } catch (error) {
+        console.error('Failed to prefetch API data:', error);
+        setApiError('Failed to connect to API server. Please check your connection and try again.');
+        setIsApiLoaded(false);
+      }
+    };
+
+    prefetchData();
+
+    // Listen for retry events from LoadingScreen
+    const retryHandler = () => {
+      prefetchData();
+    };
+    window.addEventListener('loading-screen-retry', retryHandler as EventListener);
+
+    return () => {
+      window.removeEventListener('loading-screen-retry', retryHandler as EventListener);
+    };
   }, []);
 
   const handleLoadingComplete = () => {
@@ -104,7 +132,13 @@ export default function HomePage() {
     <>
       {/* Loading Screen */}
       <AnimatePresence mode="wait">
-        {isLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
+        {isLoading && (
+          <LoadingScreen
+            onComplete={handleLoadingComplete}
+            isApiLoaded={isApiLoaded}
+            apiError={apiError}
+          />
+        )}
       </AnimatePresence>
 
       {/* Main App - Only render after loading is complete */}

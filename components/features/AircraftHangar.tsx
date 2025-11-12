@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -19,7 +19,8 @@ import {
   Mountain,
   Calendar,
   MapPin,
-  Award
+  Award,
+  Plane
 } from 'lucide-react';
 
 type CategoryType = 'github' | 'flight' | 'mountain';
@@ -53,232 +54,54 @@ interface HangarItem {
   icon: string;
   color: string;
   achievements?: string[];
+  order: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export function AircraftHangar() {
   const [selectedItem, setSelectedItem] = useState<HangarItem | null>(null);
   const [filterCategory, setFilterCategory] = useState<CategoryType | null>('github');
+  const [hangarItems, setHangarItems] = useState<HangarItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const hangarItems: HangarItem[] = [
-    // ===== GITHUB PROJECTS =====
-    {
-      id: 'github-1',
-      category: 'github',
-      name: 'react-dashboard-pro',
-      model: 'Boeing 787 Dreamliner',
-      classification: 'Heavy Jet',
-      description: 'Long-range, wide-body twin-engine jet airliner. Advanced admin dashboard with real-time analytics, interactive charts, and comprehensive data visualization capabilities.',
-      stats: { stars: 245, forks: 67, watchers: 23 },
-      specifications: {
-        language: 'TypeScript',
-        engine: 'React 18.x',
-        maxSpeed: 'Mach 0.85',
-        range: '8,000 nm'
-      },
-      systems: ['React', 'TypeScript', 'Recharts', 'TailwindCSS'],
-      url: 'https://github.com',
-      icon: '✈️',
-      color: 'cyan'
-    },
-    {
-      id: 'github-2',
-      category: 'github',
-      name: 'node-microservices',
-      model: 'Airbus A350',
-      classification: 'Heavy Jet',
-      description: 'Ultra-modern wide-body aircraft with advanced systems. Scalable microservices architecture with containerization and orchestration support.',
-      stats: { stars: 189, forks: 45, watchers: 18 },
-      specifications: {
-        language: 'JavaScript',
-        engine: 'Node.js 20.x',
-        maxSpeed: 'Mach 0.89',
-        range: '7,500 nm'
-      },
-      systems: ['Node.js', 'Docker', 'Kubernetes', 'Redis'],
-      url: 'https://github.com',
-      icon: '🛩️',
-      color: 'green'
-    },
-    {
-      id: 'github-3',
-      category: 'github',
-      name: 'python-ml-toolkit',
-      model: 'Lockheed SR-71 Blackbird',
-      classification: 'Reconnaissance',
-      description: 'Strategic reconnaissance aircraft known for exceptional speed. Machine learning toolkit with pre-trained models and advanced data processing.',
-      stats: { stars: 312, forks: 89, watchers: 34 },
-      specifications: {
-        language: 'Python',
-        engine: 'TensorFlow/PyTorch',
-        maxSpeed: 'Mach 3.3',
-        range: '3,200 nm'
-      },
-      systems: ['Python', 'TensorFlow', 'NumPy', 'Pandas'],
-      url: 'https://github.com',
-      icon: '🚀',
-      color: 'purple'
-    },
-
-    // ===== FLIGHT AWARDS =====
-    {
-      id: 'flight-1',
-      category: 'flight',
-      name: 'First Solo Cross-Country',
-      model: 'Commercial Pilot License',
-      classification: 'Aviation Milestone',
-      description: 'Successfully completed first solo cross-country flight with multiple waypoints. Demonstrated proficiency in navigation, communication, and emergency procedures.',
-      stats: {
-        altitude: 'FL180',
-        duration: '3.5 hours',
-        difficulty: 'Intermediate'
-      },
-      specifications: {
-        location: 'Jakarta - Bandung - Yogyakarta',
-        date: 'March 2023',
-        elevation: '18,000 ft'
-      },
-      systems: ['Navigation', 'Radio Communication', 'Weather Analysis', 'Flight Planning'],
-      icon: '🏆',
-      color: 'orange',
-      achievements: [
-        'Completed 3 successful landings',
-        'Perfect weather adaptation',
-        'Zero navigation errors'
-      ]
-    },
-    {
-      id: 'flight-2',
-      category: 'flight',
-      name: 'Instrument Rating Certification',
-      model: 'IFR Qualification',
-      classification: 'Advanced Certification',
-      description: 'Earned Instrument Flight Rules rating with exceptional scores. Mastered flying solely by reference to instruments in challenging weather conditions.',
-      stats: {
-        altitude: 'FL250',
-        duration: '50 hours',
-        difficulty: 'Advanced'
-      },
-      specifications: {
-        location: 'Flight Training Center',
-        date: 'August 2023',
-        elevation: '25,000 ft'
-      },
-      systems: ['ILS Approach', 'VOR Navigation', 'GPS Systems', 'Autopilot'],
-      icon: '🎖️',
-      color: 'cyan',
-      achievements: [
-        'Passed on first attempt',
-        '95% score on written exam',
-        'Certified for IMC operations'
-      ]
-    },
-    {
-      id: 'flight-3',
-      category: 'flight',
-      name: 'Multi-Engine Rating',
-      model: 'Twin-Engine Certification',
-      classification: 'Complex Aircraft',
-      description: 'Qualified to operate multi-engine aircraft. Demonstrated mastery of asymmetric thrust management and engine-out procedures.',
-      stats: {
-        altitude: 'FL280',
-        duration: '25 hours',
-        difficulty: 'Advanced'
-      },
-      specifications: {
-        location: 'Advanced Flight Academy',
-        date: 'December 2023',
-        elevation: '28,000 ft'
-      },
-      systems: ['Twin-Engine Ops', 'Engine Failure Procedures', 'Performance Calculations'],
-      icon: '🌟',
-      color: 'purple',
-      achievements: [
-        'Zero engine-out incidents',
-        'Perfect single-engine landings',
-        'Advanced weather operations'
-      ]
-    },
-
-    // ===== MOUNTAIN EXPEDITIONS =====
-    {
-      id: 'mountain-1',
-      category: 'mountain',
-      name: 'Mount Semeru Summit',
-      model: 'Java\'s Highest Peak',
-      classification: 'Volcanic Expedition',
-      description: 'Successfully summited Mount Semeru (3,676m), the highest mountain in Java. Challenging volcanic terrain with active crater and steep slopes.',
-      stats: {
-        altitude: '3,676 m',
-        duration: '3 days',
-        difficulty: 'Hard'
-      },
-      specifications: {
-        location: 'East Java, Indonesia',
-        date: 'June 2024',
-        elevation: '3,676 m'
-      },
-      systems: ['High-altitude trekking', 'Volcanic terrain', 'Night summit push', 'Cold weather'],
-      icon: '⛰️',
-      color: 'orange',
-      achievements: [
-        'Reached summit at sunrise',
-        'Witnessed active crater',
-        'Completed in optimal weather window'
-      ]
-    },
-    {
-      id: 'mountain-2',
-      category: 'mountain',
-      name: 'Mount Rinjani Traverse',
-      model: 'Lombok\'s Sacred Mountain',
-      classification: 'Multi-day Expedition',
-      description: 'Epic 4-day traverse of Mount Rinjani (3,726m) including Segara Anak crater lake and hot springs. One of Indonesia\'s most challenging treks.',
-      stats: {
-        altitude: '3,726 m',
-        duration: '4 days',
-        difficulty: 'Very Hard'
-      },
-      specifications: {
-        location: 'Lombok, Indonesia',
-        date: 'August 2024',
-        elevation: '3,726 m'
-      },
-      systems: ['Multi-day trekking', 'Crater lake camping', 'Extreme elevation gain', 'Technical descent'],
-      icon: '🏔️',
-      color: 'cyan',
-      achievements: [
-        'Full traverse completion',
-        'Camped at crater rim (2,700m)',
-        'Bathed in natural hot springs'
-      ]
-    },
-    {
-      id: 'mountain-3',
-      category: 'mountain',
-      name: 'Seven Summits of Java',
-      model: 'Provincial Peak Collection',
-      classification: 'Multi-Peak Challenge',
-      description: 'Completed all seven highest peaks across Java\'s provinces. A year-long journey covering diverse terrains from volcanic craters to tropical highlands.',
-      stats: {
-        altitude: 'Various peaks',
-        duration: '12 months',
-        difficulty: 'Extreme'
-      },
-      specifications: {
-        location: 'Across Java Island',
-        date: 'Jan - Dec 2024',
-        elevation: 'Up to 3,676 m'
-      },
-      systems: ['Multi-terrain navigation', 'Season planning', 'Endurance training', 'Logistics management'],
-      icon: '🎯',
-      color: 'purple',
-      achievements: [
-        '7 major summits completed',
-        'Over 200km trekking distance',
-        'Documented entire journey'
-      ]
+  const getIconForCategory = (category: CategoryType) => {
+    switch (category) {
+      case 'github':
+        return <Github className="w-6 h-6" />;
+      case 'flight':
+        return <Plane className="w-6 h-6" />;
+      case 'mountain':
+        return <Mountain className="w-6 h-6" />;
+      default:
+        return <Plane className="w-6 h-6" />;
     }
-  ];
+  };
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch('/api/admin/experience/projects');
+        if (!response.ok) {
+          throw new Error('Failed to fetch project data');
+        }
+        const result = await response.json();
+        if (result.success && result.data) {
+          setHangarItems(result.data);
+        } else {
+          setError('Failed to load project data');
+        }
+      } catch (err) {
+        setError('Failed to load project data');
+        console.error('Error fetching projects:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const getColorClasses = (color: string) => {
     const colors: { [key: string]: { main: string; glow: string; border: string } } = {
@@ -293,6 +116,30 @@ export function AircraftHangar() {
   const filteredItems = filterCategory === null 
     ? hangarItems 
     : hangarItems.filter(item => item.category === filterCategory);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-white/60">Loading aircraft hangar...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-red-400">{error}</div>
+      </div>
+    );
+  }
+
+  if (hangarItems.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-white/60">No aircraft in hangar</div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -391,7 +238,7 @@ export function AircraftHangar() {
                             boxShadow: `0 0 15px ${colors.glow}`
                           }}
                         >
-                          {item.icon}
+                          {getIconForCategory(item.category)}
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="text-xs text-white/40 uppercase tracking-wider mb-0.5">
@@ -433,7 +280,7 @@ export function AircraftHangar() {
                             <div className="min-w-0 flex-1">
                               <div className="text-[10px] text-white/40 uppercase">Speed</div>
                               <div className="text-xs text-white/70 font-mono truncate">
-                                {item.specifications.maxSpeed}
+                                {item.specifications?.maxSpeed}
                               </div>
                             </div>
                           </div>
@@ -442,7 +289,7 @@ export function AircraftHangar() {
                             <div className="min-w-0 flex-1">
                               <div className="text-[10px] text-white/40 uppercase">Range</div>
                               <div className="text-xs text-white/70 font-mono truncate">
-                                {item.specifications.range}
+                                {item.specifications?.range}
                               </div>
                             </div>
                           </div>
@@ -556,7 +403,7 @@ export function AircraftHangar() {
                               boxShadow: `0 0 20px ${colors.glow}`
                             }}
                           >
-                            {selectedItem.icon}
+                            {getIconForCategory(selectedItem.category)}
                           </div>
                           <div className="min-w-0 flex-1">
                             <h3 className="text-white text-sm md:text-base mb-1 truncate">{selectedItem.name}</h3>
@@ -619,36 +466,36 @@ export function AircraftHangar() {
                             <>
                               <div className="p-3 rounded-xl bg-white/5 border border-white/10 min-w-0">
                                 <div className="text-xs text-white/40 uppercase mb-1">Language</div>
-                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications.language}</div>
+                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications?.language}</div>
                               </div>
                               <div className="p-3 rounded-xl bg-white/5 border border-white/10 min-w-0">
                                 <div className="text-xs text-white/40 uppercase mb-1">Engine</div>
-                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications.engine}</div>
+                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications?.engine}</div>
                               </div>
                               <div className="p-3 rounded-xl bg-white/5 border border-white/10 min-w-0">
                                 <div className="text-xs text-white/40 uppercase mb-1">Max Speed</div>
-                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications.maxSpeed}</div>
+                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications?.maxSpeed}</div>
                               </div>
                               <div className="p-3 rounded-xl bg-white/5 border border-white/10 min-w-0">
                                 <div className="text-xs text-white/40 uppercase mb-1">Range</div>
-                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications.range}</div>
+                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications?.range}</div>
                               </div>
                             </>
                           ) : (
                             <>
                               <div className="p-3 rounded-xl bg-white/5 border border-white/10 min-w-0">
                                 <div className="text-xs text-white/40 uppercase mb-1">Location</div>
-                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications.location}</div>
+                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications?.location}</div>
                               </div>
                               <div className="p-3 rounded-xl bg-white/5 border border-white/10 min-w-0">
                                 <div className="text-xs text-white/40 uppercase mb-1">Date</div>
-                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications.date}</div>
+                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications?.date}</div>
                               </div>
                               <div className="p-3 rounded-xl bg-white/5 border border-white/10">
                                 <div className="text-xs text-white/40 uppercase mb-1">
                                   {selectedItem.category === 'flight' ? 'Altitude' : 'Elevation'}
                                 </div>
-                                <div className="text-white font-mono">{selectedItem.specifications.elevation}</div>
+                                <div className="text-white font-mono">{selectedItem.specifications?.elevation}</div>
                               </div>
                               <div className="p-3 rounded-xl bg-white/5 border border-white/10">
                                 <div className="text-xs text-white/40 uppercase mb-1">Difficulty</div>

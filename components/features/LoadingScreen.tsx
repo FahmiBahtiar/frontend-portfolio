@@ -6,9 +6,11 @@ import { Code2, Plane, Mountain, Terminal } from 'lucide-react';
 
 interface LoadingScreenProps {
   onComplete: () => void;
+  isApiLoaded?: boolean;
+  apiError?: string | null;
 }
 
-export function LoadingScreen({ onComplete }: LoadingScreenProps) {
+export function LoadingScreen({ onComplete, isApiLoaded = false, apiError = null }: LoadingScreenProps) {
   const [loadingText, setLoadingText] = useState('Initializing system...');
   const [progress, setProgress] = useState(0);
 
@@ -18,42 +20,89 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
     { Icon: Mountain, color: 'text-green-400', label: 'Mountaineer' },
   ];
 
-  // Loading text sequence - OPTIMIZED
+  // Loading text sequence - show error if API fails
   useEffect(() => {
+    let timeouts: NodeJS.Timeout[] = [];
+
+    if (apiError) {
+      setLoadingText('API Connection Failed');
+      return;
+    }
+
     const messages = [
       { text: 'Initializing system...', delay: 0 },
       { text: 'Loading modules...', delay: 600 },
       { text: 'Ready to launch!', delay: 1200 },
     ];
 
-    messages.forEach(({ text, delay }) => {
-      setTimeout(() => setLoadingText(text), delay);
-    });
-  }, []);
+    timeouts = messages.map(({ text, delay }) =>
+      setTimeout(() => setLoadingText(text), delay)
+    );
 
-  // Progress bar animation - OPTIMIZED to 2 seconds
+    return () => {
+      timeouts.forEach(clearTimeout);
+    };
+  }, [apiError]);
+
+  // Progress bar animation - sync with API loading
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (apiError) {
+      // Stop progress if there's an error
+      return;
+    }
+
+    // While waiting for API, advance slowly up to 90%
+    if (!isApiLoaded) {
+      const interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(interval);
+            return 90;
+          }
+          return prev + 2; // Slower progress while waiting
+        });
+      }, 200);
+
+      return () => clearInterval(interval);
+    }
+
+    // When API becomes ready, show "API Ready" and animate remaining progress to 100%
+    let intervalId: number | null = null;
+    setLoadingText('API Ready');
+
+    intervalId = window.setInterval(() => {
       setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
+        // larger delta and faster ticks to finish quicker
+        const delta = Math.max(2, Math.round((100 - prev) / 4));
+        const next = Math.min(100, prev + delta);
+        if (next === 100 && intervalId) {
+          clearInterval(intervalId);
+          // much shorter pause so user sees 100% but app proceeds promptly
+          setTimeout(() => onComplete(), 150);
         }
-        return prev + 5; // 20 steps in 2 seconds
+        return next;
       });
-    }, 100);
+    }, 50);
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isApiLoaded, apiError, onComplete]);
 
-  // Auto complete after 2 seconds
+  // Auto complete fallback when API hasn't loaded after some time (but not if error)
   useEffect(() => {
+    if (apiError) return;
+
+    // If API is already loaded, let the progress effect drive completion so user sees the "API Ready" animation
+    if (isApiLoaded) return;
+
+    // Fallback: complete after 10 seconds if API still not loaded
     const timer = setTimeout(() => {
       onComplete();
-    }, 2000);
+    }, 10000);
 
     return () => clearTimeout(timer);
-  }, [onComplete]);
+  }, [onComplete, isApiLoaded, apiError]);
 
   return (
     <motion.div
@@ -109,6 +158,16 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
               </motion.span>
             </div>
 
+            {/* Error message if API failed */}
+            {apiError && (
+              <div className="flex flex-col items-center gap-2 text-sm font-mono">
+                <div className="flex items-center justify-center gap-2 text-sm font-mono text-red-400 bg-red-900/20 border border-red-800/50 rounded-lg px-4 py-2 max-w-md mx-auto">
+                  <span className="text-red-400">⚠️</span>
+                  <span>{apiError}</span>
+                </div>
+              </div>
+            )}
+
             {/* Progress bar with plane - simplified */}
             <div className="space-y-2 max-w-md mx-auto">
               <div className="relative h-2 bg-slate-800 rounded-full overflow-visible border border-slate-700">
@@ -148,6 +207,13 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
               <span>⚡ Tailwind</span>
               <span>🎨 Motion</span>
             </div>
+
+            {/* API error message - shown only on error */}
+            {apiError && (
+              <div className="mt-4 text-sm text-red-400 font-mono">
+                Error: {apiError}
+              </div>
+            )}
           </div>
         </motion.div>
       </div>

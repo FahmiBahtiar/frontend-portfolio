@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Plane,
@@ -30,159 +30,48 @@ interface FlightEntry {
   };
   projectName: string; // Secondary - project or department
   duration: string; // in months
-  flightHours: string; // displayed as years
   crew: string[]; // technologies
   responsibilities: string[]; // what you did there
   color: string;
   location: string;
   category: string;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export function FlightLogbook() {
-  const [selectedEntry, setSelectedEntry] = useState<string | null>('flight-1');
+  const [selectedEntry, setSelectedEntry] = useState<string | null>(null);
+  const [flightEntries, setFlightEntries] = useState<FlightEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const flightEntries: FlightEntry[] = [
-    {
-      id: 'work-1',
-      callsign: 'WRK-001',
-      company: 'Tech Solutions Inc.',
-      departure: {
-        role: 'Full Stack Developer',
-        code: 'FSD',
-        date: '2024-01-15'
-      },
-      arrival: {
-        status: 'Current',
-        code: 'CUR',
-        date: 'Present'
-      },
-      projectName: 'E-Commerce Platform',
-      duration: '10',
-      flightHours: '10 mo',
-      crew: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Prisma', 'PostgreSQL'],
-      responsibilities: [
-        'Developed and maintained e-commerce platform serving 10k+ active users',
-        'Implemented real-time inventory management and order tracking system',
-        'Integrated payment gateways (Stripe, Midtrans) and shipping APIs',
-        'Led code reviews and mentored 3 junior developers'
-      ],
-      location: 'Remote',
-      category: 'Development',
-      color: 'purple'
-    },
-    {
-      id: 'work-2',
-      callsign: 'WRK-002',
-      company: 'FinTech Solutions',
-      departure: {
-        role: 'Backend Engineer',
-        code: 'BKE',
-        date: '2023-06-01'
-      },
-      arrival: {
-        status: 'Completed',
-        code: 'CMP',
-        date: '2023-12-31'
-      },
-      projectName: 'Banking Integration',
-      duration: '7',
-      flightHours: '7 mo',
-      crew: ['Node.js', 'Express', 'MongoDB', 'Redis', 'Docker'],
-      responsibilities: [
-        'Integrated 5 major Indonesian bank APIs (BCA, Mandiri, BNI, BRI, Permata)',
-        'Built real-time transaction monitoring and reconciliation system',
-        'Implemented security protocols achieving SOC 2 compliance',
-        'Optimized database queries handling 100k+ daily transactions'
-      ],
-      location: 'Jakarta',
-      category: 'Development',
-      color: 'cyan'
-    },
-    {
-      id: 'work-3',
-      callsign: 'WRK-003',
-      company: 'Startup Indonesia',
-      departure: {
-        role: 'Frontend Developer',
-        code: 'FED',
-        date: '2022-08-01'
-      },
-      arrival: {
-        status: 'Team Lead',
-        code: 'TLD',
-        date: '2023-05-31'
-      },
-      projectName: 'Analytics Dashboard',
-      duration: '10',
-      flightHours: '10 mo',
-      crew: ['React', 'D3.js', 'Chart.js', 'WebSocket', 'Material-UI'],
-      responsibilities: [
-        'Led frontend team of 4 developers in building analytics platform',
-        'Developed real-time data visualization with D3.js and Chart.js',
-        'Implemented WebSocket for live data streaming (1M+ data points/day)',
-        'Reduced initial load time by 65% through code splitting and lazy loading'
-      ],
-      location: 'Remote',
-      category: 'Leadership',
-      color: 'purple'
-    },
-    {
-      id: 'work-4',
-      callsign: 'WRK-004',
-      company: 'Freelance Projects',
-      departure: {
-        role: 'Full Stack Developer',
-        code: 'FSD',
-        date: '2021-01-01'
-      },
-      arrival: {
-        status: 'Multiple Clients',
-        code: 'MLC',
-        date: '2022-07-31'
-      },
-      projectName: 'Various Client Projects',
-      duration: '19',
-      flightHours: '1.5 yrs',
-      crew: ['React', 'Vue.js', 'Laravel', 'WordPress', 'MySQL'],
-      responsibilities: [
-        'Delivered 15+ projects for local businesses (restaurants, retail, services)',
-        'Built custom CMS and inventory management systems',
-        'Developed responsive websites and e-commerce solutions',
-        'Provided maintenance and technical support for ongoing projects'
-      ],
-      location: 'Various',
-      category: 'Freelance',
-      color: 'orange'
-    },
-    {
-      id: 'work-5',
-      callsign: 'WRK-005',
-      company: 'Open Source Community',
-      departure: {
-        role: 'Contributor',
-        code: 'CON',
-        date: '2020-03-01'
-      },
-      arrival: {
-        status: 'Maintainer',
-        code: 'MNT',
-        date: 'Ongoing'
-      },
-      projectName: 'React UI Library',
-      duration: '56',
-      flightHours: '4+ yrs',
-      crew: ['React', 'TypeScript', 'Storybook', 'Jest', 'Rollup'],
-      responsibilities: [
-        'Core maintainer of popular React UI component library (5k+ stars)',
-        'Reviewed 200+ pull requests and mentored new contributors',
-        'Published 25+ releases with new components and bug fixes',
-        'Library used by 100+ companies including Fortune 500'
-      ],
-      location: 'Remote',
-      category: 'Open Source',
-      color: 'cyan'
-    }
-  ];
+  useEffect(() => {
+    const fetchFlights = async () => {
+      try {
+        const response = await fetch('/api/admin/experience/flights');
+        if (!response.ok) {
+          throw new Error('Failed to fetch flight data');
+        }
+        const result = await response.json();
+        if (result.success && result.data) {
+          setFlightEntries(result.data);
+          if (result.data.length > 0) {
+            setSelectedEntry(result.data[0].id);
+          }
+        } else {
+          setError('Failed to load flight data');
+        }
+      } catch (err) {
+        setError('Failed to load flight data');
+        console.error('Error fetching flights:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFlights();
+  }, []);
 
   const getColorClasses = (color: string) => {
     const colors: { [key: string]: { main: string; glow: string; border: string; bg: string } } = {
@@ -207,6 +96,30 @@ export function FlightLogbook() {
     };
     return colors[color] || colors.cyan;
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-white/60">Loading flight log...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-red-400">{error}</div>
+      </div>
+    );
+  }
+
+  if (flightEntries.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-white/60">No flight entries found</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -288,7 +201,7 @@ export function FlightLogbook() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 justify-end">
                           <span className="text-white/50 text-xs truncate">{entry.arrival.status}</span>
-                          <span className="text-white/70 font-mono truncate">{entry.arrival.code}</span>
+                          <span className="text-white/70 font-mono truncate">{entry.departure.code}</span>
                           <MapPin className="w-3.5 h-3.5 text-orange-400 flex-shrink-0" />
                         </div>
                       </div>
@@ -304,9 +217,9 @@ export function FlightLogbook() {
                         borderColor: `${colors.main}40`
                       }}
                     >
-                      <div className="text-xs text-white/50 uppercase tracking-wider mb-1">Flight Hours</div>
+                      <div className="text-xs text-white/50 uppercase tracking-wider mb-1">Duration</div>
                       <div className="font-mono font-bold" style={{ color: colors.main }}>
-                        {entry.flightHours}
+                        {entry.duration} mo
                       </div>
                     </div>
                   </div>
@@ -316,12 +229,17 @@ export function FlightLogbook() {
               {/* Flight Details - Main Content */}
               <div className="p-4 md:p-6">
                 {/* Quick Info Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
                     <div className="min-w-0">
                       <div className="text-white/40 text-xs">Start Date</div>
-                      <div className="text-white/70 text-xs font-mono truncate">{entry.departure.date}</div>
+                      <div className="text-white/70 text-xs font-mono truncate">
+                        {entry.departure.date ? new Date(entry.departure.date).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          year: 'numeric' 
+                        }) : 'N/A'}
+                      </div>
                     </div>
                   </div>
 
@@ -329,7 +247,20 @@ export function FlightLogbook() {
                     <Calendar className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
                     <div className="min-w-0">
                       <div className="text-white/40 text-xs">End Date</div>
-                      <div className="text-white/70 text-xs font-mono truncate">{entry.arrival.date}</div>
+                      <div className="text-white/70 text-xs font-mono truncate">
+                        {entry.arrival.date ? new Date(entry.arrival.date).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          year: 'numeric' 
+                        }) : 'N/A'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-sm">
+                    <Award className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
+                    <div className="min-w-0">
+                      <div className="text-white/40 text-xs">Status</div>
+                      <div className="text-white/70 text-xs font-mono truncate">{entry.arrival.status}</div>
                     </div>
                   </div>
 

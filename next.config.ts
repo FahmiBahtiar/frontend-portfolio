@@ -22,6 +22,48 @@ const nextConfig: NextConfig = {
   },
   // Optimize JavaScript
   productionBrowserSourceMaps: false,
+  
+  // SEO & Performance Optimizations
+  generateBuildId: async () => {
+    // Generate build ID dengan timestamp untuk cache busting
+    return `build-${Date.now()}`;
+  },
+  
+  // Compression
+  compress: true,
+  
+  // PoweredBy header removal untuk security
+  poweredByHeader: false,
+  
+  // Strict Mode untuk better React debugging
+  reactStrictMode: true,
+  
+  // Headers untuk SEO dan Security
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
+import { Logo } from '@/components/ui/logo';
 import {
   LayoutDashboard,
   User,
@@ -160,9 +161,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             {/* Logo */}
             <div className="p-6 border-b border-white/10 flex-shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                  <Plane className="w-6 h-6 text-white" />
-                </div>
+                <Logo size={40} />
                 <div>
                   <h1 className="text-white font-bold text-lg">Admin Panel</h1>
                   <p className="text-white/50 text-xs">Portfolio CMS</p>
