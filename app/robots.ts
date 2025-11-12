@@ -1,7 +1,7 @@
 // Dynamic robots.txt untuk SEO
 import { MetadataRoute } from 'next';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://blimbing.dev';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://blimbing.me';
 
 export default function robots(): MetadataRoute.Robots {
   return {

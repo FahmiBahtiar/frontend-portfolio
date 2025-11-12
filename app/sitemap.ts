@@ -1,6 +1,6 @@
 // Dynamic Sitemap untuk SEO
 import { MetadataRoute } from 'next';
-import { getProjectsServer, getEducationRecordsServer } from '@/lib/services/server-data';
+import { getFlightsServer, getEducationRecordsServer } from '@/lib/services/server-data';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://blimbing.dev';
 
@@ -41,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     // Fetch dynamic data untuk projects (jika ada halaman detail)
-    const projects = await getProjectsServer();
+    const projects = await getFlightsServer();
     
     // Jika nanti ada halaman detail project, bisa ditambahkan seperti ini:
     // const projectPages = projects.map((project: any) => ({
