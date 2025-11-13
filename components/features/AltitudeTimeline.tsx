@@ -19,14 +19,14 @@ interface TimelinePoint {
   title: string;
   subtitle: string;
   institution: string;
-  level: 'elementary' | 'junior' | 'senior' | 'university';
+  level: 'elementary' | 'junior' | 'senior' | 'bootcamp' | 'university';
   icon: any;
   badge?: string;
   description?: string;
   gpa?: string;
 }
 
-// Education Journey Timeline - 4 Levels
+// Education Journey Timeline - 5 Levels
 const defaultTimelineData: TimelinePoint[] = [
   // Elementary School
   { 
@@ -49,7 +49,7 @@ const defaultTimelineData: TimelinePoint[] = [
     id: '2', 
     year: '2012-2015', 
     month: 6, 
-    altitude: 40, 
+    altitude: 25, 
     title: 'Junior High School', 
     subtitle: 'Academic Excellence', 
     institution: 'SMP Negeri 5 Jakarta',
@@ -65,7 +65,7 @@ const defaultTimelineData: TimelinePoint[] = [
     id: '3', 
     year: '2015-2018', 
     month: 6, 
-    altitude: 65, 
+    altitude: 50, 
     title: 'Senior High School', 
     subtitle: 'STEM Specialization', 
     institution: 'SMA Negeri 8 Jakarta',
@@ -76,9 +76,25 @@ const defaultTimelineData: TimelinePoint[] = [
     gpa: '92 / 100',
   },
   
-  // University
+  // Scholarship/Bootcamp
   { 
     id: '4', 
+    year: '2019-2020', 
+    month: 3, 
+    altitude: 75, 
+    title: 'Intensive Bootcamp', 
+    subtitle: 'Full-Stack Development', 
+    institution: 'Tech Academy Scholarship',
+    level: 'bootcamp',
+    icon: Code2, 
+    badge: 'Camp 3', 
+    description: 'Received full scholarship for intensive coding bootcamp. Mastered modern web technologies, agile development, and real-world projects.',
+    gpa: 'Graduate with Distinction',
+  },
+  
+  // University
+  { 
+    id: '5', 
     year: '2020-2024', 
     month: 8, 
     altitude: 100, 
@@ -98,6 +114,7 @@ const categoryColors = {
   elementary: { main: '#22d3ee', glow: 'rgba(34, 211, 238, 0.5)', bg: 'from-cyan-400/20 to-blue-400/20', text: 'text-cyan-300' },
   junior: { main: '#4ade80', glow: 'rgba(74, 222, 128, 0.5)', bg: 'from-green-400/20 to-emerald-400/20', text: 'text-green-300' },
   senior: { main: '#fb923c', glow: 'rgba(251, 146, 60, 0.5)', bg: 'from-orange-400/20 to-pink-400/20', text: 'text-orange-300' },
+  bootcamp: { main: '#f59e0b', glow: 'rgba(245, 158, 11, 0.5)', bg: 'from-amber-400/20 to-orange-400/20', text: 'text-amber-300' },
   university: { main: '#a78bfa', glow: 'rgba(167, 139, 250, 0.5)', bg: 'from-purple-400/20 to-pink-400/20', text: 'text-purple-300' },
 };
 
@@ -112,15 +129,25 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
 
     return records.map((record, index) => {
       // Map education order to timeline level
-      const levelMap: Record<number, 'elementary' | 'junior' | 'senior' | 'university'> = {
+      const levelMap: Record<number, 'elementary' | 'junior' | 'senior' | 'bootcamp' | 'university'> = {
         1: 'elementary',
         2: 'junior',
         3: 'senior',
-        4: 'university'
+        4: 'bootcamp',
+        5: 'university'
+      };
+
+      // Map education order to altitude aligned with grid lines (0, 25, 50, 75, 100)
+      const altitudeMap: Record<number, number> = {
+        1: 0.1,   // Base Camp at 0%
+        2: 25,  // Camp 1 at 25%
+        3: 50,  // Camp 2 at 50%
+        4: 75,  // Camp 3 at 75%
+        5: 100  // Summit at 100%
       };
 
       const level = levelMap[record.order] || 'university';
-      const altitude = Math.min(100, record.order * 25); // Use order for altitude
+      const altitude = altitudeMap[record.order] || 100; // Use mapped altitude to align with grid lines
 
       return {
         id: record.id,
@@ -132,7 +159,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
         institution: record.institution,
         level,
         icon: GraduationCap,
-        badge: record.institution,
+        badge: record.institution, // Use proper badge label based on order
         description: record.description,
         gpa: record.gpa,
       };
@@ -226,13 +253,13 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
 
   // Calculate SVG path points
   const width = 1000;
-  const height = 600;
-  const padding = { top: 40, right: 60, bottom: 80, left: 60 };
+  const height = 650; // Reduced from 750 to 650 for more compact view
+  const padding = { top: 40, right: 60, bottom: 90, left: 60 }; // Increased bottom padding from 100 to 120 for more label space
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
   
   // Define the actual visual area for plotting (0% should be at bottom minus labels)
-  const visualBottom = height - padding.bottom + 160; // Add 40px to go closer to actual bottom
+  const visualBottom = height - padding.bottom + 200; // Increased from 160 to 200 for more space at bottom
   const visualTop = padding.top;
   const visualHeight = visualBottom - visualTop;
 
@@ -247,8 +274,8 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
     // Calculate x position with equal spacing between waypoints
     const xProgress = index / (timelineData.length - 1);
     const x = padding.left + xProgress * chartWidth;
-    // Use visualHeight so altitude 0 is at visualBottom
-    const y = visualBottom - (point.altitude / 100) * visualHeight;
+    // Use SAME calculation as grid lines to ensure alignment
+    const y = padding.top + chartHeight - (point.altitude / 100) * chartHeight;
     
     return { ...point, x, y };
   });
@@ -551,32 +578,40 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
 
       {/* Altitude Labels & Background Zones */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Elementary Zone - 0-30% altitude (bottom 30%) */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-cyan-400/5 to-transparent" style={{ height: '30%' }}>
+        {/* Elementary Zone - 0-25% altitude */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-cyan-400/5 to-transparent" style={{ height: '25%' }}>
           <div className="absolute top-2 md:top-4 left-2 md:left-4 text-cyan-300/50 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2">
             <GraduationCap className="w-3 h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Base Camp • Elementary School</span>
             <span className="sm:hidden">Elementary</span>
           </div>
         </div>
-        {/* Junior Zone - 30-50% altitude */}
-        <div className="absolute left-0 right-0 bg-gradient-to-t from-green-400/5 to-transparent" style={{ bottom: '30%', height: '20%' }}>
+        {/* Junior Zone - 25-50% altitude */}
+        <div className="absolute left-0 right-0 bg-gradient-to-t from-green-400/5 to-transparent" style={{ bottom: '25%', height: '25%' }}>
           <div className="absolute top-2 md:top-4 left-2 md:left-4 text-green-300/50 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2">
             <Award className="w-3 h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Camp 1 • Junior High School</span>
             <span className="sm:hidden">Junior High</span>
           </div>
         </div>
-        {/* Senior Zone - 50-75% altitude */}
-        <div className="absolute left-0 right-0 bg-gradient-to-t from-orange-400/5 to-transparent" style={{ bottom: '50%', height: '25%' }}>
+        {/* Senior Zone - 50-70% altitude */}
+        <div className="absolute left-0 right-0 bg-gradient-to-t from-orange-400/5 to-transparent" style={{ bottom: '50%', height: '20%' }}>
           <div className="absolute top-2 md:top-4 left-2 md:left-4 text-orange-300/50 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2">
             <Trophy className="w-3 h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Camp 2 • Senior High School</span>
             <span className="sm:hidden">Senior High</span>
           </div>
         </div>
-        {/* University Zone - 75-100% altitude (top 25%) */}
-        <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-purple-400/5 to-transparent" style={{ height: '25%' }}>
+        {/* Bootcamp Zone - 70-85% altitude */}
+        <div className="absolute left-0 right-0 bg-gradient-to-t to-transparent" style={{ bottom: '70%', height: '15%', backgroundImage: 'linear-gradient(to top, rgba(251, 191, 36, 0.07), transparent)' }}>
+          <div className="absolute top-2 md:top-4 left-2 md:left-4 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2" style={{ color: 'rgba(251, 191, 36, 0.6)' }}>
+            <Code2 className="w-3 h-3 flex-shrink-0" />
+            <span className="hidden sm:inline">Camp 3 • Intensive Bootcamp</span>
+            <span className="sm:hidden">Bootcamp</span>
+          </div>
+        </div>
+        {/* University Zone - 85-100% altitude (top 15%) */}
+        <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-purple-400/5 to-transparent" style={{ height: '15%' }}>
           <div className="absolute top-2 md:top-4 left-2 md:left-4 text-purple-300/50 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2">
             <Star className="w-3 h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Summit • University</span>
@@ -602,7 +637,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="w-full h-auto"
-          style={{ minHeight: '300px', maxHeight: '600px' }}
+          style={{ minHeight: '350px', maxHeight: '650px' }} // Reduced from 400px/800px to 350px/650px for more compact view
         >
           {/* Grid lines */}
           <g opacity="0.1">
@@ -635,7 +670,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                 <text
                   key={`year-${point.id}`}
                   x={point.x}
-                  y={height - padding.bottom + 30}
+                  y={height - padding.bottom + 60} // Increased from 60 to 70 for more space between badge and year
                   fill="white"
                   fontSize="14"
                   textAnchor="middle"
@@ -738,7 +773,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                 {point.badge && (
                   <motion.text
                     x={point.x}
-                    y={point.y - 20}
+                    y={point.altitude <= 10 ? point.y + 25 : point.y - 20} // Base Camp (<=10% altitude) below by 40px, others above by 35px
                     fill={colors.main}
                     fontSize="10"
                     textAnchor="middle"
