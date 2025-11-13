@@ -69,16 +69,16 @@ export const defaultMetadata: Metadata = {
   },
   icons: {
     icon: [
-      {
-        url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23020617"/><stop offset="50%" stop-color="%230f172a"/><stop offset="100%" stop-color="%23020617"/></linearGradient><linearGradient id="txt" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%2306b6d4"/><stop offset="50%" stop-color="%233b82f6"/><stop offset="100%" stop-color="%23a855f7"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(%23bg)"/><rect width="100" height="100" rx="22" fill="none" stroke="url(%23txt)" stroke-width="1" stroke-opacity="0.2"/><path d="M32 25 h20 c8 0 14 4 14 11 c0 5 -3 8 -7 9 c5 1 9 5 9 11 c0 8 -7 12 -15 12 h-21 z M40 33 v12 h10 c4 0 7 -2 7 -6 c0 -4 -3 -6 -7 -6 z M40 52 v13 h11 c5 0 8 -2 8 -6.5 c0 -4.5 -3 -6.5 -8 -6.5 z" fill="url(%23txt)" fill-opacity="0.95"/></svg>',
-        type: 'image/svg+xml',
-      },
+      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
+    shortcut: '/favicon.ico',
     apple: [
-      {
-        url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23020617"/><stop offset="50%" stop-color="%230f172a"/><stop offset="100%" stop-color="%23020617"/></linearGradient><linearGradient id="txt" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%2306b6d4"/><stop offset="50%" stop-color="%233b82f6"/><stop offset="100%" stop-color="%23a855f7"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(%23bg)"/><rect width="100" height="100" rx="22" fill="none" stroke="url(%23txt)" stroke-width="1" stroke-opacity="0.2"/><path d="M32 25 h20 c8 0 14 4 14 11 c0 5 -3 8 -7 9 c5 1 9 5 9 11 c0 8 -7 12 -15 12 h-21 z M40 33 v12 h10 c4 0 7 -2 7 -6 c0 -4 -3 -6 -7 -6 z M40 52 v13 h11 c5 0 8 -2 8 -6.5 c0 -4.5 -3 -6.5 -8 -6.5 z" fill="url(%23txt)" fill-opacity="0.95"/></svg>',
-        type: 'image/svg+xml',
-      },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
   },
   alternates: {
