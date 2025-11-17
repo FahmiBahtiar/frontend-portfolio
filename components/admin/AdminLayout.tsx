@@ -47,10 +47,18 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   // Default sidebar state: open on desktop, closed on mobile
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
+  // Track which area is being hovered for scroll control
+  const [hoveredArea, setHoveredArea] = useState<'sidebar' | 'main' | null>(null);
+  
+  // Track if we're on desktop for responsive margin
+  const [isDesktop, setIsDesktop] = useState(false);
+  
   // Set initial sidebar state based on screen size
   useEffect(() => {
     const handleResize = () => {
-      setIsSidebarOpen(window.innerWidth >= 1024);
+      const desktop = window.innerWidth >= 1024;
+      setIsSidebarOpen(desktop);
+      setIsDesktop(desktop);
     };
     
     // Set initial state
@@ -172,17 +180,20 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex overflow-hidden">
+    <div className="min-h-screen h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 overflow-hidden overscroll-behavior-contain">
       {/* Sidebar - Always rendered but can be hidden */}
       <motion.aside
         initial={false}
         animate={{ 
           x: isSidebarOpen ? 0 : -256,
-          width: isSidebarOpen ? 256 : 0
+          width: isSidebarOpen ? 256 : 0,
+          opacity: isSidebarOpen ? 1 : 0
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="relative h-full bg-slate-900/95 backdrop-blur-xl border-r border-white/10 flex flex-col flex-shrink-0 overflow-hidden"
+        className={`fixed left-0 top-0 h-full bg-slate-900/95 backdrop-blur-xl border-r border-white/10 flex flex-col flex-shrink-0 overflow-hidden overscroll-behavior-contain z-10 ${!isSidebarOpen ? 'pointer-events-none' : ''}`}
         style={{ minWidth: isSidebarOpen ? '256px' : '0' }}
+        onMouseEnter={() => setHoveredArea('sidebar')}
+        onMouseLeave={() => setHoveredArea(null)}
       >
         {/* Logo - Fixed at top */}
         <div className="p-6 border-b border-white/10 flex-shrink-0">
@@ -197,7 +208,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Navigation - Scrollable in middle */}
         <nav 
-          className="flex-1 p-4 space-y-2 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent hover:scrollbar-thumb-white/20"
+          className={`flex-1 p-4 space-y-2 overflow-x-hidden scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent hover:scrollbar-thumb-white/20 overscroll-behavior-contain ${
+            hoveredArea === 'sidebar' ? 'overflow-y-auto' : 
+            hoveredArea === 'main' ? 'overflow-y-hidden' : 
+            'overflow-y-auto'
+          } ${hoveredArea === 'main' ? 'pointer-events-none' : ''}`}
           style={{ width: '256px' }}
         >
               {navigation.map((item) => {
@@ -340,7 +355,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </motion.aside>
 
       {/* Main Content Wrapper */}
-      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+      <div 
+        className="flex-1 flex flex-col min-w-0 h-full overflow-hidden transition-all duration-300"
+        style={{ marginLeft: isSidebarOpen && isDesktop ? '256px' : '0' }}
+      >
         {/* Header */}
         <header className="flex-shrink-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/10">
           <div className="flex items-center justify-between px-6 py-4">
@@ -382,7 +400,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main 
+          className={`flex-1 p-6 overscroll-behavior-contain ${
+            hoveredArea === 'main' ? 'overflow-y-auto' : 
+            hoveredArea === 'sidebar' ? 'overflow-y-hidden' : 
+            'overflow-y-auto'
+          } ${hoveredArea === 'sidebar' ? 'pointer-events-none' : ''}`}
+          onMouseEnter={() => setHoveredArea('main')}
+          onMouseLeave={() => setHoveredArea(null)}
+        >
           {children}
         </main>
       </div>
