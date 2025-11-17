@@ -1,17 +1,34 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { Plane, Plus, Trash2, Save, Calendar, Clock, MapPin, X } from 'lucide-react';
-import { DataTable, type Column } from '@/components/admin/DataTable';
+import { motion, AnimatePresence } from 'motion/react';
+import { Plane, Plus, Trash2, Save, Calendar, Clock, MapPin, X, Star, GripVertical } from 'lucide-react';
 import { DeleteDialog } from '@/components/admin/DeleteDialog';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface FlightEntry {
   id: string;
   callsign: string;
   company: string;
   departure: {
-    role: string;
+    roles: string[];
+    highlightedRole: string;
     code: string;
     date: string;
   };
@@ -28,8 +45,121 @@ interface FlightEntry {
   location: string;
   category: string;
   order: number;
+  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+interface SortableFlightItemProps {
+  flight: FlightEntry;
+  onEdit: (flight: FlightEntry) => void;
+  onDelete: (id: string) => void;
+  onToggleActive: (flight: FlightEntry) => void;
+}
+
+function SortableFlightItem({ flight, onEdit, onDelete, onToggleActive }: SortableFlightItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: flight.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="group relative bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all"
+    >
+      <div className="flex items-center gap-4">
+        {/* Drag Handle */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-white/40 hover:text-white/60"
+        >
+          <GripVertical className="w-5 h-5" />
+        </div>
+
+        {/* Active Star */}
+        <button
+          onClick={() => onToggleActive(flight)}
+          className={`transition-all ${
+            flight.isActive
+              ? 'text-yellow-400 hover:text-yellow-300'
+              : 'text-white/20 hover:text-white/40'
+          }`}
+          title={flight.isActive ? 'Currently active' : 'Mark as active'}
+        >
+          <Star
+            className="w-5 h-5"
+            fill={flight.isActive ? 'currentColor' : 'none'}
+          />
+        </button>
+
+        {/* Flight Info */}
+        <div className="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-semibold text-white truncate">{flight.company}</span>
+              {flight.isActive && (
+                <span className="px-2 py-0.5 rounded-full text-xs bg-yellow-400/10 border border-yellow-400/30 text-yellow-400">
+                  Active
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-white/60 truncate">{flight.projectName}</p>
+          </div>
+          
+          <div className="min-w-0">
+            <div className="text-xs text-white/40 mb-1">Role</div>
+            <p className="text-sm text-white/80 truncate">{flight.departure.highlightedRole}</p>
+          </div>
+          
+          <div className="min-w-0">
+            <div className="text-xs text-white/40 mb-1">Duration</div>
+            <p className="text-sm text-white/80">{flight.duration}</p>
+          </div>
+          
+          <div className="min-w-0">
+            <div className="text-xs text-white/40 mb-1">Category</div>
+            <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${
+              flight.category === 'Development' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' :
+              flight.category === 'Leadership' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+              flight.category === 'Freelance' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' :
+              'bg-green-500/10 text-green-400 border border-green-500/20'
+            }`}>
+              {flight.category}
+            </span>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onEdit(flight)}
+            className="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-all text-sm"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => onDelete(flight.id)}
+            className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all text-sm"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function FlightLogbookPage() {
@@ -37,6 +167,13 @@ export default function FlightLogbookPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string>('All');
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Mock data
     const [flights, setFlights] = useState<FlightEntry[]>([]);
@@ -47,7 +184,8 @@ export default function FlightLogbookPage() {
     callsign: '',
     company: '',
     departure: {
-      role: '',
+      roles: [],
+      highlightedRole: '',
       code: '',
       date: '',
     },
@@ -63,7 +201,8 @@ export default function FlightLogbookPage() {
     color: 'blue',
     location: '',
     category: 'Development',
-    order: 0
+    order: 0,
+    isActive: false,
   });
 
   const flightTypes = ['All', 'Development', 'Leadership', 'Freelance', 'Open Source'];
@@ -80,7 +219,9 @@ export default function FlightLogbookPage() {
       }
       const result = await response.json();
       if (result.success) {
-        setFlights(result.data);
+        // Sort by order
+        const sortedFlights = result.data.sort((a: FlightEntry, b: FlightEntry) => a.order - b.order);
+        setFlights(sortedFlights);
       } else {
         setError('Failed to load flights');
       }
@@ -89,6 +230,70 @@ export default function FlightLogbookPage() {
       console.error('Error fetching flights:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = flights.findIndex((item) => item.id === active.id);
+      const newIndex = flights.findIndex((item) => item.id === over.id);
+
+      const newItems = arrayMove(flights, oldIndex, newIndex);
+      
+      // Update order property for all items
+      const updatedItems = newItems.map((item, index) => ({
+        ...item,
+        order: index,
+      }));
+
+      setFlights(updatedItems);
+
+      // Save the new order to backend
+      try {
+        await Promise.all(
+          updatedItems.map((item) =>
+            fetch(`/api/admin/experience/flights/${item.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ order: item.order }),
+            })
+          )
+        );
+      } catch (error) {
+        console.error('Error updating flight order:', error);
+        alert('Failed to update flight order');
+        // Revert on error
+        fetchFlights();
+      }
+    }
+  };
+
+  const handleToggleActive = async (flight: FlightEntry) => {
+    try {
+      const response = await fetch(`/api/admin/experience/flights/${flight.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isActive: !flight.isActive }),
+      });
+
+      if (response.ok) {
+        setFlights(
+          flights.map((f) =>
+            f.id === flight.id ? { ...f, isActive: !f.isActive } : f
+          )
+        );
+      } else {
+        alert('Failed to update flight status');
+      }
+    } catch (error) {
+      console.error('Error toggling active status:', error);
+      alert('Failed to update flight status');
     }
   };
 
@@ -116,7 +321,8 @@ export default function FlightLogbookPage() {
       color: flight.color,
       location: flight.location,
       category: flight.category,
-      order: flight.order
+      order: flight.order,
+      isActive: flight.isActive || false,
     });
     setEditingId(flight.id);
     setIsFormOpen(true);
@@ -146,7 +352,7 @@ export default function FlightLogbookPage() {
       alert('Company is required');
       return;
     }
-    if (!formData.departure.role.trim()) {
+    if (!formData.departure.highlightedRole.trim()) {
       alert('Role is required');
       return;
     }
@@ -160,10 +366,6 @@ export default function FlightLogbookPage() {
     }
     if (!formData.arrival.status.trim()) {
       alert('Arrival status is required');
-      return;
-    }
-    if (!formData.arrival.code.trim()) {
-      alert('Arrival code is required');
       return;
     }
     if (!formData.arrival.date) {
@@ -193,6 +395,7 @@ export default function FlightLogbookPage() {
         location: formData.location,
         category: formData.category,
         order: formData.order || flights.length + 1,
+        isActive: formData.isActive,
       };
 
       console.log('Sending flight data:', flightData);
@@ -240,7 +443,8 @@ export default function FlightLogbookPage() {
       callsign: '',
       company: '',
       departure: {
-        role: '',
+        roles: [],
+        highlightedRole: '',
         code: '',
         date: '',
       },
@@ -256,7 +460,8 @@ export default function FlightLogbookPage() {
       color: 'blue',
       location: '',
       category: 'Development',
-      order: 0
+      order: 0,
+      isActive: false,
     });
     setEditingId(null);
     setIsFormOpen(false);
@@ -280,89 +485,38 @@ export default function FlightLogbookPage() {
     }
   };
 
-  const columns: Column<FlightEntry>[] = [
-    {
-      key: 'date',
-      label: 'Date',
-      render: (flight: FlightEntry) => (
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-cyan-400" />
-          <span className="text-white font-medium">
-            {new Date(flight.departure.date).toLocaleDateString('en-US', { 
-              month: 'short', 
-              day: 'numeric', 
-              year: 'numeric' 
-            })}
-          </span>
-        </div>
-      ),
-    },
-    {
-      key: 'projectName',
-      label: 'Project / Role',
-      render: (flight: FlightEntry) => (
-        <div>
-          <p className="text-white font-medium">{flight.projectName}</p>
-          <p className="text-white/60 text-xs">{flight.departure.role}</p>
-        </div>
-      ),
-    },
-    {
-      key: 'company',
-      label: 'Company',
-      render: (flight: FlightEntry) => (
-        <div className="flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-green-400" />
-          <div>
-            <p className="text-white/80 text-sm">{flight.company}</p>
-            <p className="text-white/50 text-xs">{flight.location}</p>
-          </div>
-        </div>
-      ),
-    },
-    {
-      key: 'duration',
-      label: 'Duration',
-      render: (flight: FlightEntry) => (
-        <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-purple-400" />
-          <span className="text-white font-semibold">{flight.duration} mo</span>
-        </div>
-      ),
-    },
-    {
-      key: 'endDate',
-      label: 'End Date',
-      render: (flight: FlightEntry) => (
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-orange-400" />
-          <span className="text-white font-medium">
-            {flight.arrival.date ? new Date(flight.arrival.date).toLocaleDateString('en-US', { 
-              month: 'short', 
-              day: 'numeric', 
-              year: 'numeric' 
-            }) : 'N/A'}
-          </span>
-        </div>
-      ),
-    },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (flight: FlightEntry) => {
-        const statusColors: { [key: string]: string } = {
-          Landed: 'bg-green-500/20 text-green-400 border-green-500/30',
-          'In Progress': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-          Cancelled: 'bg-red-500/20 text-red-400 border-red-500/30',
-        };
-        return (
-          <span className={`px-2 py-1 rounded-lg text-xs font-medium border ${statusColors[flight.arrival.status] || 'bg-gray-500/20 text-gray-400 border-gray-500/30'}`}>
-            {flight.arrival.status}
-          </span>
-        );
+  const addRole = (role: string) => {
+    if (role.trim() && !formData.departure.roles.includes(role.trim())) {
+      const newRoles = [...formData.departure.roles, role.trim()];
+      setFormData({
+        ...formData,
+        departure: {
+          ...formData.departure,
+          roles: newRoles,
+          highlightedRole: formData.departure.highlightedRole || role.trim(), // Auto-select first role as highlighted
+        },
+      });
+    }
+  };
+
+  const removeRole = (index: number) => {
+    const roleToRemove = formData.departure.roles[index];
+    const newRoles = formData.departure.roles.filter((_, i) => i !== index);
+    
+    let newHighlightedRole = formData.departure.highlightedRole;
+    if (roleToRemove === formData.departure.highlightedRole) {
+      newHighlightedRole = newRoles.length > 0 ? newRoles[0] : '';
+    }
+
+    setFormData({
+      ...formData,
+      departure: {
+        ...formData.departure,
+        roles: newRoles,
+        highlightedRole: newHighlightedRole,
       },
-    },
-  ];
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -556,19 +710,70 @@ export default function FlightLogbookPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-white/80 mb-2">
-                      Role
+                      Roles
                     </label>
-                    <input
-                      type="text"
-                      value={formData.departure.role}
-                      onChange={(e) => setFormData({ 
-                        ...formData, 
-                        departure: { ...formData.departure, role: e.target.value } 
-                      })}
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all"
-                      placeholder="Full Stack Developer"
-                      required
-                    />
+                    <div className="space-y-3">
+                      {/* Add role input */}
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          id="role-input"
+                          className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all"
+                          placeholder="Add a role..."
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const input = e.target as HTMLInputElement;
+                              addRole(input.value);
+                              input.value = '';
+                            }
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const input = document.getElementById('role-input') as HTMLInputElement;
+                            addRole(input.value);
+                            input.value = '';
+                          }}
+                          className="px-4 py-3 rounded-xl bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-all"
+                        >
+                          <Plus className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      {/* Roles list */}
+                      <div className="space-y-2 max-h-32 overflow-y-auto">
+                        {formData.departure.roles.map((role, index) => (
+                          <div key={index} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="radio"
+                                name="highlightedRole"
+                                checked={formData.departure.highlightedRole === role}
+                                onChange={() => setFormData({
+                                  ...formData,
+                                  departure: { ...formData.departure, highlightedRole: role }
+                                })}
+                                className="text-cyan-500 focus:ring-cyan-500"
+                              />
+                              <span className="text-white/80 text-sm">{role}</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeRole(index)}
+                              className="text-red-400 hover:text-red-300"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+
+                      {formData.departure.roles.length === 0 && (
+                        <p className="text-white/40 text-sm text-center py-4">No roles added yet</p>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -631,6 +836,23 @@ export default function FlightLogbookPage() {
                       placeholder="6"
                       required
                     />
+                  </div>
+
+                  <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
+                    <input
+                      type="checkbox"
+                      id="isActiveCheck"
+                      checked={formData.isActive}
+                      onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                      className="w-5 h-5 rounded bg-white/10 border-white/20 text-yellow-500 focus:ring-yellow-500/50"
+                    />
+                    <label htmlFor="isActiveCheck" className="flex items-center gap-2 text-white cursor-pointer flex-1">
+                      <Star className={`w-5 h-5 ${formData.isActive ? 'text-yellow-400 fill-yellow-400' : 'text-white/40'}`} />
+                      <div>
+                        <div className="font-medium">Currently Active</div>
+                        <div className="text-sm text-white/60">Mark this position as currently active</div>
+                      </div>
+                    </label>
                   </div>
                 </div>
 
@@ -717,17 +939,47 @@ export default function FlightLogbookPage() {
             </motion.div>
           )}
 
-          {/* Table */}
+          {/* Sortable List */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <DataTable
-              data={filteredFlights}
-              columns={columns}
-              onEdit={handleEdit}
-              onDelete={(flight) => setDeleteId(flight.id)}
-            />
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <div className="mb-4">
+                <p className="text-white/60 text-sm">
+                  Drag and drop to reorder • Click star to mark as currently active
+                </p>
+              </div>
+
+              {filteredFlights.length === 0 ? (
+                <div className="text-center py-12 text-white/40">
+                  No flight entries found. Add your first project!
+                </div>
+              ) : (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={filteredFlights.map((item) => item.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-3">
+                      {filteredFlights.map((flight) => (
+                        <SortableFlightItem
+                          key={flight.id}
+                          flight={flight}
+                          onEdit={handleEdit}
+                          onDelete={setDeleteId}
+                          onToggleActive={handleToggleActive}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              )}
+            </div>
           </motion.div>
 
           {/* Delete Dialog */}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Logo } from '@/components/ui/logo';
 import {
@@ -19,7 +20,9 @@ import {
   Plane,
   Award,
   Code2,
-  Mountain
+  Mountain,
+  Users,
+  Shield
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -39,7 +42,24 @@ interface NavItem {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { data: session, status } = useSession();
+  
+  // Default sidebar state: open on desktop, closed on mobile
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  // Set initial sidebar state based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSidebarOpen(window.innerWidth >= 1024);
+    };
+    
+    // Set initial state
+    handleResize();
+    
+    // Listen for resize
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   // Auto-expand menu items based on current path
   const getInitialExpandedItems = () => {
@@ -123,6 +143,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       icon: Mail,
     },
     {
+      label: 'Users',
+      href: '/admin/users',
+      icon: Users,
+    },
+    {
       label: 'Settings',
       href: '/admin/settings',
       icon: Settings,
@@ -147,33 +172,33 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex">
-      {/* Sidebar */}
-      <AnimatePresence mode="wait">
-        {isSidebarOpen && (
-          <motion.aside
-            initial={{ x: -300 }}
-            animate={{ x: 0 }}
-            exit={{ x: -300 }}
-            transition={{ type: 'spring', damping: 25 }}
-            className="fixed lg:sticky left-0 top-0 h-screen w-64 bg-slate-900/95 backdrop-blur-xl border-r border-white/10 z-50 flex flex-col lg:z-auto"
-          >
-            {/* Logo */}
-            <div className="p-6 border-b border-white/10 flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <Logo size={40} />
-                <div>
-                  <h1 className="text-white font-bold text-lg">Admin Panel</h1>
-                  <p className="text-white/50 text-xs">Portfolio CMS</p>
-                </div>
-              </div>
+    <div className="min-h-screen h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex overflow-hidden">
+      {/* Sidebar - Always rendered but can be hidden */}
+      <motion.aside
+        initial={false}
+        animate={{ 
+          x: isSidebarOpen ? 0 : -256,
+          width: isSidebarOpen ? 256 : 0
+        }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className="relative h-full bg-slate-900/95 backdrop-blur-xl border-r border-white/10 flex flex-col flex-shrink-0 overflow-hidden"
+      >
+        {/* Logo */}
+        <div className="p-6 border-b border-white/10 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <Logo size={40} />
+            <div>
+              <h1 className="text-white font-bold text-lg whitespace-nowrap">Admin Panel</h1>
+              <p className="text-white/50 text-xs whitespace-nowrap">Portfolio CMS</p>
             </div>
+          </div>
+        </div>
 
-            {/* Navigation - Scrollable */}
-            <nav 
-              className="flex-1 p-4 space-y-2 overflow-y-auto scrollbar-thin"
-              style={{ maxHeight: 'calc(100vh - 200px)' }}
-            >
+        {/* Navigation - Scrollable */}
+        <nav 
+          className="flex-1 p-4 space-y-2 overflow-y-auto scrollbar-thin"
+          style={{ maxHeight: 'calc(100vh - 200px)', width: '256px' }}
+        >
               {navigation.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
@@ -254,41 +279,91 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
             {/* User Section - Fixed at bottom */}
             <div className="flex-shrink-0 p-4 border-t border-white/10 bg-slate-900/80">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
-                  FB
+              {status === 'loading' ? (
+                <div className="animate-pulse">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-slate-700"></div>
+                    <div className="flex-1">
+                      <div className="h-4 bg-slate-700 rounded mb-2"></div>
+                      <div className="h-3 bg-slate-700 rounded w-16"></div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-medium truncate">Fahmi Bahtiar</p>
-                  <p className="text-white/50 text-xs truncate">Admin</p>
+              ) : session?.user ? (
+                <>
+                  <div className="flex items-center gap-3 mb-3">
+                    {session.user.image ? (
+                      <img
+                        src={session.user.image}
+                        alt={session.user.name || 'User'}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                        {session.user.name
+                          ?.split(' ')
+                          .map((n) => n[0])
+                          .join('')
+                          .toUpperCase()
+                          .slice(0, 2) || 'U'}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm font-medium truncate">
+                        {session.user.name || 'User'}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-white/50 text-xs truncate capitalize">
+                          {session.user.role || 'user'}
+                        </p>
+                        {session.user.role === 'admin' && (
+                          <Shield className="w-3 h-3 text-cyan-400" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => signOut({ callbackUrl: '/admin/login' })}
+                    className="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-all"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span className="text-sm">Logout</span>
+                  </button>
+                </>
+              ) : (
+                <div className="text-center text-white/50 text-sm">
+                  Not logged in
                 </div>
-              </div>
-              <button className="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-all">
-                <LogOut className="w-4 h-4" />
-                <span className="text-sm">Logout</span>
-              </button>
+              )}
             </div>
           </motion.aside>
-        )}
-      </AnimatePresence>
 
       {/* Main Content Wrapper */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         {/* Header */}
-        <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-xl border-b border-white/10">
+        <header className="flex-shrink-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/10">
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center gap-4">
-              <button
+              <motion.button
                 onClick={toggleSidebar}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 className="p-2 rounded-lg text-white/70 hover:bg-white/5 hover:text-white transition-all"
-                aria-label="Toggle sidebar"
+                aria-label={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
+                title={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
               >
-                {isSidebarOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </button>
+                <motion.div
+                  initial={false}
+                  animate={{ rotate: isSidebarOpen ? 0 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {isSidebarOpen ? (
+                    <X className="w-5 h-5" />
+                  ) : (
+                    <Menu className="w-5 h-5" />
+                  )}
+                </motion.div>
+              </motion.button>
               
               {/* Breadcrumb or page title can go here */}
             </div>
@@ -306,18 +381,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-6 overflow-y-auto">
           {children}
         </main>
       </div>
-
-      {/* Backdrop for mobile */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-          onClick={toggleSidebar}
-        />
-      )}
     </div>
   );
 }

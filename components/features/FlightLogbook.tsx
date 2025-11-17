@@ -11,7 +11,8 @@ import {
   Award,
   ChevronRight,
   CloudSun,
-  TrendingUp
+  TrendingUp,
+  Star
 } from 'lucide-react';
 
 interface FlightEntry {
@@ -19,7 +20,8 @@ interface FlightEntry {
   callsign: string;
   company: string; // Main display - company/organization name
   departure: {
-    role: string;
+    roles: string[];
+    highlightedRole: string;
     code: string;
     date: string;
   };
@@ -36,6 +38,7 @@ interface FlightEntry {
   location: string;
   category: string;
   order: number;
+  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -55,9 +58,11 @@ export function FlightLogbook() {
         }
         const result = await response.json();
         if (result.success && result.data) {
-          setFlightEntries(result.data);
-          if (result.data.length > 0) {
-            setSelectedEntry(result.data[0].id);
+          // Sort by order
+          const sortedData = result.data.sort((a: FlightEntry, b: FlightEntry) => a.order - b.order);
+          setFlightEntries(sortedData);
+          if (sortedData.length > 0) {
+            setSelectedEntry(sortedData[0].id);
           }
         } else {
           setError('Failed to load flight data');
@@ -177,7 +182,15 @@ export function FlightLogbook() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="text-white font-bold text-lg truncate">{entry.company}</h4>
-                        <p className="text-white/50 text-sm truncate">{entry.projectName}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-white/50 text-sm truncate">{entry.projectName}</p>
+                          {entry.isActive && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 flex-shrink-0">
+                              <Star className="w-3 h-3 fill-yellow-400" />
+                              Active
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -187,7 +200,7 @@ export function FlightLogbook() {
                         <div className="flex items-center gap-2">
                           <MapPin className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
                           <span className="text-white/70 font-mono truncate">{entry.departure.code}</span>
-                          <span className="text-white/50 text-xs truncate">{entry.departure.role}</span>
+                          <span className="text-white/50 text-xs truncate">{entry.departure.highlightedRole}</span>
                         </div>
                       </div>
                       
@@ -284,42 +297,12 @@ export function FlightLogbook() {
                       className="overflow-hidden"
                     >
                       <div
-                        className="pt-4 mt-4 border-t space-y-4"
+                        className="pt-4 mt-4 border-t"
                         style={{ borderTopColor: `${colors.main}20` }}
                       >
-                        {/* Technologies */}
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div
-                              className="w-1 h-4 rounded-full"
-                              style={{ backgroundColor: colors.main }}
-                            />
-                            <span className="text-xs uppercase tracking-wider" style={{ color: colors.main }}>
-                              Technologies
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap gap-2 pl-4">
-                            {entry.crew.map((member, idx) => (
-                              <motion.span
-                                key={idx}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: idx * 0.05 }}
-                                className="px-3 py-1.5 rounded-lg border text-xs font-mono"
-                                style={{
-                                  backgroundColor: `${colors.main}15`,
-                                  borderColor: `${colors.main}30`,
-                                  color: colors.main
-                                }}
-                              >
-                                {member}
-                              </motion.span>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Responsibilities */}
-                        {entry.responsibilities && entry.responsibilities.length > 0 && (
+                        {/* Combined Grid for Technologies, Roles, and Responsibilities */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                          {/* Technologies - Column 1 */}
                           <div>
                             <div className="flex items-center gap-2 mb-2">
                               <div
@@ -327,25 +310,102 @@ export function FlightLogbook() {
                                 style={{ backgroundColor: colors.main }}
                               />
                               <span className="text-xs uppercase tracking-wider" style={{ color: colors.main }}>
-                                Responsibilities
+                                Technologies
                               </span>
                             </div>
-                            <ul className="space-y-2 pl-4">
-                              {entry.responsibilities.map((responsibility, idx) => (
-                                <motion.li
+                            <div className="flex flex-wrap gap-2 pl-4">
+                              {entry.crew.map((member, idx) => (
+                                <motion.span
                                   key={idx}
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
                                   transition={{ delay: idx * 0.05 }}
-                                  className="flex items-start gap-2 text-sm text-white/60"
+                                  className="px-3 py-1.5 rounded-lg border text-xs font-mono"
+                                  style={{
+                                    backgroundColor: `${colors.main}15`,
+                                    borderColor: `${colors.main}30`,
+                                    color: colors.main
+                                  }}
                                 >
-                                  <Award className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.main }} />
-                                  <span>{responsibility}</span>
-                                </motion.li>
+                                  {member}
+                                </motion.span>
                               ))}
-                            </ul>
+                            </div>
                           </div>
-                        )}
+
+                          {/* Roles - Column 2 */}
+                          {entry.departure.roles && entry.departure.roles.length > 0 && (
+                            <div>
+                              <div className="flex items-center gap-2 mb-2">
+                                <div
+                                  className="w-1 h-4 rounded-full"
+                                  style={{ backgroundColor: colors.main }}
+                                />
+                                <span className="text-xs uppercase tracking-wider" style={{ color: colors.main }}>
+                                  {entry.departure.roles.length > 1 ? 'Roles' : 'Role'}
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap gap-2 pl-4">
+                                {entry.departure.roles.map((role, idx) => (
+                                  <motion.span
+                                    key={idx}
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    className={`px-3 py-1.5 rounded-lg border text-xs font-mono ${
+                                      role === entry.departure.highlightedRole 
+                                        ? 'ring-2 ring-offset-1 ring-offset-gray-900' 
+                                        : ''
+                                    }`}
+                                    style={{
+                                      backgroundColor: role === entry.departure.highlightedRole 
+                                        ? `${colors.main}25` 
+                                        : `${colors.main}15`,
+                                      borderColor: role === entry.departure.highlightedRole 
+                                        ? colors.main 
+                                        : `${colors.main}30`,
+                                      color: role === entry.departure.highlightedRole 
+                                        ? colors.main 
+                                        : colors.main
+                                    }}
+                                  >
+                                    {role === entry.departure.highlightedRole && '★ '}
+                                    {role}
+                                  </motion.span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Responsibilities - Column 3 */}
+                          {entry.responsibilities && entry.responsibilities.length > 0 && (
+                            <div>
+                              <div className="flex items-center gap-2 mb-2">
+                                <div
+                                  className="w-1 h-4 rounded-full"
+                                  style={{ backgroundColor: colors.main }}
+                                />
+                                <span className="text-xs uppercase tracking-wider" style={{ color: colors.main }}>
+                                  Responsibilities
+                                </span>
+                              </div>
+                              <ul className="space-y-2 pl-4">
+                                {entry.responsibilities.map((responsibility, idx) => (
+                                  <motion.li
+                                    key={idx}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    className="flex items-start gap-2 text-sm text-white/60"
+                                  >
+                                    <Award className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.main }} />
+                                    <span>{responsibility}</span>
+                                  </motion.li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </motion.div>
                   )}

@@ -1,0 +1,99 @@
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+
+// Get backend URL (without /api prefix for direct backend calls)
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+  ],
+  callbacks: {
+    async signIn({ user, account, profile }) {
+      // Check if user is authorized
+      if (!user.email) {
+        console.log('❌ No email provided');
+        return false;
+      }
+
+      try {
+        console.log('🔍 Checking authorization for:', user.email);
+        const checkUrl = `${BACKEND_URL}/api/admin/auth/users/check/${encodeURIComponent(user.email)}`;
+        console.log('📍 Checking URL:', checkUrl);
+        
+        const response = await fetch(checkUrl, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          console.error('❌ Authorization check failed:', response.status);
+          return false;
+        }
+
+        const result = await response.json();
+        console.log('📦 Authorization result:', result);
+
+        if (result.success && result.data?.isAuthorized && result.data?.user) {
+          console.log('✅ User authorized:', result.data.user.name);
+          return true;
+        }
+
+        console.log('❌ User not authorized:', user.email);
+        return false;
+      } catch (error) {
+        console.error('❌ Authorization check error:', error);
+        return false;
+      }
+    },
+    async jwt({ token, user, account }) {
+      if (user && user.email) {
+        // Fetch user details from backend on first sign in
+        try {
+          const response = await fetch(
+            `${BACKEND_URL}/api/admin/auth/users/check/${encodeURIComponent(user.email)}`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
+          if (response.ok) {
+            const result = await response.json();
+
+            if (result.success && result.data?.user) {
+              token.role = result.data.user.role;
+              token.userId = result.data.user._id;
+              token.email = user.email;
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch user details:', error);
+        }
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.role = token.role as string;
+        session.user.userId = token.userId as string;
+        session.user.email = token.email as string;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: '/admin/login',
+    error: '/admin/login',
+  },
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  debug: process.env.NODE_ENV === 'development',
+});

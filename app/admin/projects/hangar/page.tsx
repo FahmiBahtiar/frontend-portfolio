@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plane, Plus, X, Save, Github, Star, GitFork } from 'lucide-react';
+import { Plane, Plus, X, Save, Star, GitFork } from 'lucide-react';
 import { DataTable } from '@/components/admin/DataTable';
 import { DeleteDialog } from '@/components/admin/DeleteDialog';
 import type { HangarItem } from '@/lib/types/admin';
@@ -50,6 +50,7 @@ export default function AircraftHangarPage() {
     url: '',
     achievements: [] as string[],
     order: 0,
+    isActive: false,
   });
 
   const categories = [
@@ -79,7 +80,9 @@ export default function AircraftHangarPage() {
       }
       const result = await response.json();
       if (result.success) {
-        setHangarItems(result.data);
+        // Sort by order
+        const sortedItems = result.data.sort((a: HangarItem, b: HangarItem) => a.order - b.order);
+        setHangarItems(sortedItems);
       } else {
         setError('Failed to load projects');
       }
@@ -116,6 +119,7 @@ export default function AircraftHangarPage() {
       url: '',
       achievements: [] as string[],
       order: 0,
+      isActive: false,
     });
     setIsFormOpen(true);
   };
@@ -144,6 +148,7 @@ export default function AircraftHangarPage() {
       url: item.url || '',
       achievements: item.achievements || [],
       order: item.order || 0,
+      isActive: item.isActive || false,
     });
     setIsFormOpen(true);
   };
@@ -172,6 +177,7 @@ export default function AircraftHangarPage() {
         color: formData.color,
         achievements: formData.achievements,
         order: formData.order || hangarItems.length + 1,
+        isActive: formData.isActive,
       };
 
       if (editingItem) {
@@ -324,6 +330,7 @@ export default function AircraftHangarPage() {
       url: '',
       achievements: [] as string[],
       order: 0,
+      isActive: false,
     });
   };
 

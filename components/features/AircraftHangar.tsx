@@ -55,6 +55,7 @@ interface HangarItem {
   color: string;
   achievements?: string[];
   order: number;
+  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -88,7 +89,9 @@ export function AircraftHangar() {
         }
         const result = await response.json();
         if (result.success && result.data) {
-          setHangarItems(result.data);
+          // Sort by order
+          const sortedData = result.data.sort((a: HangarItem, b: HangarItem) => a.order - b.order);
+          setHangarItems(sortedData);
         } else {
           setError('Failed to load project data');
         }
@@ -241,8 +244,16 @@ export function AircraftHangar() {
                           {getIconForCategory(item.category)}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="text-xs text-white/40 uppercase tracking-wider mb-0.5">
-                            {item.classification}
+                          <div className="flex items-center gap-2">
+                            <div className="text-xs text-white/40 uppercase tracking-wider">
+                              {item.classification}
+                            </div>
+                            {item.isActive && (
+                              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-400/10 border border-yellow-400/30">
+                                <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                                <span className="text-[10px] text-yellow-400 font-medium uppercase tracking-wider">Active</span>
+                              </div>
+                            )}
                           </div>
                           <div className="text-xs font-mono text-white/70 truncate">
                             {item.model}
