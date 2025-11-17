@@ -182,8 +182,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className="relative h-full bg-slate-900/95 backdrop-blur-xl border-r border-white/10 flex flex-col flex-shrink-0 overflow-hidden"
+        style={{ minWidth: isSidebarOpen ? '256px' : '0' }}
       >
-        {/* Logo */}
+        {/* Logo - Fixed at top */}
         <div className="p-6 border-b border-white/10 flex-shrink-0">
           <div className="flex items-center gap-3">
             <Logo size={40} />
@@ -194,10 +195,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </div>
         </div>
 
-        {/* Navigation - Scrollable */}
+        {/* Navigation - Scrollable in middle */}
         <nav 
-          className="flex-1 p-4 space-y-2 overflow-y-auto scrollbar-thin"
-          style={{ maxHeight: 'calc(100vh - 200px)', width: '256px' }}
+          className="flex-1 p-4 space-y-2 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent hover:scrollbar-thumb-white/20"
+          style={{ width: '256px' }}
         >
               {navigation.map((item) => {
                 const Icon = item.icon;
