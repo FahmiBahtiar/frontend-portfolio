@@ -4,11 +4,12 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export async function GET(
   request: Request,
-  { params }: { params: { email: string } }
+  { params }: { params: Promise<{ email: string }> }
 ) {
   try {
+    const { email } = await params;
     const response = await fetch(
-      `${BACKEND_URL}/api/admin/auth/users/check/${params.email}`,
+      `${BACKEND_URL}/api/admin/auth/users/check/${email}`,
       { cache: 'no-store' }
     );
     const data = await response.json();

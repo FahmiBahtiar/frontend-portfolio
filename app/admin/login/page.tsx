@@ -1,12 +1,12 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plane, Lock, AlertCircle, X } from 'lucide-react';
 
-export default function LoginPage() {
+function ErrorAlert() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
   const [showError, setShowError] = useState(false);
@@ -16,20 +16,6 @@ export default function LoginPage() {
       setShowError(true);
     }
   }, [error]);
-
-  const handleGoogleSignIn = async () => {
-    await signIn('google', { callbackUrl: '/admin' });
-  };
-
-  // Force dark theme for login page
-  useEffect(() => {
-    document.documentElement.classList.add('dark');
-    document.body.style.backgroundColor = '#0f172a';
-    return () => {
-      document.documentElement.classList.remove('dark');
-      document.body.style.backgroundColor = '';
-    };
-  }, []);
 
   const getErrorMessage = () => {
     switch (error) {
@@ -51,6 +37,53 @@ export default function LoginPage() {
     }
   };
 
+  if (!showError) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md z-50 px-4"
+    >
+      <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-xl p-4 shadow-2xl">
+        <div className="flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm text-red-200 font-medium mb-1">
+              {getErrorMessage().title}
+            </p>
+            <p className="text-xs text-red-200/70">
+              {getErrorMessage().message}
+            </p>
+          </div>
+          <button
+            onClick={() => setShowError(false)}
+            className="text-red-400 hover:text-red-300 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export default function LoginPage() {
+  const handleGoogleSignIn = async () => {
+    await signIn('google', { callbackUrl: '/admin' });
+  };
+
+  // Force dark theme for login page
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+    document.body.style.backgroundColor = '#0f172a';
+    return () => {
+      document.documentElement.classList.remove('dark');
+      document.body.style.backgroundColor = '';
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
       {/* Background Effects */}
@@ -60,36 +93,9 @@ export default function LoginPage() {
       </div>
 
       {/* Error Alert */}
-      <AnimatePresence>
-        {showError && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md z-50 px-4"
-          >
-            <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-xl p-4 shadow-2xl">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm text-red-200 font-medium mb-1">
-                    {getErrorMessage().title}
-                  </p>
-                  <p className="text-xs text-red-200/70">
-                    {getErrorMessage().message}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowError(false)}
-                  className="text-red-400 hover:text-red-300 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Suspense fallback={null}>
+        <ErrorAlert />
+      </Suspense>
 
       {/* Login Card */}
       <motion.div
