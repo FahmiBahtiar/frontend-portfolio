@@ -350,23 +350,9 @@ export default function AchievementsPage() {
           )
         );
 
-        // Update local state
-        const updatedAchievements = achievements.map(achievement => {
-          if (achievement.category === sourceCategory) {
-            const newItem = reorderedItems.find(item => item.id === achievement.id);
-            return newItem || achievement;
-          }
-          return achievement;
-        });
-
-        setAchievements(updatedAchievements);
-
-        // Notify frontend to refresh data
-        localStorage.setItem('achievements_updated', Date.now().toString());
-        window.dispatchEvent(new StorageEvent('storage', {
-          key: 'achievements_updated',
-          newValue: Date.now().toString()
-        }));
+        // Reload data from server to ensure consistency
+        const data = await EducationService.getAchievements();
+        setAchievements(data);
       } catch (error) {
         console.error('Failed to update order:', error);
       }
