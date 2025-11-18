@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { GraduationCap, Award, Code2, Plane, Mountain, Calendar, MapPin, Trophy, Star, ChevronDown, ChevronUp, CheckCircle2, ExternalLink, Loader2 } from 'lucide-react';
+import { GraduationCap, Award, Code2, Plane, Mountain, Calendar, MapPin, Trophy, Star, CheckCircle2, ExternalLink, Loader2 } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -20,7 +20,7 @@ interface Page3EducationProps {
 export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
   const [selectedAchievement, setSelectedAchievement] = useState<{
     category: string;
-    index: number;
+    achievementId: string;
   } | null>(null);
 
   const [educationRecords, setEducationRecords] = useState<Education[]>([]);
@@ -28,25 +28,35 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Load education data
   useEffect(() => {
-    const fetchEducationData = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
-        setError(null);
         const [educationData, achievementsData] = await Promise.all([
           EducationService.getEducationRecords(),
           EducationService.getAchievements(),
         ]);
         setEducationRecords(educationData);
         setAchievements(achievementsData);
-      } catch (err) {
-        setError('Unable to load education data.');
+      } catch (error) {
+        console.error('Failed to load education data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEducationData();
+    loadData();
+
+    // Listen for data updates from admin panel
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'achievements_updated') {
+        loadData();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   // Group achievements by category
@@ -123,8 +133,10 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
     if (!selectedAchievement) return null;
     const category = achievementCategories.find((c) => c.id === selectedAchievement.category);
     if (!category) return null;
+    const achievement = category.achievements.find((a) => a.id === selectedAchievement.achievementId);
+    if (!achievement) return null;
     return {
-      achievement: category.achievements[selectedAchievement.index],
+      achievement,
       category,
     };
   };
@@ -232,195 +244,292 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
               const CategoryIcon = category.icon;
               
               return (
-                <AccordionItem
-                  key={category.id}
-                  value={category.id}
-                  className={`rounded-2xl bg-gradient-to-br ${category.gradient} backdrop-blur-xl border ${category.borderColor} overflow-hidden transition-all hover:border-white/40`}
-                >
-                  <AccordionTrigger className="px-6 py-5 hover:no-underline group">
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                          <CategoryIcon className={`w-6 h-6 ${category.textColor}`} />
+                <div key={category.id} className={`rounded-2xl bg-gradient-to-br ${category.gradient} backdrop-blur-xl border ${category.borderColor} transition-all hover:border-white/40 ${categoryIndex !== achievementCategories.length - 1 ? '!border-b-0' : ''}`}>
+                  <AccordionItem
+                    key={category.id}
+                    value={category.id}
+                    className="border-0 bg-transparent"
+                  >
+                    <AccordionTrigger className="px-6 py-5 hover:no-underline group">
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                            <CategoryIcon className={`w-6 h-6 ${category.textColor}`} />
+                          </div>
+                          <div className="text-left">
+                            <h4 className="text-white mb-1">{category.label}</h4>
+                            <p className="text-white/60 text-sm">
+                              {category.achievements.length} certifications
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-left">
-                          <h4 className="text-white mb-1">{category.label}</h4>
-                          <p className="text-white/60 text-sm">
-                            {category.achievements.length} certifications
-                          </p>
+                        <div className={`px-3 py-1.5 rounded-full bg-white/10 ${category.textColor} text-sm`}>
+                          {category.achievements.length}
                         </div>
                       </div>
-                      <div className={`px-3 py-1.5 rounded-full bg-white/10 ${category.textColor} text-sm`}>
-                        {category.achievements.length}
-                      </div>
-                    </div>
-                  </AccordionTrigger>
-                  
-                  <AccordionContent className="px-6 pb-6 pt-2">
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                      className="grid grid-cols-1 lg:grid-cols-3 gap-4"
-                    >
-                      {/* Left: Achievement List */}
-                      <div className="lg:col-span-1 space-y-2">
-                        {category.achievements.map((achievement, index) => {
-                          const Icon = achievement.icon;
-                          const isSelected = selectedAchievement?.category === category.id && selectedAchievement?.index === index;
-                          
-                          return (
-                            <motion.button
-                              key={achievement.title}
-                              onClick={() => setSelectedAchievement({ category: category.id, index })}
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.05 }}
-                              className={`w-full p-3 rounded-xl border transition-all text-left group/item ${
-                                isSelected
-                                  ? `bg-white/15 ${category.borderColor} border-white/40`
-                                  : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
-                              }`}
-                              whileHover={{ x: 4 }}
-                            >
-                              <div className="flex items-start gap-3">
-                                <div className={`w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-/item-hover:scale-110 transition-transform`}>
-                                  {(() => {
-                                    const AchievementIcon = getIcon(achievement.icon);
-                                    return <AchievementIcon className={`w-5 h-5 ${category.textColor}`} />;
-                                  })()}
+                    </AccordionTrigger>
+                    
+                    <AccordionContent className="px-6 pb-6 pt-2 overflow-hidden">
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                        className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4"
+                      >
+                        {/* Left: Achievement List - Fixed height with scroll (shows ~7 items) */}
+                        {/* Desktop: vertical scroll, Mobile: horizontal scroll */}
+                        <div className="lg:col-span-1 lg:h-[560px]" style={{ maxHeight: '560px', overflow: 'hidden' }}>
+                          {/* Desktop: vertical scroll list */}
+                          <div 
+                            className="hidden lg:block space-y-2 overflow-x-hidden overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent hover:scrollbar-thumb-white/30"
+                            style={{ height: '100%', maxHeight: '560px' }}
+                          >
+                            {category.achievements.map((achievement, index) => {
+                              const Icon = achievement.icon;
+                              const isSelected = selectedAchievement?.category === category.id && selectedAchievement?.achievementId === achievement.id;
+                              
+                              return (
+                                <motion.button
+                                  key={achievement.id}
+                                  onClick={() => setSelectedAchievement({ category: category.id, achievementId: achievement.id })}
+                                  initial={{ opacity: 0, x: -20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: index * 0.05 }}
+                                  className={`w-full p-3 rounded-xl border transition-all text-left group/item ${
+                                    isSelected
+                                      ? `bg-white/15 ${category.borderColor} border-white/40`
+                                      : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                                  }`}
+                                >
+                                  <div className="flex items-start gap-3">
+                                    <div className={`w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-/item-hover:scale-110 transition-transform`}>
+                                      {(() => {
+                                        const AchievementIcon = getIcon(achievement.icon);
+                                        return <AchievementIcon className={`w-5 h-5 ${category.textColor}`} />;
+                                      })()}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className={`text-sm mb-0.5 transition-colors ${isSelected ? 'text-white' : 'text-white/80 group-hover:item:text-white'}`}>
+                                        {achievement.title}
+                                      </p>
+                                      <div className="flex items-center justify-between">
+                                        <p className="text-white/40 text-xs truncate">{achievement.issuer}</p>
+                                        <p className="text-white/30 text-xs flex-shrink-0 ml-2">{achievement.date}</p>
+                                      </div>
+                                    </div>
+                                    {isSelected && (
+                                      <CheckCircle2 className={`w-5 h-5 ${category.textColor} flex-shrink-0`} />
+                                    )}
+                                  </div>
+                                </motion.button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Mobile: horizontal scroll */}
+                          <div 
+                            className="lg:hidden flex gap-3 overflow-x-auto overflow-y-hidden pb-2 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent hover:scrollbar-thumb-white/30"
+                          >
+                            {category.achievements.map((achievement, index) => {
+                              const Icon = achievement.icon;
+                              const isSelected = selectedAchievement?.category === category.id && selectedAchievement?.achievementId === achievement.id;
+                              
+                              return (
+                                <motion.button
+                                  key={achievement.id}
+                                  onClick={() => setSelectedAchievement({ category: category.id, achievementId: achievement.id })}
+                                  initial={{ opacity: 0, x: -20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: index * 0.05 }}
+                                  className={`flex-shrink-0 w-[280px] p-3 rounded-xl border transition-all text-left group/item ${
+                                    isSelected
+                                      ? `bg-white/15 ${category.borderColor} border-white/40`
+                                      : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                                  }`}
+                                >
+                                  <div className="flex items-start gap-3">
+                                    <div className={`w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-/item-hover:scale-110 transition-transform`}>
+                                      {(() => {
+                                        const AchievementIcon = getIcon(achievement.icon);
+                                        return <AchievementIcon className={`w-5 h-5 ${category.textColor}`} />;
+                                      })()}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className={`text-sm mb-0.5 transition-colors ${isSelected ? 'text-white' : 'text-white/80 group-hover:item:text-white'}`}>
+                                        {achievement.title}
+                                      </p>
+                                      <div className="flex flex-col gap-1">
+                                        <p className="text-white/40 text-xs truncate">{achievement.issuer}</p>
+                                        <p className="text-white/30 text-xs">{achievement.date}</p>
+                                      </div>
+                                    </div>
+                                    {isSelected && (
+                                      <CheckCircle2 className={`w-5 h-5 ${category.textColor} flex-shrink-0`} />
+                                    )}
+                                  </div>
+                                </motion.button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Right: Certificate Detail Preview */}
+                        <div className="lg:col-span-2 h-fit">
+                          <AnimatePresence mode="wait">
+                            {selectedAchievement?.category === category.id ? (
+                              <motion.div
+                                key={`${category.id}-${selectedAchievement.achievementId}`}
+                                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                transition={{ duration: 0.3 }}
+                                className={`p-8 rounded-2xl bg-gradient-to-br ${category.gradient} border-2 ${category.borderColor} relative overflow-hidden`}
+                              >
+                                {/* Certificate-style decorative corners */}
+                                <div className="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-white/20 rounded-tl-2xl" />
+                                <div className="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-white/20 rounded-tr-2xl" />
+                                <div className="absolute bottom-0 left-0 w-20 h-20 border-b-2 border-l-2 border-white/20 rounded-bl-2xl" />
+                                <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-white/20 rounded-br-2xl" />
+
+                                {/* Content */}
+                                <div className="relative text-center">
+                                  {/* Icon - Only show if no certificate */}
+                                  {!getSelectedAchievementDetail()?.achievement.certificateUrl && (
+                                    <motion.div
+                                      initial={{ scale: 0, rotate: -180 }}
+                                      animate={{ scale: 1, rotate: 0 }}
+                                      transition={{ type: 'spring', stiffness: 200 }}
+                                      className="mx-auto mb-6"
+                                    >
+                                      <div className={`w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto border-2 ${category.borderColor}`}>
+                                        {(() => {
+                                          const detail = getSelectedAchievementDetail();
+                                          if (!detail) return null;
+                                          const Icon = getIcon(detail.achievement.icon);
+                                          return <Icon className={`w-10 h-10 ${category.textColor}`} />;
+                                        })()}
+                                      </div>
+                                    </motion.div>
+                                  )}
+
+                                  {/* Title - Only show if no certificate */}
+                                  {!getSelectedAchievementDetail()?.achievement.certificateUrl && (
+                                    <motion.div
+                                      initial={{ opacity: 0, y: 10 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      transition={{ delay: 0.1 }}
+                                    >
+                                      <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border ${category.borderColor} mb-4`}>
+                                        <Award className={`w-4 h-4 ${category.textColor}`} />
+                                        <span className={`text-sm ${category.textColor}`}>
+                                          {category.label} Certification
+                                        </span>
+                                      </div>
+                                      <h3 className="text-white text-2xl mb-3">
+                                        {getSelectedAchievementDetail()?.achievement.title}
+                                      </h3>
+                                      <p className="text-white/70 text-lg mb-6">
+                                        {getSelectedAchievementDetail()?.achievement.issuer}
+                                      </p>
+                                    </motion.div>
+                                  )}
+
+                                  {/* Date & Meta - Only show if no certificate */}
+                                  {!getSelectedAchievementDetail()?.achievement.certificateUrl && (
+                                    <motion.div
+                                      initial={{ opacity: 0 }}
+                                      animate={{ opacity: 1 }}
+                                      transition={{ delay: 0.2 }}
+                                      className="flex items-center justify-center gap-6 mb-6 pb-6 border-b border-white/10"
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        <Calendar className="w-4 h-4 text-white/60" />
+                                        <span className="text-white/60 text-sm">
+                                          {getSelectedAchievementDetail()?.achievement.date}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <Trophy className="w-4 h-4 text-yellow-400" />
+                                        <span className="text-white/60 text-sm">Certified</span>
+                                      </div>
+                                    </motion.div>
+                                  )}
+
+                                  {/* Certificate Section */}
+                                  <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.25 }}
+                                    className="mb-6"
+                                  >
+                                    {getSelectedAchievementDetail()?.achievement.certificateUrl ? (
+                                      <div className="space-y-4">
+                                        <div className="relative w-full h-full">
+                                          <img
+                                            src={getSelectedAchievementDetail()?.achievement.certificateUrl}
+                                            alt="Certificate"
+                                            className="w-full h-full object-contain rounded-xl"
+                                            onError={(e) => {
+                                              e.currentTarget.style.display = 'none';
+                                            }}
+                                          />
+                                        </div>
+                                        
+                                        {/* Credential URL */}
+                                        {getSelectedAchievementDetail()?.achievement.credentialUrl && (
+                                          <div className="text-center">
+                                            <a
+                                              href={getSelectedAchievementDetail()?.achievement.credentialUrl}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20 transition-colors"
+                                            >
+                                              <ExternalLink className="w-4 h-4" />
+                                              <span className="text-sm font-medium">View Credential</span>
+                                            </a>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <div className="text-center py-8 px-6 rounded-xl border-2 border-dashed border-white/20 bg-white/5">
+                                        <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4">
+                                          <Award className="w-8 h-8 text-white/40" />
+                                        </div>
+                                        <p className="text-white/60 text-sm">No certificate available</p>
+                                      </div>
+                                    )}
+                                  </motion.div>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className={`text-sm mb-0.5 transition-colors ${isSelected ? 'text-white' : 'text-white/80 group-hover:item:text-white'}`}>
-                                    {achievement.title}
-                                  </p>
-                                  <p className="text-white/40 text-xs truncate">{achievement.issuer}</p>
+
+                                {/* Background pattern */}
+                                <div className="absolute inset-0 opacity-5 pointer-events-none">
+                                  <div className="absolute inset-0" style={{
+                                    backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+                                    backgroundSize: '30px 30px',
+                                  }} />
                                 </div>
-                                {isSelected && (
-                                  <CheckCircle2 className={`w-5 h-5 ${category.textColor} flex-shrink-0`} />
-                                )}
-                              </div>
-                            </motion.button>
-                          );
-                        })}
-                      </div>
-
-                      {/* Right: Certificate Detail Preview */}
-                      <div className="lg:col-span-2">
-                        <AnimatePresence mode="wait">
-                          {selectedAchievement?.category === category.id ? (
-                            <motion.div
-                              key={`${category.id}-${selectedAchievement.index}`}
-                              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                              animate={{ opacity: 1, scale: 1, y: 0 }}
-                              exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                              transition={{ duration: 0.3 }}
-                              className={`p-8 rounded-2xl bg-gradient-to-br ${category.gradient} border-2 ${category.borderColor} relative overflow-hidden`}
-                            >
-                              {/* Certificate-style decorative corners */}
-                              <div className="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-white/20 rounded-tl-2xl" />
-                              <div className="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-white/20 rounded-tr-2xl" />
-                              <div className="absolute bottom-0 left-0 w-20 h-20 border-b-2 border-l-2 border-white/20 rounded-bl-2xl" />
-                              <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-white/20 rounded-br-2xl" />
-
-                              {/* Content */}
-                              <div className="relative text-center">
-                                {/* Icon */}
-                                <motion.div
-                                  initial={{ scale: 0, rotate: -180 }}
-                                  animate={{ scale: 1, rotate: 0 }}
-                                  transition={{ type: 'spring', stiffness: 200 }}
-                                  className="mx-auto mb-6"
-                                >
-                                  <div className={`w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto border-2 ${category.borderColor}`}>
-                                    {(() => {
-                                      const detail = getSelectedAchievementDetail();
-                                      if (!detail) return null;
-                                      const Icon = getIcon(detail.achievement.icon);
-                                      return <Icon className={`w-10 h-10 ${category.textColor}`} />;
-                                    })()}
+                              </motion.div>
+                            ) : (
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="h-full min-h-[300px] flex items-center justify-center p-8 rounded-2xl border-2 border-dashed border-white/10"
+                              >
+                                <div className="text-center">
+                                  <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
+                                    <Award className="w-8 h-8 text-white/30" />
                                   </div>
-                                </motion.div>
-
-                                {/* Title */}
-                                <motion.div
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: 0.1 }}
-                                >
-                                  <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border ${category.borderColor} mb-4`}>
-                                    <Award className={`w-4 h-4 ${category.textColor}`} />
-                                    <span className={`text-sm ${category.textColor}`}>
-                                      {category.label} Certification
-                                    </span>
-                                  </div>
-                                  <h3 className="text-white text-2xl mb-3">
-                                    {getSelectedAchievementDetail()?.achievement.title}
-                                  </h3>
-                                  <p className="text-white/70 text-lg mb-6">
-                                    {getSelectedAchievementDetail()?.achievement.issuer}
-                                  </p>
-                                </motion.div>
-
-                                {/* Date & Meta */}
-                                <motion.div
-                                  initial={{ opacity: 0 }}
-                                  animate={{ opacity: 1 }}
-                                  transition={{ delay: 0.2 }}
-                                  className="flex items-center justify-center gap-6 mb-6 pb-6 border-b border-white/10"
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4 text-white/60" />
-                                    <span className="text-white/60 text-sm">
-                                      {getSelectedAchievementDetail()?.achievement.date}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Trophy className="w-4 h-4 text-yellow-400" />
-                                    <span className="text-white/60 text-sm">Certified</span>
-                                  </div>
-                                </motion.div>
-
-                                {/* Signature-style line */}
-                                <motion.div
-                                  initial={{ scaleX: 0 }}
-                                  animate={{ scaleX: 1 }}
-                                  transition={{ delay: 0.3, duration: 0.5 }}
-                                  className="relative"
-                                >
-                                  <div className="h-px bg-gradient-to-r from-transparent via-white/30 to-transparent mb-2" />
-                                  <p className="text-white/40 text-xs italic">Achievement verified</p>
-                                </motion.div>
-                              </div>
-
-                              {/* Background pattern */}
-                              <div className="absolute inset-0 opacity-5 pointer-events-none">
-                                <div className="absolute inset-0" style={{
-                                  backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
-                                  backgroundSize: '30px 30px',
-                                }} />
-                              </div>
-                            </motion.div>
-                          ) : (
-                            <motion.div
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              className="h-full min-h-[300px] flex items-center justify-center p-8 rounded-2xl border-2 border-dashed border-white/10"
-                            >
-                              <div className="text-center">
-                                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-                                  <Award className="w-8 h-8 text-white/30" />
+                                  <p className="text-white/50 mb-2">Select an achievement</p>
+                                  <p className="text-white/30 text-sm">Click on any certification to view details</p>
                                 </div>
-                                <p className="text-white/50 mb-2">Select an achievement</p>
-                                <p className="text-white/30 text-sm">Click on any certification to view details</p>
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    </motion.div>
-                  </AccordionContent>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      </motion.div>
+                    </AccordionContent>
                 </AccordionItem>
+                </div>
               );
             })}
           </Accordion>

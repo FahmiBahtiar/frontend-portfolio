@@ -187,6 +187,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
     restDelta: 0.0001 
   });
   const pathRef = useRef<SVGPathElement>(null);
+  const pathRefMobile = useRef<SVGPathElement>(null);
   const climberAnimProgress = useMotionValue(0);
   const pathDrawProgress = useMotionValue(0); // For synchronized path drawing
 
@@ -251,15 +252,21 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
     };
   }, []);
 
-  // Calculate SVG path points
+  // Calculate SVG path points - Responsive dimensions
   const width = 1000;
-  const height = 650; // Reduced from 750 to 650 for more compact view
-  const padding = { top: 40, right: 60, bottom: 90, left: 60 }; // Increased bottom padding from 100 to 120 for more label space
+  const height = 650;
+  // Responsive padding - smaller on mobile
+  const padding = { 
+    top: 40, 
+    right: 40, // Reduced from 60 for mobile
+    bottom: 80, // Reduced from 90 for mobile
+    left: 40 // Reduced from 60 for mobile
+  };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
   
   // Define the actual visual area for plotting (0% should be at bottom minus labels)
-  const visualBottom = height - padding.bottom + 200; // Increased from 160 to 200 for more space at bottom
+  const visualBottom = height - padding.bottom + 200;
   const visualTop = padding.top;
   const visualHeight = visualBottom - visualTop;
 
@@ -350,12 +357,13 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
   // Create transforms for climber position (at top level)
   // Use smoothProgress for smooth movement
   const climberX = useTransform(smoothProgress, (p) => {
-    if (!pathRef.current || points.length === 0) return points[0]?.x || 0;
+    const currentPathRef = pathRef.current || pathRefMobile.current;
+    if (!currentPathRef || points.length === 0) return points[0]?.x || 0;
     const clampedP = Math.max(0, Math.min(1, p));
     try {
-      const pathLength = pathRef.current.getTotalLength();
+      const pathLength = currentPathRef.getTotalLength();
       const targetLength = pathLength * clampedP;
-      const point = pathRef.current.getPointAtLength(targetLength);
+      const point = currentPathRef.getPointAtLength(targetLength);
       return point.x;
     } catch {
       return points[0]?.x || 0;
@@ -363,12 +371,13 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
   });
   
   const climberY = useTransform(smoothProgress, (p) => {
-    if (!pathRef.current || points.length === 0) return points[0]?.y || 0;
+    const currentPathRef = pathRef.current || pathRefMobile.current;
+    if (!currentPathRef || points.length === 0) return points[0]?.y || 0;
     const clampedP = Math.max(0, Math.min(1, p));
     try {
-      const pathLength = pathRef.current.getTotalLength();
+      const pathLength = currentPathRef.getTotalLength();
       const targetLength = pathLength * clampedP;
-      const point = pathRef.current.getPointAtLength(targetLength);
+      const point = currentPathRef.getPointAtLength(targetLength);
       return point.y;
     } catch {
       return points[0]?.y || 0;
@@ -384,8 +393,9 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
     
     // Use requestAnimationFrame instead of setTimeout for immediate execution
     const rafId = requestAnimationFrame(() => {
+      const currentPathRef = pathRef.current || pathRefMobile.current;
       // Double check before starting
-      if (!pathRef.current || animationStarted.current) {
+      if (!currentPathRef || animationStarted.current) {
         return;
       }
       
@@ -487,7 +497,8 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
   // Track climber position and detect waypoints - SETUP ONCE
   useEffect(() => {
     const handleProgressChange = (progress: number) => {
-      if (!pathRef.current) return;
+      const currentPathRef = pathRef.current || pathRefMobile.current;
+      if (!currentPathRef) return;
       
       // Update climber position
       climberProgress.set(progress);
@@ -532,36 +543,37 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
             initial={{ opacity: 0, y: -30, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.8 }}
-            className="absolute top-0 left-1/2 -translate-x-1/2 z-50 mb-6"
-            style={{ width: 'max-content', maxWidth: '90%' }}
+            className="absolute top-0 left-1/2 -translate-x-1/2 z-50 mb-4 md:mb-6 px-2 w-full"
+            style={{ maxWidth: '95%' }}
           >
             <div
-              className="px-6 py-4 rounded-2xl backdrop-blur-xl border-2 shadow-2xl"
+              className="px-3 py-2 md:px-6 md:py-4 rounded-xl md:rounded-2xl backdrop-blur-xl border-2 shadow-2xl mx-auto"
               style={{
                 backgroundColor: 'rgba(15, 23, 42, 0.95)',
                 borderColor: categoryColors[currentWaypoint.level].main,
                 boxShadow: `0 0 40px ${categoryColors[currentWaypoint.level].glow}, 0 10px 30px rgba(0,0,0,0.5)`,
+                maxWidth: 'fit-content',
               }}
             >
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
                 {(() => {
                   const Icon = currentWaypoint.icon;
-                  return <Icon className="w-5 h-5" style={{ color: categoryColors[currentWaypoint.level].main }} />;
+                  return <Icon className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" style={{ color: categoryColors[currentWaypoint.level].main }} />;
                 })()}
-                <h3 className="text-white text-lg">{currentWaypoint.title}</h3>
+                <h3 className="text-white text-sm md:text-lg truncate">{currentWaypoint.title}</h3>
               </div>
-              <div className="flex items-center gap-4 text-sm text-white/60">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-4 text-[10px] md:text-sm text-white/60">
                 <span className="flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />
-                  {currentWaypoint.institution}
+                  <MapPin className="w-2.5 h-2.5 md:w-3 md:h-3 flex-shrink-0" />
+                  <span className="truncate">{currentWaypoint.institution}</span>
                 </span>
                 <span className="flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />
+                  <Calendar className="w-2.5 h-2.5 md:w-3 md:h-3 flex-shrink-0" />
                   {currentWaypoint.year}
                 </span>
                 {currentWaypoint.badge && (
                   <span
-                    className="px-2 py-0.5 rounded-full text-xs ml-auto"
+                    className="px-1.5 py-0.5 md:px-2 md:py-0.5 rounded-full text-[9px] md:text-xs ml-0 sm:ml-auto"
                     style={{
                       backgroundColor: categoryColors[currentWaypoint.level].glow,
                       color: categoryColors[currentWaypoint.level].main,
@@ -580,42 +592,42 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
       <div className="absolute inset-0 pointer-events-none">
         {/* Elementary Zone - 0-25% altitude */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-cyan-400/5 to-transparent" style={{ height: '25%' }}>
-          <div className="absolute top-2 md:top-4 left-2 md:left-4 text-cyan-300/50 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2">
-            <GraduationCap className="w-3 h-3 flex-shrink-0" />
+          <div className="absolute top-2 left-2 md:top-4 md:left-4 text-cyan-300/50 text-[9px] md:text-xs flex items-center gap-1 md:gap-2">
+            <GraduationCap className="w-2.5 h-2.5 md:w-3 md:h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Base Camp • Elementary School</span>
-            <span className="sm:hidden">Elementary</span>
+            <span className="sm:hidden truncate">Elementary</span>
           </div>
         </div>
         {/* Junior Zone - 25-50% altitude */}
         <div className="absolute left-0 right-0 bg-gradient-to-t from-green-400/5 to-transparent" style={{ bottom: '25%', height: '25%' }}>
-          <div className="absolute top-2 md:top-4 left-2 md:left-4 text-green-300/50 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2">
-            <Award className="w-3 h-3 flex-shrink-0" />
+          <div className="absolute top-2 left-2 md:top-4 md:left-4 text-green-300/50 text-[9px] md:text-xs flex items-center gap-1 md:gap-2">
+            <Award className="w-2.5 h-2.5 md:w-3 md:h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Camp 1 • Junior High School</span>
-            <span className="sm:hidden">Junior High</span>
+            <span className="sm:hidden truncate">Junior High</span>
           </div>
         </div>
         {/* Senior Zone - 50-70% altitude */}
         <div className="absolute left-0 right-0 bg-gradient-to-t from-orange-400/5 to-transparent" style={{ bottom: '50%', height: '20%' }}>
-          <div className="absolute top-2 md:top-4 left-2 md:left-4 text-orange-300/50 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2">
-            <Trophy className="w-3 h-3 flex-shrink-0" />
+          <div className="absolute top-2 left-2 md:top-4 md:left-4 text-orange-300/50 text-[9px] md:text-xs flex items-center gap-1 md:gap-2">
+            <Trophy className="w-2.5 h-2.5 md:w-3 md:h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Camp 2 • Senior High School</span>
-            <span className="sm:hidden">Senior High</span>
+            <span className="sm:hidden truncate">Senior High</span>
           </div>
         </div>
         {/* Bootcamp Zone - 70-85% altitude */}
         <div className="absolute left-0 right-0 bg-gradient-to-t to-transparent" style={{ bottom: '70%', height: '15%', backgroundImage: 'linear-gradient(to top, rgba(251, 191, 36, 0.07), transparent)' }}>
-          <div className="absolute top-2 md:top-4 left-2 md:left-4 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2" style={{ color: 'rgba(251, 191, 36, 0.6)' }}>
-            <Code2 className="w-3 h-3 flex-shrink-0" />
+          <div className="absolute top-2 left-2 md:top-4 md:left-4 text-[9px] md:text-xs flex items-center gap-1 md:gap-2" style={{ color: 'rgba(251, 191, 36, 0.6)' }}>
+            <Code2 className="w-2.5 h-2.5 md:w-3 md:h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Camp 3 • Intensive Bootcamp</span>
-            <span className="sm:hidden">Bootcamp</span>
+            <span className="sm:hidden truncate">Bootcamp</span>
           </div>
         </div>
         {/* University Zone - 85-100% altitude (top 15%) */}
         <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-purple-400/5 to-transparent" style={{ height: '15%' }}>
-          <div className="absolute top-2 md:top-4 left-2 md:left-4 text-purple-300/50 text-[10px] md:text-xs flex items-center gap-1.5 md:gap-2">
-            <Star className="w-3 h-3 flex-shrink-0" />
+          <div className="absolute top-2 left-2 md:top-4 md:left-4 text-purple-300/50 text-[9px] md:text-xs flex items-center gap-1 md:gap-2">
+            <Star className="w-2.5 h-2.5 md:w-3 md:h-3 flex-shrink-0" />
             <span className="hidden sm:inline">Summit • University</span>
-            <span className="sm:hidden">University</span>
+            <span className="sm:hidden truncate">University</span>
           </div>
         </div>
 
@@ -633,11 +645,16 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
       </div>
 
       {/* SVG Chart */}
-      <div className="relative w-full overflow-x-auto">
+      <div className="relative w-full overflow-x-auto overflow-y-hidden">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="w-full h-auto"
-          style={{ minHeight: '350px', maxHeight: '650px' }} // Reduced from 400px/800px to 350px/650px for more compact view
+          preserveAspectRatio="xMidYMid meet"
+          style={{ 
+            minHeight: '300px', 
+            maxHeight: '650px',
+            minWidth: '100%'
+          }}
         >
           {/* Grid lines */}
           <g opacity="0.1">
@@ -654,8 +671,25 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                     strokeWidth="1"
                     strokeDasharray="4 4"
                   />
-                  <text x={padding.left - 35} y={y + 4} fill="white" fontSize="12" opacity="0.5">
+                  <text 
+                    x={padding.left - 25} 
+                    y={y + 4} 
+                    fill="white" 
+                    fontSize="10" 
+                    opacity="0.5"
+                    className="hidden sm:block"
+                  >
                     {alt}%
+                  </text>
+                  <text 
+                    x={padding.left - 18} 
+                    y={y + 3} 
+                    fill="white" 
+                    fontSize="8" 
+                    opacity="0.5"
+                    className="sm:hidden"
+                  >
+                    {alt}
                   </text>
                 </g>
               );
@@ -667,17 +701,30 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
             {points.map((point, index) => {
               const endYear = getYearFromRange(point.year, false);
               return (
-                <text
-                  key={`year-${point.id}`}
-                  x={point.x}
-                  y={height - padding.bottom + 60} // Increased from 60 to 70 for more space between badge and year
-                  fill="white"
-                  fontSize="14"
-                  textAnchor="middle"
-                  opacity="0.7"
-                >
-                  {endYear}
-                </text>
+                <g key={`year-${point.id}`}>
+                  <text
+                    x={point.x}
+                    y={height - padding.bottom + 60}
+                    fill="white"
+                    fontSize="12"
+                    textAnchor="middle"
+                    opacity="0.7"
+                    className="hidden sm:block"
+                  >
+                    {endYear}
+                  </text>
+                  <text
+                    x={point.x}
+                    y={height - padding.bottom + 45}
+                    fill="white"
+                    fontSize="9"
+                    textAnchor="middle"
+                    opacity="0.7"
+                    className="sm:hidden"
+                  >
+                    {endYear}
+                  </text>
+                </g>
               );
             })}
           </g>
@@ -701,7 +748,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
             d={pathData}
             fill="none"
             stroke="url(#pathGlowGradient)"
-            strokeWidth="12"
+            strokeWidth="8"
             strokeLinecap="round"
             strokeLinejoin="round"
             style={{
@@ -709,6 +756,21 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
               opacity: isInView ? 1 : 0,
             }}
             filter="blur(4px)"
+            className="hidden sm:block"
+          />
+          <motion.path
+            d={pathData}
+            fill="none"
+            stroke="url(#pathGlowGradient)"
+            strokeWidth="6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{
+              pathLength: pathDrawProgress,
+              opacity: isInView ? 1 : 0,
+            }}
+            filter="blur(3px)"
+            className="sm:hidden"
           />
 
           {/* Main path */}
@@ -717,12 +779,26 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
             d={pathData}
             fill="none"
             stroke="url(#pathGradient)"
-            strokeWidth="4"
+            strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
             style={{
               pathLength: pathDrawProgress,
             }}
+            className="hidden sm:block"
+          />
+          <motion.path
+            ref={pathRefMobile}
+            d={pathData}
+            fill="none"
+            stroke="url(#pathGradient)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{
+              pathLength: pathDrawProgress,
+            }}
+            className="sm:hidden"
           />
 
           {/* Waypoints */}
@@ -741,13 +817,28 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                   <motion.circle
                     cx={point.x}
                     cy={point.y}
-                    r="20"
+                    r="15"
                     fill={colors.glow}
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 0.6 }}
                     exit={{ scale: 0, opacity: 0 }}
                     transition={{ duration: 0.3 }}
                     style={{ filter: 'blur(8px)' }}
+                    className="hidden sm:block"
+                  />
+                )}
+                {(isHovered || isSelected) && (
+                  <motion.circle
+                    cx={point.x}
+                    cy={point.y}
+                    r="12"
+                    fill={colors.glow}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 0.6 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{ filter: 'blur(6px)' }}
+                    className="sm:hidden"
                   />
                 )}
                 
@@ -755,7 +846,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                 <motion.circle
                   cx={point.x}
                   cy={point.y}
-                  r="8"
+                  r="7"
                   fill={colors.main}
                   stroke="rgba(255,255,255,0.3)"
                   strokeWidth="2"
@@ -767,23 +858,58 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                   onMouseEnter={() => setHoveredPoint(point.id)}
                   onMouseLeave={() => setHoveredPoint(null)}
                   onClick={() => setSelectedPoint(selectedPoint === point.id ? null : point.id)}
+                  className="hidden sm:block"
+                />
+                <motion.circle
+                  cx={point.x}
+                  cy={point.y}
+                  r="6"
+                  fill={colors.main}
+                  stroke="rgba(255,255,255,0.3)"
+                  strokeWidth="1.5"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={isInView ? { scale: 1, opacity: 1 } : {}}
+                  transition={{ delay: waypointDelay, type: 'spring', stiffness: 200 }}
+                  style={{ cursor: 'pointer' }}
+                  whileTap={{ scale: 1.3 }}
+                  onTouchStart={() => setHoveredPoint(point.id)}
+                  onTouchEnd={() => setHoveredPoint(null)}
+                  onClick={() => setSelectedPoint(selectedPoint === point.id ? null : point.id)}
+                  className="sm:hidden"
                 />
 
                 {/* Badge label */}
                 {point.badge && (
-                  <motion.text
-                    x={point.x}
-                    y={point.altitude <= 10 ? point.y + 25 : point.y - 20} // Base Camp (<=10% altitude) below by 40px, others above by 35px
-                    fill={colors.main}
-                    fontSize="10"
-                    textAnchor="middle"
-                    fontWeight="bold"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={isInView ? { opacity: 0.8, y: 0 } : {}}
-                    transition={{ delay: waypointDelay + 0.2 }}
-                  >
-                    {point.badge}
-                  </motion.text>
+                  <g>
+                    <motion.text
+                      x={point.x}
+                      y={point.altitude <= 10 ? point.y + 25 : point.y - 20}
+                      fill={colors.main}
+                      fontSize="9"
+                      textAnchor="middle"
+                      fontWeight="bold"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={isInView ? { opacity: 0.8, y: 0 } : {}}
+                      transition={{ delay: waypointDelay + 0.2 }}
+                      className="hidden sm:block"
+                    >
+                      {point.badge}
+                    </motion.text>
+                    <motion.text
+                      x={point.x}
+                      y={point.altitude <= 10 ? point.y + 20 : point.y - 15}
+                      fill={colors.main}
+                      fontSize="7"
+                      textAnchor="middle"
+                      fontWeight="bold"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={isInView ? { opacity: 0.8, y: 0 } : {}}
+                      transition={{ delay: waypointDelay + 0.2 }}
+                      className="sm:hidden"
+                    >
+                      {point.badge.length > 15 ? point.badge.substring(0, 12) + '...' : point.badge}
+                    </motion.text>
+                  </g>
                 )}
               </g>
             );
@@ -803,15 +929,28 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                 pointerEvents: 'none',
               }}
             >
-              {/* Climber */}
-              <circle cx="0" cy="0" r="12" fill="rgba(255, 255, 255, 0.2)" style={{ pointerEvents: 'none' }} />
+              {/* Climber - Responsive size */}
+              <circle cx="0" cy="0" r="10" fill="rgba(255, 255, 255, 0.2)" style={{ pointerEvents: 'none' }} className="hidden sm:block" />
+              <circle cx="0" cy="0" r="8" fill="rgba(255, 255, 255, 0.2)" style={{ pointerEvents: 'none' }} className="sm:hidden" />
               <text
                 x="0"
                 y="0"
                 textAnchor="middle"
                 dominantBaseline="central"
-                fontSize="16"
+                fontSize="14"
                 style={{ pointerEvents: 'none' }}
+                className="hidden sm:block"
+              >
+                🧗
+              </text>
+              <text
+                x="0"
+                y="0"
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize="12"
+                style={{ pointerEvents: 'none' }}
+                className="sm:hidden"
               >
                 🧗
               </text>

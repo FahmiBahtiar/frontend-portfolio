@@ -92,13 +92,14 @@ export interface Education {
 
 export interface Achievement {
   id: string;
-  category: 'developer' | 'aviation' | 'mountaineering';
+  category: 'developer' | 'aviation' | 'mountaineering' | 'other';
   title: string;
   issuer: string;
   date: string;
   icon: string;
   description?: string;
   certificateUrl?: string;
+  credentialUrl?: string;
   order: number;
   createdAt: string;
   updatedAt: string;
