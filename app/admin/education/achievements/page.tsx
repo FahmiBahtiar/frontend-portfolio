@@ -308,75 +308,52 @@ export default function AchievementsPage() {
 
     if (!over || active.id === over.id) return;
 
-    const activeId = active.id as string;
-    const overId = over.id as string;
+    // Get current category achievements (already sorted)
+    const categoryAchievements = achievements
+      .filter(a => a.category === activeTab)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-    // Find the category and items
-    const categoryAchievements = achievements.reduce((acc, achievement) => {
-      if (!acc[achievement.category]) {
-        acc[achievement.category] = [];
+    const oldIndex = categoryAchievements.findIndex((item) => item.id === active.id);
+    const newIndex = categoryAchievements.findIndex((item) => item.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const newItems = arrayMove(categoryAchievements, oldIndex, newIndex);
+    
+    // Update order property for all items in the category
+    const updatedItems = newItems.map((item, index) => ({
+      ...item,
+      order: index + 1,
+    }));
+
+    // Optimistically update local state first
+    const newAchievements = achievements.map(achievement => {
+      if (achievement.category === activeTab) {
+        return updatedItems.find(item => item.id === achievement.id) || achievement;
       }
-      acc[achievement.category].push(achievement);
-      return acc;
-    }, {} as Record<string, Achievement[]>);
+      return achievement;
+    });
+    setAchievements(newAchievements);
 
-    // Find which category the items belong to
-    let sourceCategory = '';
-    let sourceIndex = -1;
-    let targetIndex = -1;
+    // Then update order in database
+    try {
+      await Promise.all(
+        updatedItems.map((item) =>
+          EducationService.updateAchievement(item.id, { order: item.order })
+        )
+      );
 
-    for (const [category, items] of Object.entries(categoryAchievements)) {
-      const activeIndex = items.findIndex(item => item.id === activeId);
-      const overIndex = items.findIndex(item => item.id === overId);
-
-      if (activeIndex !== -1) {
-        sourceCategory = category;
-        sourceIndex = activeIndex;
-      }
-      if (overIndex !== -1) {
-        targetIndex = overIndex;
-      }
-    }
-
-    if (sourceCategory && sourceIndex !== -1 && targetIndex !== -1) {
-      const categoryItems = categoryAchievements[sourceCategory];
-      const reorderedItems = arrayMove(categoryItems, sourceIndex, targetIndex);
-
-      // Update order property for all items in the category
-      const updatedItems = reorderedItems.map((item, index) => ({
-        ...item,
-        order: index + 1,
+      // Notify frontend to refresh data
+      localStorage.setItem('achievements_updated', Date.now().toString());
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'achievements_updated',
+        newValue: Date.now().toString()
       }));
-
-      // Optimistically update local state first
-      const newAchievements = achievements.map(achievement => {
-        if (achievement.category === sourceCategory) {
-          return updatedItems.find(item => item.id === achievement.id) || achievement;
-        }
-        return achievement;
-      });
-      setAchievements(newAchievements);
-
-      // Then update order in database
-      try {
-        await Promise.all(
-          updatedItems.map((item) =>
-            EducationService.updateAchievement(item.id, { order: item.order })
-          )
-        );
-
-        // Notify frontend to refresh data
-        localStorage.setItem('achievements_updated', Date.now().toString());
-        window.dispatchEvent(new StorageEvent('storage', {
-          key: 'achievements_updated',
-          newValue: Date.now().toString()
-        }));
-      } catch (error) {
-        console.error('Failed to update order:', error);
-        // Revert on error
-        const data = await EducationService.getAchievements();
-        setAchievements(data);
-      }
+    } catch (error) {
+      console.error('Failed to update order:', error);
+      // Revert on error
+      const data = await EducationService.getAchievements();
+      setAchievements(data);
     }
   };
 
