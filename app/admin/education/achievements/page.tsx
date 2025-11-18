@@ -342,19 +342,40 @@ export default function AchievementsPage() {
       const categoryItems = categoryAchievements[sourceCategory];
       const reorderedItems = arrayMove(categoryItems, sourceIndex, targetIndex);
 
-      // Update order in database
+      // Update order property for all items in the category
+      const updatedItems = reorderedItems.map((item, index) => ({
+        ...item,
+        order: index + 1,
+      }));
+
+      // Optimistically update local state first
+      const newAchievements = achievements.map(achievement => {
+        if (achievement.category === sourceCategory) {
+          return updatedItems.find(item => item.id === achievement.id) || achievement;
+        }
+        return achievement;
+      });
+      setAchievements(newAchievements);
+
+      // Then update order in database
       try {
         await Promise.all(
-          reorderedItems.map((item, index) =>
-            EducationService.updateAchievement(item.id, { order: index + 1 })
+          updatedItems.map((item) =>
+            EducationService.updateAchievement(item.id, { order: item.order })
           )
         );
 
-        // Reload data from server to ensure consistency
-        const data = await EducationService.getAchievements();
-        setAchievements(data);
+        // Notify frontend to refresh data
+        localStorage.setItem('achievements_updated', Date.now().toString());
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'achievements_updated',
+          newValue: Date.now().toString()
+        }));
       } catch (error) {
         console.error('Failed to update order:', error);
+        // Revert on error
+        const data = await EducationService.getAchievements();
+        setAchievements(data);
       }
     }
   };
