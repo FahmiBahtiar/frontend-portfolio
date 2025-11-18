@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Forward the request to backend upload endpoint
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     const formData = new FormData();
     formData.append('file', file);
 
