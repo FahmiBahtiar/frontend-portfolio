@@ -96,7 +96,7 @@ export default function ContactPage() {
     try {
       if (editingContact) {
         // Update existing contact
-        const { id, createdAt, updatedAt, isActive, __v, ...updateData } = formData;
+        const { id, createdAt, updatedAt, isActive, __v, ...updateData } = formData as any;
         const response = await fetch(`/api/admin/contact-info/${editingContact.id}`, {
           method: 'PUT',
           headers: {

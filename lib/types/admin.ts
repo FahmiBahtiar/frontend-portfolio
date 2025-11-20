@@ -178,6 +178,7 @@ export interface ContactFrequency {
   color: string;
   link?: string;
   order: number;
+  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }
