@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, ChevronRight, Camera, MapPin, Calendar, Compass } from 'lucide-react';
 
@@ -15,7 +16,7 @@ interface FlightDataCardProps {
   };
 }
 
-export function FlightDataCard({ 
+export const FlightDataCard = memo(function FlightDataCard({ 
   onPaginate,
   photoData = {
     location: "Mt. Merbabu Summit",
@@ -126,9 +127,9 @@ export function FlightDataCard({
         {/* Corner Brackets */}
         <div className="absolute top-2 left-2 w-6 h-6 border-l-2 border-t-2 border-cyan-400/50" />
         <div className="absolute top-2 right-2 w-6 h-6 border-r-2 border-t-2 border-cyan-400/50" />
-        <div className="absolute bottom-2 left-2 w-6 h-6 border-l-2 border-b-2 border-cyan-400/50" />
-        <div className="absolute bottom-2 right-2 w-6 h-6 border-r-2 border-b-2 border-cyan-400/50" />
+        <div className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2 w-4 h-4 sm:w-6 sm:h-6 border-l-2 border-b-2 border-cyan-400/50" />
+        <div className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 w-4 h-4 sm:w-6 sm:h-6 border-r-2 border-b-2 border-cyan-400/50" />
       </div>
     </motion.div>
   );
-}
+});

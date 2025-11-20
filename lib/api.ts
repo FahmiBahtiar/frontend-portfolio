@@ -23,6 +23,9 @@ export const API_CONFIG = {
 
     // Contact Section
     CONTACT: '/api/admin/contact',
+
+    // Gallery Section
+    GALLERY: '/gallery',
   },
 };
 
@@ -89,6 +92,11 @@ export async function apiRequest<T>(
         response.status,
         errorData
       );
+    }
+
+    // Handle responses without body (like 204 No Content)
+    if (response.status === 204) {
+      return null as T;
     }
 
     const data = await response.json();

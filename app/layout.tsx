@@ -2,18 +2,25 @@ import type { Metadata } from "next";
 import { Inter, Dancing_Script } from 'next/font/google';
 import "./globals.css";
 import { generateDynamicMetadata, generateStructuredData } from '@/lib/metadata';
+import { WebVitals } from '@/components/features/WebVitals';
 
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   preload: true,
   variable: '--font-inter',
+  fallback: ['system-ui', 'arial'],
+  adjustFontFallback: true,
+  weight: ['400', '500', '600', '700'],
 });
 
 const dancingScript = Dancing_Script({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-dancing-script',
+  fallback: ['cursive'],
+  adjustFontFallback: true,
+  weight: ['400', '700'],
 });
 
 // Generate dynamic metadata dari API
@@ -39,9 +46,17 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${dancingScript.variable}`}>
       <head>
-        {/* DNS Prefetch & Preconnect for faster resource loading */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        {/* Critical Resource Hints */}
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        
+        {/* Preconnect to your API if hosted elsewhere */}
+        {process.env.NEXT_PUBLIC_API_URL && (
+          <>
+            <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL} />
+            <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL} />
+          </>
+        )}
         
         {/* JSON-LD Structured Data untuk SEO */}
         {structuredData && (
@@ -75,7 +90,8 @@ export default async function RootLayout({
           </>
         )}
       </head>
-      <body suppressHydrationWarning className={inter.className}>
+      <body suppressHydrationWarning className={`${inter.className} bg-slate-900`}>
+        <WebVitals />
         {children}
       </body>
     </html>

@@ -1,89 +1,90 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AviationHUD } from '@/components/features/AviationHUD';
 import { CockpitCarousel } from '@/components/features/CockpitCarousel';
 import { FlightDataCard } from '@/components/features/FlightDataCard';
-
-interface MissionPhoto {
-  id: number;
-  image: string;
-  location: string;
-  coordinates: string;
-  altitude: string;
-  date: string;
-  camera: string;
-  heading: string;
-}
+import { useGallery } from '@/lib/hooks/useGallery';
 
 export function PageGallery() {
-  const missionPhotos: MissionPhoto[] = [
-    {
-      id: 1,
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
-      location: "Mt. Merbabu Summit",
-      coordinates: "7°27'S 110°26'E",
-      altitude: "3142M MSL",
-      date: "2024-08-15",
-      camera: "Sony A7III",
-      heading: "045°"
-    },
-    {
-      id: 2,
-      image: 'https://images.unsplash.com/photo-1623622863859-2931a6c3bc80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoaWtlciUyMG1vdW50YWluJTIwdHJhaWx8ZW58MXx8fHwxNzYxNjQxMzU2fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      location: "Mt. Semeru Trail",
-      coordinates: "8°06'S 112°55'E",
-      altitude: "2800M MSL",
-      date: "2024-07-22",
-      camera: "Canon EOS R5",
-      heading: "180°"
-    },
-    {
-      id: 3,
-      image: 'https://images.unsplash.com/photo-1640119947640-c88936e3b8da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3VudGFpbiUyMHN1bW1pdCUyMHBlcnNvbnxlbnwxfHx8fDE3NjE2NDIyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      location: "Mt. Rinjani Peak",
-      coordinates: "8°25'S 116°28'E",
-      altitude: "3726M MSL",
-      date: "2024-06-10",
-      camera: "Sony A7III",
-      heading: "270°"
-    },
-    {
-      id: 4,
-      image: 'https://images.unsplash.com/photo-1671540225462-43b2eff8622f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3VudGFpbiUyMGxhbmRzY2FwZSUyMGdyZWVufGVufDF8fHx8MTc2MTY0MjIyM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      location: "Mt. Bromo Valley",
-      coordinates: "7°56'S 112°57'E",
-      altitude: "2329M MSL",
-      date: "2024-09-05",
-      camera: "Nikon Z6II",
-      heading: "090°"
-    },
-    {
-      id: 5,
-      image: 'https://images.unsplash.com/photo-1630698515584-e419eaddc93c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3VudGFpbiUyMGhpa2luZyUyMHN1bW1pdHxlbnwxfHx8fDE3NjE2NDE4ODF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      location: "Mt. Lawu Summit",
-      coordinates: "7°37'S 111°11'E",
-      altitude: "3265M MSL",
-      date: "2024-05-18",
-      camera: "Sony A7III",
-      heading: "315°"
-    },
-  ];
-
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const handlePaginate = (direction: number) => {
+  // Use optimized gallery hook with automatic caching
+  const { photos: missionPhotos, isLoading, isError } = useGallery();
+
+  // Memoize current data to prevent unnecessary recalculations - BEFORE conditionals
+  const currentBackground = useMemo(() => missionPhotos[currentIndex]?.image, [missionPhotos, currentIndex]);
+  const currentPhotoData = useMemo(() => missionPhotos[currentIndex], [missionPhotos, currentIndex]);
+
+  // Adapter for CockpitCarousel - memoized - BEFORE conditionals
+  const carouselItems = useMemo(() => 
+    missionPhotos.map((photo, index) => ({
+      id: index,
+      image: photo.image,
+    })),
+    [missionPhotos]
+  );
+
+  const handlePaginate = useCallback((direction: number) => {
     setCurrentIndex((prevIndex) => {
       let nextIndex = prevIndex + direction;
       if (nextIndex < 0) nextIndex = missionPhotos.length - 1;
       if (nextIndex >= missionPhotos.length) nextIndex = 0;
       return nextIndex;
     });
-  };
+  }, [missionPhotos.length]);
 
-  const currentBackground = missionPhotos[currentIndex].image;
-  const currentPhotoData = missionPhotos[currentIndex];
+  // Preload adjacent images for smoother transitions
+  useEffect(() => {
+    if (missionPhotos.length > 0) {
+      const preloadImage = (index: number) => {
+        if (missionPhotos[index]?.image) {
+          const img = new Image();
+          img.src = missionPhotos[index].image;
+        }
+      };
+
+      // Preload next and previous images
+      const nextIndex = (currentIndex + 1) % missionPhotos.length;
+      const prevIndex = (currentIndex - 1 + missionPhotos.length) % missionPhotos.length;
+      preloadImage(nextIndex);
+      preloadImage(prevIndex);
+    }
+  }, [currentIndex, missionPhotos]);
+
+  // Loading state with skeleton
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-cyan-400 border-t-transparent mb-4"></div>
+          <div className="text-cyan-400 font-mono text-sm">Loading mission photos...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800">
+        <div className="text-center">
+          <div className="text-red-400 text-lg mb-2">⚠️ Failed to load mission photos</div>
+          <div className="text-white/60 text-sm">Please try again later</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Empty state
+  if (missionPhotos.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800">
+        <div className="text-white font-mono">No mission photos available</div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
@@ -100,7 +101,7 @@ export function PageGallery() {
             backgroundImage: `url('${currentBackground}')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
+            backgroundAttachment: window.devicePixelRatio > 1.5 ? 'scroll' : 'fixed',
           }}
         />
       </AnimatePresence>
@@ -117,15 +118,15 @@ export function PageGallery() {
         <AviationHUD 
           currentIndex={currentIndex}
           totalImages={missionPhotos.length}
-          location={currentPhotoData.location}
-          altitude={currentPhotoData.altitude}
-          coordinates={currentPhotoData.coordinates}
+          location={currentPhotoData?.location || ''}
+          altitude={currentPhotoData?.altitude || ''}
+          coordinates={currentPhotoData?.coordinates || ''}
         />
 
         {/* Main content */}
         <div className="flex-1 flex flex-col items-center justify-center gap-6 md:gap-8 px-2 md:px-4 py-4 md:py-8">
           {/* Cockpit Carousel */}
-          <CockpitCarousel items={missionPhotos} currentIndex={currentIndex} />
+          <CockpitCarousel items={carouselItems} currentIndex={currentIndex} />
 
           {/* Flight Data Card */}
           <FlightDataCard 
@@ -140,14 +141,6 @@ export function PageGallery() {
             <div className="text-xs text-cyan-400/70">MISSION LOG</div>
             <div className="text-sm text-white/80">MOUNTAIN RECON</div>
             <div className="text-xs text-slate-400">PHOTOGRAPHY OPS</div>
-          </div>
-        </div>
-
-        {/* Status Indicator - Bottom Right */}
-        <div className="hidden md:block absolute bottom-8 right-8">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-black/40 backdrop-blur-sm border border-emerald-500/30">
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-emerald-400 text-xs font-mono">SYSTEM NOMINAL</span>
           </div>
         </div>
       </div>

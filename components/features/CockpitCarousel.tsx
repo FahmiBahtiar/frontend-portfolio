@@ -1,10 +1,12 @@
 'use client';
 
+import { memo } from 'react';
 import { motion } from 'motion/react';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 interface CarouselItem {
-  id: number;
+  id: string | number;
   image: string;
 }
 
@@ -13,12 +15,15 @@ interface CockpitCarouselProps {
   currentIndex: number;
 }
 
-export function CockpitCarousel({ items, currentIndex }: CockpitCarouselProps) {
+export const CockpitCarousel = memo(function CockpitCarousel({ items, currentIndex }: CockpitCarouselProps) {
   const [isMobile, setIsMobile] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState(1920);
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      const width = window.innerWidth;
+      setIsMobile(width < 768);
+      setViewportWidth(width);
     };
     
     checkMobile();
@@ -28,7 +33,7 @@ export function CockpitCarousel({ items, currentIndex }: CockpitCarouselProps) {
   }, []);
 
   return (
-    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] flex items-center justify-center overflow-hidden px-4 md:px-8">
+    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] xl:h-[clamp(400px,30vh,600px)] flex items-center justify-center overflow-hidden px-4 md:px-8">
       {/* Crosshair Overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
         <div className="relative w-full h-full max-w-[1600px]">
@@ -69,8 +74,13 @@ export function CockpitCarousel({ items, currentIndex }: CockpitCarouselProps) {
             ? Math.abs(wrappedPosition) <= 1 
             : Math.abs(wrappedPosition) <= 2;
 
-          // Calculate transforms
-          let xOffset = wrappedPosition * 280;
+          // Calculate responsive offsets based on viewport
+          const baseOffset = Math.min(viewportWidth * 0.15, 280); // Max 280px or 15% of viewport
+          const mobileOffset = Math.min(viewportWidth * 0.08, 140); // Max 140px or 8% of viewport
+          const adjacentOffset = Math.min(viewportWidth * 0.12, 220); // Max 220px or 12% of viewport
+          const farOffset = Math.min(viewportWidth * 0.13, 230); // Max 230px or 13% of viewport
+
+          let xOffset = wrappedPosition * baseOffset;
           let scale = 1;
           let zIndex = 10;
           let opacity = 1;
@@ -89,7 +99,7 @@ export function CockpitCarousel({ items, currentIndex }: CockpitCarouselProps) {
             scale = isMobile ? 0.75 : 0.82;
             zIndex = 20;
             rotateY = wrappedPosition * 6;
-            xOffset = isMobile ? wrappedPosition * 140 : wrappedPosition * 220;
+            xOffset = isMobile ? wrappedPosition * mobileOffset : wrappedPosition * adjacentOffset;
             blur = isMobile ? 4 : 2;
             brightness = isMobile ? 0.8 : 0.9;
             opacity = isMobile ? 0.7 : 1;
@@ -98,7 +108,7 @@ export function CockpitCarousel({ items, currentIndex }: CockpitCarouselProps) {
             zIndex = 10;
             opacity = 0.85;
             rotateY = wrappedPosition * 8;
-            xOffset = wrappedPosition * 230;
+            xOffset = wrappedPosition * farOffset;
             blur = 4;
             brightness = 0.8;
           } else {
@@ -156,8 +166,8 @@ export function CockpitCarousel({ items, currentIndex }: CockpitCarouselProps) {
                 {/* Image Frame */}
                 <div className={`relative ${
                   isCenter
-                    ? 'w-[280px] h-[158px] md:w-[480px] md:h-[270px] lg:w-[640px] lg:h-[360px]'
-                    : 'w-[224px] h-[126px] md:w-[384px] md:h-[216px] lg:w-[512px] lg:h-[288px]'
+                    ? 'w-[280px] h-[158px] md:w-[480px] md:h-[270px] lg:w-[640px] lg:h-[360px] xl:w-[clamp(400px,25vw,640px)] xl:h-[clamp(225px,14vh,360px)]'
+                    : 'w-[224px] h-[126px] md:w-[384px] md:h-[216px] lg:w-[512px] lg:h-[288px] xl:w-[clamp(320px,20vw,512px)] xl:h-[clamp(180px,11vh,288px)]'
                 }`}>
                   {/* Cockpit Window Frame */}
                   <div className={`absolute inset-0 pointer-events-none z-10 ${
@@ -193,12 +203,16 @@ export function CockpitCarousel({ items, currentIndex }: CockpitCarouselProps) {
                   )}
 
                   {/* Image */}
-                  <img
+                  <Image
                     src={item.image}
-                    alt=""
-                    className={`w-full h-full object-cover ${
+                    alt={`Mission photo ${itemIndex + 1}`}
+                    fill
+                    sizes="(max-width: 768px) 240px, (max-width: 1024px) 400px, 580px"
+                    className={`object-cover ${
                       isCenter ? 'rounded-lg shadow-2xl shadow-cyan-500/20' : 'rounded-lg shadow-xl'
                     }`}
+                    priority={isCenter}
+                    quality={isCenter ? 90 : 75}
                   />
 
                   {/* Glow effect for center image */}
@@ -224,4 +238,4 @@ export function CockpitCarousel({ items, currentIndex }: CockpitCarouselProps) {
       </div>
     </div>
   );
-}
+});

@@ -87,7 +87,7 @@ export function MinimalistCommandBar({
       >
         <div className="relative">
           {/* Main Bar Container */}
-          <div className="relative bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl px-6 py-3">
+          <div className="relative bg-slate-900/80 md:backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl px-6 py-3">
             {/* Inner glow */}
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-cyan-500/5" />
             
@@ -107,7 +107,7 @@ export function MinimalistCommandBar({
                     </div>
                   </div>
                   {/* Glow effect */}
-                  <div className="absolute inset-0 rounded-lg bg-cyan-400/10 blur-md -z-10" />
+                  <div className="absolute inset-0 rounded-lg bg-cyan-400/10 md:blur-md -z-10" />
                 </div>
               </motion.div>
 
@@ -137,7 +137,7 @@ export function MinimalistCommandBar({
                   </div>
 
                   {/* Glow */}
-                  <div className="absolute inset-0 rounded-full bg-cyan-400/20 blur-md -z-10" />
+                  <div className="absolute inset-0 rounded-full bg-cyan-400/20 md:blur-md -z-10" />
                 </div>
 
                 {/* Altitude Label */}
@@ -164,6 +164,8 @@ export function MinimalistCommandBar({
                     <motion.button
                       key={section.id}
                       onClick={() => onNavigate(section.id)}
+                      aria-label={`Navigate to ${section.name} section`}
+                      aria-current={isActive ? 'page' : undefined}
                       className="relative group will-change-transform"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -215,7 +217,7 @@ export function MinimalistCommandBar({
                         {/* Glow on active */}
                         {isActive && (
                           <motion.div
-                            className="absolute inset-0 rounded-lg blur-lg -z-10"
+                            className="absolute inset-0 rounded-lg md:blur-lg -z-10"
                             style={{ backgroundColor: section.color }}
                             animate={{
                               opacity: [0.1, 0.2, 0.1],
@@ -230,7 +232,7 @@ export function MinimalistCommandBar({
 
                         {/* Tooltip */}
                         <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                          <div className="bg-slate-800/95 backdrop-blur-md border px-3 py-1.5 rounded-lg whitespace-nowrap"
+                          <div className="bg-slate-800/95 md:backdrop-blur-md border px-3 py-1.5 rounded-lg whitespace-nowrap"
                             style={{ borderColor: `${section.color}40` }}
                           >
                             <div className="text-xs font-mono"
@@ -315,7 +317,7 @@ export function MinimalistCommandBar({
       >
         <div className="relative">
           {/* Background */}
-          <div className="bg-slate-900/90 backdrop-blur-xl border-b border-white/10">
+          <div className="bg-slate-900/95 md:backdrop-blur-xl border-b border-white/10">
             <div className="px-4 py-3">
               <div className="flex items-center justify-between">
                 {/* Left: Brand name & Progress */}

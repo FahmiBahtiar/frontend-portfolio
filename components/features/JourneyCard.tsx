@@ -2,6 +2,7 @@
 
 import { motion } from 'motion/react';
 import { LucideIcon } from 'lucide-react';
+import Image from 'next/image';
 
 interface JourneyCardProps {
   icon: LucideIcon;
@@ -29,8 +30,15 @@ export function JourneyCard({
       className="group relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/30 transition-all duration-300"
     >
       {/* Background image */}
-      <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity">
-        <img src={image} alt={title} className="w-full h-full object-cover" />
+            <div className="relative h-48 overflow-hidden rounded-t-lg">
+        <Image 
+          src={image} 
+          alt={title} 
+          fill
+          sizes="(max-width: 768px) 100vw, 400px"
+          className="object-cover" 
+          loading="lazy"
+        />
       </div>
 
       {/* Content */}

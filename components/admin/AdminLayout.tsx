@@ -141,6 +141,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       ]
     },
     {
+      label: 'Gallery',
+      href: '/admin/gallery',
+      icon: Mountain,
+    },
+    {
       label: 'Contact',
       href: '/admin/contact',
       icon: Mail,

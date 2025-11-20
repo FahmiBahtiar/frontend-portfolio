@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { motion } from 'motion/react';
 import { Crosshair, Navigation, Mountain } from 'lucide-react';
 
@@ -11,7 +12,7 @@ interface AviationHUDProps {
   coordinates?: string;
 }
 
-export function AviationHUD({ 
+export const AviationHUD = memo(function AviationHUD({ 
   currentIndex, 
   totalImages, 
   location = "Mt. Merbabu",
@@ -93,4 +94,4 @@ export function AviationHUD({
       </div>
     </motion.div>
   );
-}
+});

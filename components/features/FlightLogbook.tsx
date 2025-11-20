@@ -216,71 +216,10 @@ export function FlightLogbook() {
   return (
     <div className="space-y-6">
       {/* Header with Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        {/* Controls and Tabs in same row */}
-        <div className="flex items-center justify-between w-full">
-          {/* Controls on the left */}
-          <div className="flex items-center gap-3">
-            {/* Search */}
-            <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-white/20 focus-within:border-cyan-400/50 focus-within:bg-white/10 transition-all">
-              <Search className="w-4 h-4 text-white/40 flex-shrink-0" />
-              <input
-                type="text"
-                placeholder="Search experiences..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent border-none outline-none text-white text-sm placeholder-white/40 w-56"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="text-white/40 hover:text-white transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-
-            {/* Filter Toggle */}
-            <motion.button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`p-2 rounded-lg border transition-all ${
-                showFilters
-                  ? 'bg-orange-500/20 border-orange-400/50 text-orange-400'
-                  : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20'
-              }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Filter className="w-4 h-4" />
-            </motion.button>
-
-            {/* View Mode Toggle */}
-            <div className="flex rounded-lg border border-white/10 bg-white/5">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-l-lg transition-all ${
-                  viewMode === 'grid'
-                    ? 'bg-cyan-500/20 text-cyan-400 border-r border-white/10'
-                    : 'text-white/60 hover:bg-white/10'
-                }`}
-              >
-                <Grid3X3 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-r-lg transition-all ${
-                  viewMode === 'list'
-                    ? 'bg-cyan-500/20 text-cyan-400'
-                    : 'text-white/60 hover:bg-white/10'
-                }`}
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Tabs on the right */}
+      <div className="flex flex-col gap-4">
+        {/* Tabs and Controls in one row on desktop, stacked on mobile */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          {/* Tabs */}
           <div className="flex flex-wrap gap-2">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -290,18 +229,24 @@ export function FlightLogbook() {
                 <motion.button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                  className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg border transition-all ${
                     isActive
-                      ? `bg-${tab.color}-500/20 border-${tab.color}-400/50 text-${tab.color}-400`
+                      ? tab.color === 'cyan'
+                        ? 'bg-cyan-500/20 border-cyan-400/50 text-cyan-400'
+                        : 'bg-green-500/20 border-green-400/50 text-green-400'
                       : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span className="text-sm font-medium">{tab.label}</span>
-                  <span className={`px-2 py-0.5 rounded-full text-xs ${
-                    isActive ? `bg-${tab.color}-400/20 text-${tab.color}-400` : 'bg-white/10 text-white/40'
+                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-xs md:text-sm font-medium whitespace-nowrap">{tab.label}</span>
+                  <span className={`px-1.5 md:px-2 py-0.5 rounded-full text-xs ${
+                    isActive 
+                      ? tab.color === 'cyan'
+                        ? 'bg-cyan-400/20 text-cyan-400'
+                        : 'bg-green-400/20 text-green-400'
+                      : 'bg-white/10 text-white/40'
                   }`}>
                     {tab.count}
                   </span>
@@ -309,6 +254,67 @@ export function FlightLogbook() {
               );
             })}
           </div>
+
+          {/* Controls - In one row */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            {/* Search */}
+            <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-white/20 focus-within:border-cyan-400/50 focus-within:bg-white/10 transition-all w-full md:w-auto md:min-w-[200px]">
+            <Search className="w-4 h-4 text-white/40 flex-shrink-0" />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-transparent border-none outline-none text-white text-sm placeholder-white/40 w-full"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-white/40 hover:text-white transition-colors flex-shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Filter Toggle */}
+          <motion.button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`p-2 rounded-lg border transition-all flex-shrink-0 ${
+              showFilters
+                ? 'bg-orange-500/20 border-orange-400/50 text-orange-400'
+                : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20'
+            }`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Filter className="w-4 h-4" />
+          </motion.button>
+
+          {/* View Mode Toggle */}
+          <div className="flex rounded-lg border border-white/10 bg-white/5 flex-shrink-0">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded-l-lg transition-all ${
+                viewMode === 'grid'
+                  ? 'bg-cyan-500/20 text-cyan-400 border-r border-white/10'
+                  : 'text-white/60 hover:bg-white/10'
+              }`}
+            >
+              <Grid3X3 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded-r-lg transition-all ${
+                viewMode === 'list'
+                  ? 'bg-cyan-500/20 text-cyan-400'
+                  : 'text-white/60 hover:bg-white/10'
+              }`}
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
         </div>
       </div>
 

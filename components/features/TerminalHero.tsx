@@ -145,45 +145,50 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
     loadSocialLinks();
   }, []);
 
-  // Load Spotify Now Playing data
+  // Load Spotify Now Playing data - Deferred to improve initial load
   useEffect(() => {
-    const loadSpotifyData = async () => {
-      try {
-        // Only show loading on initial load, not on subsequent polls
-        if (spotifyInitialLoad) {
-          setSpotifyLoading(true);
+    // Defer Spotify loading by 2 seconds to prioritize critical content
+    const deferTimeout = setTimeout(() => {
+      const loadSpotifyData = async () => {
+        try {
+          // Only show loading on initial load, not on subsequent polls
+          if (spotifyInitialLoad) {
+            setSpotifyLoading(true);
+          }
+          const data = await SpotifyService.getNowPlaying();
+          setSpotifyData(data);
+          setSpotifyErrorCount(0); // Reset error count on success
+        } catch (error) {
+          // Increment error count
+          setSpotifyErrorCount(prev => prev + 1);
+          
+          // Only update to "not listening" after 3 consecutive failures
+          if (spotifyErrorCount >= 2) {
+            setSpotifyData({
+              isPlaying: false,
+              song: null,
+            });
+          }
+          
+          console.error('Spotify API error:', error);
+        } finally {
+          if (spotifyInitialLoad) {
+            setSpotifyLoading(false);
+            setSpotifyInitialLoad(false);
+          }
         }
-        const data = await SpotifyService.getNowPlaying();
-        setSpotifyData(data);
-        setSpotifyErrorCount(0); // Reset error count on success
-      } catch (error) {
-        // Increment error count
-        setSpotifyErrorCount(prev => prev + 1);
-        
-        // Only update to "not listening" after 3 consecutive failures
-        if (spotifyErrorCount >= 2) {
-          setSpotifyData({
-            isPlaying: false,
-            song: null,
-          });
-        }
-        
-        console.error('Spotify API error:', error);
-      } finally {
-        if (spotifyInitialLoad) {
-          setSpotifyLoading(false);
-          setSpotifyInitialLoad(false);
-        }
-      }
-    };
+      };
 
-    loadSpotifyData();
-    
-    // Poll Spotify API every 30 seconds instead of 10 to reduce rate limiting
-    const interval = setInterval(loadSpotifyData, 10000);
-    
-    return () => clearInterval(interval);
-  }, [spotifyInitialLoad]);
+      loadSpotifyData();
+      
+      // Poll Spotify API every 30 seconds instead of 10 to reduce overhead
+      const interval = setInterval(loadSpotifyData, 30000);
+      
+      return () => clearInterval(interval);
+    }, 2000);
+
+    return () => clearTimeout(deferTimeout);
+  }, [spotifyInitialLoad, spotifyErrorCount]);
 
   // Generate commands based on hero profile data
   const commands: Command[] = heroProfile ? [
@@ -369,8 +374,8 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
         </div>
       )}
 
-      {/* Floating Aviation & Mountain Decorations */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* Floating Aviation & Mountain Decorations - Hidden on mobile for performance */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
         {/* Plane 1 - Top Right */}
         <motion.div
           initial={{ x: -100, y: 50, opacity: 0 }}
@@ -501,10 +506,10 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="order-1 lg:order-1"
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="order-1 lg:order-1 will-change-transform"
         >
-          <div className="bg-slate-900/80 backdrop-blur-md rounded-2xl p-8 lg:p-10 border border-slate-700/50 shadow-2xl min-h-[500px] flex flex-col justify-center">
+          <div className="bg-slate-900/80 md:backdrop-blur-md rounded-2xl p-8 lg:p-10 border border-slate-700/50 shadow-2xl min-h-[500px] flex flex-col justify-center">
             {/* Badge */}
             {visibleSections.badge && (
               <motion.div
@@ -597,7 +602,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                       className="relative"
                     >
                       {/* Mini HUD Card */}
-                      <div className={`relative bg-slate-900/40 backdrop-blur-sm border ${colors.border} rounded-lg p-3 overflow-hidden`}>
+                      <div className={`relative bg-slate-900/40 md:backdrop-blur-sm border ${colors.border} rounded-lg p-3 overflow-hidden`}>
                         
                         {/* Corner Brackets */}
                         <div className={`absolute top-0 left-0 w-2 h-2 border-t border-l ${colors.border}`} />
@@ -726,6 +731,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                             width={32}
                             height={32}
                             className="rounded shadow-sm"
+                            loading="lazy"
                           />
                         )}
                         <div className="flex-1 min-w-0">
@@ -778,11 +784,11 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="order-2 lg:order-2 cursor-pointer"
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="order-2 lg:order-2 cursor-pointer will-change-transform"
           onClick={handleClick}
         >
-          <div className="w-full bg-slate-900/95 backdrop-blur-md rounded-lg shadow-2xl border border-slate-700 overflow-hidden"
+          <div className="w-full bg-slate-900/95 md:backdrop-blur-md rounded-lg shadow-2xl border border-slate-700 overflow-hidden"
           >
         {/* Terminal Header */}
         <div className="flex items-center gap-2 px-4 py-3 bg-slate-800/90 border-b border-slate-700">

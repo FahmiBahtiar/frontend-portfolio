@@ -15,7 +15,9 @@ const MinimalistCommandBar = dynamic(() => import('@/components/features/Minimal
   ssr: false,
 });
 
-const Page1Hero = dynamic(() => import('@/components/sections/Page1Hero').then(mod => ({ default: mod.Page1Hero })));
+const Page1Hero = dynamic(() => import('@/components/sections/Page1Hero').then(mod => ({ default: mod.Page1Hero })), {
+  loading: () => <div className="min-h-screen bg-slate-900" />
+});
 const Page2Portfolio = dynamic(() => import('@/components/sections/Page2Portfolio').then(mod => ({ default: mod.Page2Portfolio })));
 const Page3Education = dynamic(() => import('@/components/sections/Page3Education').then(mod => ({ default: mod.Page3Education })));
 const Page4ExperienceProjects = dynamic(() => import('@/components/sections/Page4ExperienceProjects').then(mod => ({ default: mod.Page4ExperienceProjects })));
@@ -42,6 +44,12 @@ export default function HomePage() {
   ];
 
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Skip to main content for accessibility
+  const skipToMain = () => {
+    const mainContent = document.getElementById('main-content');
+    mainContent?.focus();
+  };
 
   // Prefetch hero data early to avoid loading issues
   useEffect(() => {
@@ -130,6 +138,14 @@ export default function HomePage() {
 
   return (
     <>
+      {/* Skip to main content link for accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-cyan-500 focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400"
+      >
+        Skip to main content
+      </a>
+
       {/* Loading Screen */}
       <AnimatePresence mode="wait">
         {isLoading && (
@@ -145,13 +161,13 @@ export default function HomePage() {
       {!isLoading && (
         <div className="relative w-full overflow-x-hidden bg-slate-900">
           {/* Background gradient */}
-          <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 pointer-events-none" />
+          <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 pointer-events-none" aria-hidden="true" />
           
           {/* Animated background overlay */}
-          <div className="fixed inset-0 backdrop-blur-sm bg-black/10 pointer-events-none z-[1]" />
+          <div className="fixed inset-0 md:backdrop-blur-sm bg-black/10 pointer-events-none z-[1]" aria-hidden="true" />
 
           {/* Main Content - All sections stacked vertically */}
-          <div className="relative z-[2]">
+          <main id="main-content" tabIndex={-1} className="relative z-[2] focus:outline-none">
             {sections.map((section, index) => {
               const SectionComponent = section.component;
               return (
@@ -162,6 +178,10 @@ export default function HomePage() {
                     sectionRefs.current[index] = el;
                   }}
                   className="min-h-screen"
+                  style={{
+                    contentVisibility: index > 1 ? 'auto' : 'visible',
+                    containIntrinsicSize: index > 1 ? '0 800px' : 'none',
+                  }}
                 >
                   {index === 0 ? (
                     <SectionComponent onNavigate={handleNavigate} />
@@ -171,7 +191,7 @@ export default function HomePage() {
                 </div>
               );
             })}
-          </div>
+          </main>
 
           {/* Footer */}
           <Footer />
@@ -191,15 +211,16 @@ export default function HomePage() {
                 {/* Close button */}
                 <motion.button
                   onClick={handleGalleryToggle}
+                  aria-label="Close gallery"
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0, opacity: 0 }}
-                  className="fixed top-6 right-6 z-[101] w-12 h-12 rounded-xl bg-slate-900/90 backdrop-blur-xl border border-white/10 hover:bg-slate-800/90 hover:border-pink-400/50 transition-all duration-300 flex items-center justify-center shadow-xl group will-change-transform"
+                  className="fixed top-6 right-6 z-[101] w-12 h-12 rounded-xl bg-slate-900/90 md:backdrop-blur-xl border border-white/10 hover:bg-slate-800/90 hover:border-pink-400/50 transition-all duration-300 flex items-center justify-center shadow-xl group will-change-transform"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
                 >
-                  <span className="text-white/60 group-hover:text-pink-400 text-2xl font-light transition-colors duration-300">✕</span>
+                  <span className="text-white/60 group-hover:text-pink-400 text-2xl font-light transition-colors duration-300" aria-hidden="true">✕</span>
                 </motion.button>
               </motion.div>
             )}
