@@ -96,12 +96,13 @@ export default function ContactPage() {
     try {
       if (editingContact) {
         // Update existing contact
+        const { id, createdAt, updatedAt, isActive, __v, ...updateData } = formData;
         const response = await fetch(`/api/admin/contact-info/${editingContact.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(updateData),
         });
 
         if (!response.ok) {
