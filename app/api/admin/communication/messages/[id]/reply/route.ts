@@ -11,7 +11,7 @@ export async function PUT(
   try {
     const body = await request.json();
 
-    const response = await fetch(`${BACKEND_URL}/contact-messages/${id}/reply`, {
+    const response = await fetch(`${BACKEND_URL}/contact_messages/${id}/reply`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

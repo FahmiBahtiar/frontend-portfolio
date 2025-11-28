@@ -189,7 +189,6 @@ export default function AchievementsPage() {
 
   const handleEdit = (achievement: Achievement) => {
     setEditingAchievement(achievement);
-    // Filter out MongoDB internal fields and unwanted fields
     const achievementData = achievement as any;
     const { _id, __v, createdAt, updatedAt, ...cleanAchievement } = achievementData;
     setFormData({
@@ -220,15 +219,15 @@ export default function AchievementsPage() {
         dataToSend.order = Number(dataToSend.order);
       }
 
-      console.log('Data to send:', dataToSend); // Debug log
-
       if (editingAchievement) {
         const updatedAchievement = await EducationService.updateAchievement(editingAchievement.id, dataToSend);
-        setAchievements(
-          achievements.map((achievement) =>
-            achievement.id === editingAchievement.id ? updatedAchievement : achievement
-          )
-        );
+        if (updatedAchievement) {
+          setAchievements(
+            achievements.map((achievement) =>
+              achievement.id === editingAchievement.id ? updatedAchievement : achievement
+            )
+          );
+        }
         // Notify frontend to refresh data
         localStorage.setItem('achievements_updated', Date.now().toString());
         window.dispatchEvent(new StorageEvent('storage', {

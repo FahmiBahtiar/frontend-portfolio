@@ -43,7 +43,37 @@ export function LanyardCard() {
         }
         const result = await response.json();
         if (result.success && result.data) {
-          setLanyardData(result.data);
+          if (Array.isArray(result.data)) {
+            const raw = result.data[0] || null;
+            if (raw) {
+              setLanyardData({
+                id: raw.id,
+                serviceName: raw.service_name,
+                serviceType: raw.service_type,
+                passportLabel: raw.passport_label,
+                type: raw.type,
+                countryCode: raw.country_code,
+                passportNo: raw.passport_no,
+                surname: raw.surname,
+                givenNames: raw.given_names,
+                nationality: raw.nationality,
+                placeOfBirth: raw.place_of_birth,
+                sex: raw.sex,
+                dateOfBirth: raw.date_of_birth,
+                dateOfIssue: raw.date_of_issue,
+                dateOfExpiry: raw.date_of_expiry,
+                avatarUrl: raw.avatar_url,
+                backgroundColor: raw.background_color,
+                textColor: raw.text_color,
+                accentColor: raw.accent_color,
+              });
+            } else {
+              setLanyardData(null);
+            }
+          } else {
+            // If not array, fallback to old behavior (assume already camelCase)
+            setLanyardData(result.data);
+          }
         } else {
           setError('No lanyard data available');
         }
@@ -334,7 +364,7 @@ export function LanyardCard() {
                   <p className="text-blue-900/50 text-xs sm:text-sm md:text-base uppercase mb-3 tracking-wider">HOLDER'S SIGNATURE/TANDA TANGAN</p>
                   <div className="h-20 sm:h-24 md:h-28 lg:h-32 border-b-2 border-blue-900/20 flex items-end pb-0 pt-1 sm:pt-1.5 mt-8 sm:mt-10 md:mt-12">
                     <p className="text-blue-900/80 font-thin tracking-wide leading-none -rotate-3 origin-bottom transition-transform hover:rotate-0 whitespace-nowrap translate-y-[1px]" style={{ fontFamily: 'var(--font-dancing-script), cursive', fontSize: 'clamp(2rem, 5vw, 5rem)' }}>
-                      {lanyardData.givenNames.toLowerCase()}
+                      {(lanyardData.givenNames || '').toLowerCase()}
                     </p>
                   </div>
                 </div>

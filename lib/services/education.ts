@@ -23,7 +23,6 @@ export class EducationService {
   }
 
   static async updateEducationRecord(id: string, education: Partial<Education>): Promise<Education> {
-    // Only send updatable fields, exclude MongoDB internal fields
     const updateData = Object.fromEntries(
       Object.entries(education).filter(([key]) => 
         !['id', 'createdAt', 'updatedAt', '__v'].includes(key)
@@ -50,10 +49,24 @@ export class EducationService {
 
   // Achievements API
   static async getAchievements(): Promise<Achievement[]> {
-    const response = await apiRequest<ApiResponse<Achievement[]>>(
+    const response = await apiRequest<ApiResponse<any[]>>(
       API_CONFIG.ENDPOINTS.ACHIEVEMENTS
     );
-    return response.data;
+    // Map snake_case to camelCase for frontend compatibility
+    return (response.data || []).map((raw) => ({
+      id: raw.id,
+      category: raw.category,
+      title: raw.title,
+      issuer: raw.issuer,
+      date: raw.date,
+      icon: raw.icon,
+      description: raw.description,
+      certificateUrl: raw.certificateUrl || raw.certificate_url,
+      credentialUrl: raw.credentialUrl || raw.credential_url,
+      order: raw.order,
+      createdAt: raw.createdAt || raw.created_at,
+      updatedAt: raw.updatedAt || raw.updated_at,
+    }));
   }
 
   static async getAchievementsByCategory(category: string): Promise<Achievement[]> {
@@ -74,7 +87,7 @@ export class EducationService {
     return response.data;
   }
 
-  static async updateAchievement(id: string, achievement: Partial<Achievement>): Promise<Achievement> {
+  static async updateAchievement(id: string, achievement: Partial<Achievement>): Promise<Achievement | null> {
     const response = await apiRequest<ApiResponse<Achievement>>(
       `${API_CONFIG.ENDPOINTS.ACHIEVEMENTS}/${id}`,
       {
@@ -82,6 +95,10 @@ export class EducationService {
         body: JSON.stringify(achievement),
       }
     );
+    if (!response.success) {
+      console.error('Update achievement failed:', response.message);
+      return null;
+    }
     return response.data;
   }
 

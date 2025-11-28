@@ -61,6 +61,8 @@ export function FlightLogbook() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [listItemsToShow, setListItemsToShow] = useState(3); // Show 3 items initially in list view
+  const [showMore, setShowMore] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [flightEntries, setFlightEntries] = useState<FlightEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,7 +96,19 @@ export function FlightLogbook() {
   // Reset list items to show when filters change
   useEffect(() => {
     setListItemsToShow(3);
+    setShowMore(false);
   }, [activeTab, searchQuery, selectedTech]);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const getColorClasses = (color: string) => {
     const colors: { [key: string]: { main: string; glow: string; border: string; bg: string } } = {
@@ -171,6 +185,9 @@ export function FlightLogbook() {
 
     return filtered;
   }, [flightEntries, activeTab, searchQuery, selectedTech]);
+
+  // Display items: show 3 (mobile) or 6 (desktop) or all based on showMore for grid view
+  const displayedEntries = showMore ? filteredEntries : filteredEntries.slice(0, isMobile ? 3 : 6);
 
   const tabs = [
     {
@@ -414,8 +431,8 @@ export function FlightLogbook() {
                 : 'space-y-4'
             }
           >
-            {/* Grid View - Show all items */}
-            {viewMode === 'grid' && filteredEntries.map((entry, index) => {
+            {/* Grid View - Show limited items */}
+            {viewMode === 'grid' && displayedEntries.map((entry, index) => {
               const colors = getColorClasses(entry.color);
 
               return (
@@ -492,6 +509,20 @@ export function FlightLogbook() {
                 </motion.div>
               );
             })}
+
+            {/* Show More Button for Grid View */}
+            {viewMode === 'grid' && filteredEntries.length > (isMobile ? 3 : 6) && (
+              <div className="flex justify-center mt-8">
+                <motion.button
+                  onClick={() => setShowMore(!showMore)}
+                  className="px-6 py-3 rounded-lg bg-purple-500/20 border border-purple-400/50 text-purple-400 hover:bg-purple-500/30 transition-all font-mono uppercase tracking-wider text-sm"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {showMore ? 'Show Less' : `Show ${filteredEntries.length - (isMobile ? 3 : 6)} More Experiences`}
+                </motion.button>
+              </div>
+            )}
 
             {/* List View - Show limited items with Show More */}
             {viewMode === 'list' && (

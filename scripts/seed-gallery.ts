@@ -50,12 +50,9 @@ const seedData = [
 
 async function seedGallery() {
   try {
-    console.log('Seeding gallery data...');
     for (const photo of seedData) {
       await galleryApi.create(photo);
-      console.log(`Created photo for ${photo.location}`);
     }
-    console.log('Gallery seeding completed!');
   } catch (error) {
     console.error('Error seeding gallery:', error);
   }

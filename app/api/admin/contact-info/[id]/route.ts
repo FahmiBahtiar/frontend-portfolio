@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+
+// Use new Backend API endpoint
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export async function GET(
@@ -9,21 +11,16 @@ export async function GET(
   const { id } = await params;
 
   try {
+    // Backend API endpoint (new)
     const response = await fetch(`${BACKEND_URL}/contact-info/${id}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch contact information');
     }
 
+    // Data from backend already uses 'id', no _id transform needed
     const data = await response.json();
-    
-    // Transform _id to id for frontend compatibility
-    const transformedData = {
-      ...data,
-      id: data._id,
-    };
-    
-    return NextResponse.json(transformedData);
+    return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching contact information:', error);
     return NextResponse.json(
@@ -55,7 +52,6 @@ export async function PUT(
     }
 
     const data = await response.json();
-    
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error updating contact information:', error);

@@ -162,7 +162,6 @@ export interface HangarItem {
   color: 'cyan' | 'green' | 'purple' | 'orange' | 'blue';
   achievements?: string[];
   order: number;
-  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -178,7 +177,6 @@ export interface ContactFrequency {
   color: string;
   link?: string;
   order: number;
-  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }

@@ -9,7 +9,7 @@ export async function PUT(
   const { id } = await params;
 
   try {
-    const response = await fetch(`${BACKEND_URL}/contact-messages/${id}/read`, {
+    const response = await fetch(`${BACKEND_URL}/contact_messages/${id}/read`, {
       method: 'PUT',
     });
 

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3001';
+
+// Use new Backend API endpoint
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,17 +22,8 @@ export async function GET(request: NextRequest) {
       throw new Error('Failed to fetch messages');
     }
 
+    // Data from backend already uses 'id', no _id transform needed
     const data = await response.json();
-
-    // Transform _id to id for frontend compatibility
-    if (data.success && data.data) {
-      data.data = data.data.map((item: any) => ({
-        ...item,
-        id: item._id,
-        _id: undefined,
-      }));
-    }
-
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching contact messages:', error);
@@ -59,15 +52,7 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
 
-    // Transform _id to id for frontend compatibility
-    if (data.success && data.data) {
-      data.data = {
-        ...data.data,
-        id: data.data._id,
-        _id: undefined,
-      };
-    }
-
+    // Data from backend already uses 'id', no _id transform needed
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error creating contact message:', error);

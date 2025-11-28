@@ -289,9 +289,9 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                         <div 
                           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
                           style={{
-                            background: passion.gradient.startsWith('from-') 
-                              ? `linear-gradient(135deg, ${getGradientColors(passion.gradient)})` 
-                              : `linear-gradient(135deg, ${getSolidColor(passion.gradient)})`
+                            background: (passion.gradient && passion.gradient.startsWith('from-'))
+                              ? `linear-gradient(135deg, ${getGradientColors(passion.gradient)})`
+                              : `linear-gradient(135deg, ${getSolidColor(passion.gradient || '')})`
                           }}
                         />
                         

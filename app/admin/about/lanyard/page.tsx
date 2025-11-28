@@ -60,9 +60,61 @@ export default function LanyardCardPage() {
       }
       const result = await response.json();
       if (result.success && result.data) {
-        setFormData(result.data);
-        setOriginalData(result.data);
-        setCurrentAvatarUrl(result.data.avatarUrl || '');
+        // Jika array, ambil item pertama dan mapping snake_case ke camelCase
+        let raw = Array.isArray(result.data) ? result.data[0] : result.data;
+        if (raw) {
+          setFormData({
+            id: raw.id,
+            serviceName: raw.service_name || '',
+            serviceType: raw.service_type || '',
+            passportLabel: raw.passport_label || '',
+            type: raw.type || '',
+            countryCode: raw.country_code || '',
+            passportNo: raw.passport_no || '',
+            surname: raw.surname || '',
+            givenNames: raw.given_names || '',
+            nationality: raw.nationality || '',
+            placeOfBirth: raw.place_of_birth || '',
+            sex: raw.sex || 'M',
+            dateOfBirth: raw.date_of_birth || '',
+            dateOfIssue: raw.date_of_issue || '',
+            dateOfExpiry: raw.date_of_expiry || '',
+            avatarUrl: raw.avatar_url,
+            backgroundColor: raw.background_color || '#f5e6d3',
+            textColor: raw.text_color || '#1e3a8a',
+            accentColor: raw.accent_color || '#3b82f6',
+            createdAt: raw.created_at || '',
+            updatedAt: raw.updated_at || '',
+          });
+          setOriginalData({
+            id: raw.id,
+            serviceName: raw.service_name || '',
+            serviceType: raw.service_type || '',
+            passportLabel: raw.passport_label || '',
+            type: raw.type || '',
+            countryCode: raw.country_code || '',
+            passportNo: raw.passport_no || '',
+            surname: raw.surname || '',
+            givenNames: raw.given_names || '',
+            nationality: raw.nationality || '',
+            placeOfBirth: raw.place_of_birth || '',
+            sex: raw.sex || 'M',
+            dateOfBirth: raw.date_of_birth || '',
+            dateOfIssue: raw.date_of_issue || '',
+            dateOfExpiry: raw.date_of_expiry || '',
+            avatarUrl: raw.avatar_url,
+            backgroundColor: raw.background_color || '#f5e6d3',
+            textColor: raw.text_color || '#1e3a8a',
+            accentColor: raw.accent_color || '#3b82f6',
+            createdAt: raw.created_at || '',
+            updatedAt: raw.updated_at || '',
+          });
+          setCurrentAvatarUrl(raw.avatar_url || '');
+        } else {
+          setFormData(null);
+          setOriginalData(null);
+          setCurrentAvatarUrl('');
+        }
       } else {
         // No lanyard exists yet, use default data
         const defaultData: Omit<LanyardData, 'id' | 'createdAt' | 'updatedAt'> = {
@@ -120,10 +172,10 @@ export default function LanyardCardPage() {
       }
 
       const result = await response.json();
-      if (result.success) {
-        setFormData(result.data);
-        setOriginalData(result.data);
+      if (result.success && result.data) {
         setIsEditing(false);
+        // Fetch updated data to ensure the UI reflects the changes
+        fetchLanyard();
         return result; // Return the result
       } else {
         throw new Error('Failed to save lanyard data');
@@ -177,9 +229,9 @@ export default function LanyardCardPage() {
   const handleChange = (field: keyof LanyardData, value: string) => {
     if (field === 'avatarUrl') {
       setCurrentAvatarUrl(value);
-      setFormData(prev => prev ? { ...prev, avatarUrl: value } : null);
+      setFormData(prev => ({ ...prev!, avatarUrl: value }));
     } else {
-      setFormData(prev => prev ? { ...prev, [field]: value } : null);
+      setFormData(prev => ({ ...prev!, [field]: value }));
     }
   };
 
@@ -301,7 +353,7 @@ export default function LanyardCardPage() {
                 <label className="block text-sm font-medium text-white/80 mb-2">Service Name</label>
                 <input
                   type="text"
-                  value={formData!.serviceName}
+                  value={formData?.serviceName ?? ''}
                   onChange={(e) => handleChange('serviceName', e.target.value)}
                   disabled={!isEditing}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white disabled:opacity-50 focus:outline-none focus:border-cyan-500/50"
@@ -311,7 +363,7 @@ export default function LanyardCardPage() {
                 <label className="block text-sm font-medium text-white/80 mb-2">Service Type</label>
                 <input
                   type="text"
-                  value={formData!.serviceType}
+                  value={formData?.serviceType ?? ''}
                   onChange={(e) => handleChange('serviceType', e.target.value)}
                   disabled={!isEditing}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white disabled:opacity-50 focus:outline-none focus:border-cyan-500/50"
@@ -329,7 +381,7 @@ export default function LanyardCardPage() {
                   <label className="block text-sm font-medium text-white/80 mb-2">Type</label>
                   <input
                     type="text"
-                    value={formData!.type}
+                    value={formData?.type ?? ''}
                     onChange={(e) => handleChange('type', e.target.value)}
                     disabled={!isEditing}
                     className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white disabled:opacity-50 focus:outline-none focus:border-cyan-500/50"
@@ -339,7 +391,7 @@ export default function LanyardCardPage() {
                   <label className="block text-sm font-medium text-white/80 mb-2">Country Code</label>
                   <input
                     type="text"
-                    value={formData!.countryCode}
+                    value={formData?.countryCode ?? ''}
                     onChange={(e) => handleChange('countryCode', e.target.value.toUpperCase())}
                     disabled={!isEditing}
                     maxLength={3}
@@ -352,7 +404,7 @@ export default function LanyardCardPage() {
                 <label className="block text-sm font-medium text-white/80 mb-2">Passport No.</label>
                 <input
                   type="text"
-                  value={formData!.passportNo}
+                  value={formData?.passportNo ?? ''}
                   onChange={(e) => handleChange('passportNo', e.target.value.toUpperCase())}
                   disabled={!isEditing}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white disabled:opacity-50 focus:outline-none focus:border-cyan-500/50 uppercase font-mono"
@@ -363,7 +415,7 @@ export default function LanyardCardPage() {
                 <label className="block text-sm font-medium text-white/80 mb-2">Surname / Nama Keluarga</label>
                 <input
                   type="text"
-                  value={formData!.surname}
+                  value={formData?.surname ?? ''}
                   onChange={(e) => handleChange('surname', e.target.value.toUpperCase())}
                   disabled={!isEditing}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white disabled:opacity-50 focus:outline-none focus:border-cyan-500/50 uppercase"
@@ -374,7 +426,7 @@ export default function LanyardCardPage() {
                 <label className="block text-sm font-medium text-white/80 mb-2">Given Names / Nama Depan</label>
                 <input
                   type="text"
-                  value={formData!.givenNames}
+                  value={formData?.givenNames ?? ''}
                   onChange={(e) => handleChange('givenNames', e.target.value.toUpperCase())}
                   disabled={!isEditing}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white disabled:opacity-50 focus:outline-none focus:border-cyan-500/50 uppercase"
@@ -386,7 +438,7 @@ export default function LanyardCardPage() {
                   <label className="block text-sm font-medium text-white/80 mb-2">Nationality</label>
                   <input
                     type="text"
-                    value={formData!.nationality}
+                    value={formData?.nationality ?? ''}
                     onChange={(e) => handleChange('nationality', e.target.value)}
                     disabled={!isEditing}
                     className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white disabled:opacity-50 focus:outline-none focus:border-cyan-500/50"
@@ -395,7 +447,7 @@ export default function LanyardCardPage() {
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">Sex</label>
                   <select
-                    value={formData!.sex}
+                    value={formData?.sex ?? 'M'}
                     onChange={(e) => handleChange('sex', e.target.value)}
                     disabled={!isEditing}
                     className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white disabled:opacity-50 focus:outline-none focus:border-cyan-500/50"
@@ -410,7 +462,7 @@ export default function LanyardCardPage() {
                 <label className="block text-sm font-medium text-white/80 mb-2">Place of Birth</label>
                 <input
                   type="text"
-                  value={formData!.placeOfBirth}
+                  value={formData?.placeOfBirth ?? ''}
                   onChange={(e) => handleChange('placeOfBirth', e.target.value)}
                   disabled={!isEditing}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white disabled:opacity-50 focus:outline-none focus:border-cyan-500/50"
@@ -422,7 +474,7 @@ export default function LanyardCardPage() {
                   <label className="block text-sm font-medium text-white/80 mb-2">Date of Birth</label>
                   <input
                     type="text"
-                    value={formData!.dateOfBirth}
+                    value={formData?.dateOfBirth ?? ''}
                     onChange={(e) => handleChange('dateOfBirth', e.target.value)}
                     disabled={!isEditing}
                     placeholder="01 JAN 1990"
@@ -433,7 +485,7 @@ export default function LanyardCardPage() {
                   <label className="block text-sm font-medium text-white/80 mb-2">Date of Issue</label>
                   <input
                     type="text"
-                    value={formData!.dateOfIssue}
+                    value={formData?.dateOfIssue ?? ''}
                     onChange={(e) => handleChange('dateOfIssue', e.target.value)}
                     disabled={!isEditing}
                     placeholder="01 OCT 2023"
@@ -444,7 +496,7 @@ export default function LanyardCardPage() {
                   <label className="block text-sm font-medium text-white/80 mb-2">Date of Expiry</label>
                   <input
                     type="text"
-                    value={formData!.dateOfExpiry}
+                    value={formData?.dateOfExpiry ?? ''}
                     onChange={(e) => handleChange('dateOfExpiry', e.target.value)}
                     disabled={!isEditing}
                     placeholder="01 OCT 2033"
@@ -463,7 +515,7 @@ export default function LanyardCardPage() {
                 <label className="block text-sm font-medium text-white/80 mb-2">Background</label>
                 <input
                   type="color"
-                  value={formData!.backgroundColor}
+                  value={formData?.backgroundColor ?? '#f5e6d3'}
                   onChange={(e) => handleChange('backgroundColor', e.target.value)}
                   disabled={!isEditing}
                   className="w-full h-12 rounded-xl cursor-pointer disabled:opacity-50"
@@ -473,7 +525,7 @@ export default function LanyardCardPage() {
                 <label className="block text-sm font-medium text-white/80 mb-2">Text</label>
                 <input
                   type="color"
-                  value={formData!.textColor}
+                  value={formData?.textColor ?? '#1e3a8a'}
                   onChange={(e) => handleChange('textColor', e.target.value)}
                   disabled={!isEditing}
                   className="w-full h-12 rounded-xl cursor-pointer disabled:opacity-50"
@@ -483,7 +535,7 @@ export default function LanyardCardPage() {
                 <label className="block text-sm font-medium text-white/80 mb-2">Accent</label>
                 <input
                   type="color"
-                  value={formData!.accentColor}
+                  value={formData?.accentColor ?? '#3b82f6'}
                   onChange={(e) => handleChange('accentColor', e.target.value)}
                   disabled={!isEditing}
                   className="w-full h-12 rounded-xl cursor-pointer disabled:opacity-50"

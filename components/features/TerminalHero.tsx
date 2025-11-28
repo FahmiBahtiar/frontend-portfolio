@@ -97,7 +97,6 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
         // Retry logic
         if (retryCount < maxRetries) {
           retryCount++;
-          console.log(`Retrying... (${retryCount}/${maxRetries})`);
           setTimeout(loadHeroProfile, retryDelay * retryCount);
         } else {
           setError('Connection Error');
@@ -130,7 +129,6 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
         
         if (retryCount < maxRetries) {
           retryCount++;
-          console.log(`Retrying social links... (${retryCount}/${maxRetries})`);
           setTimeout(loadSocialLinks, retryDelay * retryCount);
         } else {
           setSocialLinksLoading(false);
@@ -785,7 +783,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="order-2 lg:order-2 cursor-pointer will-change-transform"
+          className="hidden md:flex order-2 lg:order-2 cursor-pointer will-change-transform"
           onClick={handleClick}
         >
           <div className="w-full bg-slate-900/95 md:backdrop-blur-md rounded-lg shadow-2xl border border-slate-700 overflow-hidden"

@@ -2,9 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plane, Plus, X, Save, Star, GitFork } from 'lucide-react';
+import { Plane, Plus, X, Save, Star, GitFork, GripVertical } from 'lucide-react';
 import { DataTable } from '@/components/admin/DataTable';
 import { DeleteDialog } from '@/components/admin/DeleteDialog';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import type { HangarItem } from '@/lib/types/admin';
 
 export default function AircraftHangarPage() {
@@ -50,7 +67,6 @@ export default function AircraftHangarPage() {
     url: '',
     achievements: [] as string[],
     order: 0,
-    isActive: false,
   });
 
   const categories = [
@@ -95,6 +111,52 @@ export default function AircraftHangarPage() {
     }
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = hangarItems.findIndex((item) => item.id === active.id);
+      const newIndex = hangarItems.findIndex((item) => item.id === over.id);
+
+      const newItems = arrayMove(hangarItems, oldIndex, newIndex);
+      
+      // Update order property for all items
+      const updatedItems = newItems.map((item, index) => ({
+        ...item,
+        order: index,
+      }));
+
+      setHangarItems(updatedItems);
+
+      // Save the new order to backend
+      try {
+        await Promise.all(
+          updatedItems.map((item) =>
+            fetch(`/api/admin/experience/projects/${item.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ order: item.order }),
+            })
+          )
+        );
+      } catch (error) {
+        console.error('Error updating project order:', error);
+        alert('Failed to update project order');
+        // Revert on error
+        fetchProjects();
+      }
+    }
+  };
+
   const handleCreate = () => {
     setEditingItem(null);
     setFormData({
@@ -119,7 +181,6 @@ export default function AircraftHangarPage() {
       url: '',
       achievements: [] as string[],
       order: 0,
-      isActive: false,
     });
     setIsFormOpen(true);
   };
@@ -148,7 +209,6 @@ export default function AircraftHangarPage() {
       url: item.url || '',
       achievements: item.achievements || [],
       order: item.order || 0,
-      isActive: item.isActive || false,
     });
     setIsFormOpen(true);
   };
@@ -177,7 +237,6 @@ export default function AircraftHangarPage() {
         color: formData.color,
         achievements: formData.achievements,
         order: formData.order || hangarItems.length + 1,
-        isActive: formData.isActive,
       };
 
       if (editingItem) {
@@ -257,55 +316,6 @@ export default function AircraftHangarPage() {
     }
   };
 
-  const columns = [
-    {
-      key: 'category',
-      label: 'Category',
-      sortable: true,
-      render: (item: HangarItem) => (
-        <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-${item.color}-500/10 border border-${item.color}-500/20 text-${item.color}-400 font-medium capitalize`}>
-          {item.category}
-        </span>
-      ),
-    },
-    {
-      key: 'name',
-      label: 'Name',
-      sortable: true,
-      render: (item: HangarItem) => (
-        <div>
-          <div className="font-medium text-white">{item.name}</div>
-          <div className="text-sm text-white/60">{item.model}</div>
-        </div>
-      ),
-    },
-    {
-      key: 'classification',
-      label: 'Classification',
-      sortable: true,
-    },
-    {
-      key: 'stats',
-      label: 'Stats',
-      render: (item: HangarItem) => (
-        <div className="flex items-center gap-3 text-sm">
-          {item.stats?.stars !== undefined && (
-            <div className="flex items-center gap-1 text-yellow-400">
-              <Star className="w-4 h-4" />
-              <span>{item.stats.stars}</span>
-            </div>
-          )}
-          {item.stats?.forks !== undefined && (
-            <div className="flex items-center gap-1 text-cyan-400">
-              <GitFork className="w-4 h-4" />
-              <span>{item.stats.forks}</span>
-            </div>
-          )}
-        </div>
-      ),
-    },
-  ];
-
   const resetForm = () => {
     const defaultCategory = 'github';
     setFormData({
@@ -330,7 +340,6 @@ export default function AircraftHangarPage() {
       url: '',
       achievements: [] as string[],
       order: 0,
-      isActive: false,
     });
   };
 
@@ -364,23 +373,62 @@ export default function AircraftHangarPage() {
                 <p className="text-white/60">Manage your projects and achievements</p>
               </div>
             </div>
+
+            {/* Add Project Button */}
+            <div className="ml-auto">
+              <motion.button
+                onClick={handleCreate}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 hover:bg-cyan-500/30 transition-all font-mono uppercase tracking-wider text-sm"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Project</span>
+              </motion.button>
+            </div>
           </motion.div>
 
-          {/* Data Table */}
+          {/* Sortable List */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <DataTable
-              data={hangarItems}
-              columns={columns}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onCreate={handleCreate}
-              searchPlaceholder="Search projects..."
-              emptyMessage="No projects found. Add your first project!"
-            />
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <div className="mb-4">
+                <p className="text-white/60 text-sm">
+                  Drag and drop to reorder projects
+                </p>
+              </div>
+
+              {hangarItems.length === 0 ? (
+                <div className="text-center py-12 text-white/40">
+                  No projects found. Add your first project!
+                </div>
+              ) : (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={hangarItems.map((item) => item.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-3">
+                      {hangarItems.map((item) => (
+                        <SortableHangarItem
+                          key={item.id}
+                          item={item}
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              )}
+            </div>
           </motion.div>
 
           {/* Form Modal */}
@@ -636,6 +684,111 @@ export default function AircraftHangarPage() {
           />
         </>
       )}
+    </div>
+  );
+}
+
+interface SortableHangarItemProps {
+  item: HangarItem;
+  onEdit: (item: HangarItem) => void;
+  onDelete: (item: HangarItem) => void;
+}
+
+function SortableHangarItem({ item, onEdit, onDelete }: SortableHangarItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const getIconForCategory = (category: string) => {
+    switch (category) {
+      case 'github':
+        return '🐙';
+      case 'flight':
+        return '✈️';
+      case 'mountain':
+        return '🏔️';
+      default:
+        return '✈️';
+    }
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all ${
+        isDragging ? 'opacity-50' : ''
+      }`}
+    >
+      <div className="flex items-center gap-4">
+        {/* Drag Handle */}
+        <button
+          {...attributes}
+          {...listeners}
+          className="text-white/40 hover:text-white/60 transition-colors p-1"
+        >
+          <GripVertical className="w-5 h-5" />
+        </button>
+
+        {/* Icon */}
+        <div className="text-2xl">{getIconForCategory(item.category)}</div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-semibold text-white truncate">{item.name}</h3>
+            <span className={`px-2 py-0.5 rounded-full text-xs ${
+              item.category === 'github' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' :
+              item.category === 'flight' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+              'bg-green-500/10 text-green-400 border border-green-500/20'
+            }`}>
+              {item.category}
+            </span>
+          </div>
+          <p className="text-sm text-white/60 truncate">{item.description}</p>
+          <div className="flex items-center gap-4 mt-2 text-xs text-white/40">
+            <span>{item.model}</span>
+            {item.stats?.stars !== undefined && (
+              <span className="flex items-center gap-1">
+                <Star className="w-3 h-3 text-yellow-400" />
+                {item.stats.stars}
+              </span>
+            )}
+            {item.stats?.forks !== undefined && (
+              <span className="flex items-center gap-1">
+                <GitFork className="w-3 h-3 text-cyan-400" />
+                {item.stats.forks}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onEdit(item)}
+            className="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-all text-sm"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => onDelete(item)}
+            className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all text-sm"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+
+// Use new Supabase backend endpoint
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export async function GET() {
   try {
-    const response = await fetch(`${BACKEND_URL}/api/admin/about/lanyard`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    // Supabase backend endpoint (new)
+    const response = await fetch(`${BACKEND_URL}/api/admin/about/lanyard`);
 
     if (!response.ok) {
       throw new Error(`Backend responded with status: ${response.status}`);

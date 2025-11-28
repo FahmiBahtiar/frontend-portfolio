@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3001';
+
+// Use new Backend API endpoint
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export async function GET(
   request: NextRequest,
@@ -9,7 +11,7 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const response = await fetch(`${BACKEND_URL}/contact-messages/${id}`);
+    const response = await fetch(`${BACKEND_URL}/contact_messages/${id}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch message');
@@ -17,15 +19,7 @@ export async function GET(
 
     const data = await response.json();
 
-    // Transform _id to id for frontend compatibility
-    if (data.success && data.data) {
-      data.data = {
-        ...data.data,
-        id: data.data._id,
-        _id: undefined,
-      };
-    }
-
+    // Data from backend already uses 'id', no _id transform needed
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching contact message:', error);
@@ -45,7 +39,7 @@ export async function PUT(
   try {
     const body = await request.json();
 
-    const response = await fetch(`${BACKEND_URL}/contact-messages/${id}`, {
+    const response = await fetch(`${BACKEND_URL}/contact_messages/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -59,15 +53,7 @@ export async function PUT(
 
     const data = await response.json();
 
-    // Transform _id to id for frontend compatibility
-    if (data.success && data.data) {
-      data.data = {
-        ...data.data,
-        id: data.data._id,
-        _id: undefined,
-      };
-    }
-
+    // Data from backend already uses 'id', no _id transform needed
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error updating contact message:', error);
@@ -85,7 +71,7 @@ export async function DELETE(
   const { id } = await params;
 
   try {
-    const response = await fetch(`${BACKEND_URL}/contact-messages/${id}`, {
+    const response = await fetch(`${BACKEND_URL}/contact_messages/${id}`, {
       method: 'DELETE',
     });
 

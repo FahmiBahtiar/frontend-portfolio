@@ -1,17 +1,13 @@
 // Performance monitoring utilities for Next.js
 
 export const reportWebVitals = (metric: any) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(metric);
-  }
-  
   // Send to analytics in production
   if (process.env.NODE_ENV === 'production') {
     // Example: Send to Google Analytics, Vercel Analytics, etc.
     const { name, value, id } = metric;
     
     // You can send to your analytics service here
-    // Example: window.gtag?.('event', name, { value, metric_id: id });
+    // Example: window.gtag?.('event', name, metric_id: id });
   }
 };
 
@@ -23,9 +19,6 @@ export const measurePerformance = (componentName: string, callback: () => void) 
   callback();
   const end = performance.now();
   
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`${componentName} rendered in ${(end - start).toFixed(2)}ms`);
-  }
 };
 
 // Debounce helper for scroll/resize events

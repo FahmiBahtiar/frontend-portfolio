@@ -398,8 +398,6 @@ export default function FlightLogbookPage() {
         isActive: formData.isActive,
       };
 
-      console.log('Sending flight data:', flightData);
-
       if (editingId) {
         const response = await fetch(`/api/admin/experience/flights/${editingId}`, {
           method: 'PUT',

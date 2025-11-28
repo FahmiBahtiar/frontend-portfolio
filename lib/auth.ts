@@ -15,14 +15,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({ user, account, profile }) {
       // Check if user is authorized
       if (!user.email) {
-        console.log('❌ No email provided');
         return false;
       }
 
       try {
-        console.log('🔍 Checking authorization for:', user.email);
         const checkUrl = `${BACKEND_URL}/api/admin/auth/users/check/${encodeURIComponent(user.email)}`;
-        console.log('📍 Checking URL:', checkUrl);
         
         const response = await fetch(checkUrl, {
           headers: {
@@ -36,14 +33,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         const result = await response.json();
-        console.log('📦 Authorization result:', result);
 
         if (result.success && result.data?.isAuthorized && result.data?.user) {
-          console.log('✅ User authorized:', result.data.user.name);
           return true;
         }
 
-        console.log('❌ User not authorized:', user.email);
         return false;
       } catch (error) {
         console.error('❌ Authorization check error:', error);

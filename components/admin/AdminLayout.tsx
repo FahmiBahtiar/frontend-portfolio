@@ -359,6 +359,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </div>
           </motion.aside>
 
+      {/* Mobile Backdrop */}
+      <AnimatePresence>
+        {isSidebarOpen && !isDesktop && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSidebarOpen(false)}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-9 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Main Content Wrapper */}
       <div 
         className="flex-1 flex flex-col min-w-0 h-full overflow-hidden transition-all duration-300"

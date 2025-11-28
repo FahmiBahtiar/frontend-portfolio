@@ -59,7 +59,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  // Group achievements by category
+  // Group achievements by category and sort by order
   const achievementsByCategory = achievements.reduce((acc, achievement) => {
     if (!acc[achievement.category]) {
       acc[achievement.category] = [];
@@ -67,6 +67,11 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
     acc[achievement.category].push(achievement);
     return acc;
   }, {} as Record<string, Achievement[]>);
+
+  // Sort achievements within each category by order
+  Object.keys(achievementsByCategory).forEach(category => {
+    achievementsByCategory[category].sort((a, b) => (a.order || 0) - (b.order || 0));
+  });
 
   // Icon mapping function
   const getIcon = (iconName: string) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -11,19 +11,21 @@ import {
   ExternalLink,
   Gauge,
   Radio,
-  Fuel,
   Shield,
   Zap,
   X,
-  Trophy,
-  Mountain,
+  Search,
+  Filter,
+  Grid3X3,
+  List,
+  ChevronUp,
   Calendar,
   MapPin,
   Award,
-  Plane
+  Plus
 } from 'lucide-react';
 
-type CategoryType = 'github' | 'flight' | 'mountain';
+type CategoryType = 'github';
 
 interface HangarItem {
   id: string;
@@ -55,28 +57,28 @@ interface HangarItem {
   color: string;
   achievements?: string[];
   order: number;
-  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 export function AircraftHangar() {
   const [selectedItem, setSelectedItem] = useState<HangarItem | null>(null);
-  const [filterCategory, setFilterCategory] = useState<CategoryType | null>('github');
+  const [activeTab, setActiveTab] = useState<'all'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSystem, setSelectedSystem] = useState<string>('');
+  const [showFilters, setShowFilters] = useState(false);
   const [hangarItems, setHangarItems] = useState<HangarItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showMore, setShowMore] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const getIconForCategory = (category: CategoryType) => {
     switch (category) {
       case 'github':
         return <Github className="w-6 h-6" />;
-      case 'flight':
-        return <Plane className="w-6 h-6" />;
-      case 'mountain':
-        return <Mountain className="w-6 h-6" />;
       default:
-        return <Plane className="w-6 h-6" />;
+        return <Github className="w-6 h-6" />;
     }
   };
 
@@ -106,6 +108,17 @@ export function AircraftHangar() {
     fetchProjects();
   }, []);
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const getColorClasses = (color: string) => {
     const colors: { [key: string]: { main: string; glow: string; border: string } } = {
       cyan: { main: '#22d3ee', glow: '#22d3ee40', border: 'border-cyan-400/40' },
@@ -116,9 +129,39 @@ export function AircraftHangar() {
     return colors[color] || colors.cyan;
   };
 
-  const filteredItems = filterCategory === null 
-    ? hangarItems 
-    : hangarItems.filter(item => item.category === filterCategory);
+  // Get all unique systems
+  const allSystems = useMemo(() => {
+    const systemSet = new Set<string>();
+    hangarItems.forEach(item => {
+      item.systems.forEach(system => systemSet.add(system));
+    });
+    return Array.from(systemSet).sort();
+  }, [hangarItems]);
+
+  // Filter items based on tab, category, search, and system filter
+  const filteredItems = useMemo(() => {
+    let filtered = hangarItems;
+
+    // Search filtering
+    if (searchQuery) {
+      filtered = filtered.filter(item =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.systems.some(system => system.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    // System filtering
+    if (selectedSystem) {
+      filtered = filtered.filter(item => item.systems.includes(selectedSystem));
+    }
+
+    return filtered;
+  }, [hangarItems, searchQuery, selectedSystem]);
+
+  // Display items: show 3 (mobile) or 6 (desktop) or all based on showMore
+  const displayedItems = showMore ? filteredItems : filteredItems.slice(0, isMobile ? 3 : 6);
 
   if (loading) {
     return (
@@ -145,58 +188,122 @@ export function AircraftHangar() {
   }
 
   return (
-    <>
-      {/* Category Filter Controls */}
-      <div className="mb-6">
-        <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
-          <motion.button
-            onClick={() => setFilterCategory(filterCategory === 'github' ? null : 'github')}
-            className={`px-3 md:px-4 py-2 rounded-xl border backdrop-blur-sm transition-all text-xs md:text-sm font-mono uppercase tracking-wider ${
-              filterCategory === 'github'
-                ? 'bg-cyan-400/20 border-cyan-400/50 text-cyan-400'
-                : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20'
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Github className="w-3.5 h-3.5 inline mr-2" />
-            GitHub Projects
-          </motion.button>
+    <div className="space-y-6">
+      {/* Header with Controls */}
+      <div className="flex flex-col gap-4">
+        {/* Controls */}
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          {/* Search and Filter in same row */}
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            {/* Search */}
+            <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-white/20 focus-within:border-cyan-400/50 focus-within:bg-white/10 transition-all flex-1 md:min-w-[200px]">
+              <Search className="w-4 h-4 text-white/40 flex-shrink-0" />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-transparent border-none outline-none text-white text-sm placeholder-white/40 w-full"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="text-white/40 hover:text-white transition-colors flex-shrink-0"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
 
-          <motion.button
-            onClick={() => setFilterCategory(filterCategory === 'flight' ? null : 'flight')}
-            className={`px-3 md:px-4 py-2 rounded-xl border backdrop-blur-sm transition-all text-xs md:text-sm font-mono uppercase tracking-wider ${
-              filterCategory === 'flight'
-                ? 'bg-purple-400/20 border-purple-400/50 text-purple-400'
-                : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20'
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Trophy className="w-3.5 h-3.5 inline mr-2" />
-            Flight Awards
-          </motion.button>
-
-          <motion.button
-            onClick={() => setFilterCategory(filterCategory === 'mountain' ? null : 'mountain')}
-            className={`px-3 md:px-4 py-2 rounded-xl border backdrop-blur-sm transition-all text-xs md:text-sm font-mono uppercase tracking-wider ${
-              filterCategory === 'mountain'
-                ? 'bg-green-400/20 border-green-400/50 text-green-400'
-                : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20'
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Mountain className="w-3.5 h-3.5 inline mr-2" />
-            Mountain Expeditions
-          </motion.button>
+            {/* Filter Toggle */}
+            <motion.button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`p-2 rounded-lg border transition-all flex-shrink-0 ${
+                showFilters
+                  ? 'bg-orange-500/20 border-orange-400/50 text-orange-400'
+                  : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Filter className="w-4 h-4" />
+            </motion.button>
+          </div>
         </div>
+      </div>
+
+      {/* Filters Panel */}
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-white font-medium">Filters</h4>
+                <button
+                  onClick={() => {
+                    setSelectedSystem('');
+                    setShowFilters(false);
+                  }}
+                  className="text-white/60 hover:text-white p-1"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* System Filter */}
+              <div>
+                <label className="block text-white/80 text-sm mb-2">Technology</label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setSelectedSystem('')}
+                    className={`px-3 py-1 rounded-lg text-sm transition-all ${
+                      selectedSystem === ''
+                        ? 'bg-cyan-500/20 border border-cyan-400/50 text-cyan-400'
+                        : 'bg-white/10 border border-white/20 text-white/60 hover:bg-white/20'
+                    }`}
+                  >
+                    All
+                  </button>
+                  {allSystems.map((system) => (
+                    <button
+                      key={system}
+                      onClick={() => setSelectedSystem(system)}
+                      className={`px-3 py-1 rounded-lg text-sm font-mono transition-all ${
+                        selectedSystem === system
+                          ? 'bg-cyan-500/20 border border-cyan-400/50 text-cyan-400'
+                          : 'bg-white/10 border border-white/20 text-white/60 hover:bg-white/20'
+                      }`}
+                    >
+                      {system}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Results Count */}
+      <div className="text-white/60 text-sm">
+        Showing {filteredItems.length} of {hangarItems.length} projects
+        {(searchQuery || selectedSystem) && (
+          <span className="ml-2">
+            {searchQuery && `• Search: "${searchQuery}"`}
+            {selectedSystem && `• Tech: ${selectedSystem}`}
+          </span>
+        )}
       </div>
 
       {/* Items Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         <AnimatePresence mode="popLayout">
-          {filteredItems.map((item, index) => {
+          {displayedItems.map((item, index) => {
             const colors = getColorClasses(item.color);
 
             return (
@@ -248,26 +355,11 @@ export function AircraftHangar() {
                             <div className="text-xs text-white/40 uppercase tracking-wider">
                               {item.classification}
                             </div>
-                            {item.isActive && (
-                              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-400/10 border border-yellow-400/30">
-                                <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                                <span className="text-[10px] text-yellow-400 font-medium uppercase tracking-wider">Active</span>
-                              </div>
-                            )}
                           </div>
                           <div className="text-xs font-mono text-white/70 truncate">
                             {item.model}
                           </div>
                         </div>
-                      </div>
-
-                      {/* Category Badge */}
-                      <div className={`px-2 py-1 rounded-lg border text-[10px] uppercase tracking-wider flex-shrink-0 ${
-                        item.category === 'github' ? 'bg-cyan-400/10 text-cyan-400 border-cyan-400/40' :
-                        item.category === 'flight' ? 'bg-purple-400/10 text-purple-400 border-purple-400/40' :
-                        'bg-green-400/10 text-green-400 border-green-400/40'
-                      }`}>
-                        {item.category === 'github' ? 'PROJECT' : item.category === 'flight' ? 'FLIGHT' : 'MOUNTAIN'}
                       </div>
                     </div>
                   </div>
@@ -283,71 +375,17 @@ export function AircraftHangar() {
                     </div>
 
                     {/* Stats Panel */}
-                    <div className="grid grid-cols-2 gap-2">
-                      {item.category === 'github' ? (
-                        <>
-                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                            <Gauge className="w-3.5 h-3.5" style={{ color: colors.main }} />
-                            <div className="min-w-0 flex-1">
-                              <div className="text-[10px] text-white/40 uppercase">Speed</div>
-                              <div className="text-xs text-white/70 font-mono truncate">
-                                {item.specifications?.maxSpeed}
-                              </div>
-                            </div>
+                    <div className="grid grid-cols-1 gap-2">
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                        <Shield className="w-3.5 h-3.5" style={{ color: colors.main }} />
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[10px] text-white/40 uppercase">On board system</div>
+                          <div className="text-xs text-white/70 font-mono truncate">
+                            {item.systems.slice(0, 3).join(', ')}{item.systems.length > 3 ? '...' : ''}
                           </div>
-                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                            <Radio className="w-3.5 h-3.5" style={{ color: colors.main }} />
-                            <div className="min-w-0 flex-1">
-                              <div className="text-[10px] text-white/40 uppercase">Range</div>
-                              <div className="text-xs text-white/70 font-mono truncate">
-                                {item.specifications?.range}
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                            <MapPin className="w-3.5 h-3.5" style={{ color: colors.main }} />
-                            <div className="min-w-0 flex-1">
-                              <div className="text-[10px] text-white/40 uppercase">
-                                {item.category === 'flight' ? 'Altitude' : 'Elevation'}
-                              </div>
-                              <div className="text-xs text-white/70 font-mono truncate">
-                                {item.stats?.altitude}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                            <Calendar className="w-3.5 h-3.5" style={{ color: colors.main }} />
-                            <div className="min-w-0 flex-1">
-                              <div className="text-[10px] text-white/40 uppercase">Duration</div>
-                              <div className="text-xs text-white/70 font-mono truncate">
-                                {item.stats?.duration}
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
-
-                    {/* Bottom Stats */}
-                    {item.category === 'github' && item.stats && (
-                      <div className="flex items-center gap-3 pt-2 border-t border-white/10">
-                        <div className="flex items-center gap-1.5">
-                          <Star className="w-3.5 h-3.5 text-yellow-400" />
-                          <span className="text-sm text-white/70 font-mono">{item.stats.stars}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <GitFork className="w-3.5 h-3.5 text-cyan-400" />
-                          <span className="text-sm text-white/70 font-mono">{item.stats.forks}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Eye className="w-3.5 h-3.5 text-purple-400" />
-                          <span className="text-sm text-white/70 font-mono">{item.stats.watchers}</span>
                         </div>
                       </div>
-                    )}
+                    </div>
                   </div>
 
                   {/* Background Pattern */}
@@ -363,6 +401,20 @@ export function AircraftHangar() {
           })}
         </AnimatePresence>
       </div>
+
+      {/* Show More Button */}
+      {filteredItems.length > (isMobile ? 3 : 6) && (
+        <div className="flex justify-center mt-8">
+          <motion.button
+            onClick={() => setShowMore(!showMore)}
+            className="px-6 py-3 rounded-lg bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 hover:bg-cyan-500/30 transition-all font-mono uppercase tracking-wider text-sm"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {showMore ? 'Show Less' : `Show ${filteredItems.length - (isMobile ? 3 : 6)} More Projects`}
+          </motion.button>
+        </div>
+      )}
 
       {/* Detail Modal */}
       {typeof document !== 'undefined' && createPortal(
@@ -464,59 +516,6 @@ export function AircraftHangar() {
                         </p>
                       </div>
 
-                      {/* Specifications */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <Fuel className="w-4 h-4" style={{ color: colors.main }} />
-                          <span className="text-sm uppercase tracking-wider" style={{ color: colors.main }}>
-                            {selectedItem.category === 'github' ? 'Technical Specifications' : 'Details'}
-                          </span>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {selectedItem.category === 'github' ? (
-                            <>
-                              <div className="p-3 rounded-xl bg-white/5 border border-white/10 min-w-0">
-                                <div className="text-xs text-white/40 uppercase mb-1">Language</div>
-                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications?.language}</div>
-                              </div>
-                              <div className="p-3 rounded-xl bg-white/5 border border-white/10 min-w-0">
-                                <div className="text-xs text-white/40 uppercase mb-1">Engine</div>
-                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications?.engine}</div>
-                              </div>
-                              <div className="p-3 rounded-xl bg-white/5 border border-white/10 min-w-0">
-                                <div className="text-xs text-white/40 uppercase mb-1">Max Speed</div>
-                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications?.maxSpeed}</div>
-                              </div>
-                              <div className="p-3 rounded-xl bg-white/5 border border-white/10 min-w-0">
-                                <div className="text-xs text-white/40 uppercase mb-1">Range</div>
-                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications?.range}</div>
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <div className="p-3 rounded-xl bg-white/5 border border-white/10 min-w-0">
-                                <div className="text-xs text-white/40 uppercase mb-1">Location</div>
-                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications?.location}</div>
-                              </div>
-                              <div className="p-3 rounded-xl bg-white/5 border border-white/10 min-w-0">
-                                <div className="text-xs text-white/40 uppercase mb-1">Date</div>
-                                <div className="text-white font-mono text-sm truncate">{selectedItem.specifications?.date}</div>
-                              </div>
-                              <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                                <div className="text-xs text-white/40 uppercase mb-1">
-                                  {selectedItem.category === 'flight' ? 'Altitude' : 'Elevation'}
-                                </div>
-                                <div className="text-white font-mono">{selectedItem.specifications?.elevation}</div>
-                              </div>
-                              <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                                <div className="text-xs text-white/40 uppercase mb-1">Difficulty</div>
-                                <div className="text-white font-mono">{selectedItem.stats?.difficulty}</div>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
                       {/* Systems/Skills */}
                       <div>
                         <div className="flex items-center gap-2 mb-3">
@@ -562,41 +561,6 @@ export function AircraftHangar() {
                         </div>
                       )}
 
-                      {/* GitHub Stats */}
-                      {selectedItem.category === 'github' && selectedItem.stats && (
-                        <div>
-                          <div className="flex items-center gap-2 mb-3">
-                            <Github className="w-4 h-4" style={{ color: colors.main }} />
-                            <span className="text-sm uppercase tracking-wider" style={{ color: colors.main }}>
-                              Performance Metrics
-                            </span>
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <div className="p-4 rounded-xl bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border border-yellow-400/20 text-center">
-                              <Star className="w-5 h-5 text-yellow-400 mx-auto mb-2" />
-                              <div className="text-2xl text-yellow-400 font-mono mb-1">
-                                {selectedItem.stats.stars}
-                              </div>
-                              <div className="text-xs text-white/50 uppercase">Stars</div>
-                            </div>
-                            <div className="p-4 rounded-xl bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-400/20 text-center">
-                              <GitFork className="w-5 h-5 text-cyan-400 mx-auto mb-2" />
-                              <div className="text-2xl text-cyan-400 font-mono mb-1">
-                                {selectedItem.stats.forks}
-                              </div>
-                              <div className="text-xs text-white/50 uppercase">Forks</div>
-                            </div>
-                            <div className="p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-400/20 text-center">
-                              <Eye className="w-5 h-5 text-purple-400 mx-auto mb-2" />
-                              <div className="text-2xl text-purple-400 font-mono mb-1">
-                                {selectedItem.stats.watchers}
-                              </div>
-                              <div className="text-xs text-white/50 uppercase">Watchers</div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
                       {/* Action Button (GitHub only) */}
                       {selectedItem.url && (
                         <a
@@ -626,6 +590,6 @@ export function AircraftHangar() {
         </AnimatePresence>,
         document.body
       )}
-    </>
+    </div>
   );
 }
