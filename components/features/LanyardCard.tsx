@@ -272,14 +272,6 @@ export function LanyardCard() {
                         </div>
                       )}
                       
-                      {/* Photo overlay pattern */}
-                      <div className="absolute inset-0 opacity-10">
-                        <div className="w-full h-full grid grid-cols-4 gap-1">
-                          {[...Array(20)].map((_, i) => (
-                            <div key={i} className="bg-blue-900" />
-                          ))}
-                        </div>
-                      </div>
                     </div>
                   </div>
 
