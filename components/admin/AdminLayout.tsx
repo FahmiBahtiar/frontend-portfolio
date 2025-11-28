@@ -362,11 +362,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Mobile Backdrop */}
       <AnimatePresence>
         {isSidebarOpen && !isDesktop && (
-          <motion.div
+          <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsSidebarOpen(false)}
+            type="button"
+            aria-label="Close sidebar"
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-9 lg:hidden"
           />
         )}
