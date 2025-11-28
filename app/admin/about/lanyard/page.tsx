@@ -120,7 +120,7 @@ export default function LanyardCardPage() {
         const defaultData: Omit<LanyardData, 'id' | 'createdAt' | 'updatedAt'> = {
           serviceName: 'PORTFOLIO REPUBLIC',
           serviceType: 'SERVICE PASSPORT',
-          passportLabel: 'PASPOR DINAS',
+          passportLabel: 'PRIVATE PASSPORT',
           type: 'P (Service)',
           countryCode: 'PRT',
           passportNo: 'PF2025001',
