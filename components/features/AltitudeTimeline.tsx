@@ -29,81 +29,81 @@ interface TimelinePoint {
 // Education Journey Timeline - 5 Levels
 const defaultTimelineData: TimelinePoint[] = [
   // Elementary School
-  { 
-    id: '1', 
-    year: '2006-2012', 
-    month: 6, 
-    altitude: 0, 
-    title: 'Elementary School', 
-    subtitle: 'Foundation Building', 
+  {
+    id: '1',
+    year: '2006-2012',
+    month: 6,
+    altitude: 0,
+    title: 'Elementary School',
+    subtitle: 'Foundation Building',
     institution: 'SD Negeri 1 Jakarta',
     level: 'elementary',
-    icon: GraduationCap, 
-    badge: 'Base Camp', 
+    icon: GraduationCap,
+    badge: 'Base Camp',
     description: 'Building strong academic foundation and character development. Active in mathematics and science clubs.',
     gpa: 'Top 10 Student',
   },
-  
+
   // Junior High School
-  { 
-    id: '2', 
-    year: '2012-2015', 
-    month: 6, 
-    altitude: 25, 
-    title: 'Junior High School', 
-    subtitle: 'Academic Excellence', 
+  {
+    id: '2',
+    year: '2012-2015',
+    month: 6,
+    altitude: 25,
+    title: 'Junior High School',
+    subtitle: 'Academic Excellence',
     institution: 'SMP Negeri 5 Jakarta',
     level: 'junior',
-    icon: Award, 
-    badge: 'Camp 1', 
+    icon: Award,
+    badge: 'Camp 1',
     description: 'National Science Olympiad participant. Started programming journey with basic algorithms.',
     gpa: '9.2 / 10',
   },
-  
+
   // Senior High School
-  { 
-    id: '3', 
-    year: '2015-2018', 
-    month: 6, 
-    altitude: 50, 
-    title: 'Senior High School', 
-    subtitle: 'STEM Specialization', 
+  {
+    id: '3',
+    year: '2015-2018',
+    month: 6,
+    altitude: 50,
+    title: 'Intensive Bootcamp',
+    subtitle: 'STEM Specialization',
     institution: 'SMA Negeri 8 Jakarta',
     level: 'senior',
-    icon: Trophy, 
-    badge: 'Camp 2', 
+    icon: Trophy,
+    badge: 'Camp 2',
     description: 'Science major focus on Mathematics & Physics. Won regional robotics competition. Developed first web applications.',
     gpa: '92 / 100',
   },
-  
+
   // Scholarship/Bootcamp
-  { 
-    id: '4', 
-    year: '2019-2020', 
-    month: 3, 
-    altitude: 75, 
-    title: 'Intensive Bootcamp', 
-    subtitle: 'Full-Stack Development', 
+  {
+    id: '4',
+    year: '2019-2020',
+    month: 3,
+    altitude: 75,
+    title: 'Senior High School',
+    subtitle: 'Full-Stack Development',
     institution: 'Tech Academy Scholarship',
     level: 'bootcamp',
-    icon: Code2, 
-    badge: 'Camp 3', 
+    icon: Code2,
+    badge: 'Camp 3',
     description: 'Received full scholarship for intensive coding bootcamp. Mastered modern web technologies, agile development, and real-world projects.',
     gpa: 'Graduate with Distinction',
   },
-  
+
   // University
-  { 
-    id: '5', 
-    year: '2020-2024', 
-    month: 8, 
-    altitude: 100, 
-    title: 'Bachelor Degree', 
-    subtitle: 'Network Engineering', 
+  {
+    id: '5',
+    year: '2020-2024',
+    month: 8,
+    altitude: 100,
+    title: 'Bachelor Degree',
+    subtitle: 'Network Engineering',
     institution: 'University of Technology',
     level: 'university',
-    icon: Star, 
-    badge: '🎓 SUMMIT', 
+    icon: Star,
+    badge: '🎓 SUMMIT',
     description: 'Specialized in Network Security, Cloud Computing, and Full-Stack Development. Final project: Smart Network Monitoring System using AI/ML.',
     gpa: '3.85 / 4.00',
   },
@@ -168,7 +168,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
 
   // Use education records if available, otherwise use default data
   const timelineData = (educationRecords && educationRecords.length > 0) ? convertEducationToTimeline(educationRecords) : defaultTimelineData;
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
   const waypointTimers = useRef<NodeJS.Timeout[]>([]);
@@ -178,13 +178,13 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
   const animationFrameId = useRef<number | null>(null);
   const timeoutId = useRef<NodeJS.Timeout | null>(null);
   const lastProgress = useRef<number>(0); // Track last progress to prevent backward movement
-  
+
   const climberProgress = useMotionValue(0);
-  const smoothProgress = useSpring(climberProgress, { 
-    stiffness: 60, 
-    damping: 20, 
+  const smoothProgress = useSpring(climberProgress, {
+    stiffness: 60,
+    damping: 20,
     mass: 0.5,
-    restDelta: 0.0001 
+    restDelta: 0.0001
   });
   const pathRef = useRef<SVGPathElement>(null);
   const pathRefMobile = useRef<SVGPathElement>(null);
@@ -196,37 +196,37 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
   const PAUSE_TIME = 1500; // ms to pause at each waypoint (diperlambat dari 1000ms)
   const TITLE_DISPLAY_TIME = 2500; // ms to show title at waypoint
   const ANIMATION_START_DELAY = 0; // Start delay in seconds (instant spawn!)
-  
+
   // Helper function to generate synchronized animation keyframes
   const generateAnimationKeyframes = (waypointCount: number) => {
     const keyframes: number[] = [];
     const times: number[] = [];
-    
+
     const segmentDuration = TRAVEL_TIME + PAUSE_TIME;
     // Total duration should be based on segments, not waypoints
     // We have (waypointCount - 1) segments between waypoints
     const totalDuration = segmentDuration * (waypointCount - 1) + TRAVEL_TIME; // Add final travel time
-    
+
     for (let i = 0; i < waypointCount; i++) {
       const startTime = i * segmentDuration;
       const arrivalTime = startTime + TRAVEL_TIME;
       const departureTime = arrivalTime + PAUSE_TIME;
       const progress = i / (waypointCount - 1); // 0 to 1
-      
+
       // Arrival keyframe
       keyframes.push(progress);
       times.push(arrivalTime / totalDuration);
-      
+
       // Pause keyframe (duplicate position) - except for the last waypoint
       if (i < waypointCount - 1) {
         keyframes.push(progress);
         times.push(departureTime / totalDuration);
       }
     }
-    
+
     return { keyframes, times, totalDuration: totalDuration / 1000 };
   };
-  
+
   // Calculate total animation duration for path sync
   const { totalDuration: climberDuration } = generateAnimationKeyframes(timelineData.length);
 
@@ -256,15 +256,15 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
   const width = 1000;
   const height = 650;
   // Responsive padding - smaller on mobile
-  const padding = { 
-    top: 40, 
+  const padding = {
+    top: 40,
     right: 40, // Reduced from 60 for mobile
     bottom: 80, // Reduced from 90 for mobile
     left: 40 // Reduced from 60 for mobile
   };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
-  
+
   // Define the actual visual area for plotting (0% should be at bottom minus labels)
   const visualBottom = height - padding.bottom + 200;
   const visualTop = padding.top;
@@ -283,7 +283,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
     const x = padding.left + xProgress * chartWidth;
     // Use SAME calculation as grid lines to ensure alignment
     const y = padding.top + chartHeight - (point.altitude / 100) * chartHeight;
-    
+
     return { ...point, x, y };
   });
 
@@ -293,31 +293,31 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
     // Each waypoint segment is evenly distributed
     const segmentSize = 1 / (points.length - 1);
     const threshold = segmentSize * 0.12; // Slightly larger threshold for smooth motion - within 12% of segment
-    
+
     for (let i = 0; i < points.length; i++) {
       const waypointProgress = i / (points.length - 1);
       const distance = Math.abs(progress - waypointProgress);
-      
+
       // Check if we're within threshold of this waypoint
       if (distance < threshold) {
         return i;
       }
     }
-    
+
     return -1;
   };
 
   // Get point on path at specific progress (0-1)
   const getPointAtProgress = (progress: number) => {
     if (!pathRef.current) return { x: points[0].x, y: points[0].y };
-    
+
     // Clamp progress between 0 and 1
     const clampedProgress = Math.max(0, Math.min(1, progress));
-    
+
     const pathLength = pathRef.current.getTotalLength();
     const targetLength = pathLength * clampedProgress;
     const point = pathRef.current.getPointAtLength(targetLength);
-    
+
     return { x: point.x, y: point.y };
   };
 
@@ -337,10 +337,10 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
     const index = Math.min(Math.floor(progress * (points.length - 1)), points.length - 1);
     const nextIndex = Math.min(index + 1, points.length - 1);
     const segmentProgress = (progress * (points.length - 1)) % 1;
-    
+
     const current = points[index];
     const next = points[nextIndex];
-    
+
     return {
       x: current.x + (next.x - current.x) * segmentProgress,
       y: current.y + (next.y - current.y) * segmentProgress,
@@ -350,8 +350,8 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(-1);
   const [showingTitle, setShowingTitle] = useState(false);
   // Get current waypoint data
-  const currentWaypoint = currentWaypointIndex >= 0 && currentWaypointIndex < timelineData.length 
-    ? timelineData[currentWaypointIndex] 
+  const currentWaypoint = currentWaypointIndex >= 0 && currentWaypointIndex < timelineData.length
+    ? timelineData[currentWaypointIndex]
     : null;
 
   // Create transforms for climber position (at top level)
@@ -369,7 +369,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
       return points[0]?.x || 0;
     }
   });
-  
+
   const climberY = useTransform(smoothProgress, (p) => {
     const currentPathRef = pathRef.current || pathRefMobile.current;
     if (!currentPathRef || points.length === 0) return points[0]?.y || 0;
@@ -390,7 +390,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
     if (!isInView || animationStarted.current) {
       return;
     }
-    
+
     // Use requestAnimationFrame instead of setTimeout for immediate execution
     const rafId = requestAnimationFrame(() => {
       const currentPathRef = pathRef.current || pathRefMobile.current;
@@ -398,34 +398,34 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
       if (!currentPathRef || animationStarted.current) {
         return;
       }
-      
+
       // Mark as started IMMEDIATELY
       animationStarted.current = true;
-      
+
       // Initialize to 0
       climberAnimProgress.set(0);
       pathDrawProgress.set(0);
       lastProgress.current = 0; // Reset progress tracker
-      
+
       // Generate animation keyframes with pauses
       const { keyframes, times, totalDuration } = generateAnimationKeyframes(points.length);
-      
+
       // Animate with requestAnimationFrame
       const startTime = Date.now();
-      
+
       const animate = () => {
         // Safety check - if component unmounted, stop
         if (!animationStarted.current) {
           return;
         }
-        
+
         const elapsed = (Date.now() - startTime) / 1000 - ANIMATION_START_DELAY;
-        
+
         if (elapsed < 0) {
           animationFrameId.current = requestAnimationFrame(animate);
           return;
         }
-        
+
         if (elapsed >= totalDuration) {
           climberAnimProgress.set(1);
           pathDrawProgress.set(1);
@@ -433,10 +433,10 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
           animationFrameId.current = null;
           return; // Animation complete
         }
-        
+
         const normalizedTime = elapsed / totalDuration;
         let progress = keyframes[keyframes.length - 1] || 1; // Default to last keyframe or 1
-        
+
         // Find the appropriate keyframe segment
         let foundSegment = false;
         for (let i = 0; i < times.length; i++) {
@@ -446,7 +446,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
             } else {
               const t = (normalizedTime - times[i - 1]) / (times[i] - times[i - 1]);
               const segmentProgress = keyframes[i - 1] + (keyframes[i] - keyframes[i - 1]) * t;
-              
+
               // Snap to exact waypoint position when very close (within 0.5% of segment)
               const targetWaypoint = keyframes[i];
               if (Math.abs(segmentProgress - targetWaypoint) < 0.005) {
@@ -459,25 +459,25 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
             break;
           }
         }
-        
+
         // If we're past all times, ensure we're at the final position
         if (!foundSegment) {
           progress = keyframes[keyframes.length - 1] || 1;
         }
-        
+
         // Ensure progress never goes backward and doesn't exceed 1
         progress = Math.max(progress, lastProgress.current);
         progress = Math.min(progress, 1); // Clamp to max 1
         lastProgress.current = progress;
-        
+
         climberAnimProgress.set(progress);
         pathDrawProgress.set(progress); // Sync path drawing with climber
         animationFrameId.current = requestAnimationFrame(animate);
       };
-      
+
       animationFrameId.current = requestAnimationFrame(animate);
     });
-    
+
     // Cleanup function
     return () => {
       if (rafId) {
@@ -499,26 +499,26 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
     const handleProgressChange = (progress: number) => {
       const currentPathRef = pathRef.current || pathRefMobile.current;
       if (!currentPathRef) return;
-      
+
       // Update climber position
       climberProgress.set(progress);
-      
+
       // Detect waypoint based on progress value instead of position
       const nearestIndex = detectNearestWaypoint(progress);
-      
+
       if (nearestIndex !== -1 && nearestIndex !== lastWaypointIndex.current) {
         lastWaypointIndex.current = nearestIndex;
-        
+
         // Use requestAnimationFrame to batch state updates
         requestAnimationFrame(() => {
           setCurrentWaypointIndex(nearestIndex);
           setShowingTitle(true);
         });
-        
+
         if (titleHideTimer.current) {
           clearTimeout(titleHideTimer.current);
         }
-        
+
         titleHideTimer.current = setTimeout(() => {
           requestAnimationFrame(() => {
             setShowingTitle(false);
@@ -526,9 +526,9 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
         }, TITLE_DISPLAY_TIME);
       }
     };
-    
+
     const unsubscribe = climberAnimProgress.on('change', handleProgressChange);
-    
+
     return () => {
       unsubscribe();
     };
@@ -650,8 +650,8 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
           viewBox={`0 0 ${width} ${height}`}
           className="w-full h-auto"
           preserveAspectRatio="xMidYMid meet"
-          style={{ 
-            minHeight: '300px', 
+          style={{
+            minHeight: '300px',
             maxHeight: '650px',
             minWidth: '100%'
           }}
@@ -671,21 +671,21 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                     strokeWidth="1"
                     strokeDasharray="4 4"
                   />
-                  <text 
-                    x={padding.left - 25} 
-                    y={y + 4} 
-                    fill="white" 
-                    fontSize="10" 
+                  <text
+                    x={padding.left - 25}
+                    y={y + 4}
+                    fill="white"
+                    fontSize="10"
                     opacity="0.5"
                     className="hidden sm:block"
                   >
                     {alt}%
                   </text>
-                  <text 
-                    x={padding.left - 18} 
-                    y={y + 3} 
-                    fill="white" 
-                    fontSize="8" 
+                  <text
+                    x={padding.left - 18}
+                    y={y + 3}
+                    fill="white"
+                    fontSize="8"
                     opacity="0.5"
                     className="sm:hidden"
                   >
@@ -806,10 +806,10 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
             const colors = categoryColors[point.level];
             const isHovered = hoveredPoint === point.id;
             const isSelected = selectedPoint === point.id;
-            
+
             // Calculate when this waypoint should appear (when climber reaches it)
             const waypointDelay = ANIMATION_START_DELAY + (index * (TRAVEL_TIME + PAUSE_TIME) / 1000) + (TRAVEL_TIME / 1000);
-            
+
             return (
               <g key={point.id}>
                 {/* Glow effect */}
@@ -841,7 +841,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                     className="sm:hidden"
                   />
                 )}
-                
+
                 {/* Waypoint circle */}
                 <motion.circle
                   cx={point.x}
@@ -967,10 +967,10 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
           {selectedPoint && (() => {
             const point = points.find((p) => p.id === selectedPoint);
             if (!point) return null;
-            
+
             const colors = categoryColors[point.level];
             const Icon = point.icon;
-            
+
             return (
               <motion.div
                 key={`modal-${point.id}`}
@@ -987,7 +987,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                   className="absolute inset-0 bg-black/50 backdrop-blur-sm pointer-events-auto"
                   onClick={() => setSelectedPoint(null)}
                 />
-                
+
                 {/* Modal Card */}
                 <motion.div
                   initial={{ scale: 0.9, y: 20 }}
@@ -997,24 +997,24 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                   className="relative max-w-md w-full pointer-events-auto mx-4"
                 >
                   {/* Glow Effect */}
-                  <div 
+                  <div
                     className="absolute inset-0 rounded-3xl blur-xl opacity-50"
-                    style={{ 
+                    style={{
                       background: `linear-gradient(135deg, ${colors.main}40, transparent)`,
                     }}
                   />
-                  
+
                   {/* Main Card - HYBRID EXPEDITION DATA SHEET */}
                   <div className="relative bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 backdrop-blur-2xl border rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl"
-                    style={{ 
+                    style={{
                       borderColor: colors.main,
                       boxShadow: `0 0 60px ${colors.glow}, 0 20px 60px rgba(0,0,0,0.6)`,
                     }}
                   >
                     {/* TERMINAL HEADER - Developer Theme */}
-                    <div 
+                    <div
                       className="relative px-4 py-3 md:px-6 md:py-4 border-b"
-                      style={{ 
+                      style={{
                         background: `linear-gradient(135deg, ${colors.main}15, ${colors.main}05)`,
                         borderBottomColor: `${colors.main}30`,
                       }}
@@ -1033,7 +1033,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                           </span>
                         </div>
                       </div>
-                      
+
                       {/* Terminal Command */}
                       <div className="font-mono text-xs md:text-sm space-y-1">
                         <div className="text-green-400 hidden sm:block">
@@ -1046,23 +1046,23 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="p-4 md:p-6 space-y-4 md:space-y-6 max-h-[75vh] overflow-y-auto relative">
                       {/* Topographic Lines Background - Mountain Theme */}
-                      <div 
+                      <div
                         className="absolute inset-0 opacity-[0.03] pointer-events-none"
                         style={{
                           backgroundImage: `repeating-linear-gradient(0deg, ${colors.main} 0px, transparent 1px, transparent 20px, ${colors.main} 21px), repeating-linear-gradient(90deg, ${colors.main} 0px, transparent 1px, transparent 20px, ${colors.main} 21px)`,
                         }}
                       />
-                      
+
                       {/* Main Content Grid */}
                       <div className="relative grid grid-cols-1 md:grid-cols-[140px_1fr] gap-6">
                         {/* ALTIMETER GAUGE - Aviation Theme */}
                         <div className="flex flex-col items-center gap-3 mx-auto md:mx-0">
-                          <div 
+                          <div
                             className="relative w-24 h-24 md:w-32 md:h-32 rounded-full border-4 flex items-center justify-center shadow-2xl"
-                            style={{ 
+                            style={{
                               background: `radial-gradient(circle, ${colors.main}20, ${colors.main}05, transparent)`,
                               borderColor: colors.main,
                               boxShadow: `inset 0 0 30px ${colors.glow}, 0 0 40px ${colors.glow}`,
@@ -1078,13 +1078,13 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                                     transform: `rotate(${(alt / 100) * 270 - 135}deg)`,
                                   }}
                                 >
-                                  <div 
+                                  <div
                                     className="absolute top-2 left-1/2 -translate-x-1/2 w-0.5 h-2 bg-white/40"
                                   />
                                 </div>
                               ))}
                             </div>
-                            
+
                             {/* Needle */}
                             <div
                               className="absolute w-1 h-12 origin-bottom rounded-full transition-transform duration-1000"
@@ -1094,11 +1094,11 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                                 bottom: '50%',
                               }}
                             />
-                            
+
                             {/* Center Display */}
                             <div className="relative z-10 text-center">
                               <Icon className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-1" style={{ color: colors.main }} />
-                              <div 
+                              <div
                                 className="font-mono text-sm md:text-base tracking-tight"
                                 style={{ color: colors.main }}
                               >
@@ -1108,20 +1108,20 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                                 ALT
                               </div>
                             </div>
-                            
+
                             {/* Outer Ring Glow */}
-                            <div 
+                            <div
                               className="absolute inset-0 rounded-full animate-pulse"
                               style={{
                                 boxShadow: `0 0 20px ${colors.glow}`,
                               }}
                             />
                           </div>
-                          
+
                           {/* Level Badge */}
-                          <div 
+                          <div
                             className="px-3 py-1.5 md:px-4 md:py-2 rounded-full text-[10px] md:text-xs uppercase tracking-widest border-2 shadow-lg"
-                            style={{ 
+                            style={{
                               color: colors.main,
                               borderColor: colors.main,
                               background: `${colors.main}20`,
@@ -1131,7 +1131,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                             {point.level.replace('_', ' ')}
                           </div>
                         </div>
-                        
+
                         {/* INFO SECTION */}
                         <div className="space-y-3 md:space-y-4">
                           {/* Institution & Subtitle */}
@@ -1142,7 +1142,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                             </h3>
                             <p className="text-white/60 text-xs md:text-sm italic">{point.subtitle}</p>
                           </div>
-                          
+
                           {/* Description */}
                           {point.description && (
                             <div className="p-3 md:p-4 rounded-xl border bg-white/5 backdrop-blur-sm" style={{ borderColor: `${colors.main}30` }}>
@@ -1153,11 +1153,11 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                           )}
                         </div>
                       </div>
-                      
+
                       {/* STATS GRID - RPG/Game Theme */}
-                      <div 
+                      <div
                         className="grid grid-cols-2 gap-2 md:gap-3 p-3 md:p-4 rounded-xl border"
-                        style={{ 
+                        style={{
                           background: `linear-gradient(135deg, ${colors.main}10, ${colors.main}05)`,
                           borderColor: `${colors.main}30`,
                         }}
@@ -1170,7 +1170,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                           </div>
                           <div className="font-mono text-xs md:text-sm text-white truncate">{point.year}</div>
                         </div>
-                        
+
                         {point.gpa && (
                           <div className="space-y-0.5 md:space-y-1">
                             <div className="flex items-center gap-1.5 md:gap-2 text-white/50 text-[10px] md:text-xs uppercase tracking-wider">
@@ -1181,7 +1181,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                             <div className="font-mono text-xs md:text-sm text-white truncate">{point.gpa}</div>
                           </div>
                         )}
-                        
+
                         <div className="space-y-0.5 md:space-y-1">
                           <div className="flex items-center gap-1.5 md:gap-2 text-white/50 text-[10px] md:text-xs uppercase tracking-wider">
                             <Mountain className="w-3 h-3 flex-shrink-0" />
@@ -1190,7 +1190,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                           </div>
                           <div className="font-mono text-xs md:text-sm text-white">{point.altitude}m</div>
                         </div>
-                        
+
                         <div className="space-y-0.5 md:space-y-1">
                           <div className="flex items-center gap-1.5 md:gap-2 text-white/50 text-[10px] md:text-xs uppercase tracking-wider">
                             <Code2 className="w-3 h-3 flex-shrink-0" />
@@ -1199,13 +1199,13 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                           <div className="font-mono text-xs md:text-sm" style={{ color: colors.main }}>DONE</div>
                         </div>
                       </div>
-                      
+
                       {/* ACTION BUTTONS */}
                       <div className="flex gap-3 pt-2">
                         <button
                           onClick={() => setSelectedPoint(null)}
                           className="flex-1 py-2.5 md:py-3 rounded-xl transition-all duration-200 text-white hover:scale-[1.02] active:scale-95 border font-mono text-xs md:text-sm tracking-wide"
-                          style={{ 
+                          style={{
                             background: `linear-gradient(135deg, ${colors.main}20, ${colors.main}10)`,
                             borderColor: colors.main,
                           }}
@@ -1230,10 +1230,10 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
           if (!hoveredPoint || selectedPoint) return null;
           const point = points.find((p) => p.id === hoveredPoint);
           if (!point) return null;
-          
+
           const colors = categoryColors[point.level];
           const Icon = point.icon;
-          
+
           return (
             <motion.div
               key={`info-bar-${point.id}`}
@@ -1244,17 +1244,17 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
               className="absolute bottom-0 left-0 right-0 pointer-events-none z-40"
             >
               <div className="max-w-4xl mx-auto px-2 md:px-4 pb-2 md:pb-4">
-                <div 
+                <div
                   className="relative bg-gradient-to-r from-gray-900/98 via-gray-800/98 to-gray-900/98 backdrop-blur-2xl border rounded-xl md:rounded-2xl shadow-2xl overflow-hidden"
-                  style={{ 
+                  style={{
                     borderColor: colors.main,
                     boxShadow: `0 0 30px ${colors.glow}, 0 10px 40px rgba(0,0,0,0.5)`,
                   }}
                 >
                   {/* Terminal-style Top Bar */}
-                  <div 
+                  <div
                     className="px-3 md:px-4 py-1.5 md:py-2 flex items-center gap-2 md:gap-3 border-b"
-                    style={{ 
+                    style={{
                       background: `linear-gradient(90deg, ${colors.main}20, ${colors.main}05)`,
                       borderBottomColor: `${colors.main}30`,
                     }}
@@ -1267,9 +1267,9 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                     <div className="flex-1 font-mono text-[10px] md:text-xs text-white/40 truncate">
                       {point.id}.expedition_log
                     </div>
-                    <div 
+                    <div
                       className="font-mono text-[10px] md:text-xs px-1.5 md:px-2 py-0.5 rounded border flex-shrink-0"
-                      style={{ 
+                      style={{
                         color: colors.main,
                         borderColor: `${colors.main}50`,
                         background: `${colors.main}10`,
@@ -1278,12 +1278,12 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                       <span className="hidden sm:inline">ALT </span>{point.altitude}%
                     </div>
                   </div>
-                  
+
                   <div className="p-4 flex items-center gap-4">
                     {/* Altimeter Icon */}
-                    <div 
+                    <div
                       className="relative w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg border-2"
-                      style={{ 
+                      style={{
                         background: `radial-gradient(circle, ${colors.main}30, ${colors.main}05)`,
                         borderColor: colors.main,
                         boxShadow: `inset 0 0 20px ${colors.glow}, 0 0 20px ${colors.glow}`,
@@ -1291,21 +1291,21 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                     >
                       <Icon className="w-6 h-6 z-10" style={{ color: colors.main }} />
                       {/* Rotating ring */}
-                      <div 
+                      <div
                         className="absolute inset-0 rounded-full border-2 border-dashed animate-spin"
-                        style={{ 
+                        style={{
                           borderColor: `${colors.main}30`,
                           animationDuration: '8s',
                         }}
                       />
                     </div>
-                    
+
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span 
+                        <span
                           className="px-2 py-0.5 rounded text-xs uppercase tracking-wider border font-mono"
-                          style={{ 
+                          style={{
                             color: colors.main,
                             borderColor: colors.main,
                             background: `${colors.main}15`,
@@ -1320,7 +1320,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                       <h4 className="text-white truncate">{point.title}</h4>
                       <p className="text-white/50 text-sm truncate">{point.institution}</p>
                     </div>
-                    
+
                     {/* Meta - Terminal Style */}
                     <div className="hidden md:flex flex-col gap-1.5 font-mono text-xs text-white/60 flex-shrink-0">
                       <span className="flex items-center gap-1.5">
@@ -1334,7 +1334,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
                         </span>
                       )}
                     </div>
-                    
+
                     {/* Click hint */}
                     <div className="hidden md:block text-xs text-white/40 flex-shrink-0 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
                       Click for details
