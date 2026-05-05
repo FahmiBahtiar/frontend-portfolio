@@ -11,7 +11,7 @@
 !.yarn/versions
 
 #AI
-/.agent/
+/.agents/
 skills-lock.json
 
 # testing
