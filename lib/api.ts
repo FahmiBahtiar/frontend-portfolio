@@ -1,7 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
-  TIMEOUT: 10000, // 10 seconds timeout
+  TIMEOUT: 3000, // 3 seconds timeout for fast fail
   ENDPOINTS: {
     // Hero Section
     HERO_PROFILE: '/api/admin/hero/profile',
@@ -68,6 +68,7 @@ export async function apiRequest<T>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
+    signal: AbortSignal.timeout(API_CONFIG.TIMEOUT),
     ...options,
   };
 

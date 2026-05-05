@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
+import useSWR from 'swr';
 import { Sparkles, Github, Linkedin, Instagram, ExternalLink, Plane, Mountain, Code2, Compass } from 'lucide-react';
 import { HeroService } from '@/lib/services/hero';
 import { SpotifyService, SpotifyNowPlaying } from '@/lib/services/spotify';
 import { HeroProfile, SocialLink } from '@/lib/types/admin';
+import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 
 interface TerminalHeroProps {
@@ -29,30 +31,19 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
   const [loginTime, setLoginTime] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   
-  // Hero profile data from API
-  const [heroProfile, setHeroProfile] = useState<HeroProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  
-  // Social links data from API
-  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
-  const [socialLinksLoading, setSocialLinksLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  
-  // Spotify Now Playing state
-  const [spotifyData, setSpotifyData] = useState<SpotifyNowPlaying | null>(null);
-  const [spotifyLoading, setSpotifyLoading] = useState(true);
-  const [spotifyInitialLoad, setSpotifyInitialLoad] = useState(true);
-  const [spotifyErrorCount, setSpotifyErrorCount] = useState(0);
-  
+  // Load hero profile data from API using SWR
+  const { data: heroProfile, error: profileError, isLoading: loading } = useSWR('heroProfile', () => HeroService.getHeroProfile(), { errorRetryCount: 3, errorRetryInterval: 1000 });
+  const error = profileError ? 'Connection Error' : null;
+
+  // Load social links data from API using SWR
+  const { data: socialLinks = [], isLoading: socialLinksLoading } = useSWR('socialLinks', () => HeroService.getSocialLinks(), { errorRetryCount: 3, errorRetryInterval: 1000 });
+
+  // Load Spotify Now Playing data using SWR - Refresh every 30s
+  const { data: spotifyData, isLoading: spotifyLoading } = useSWR('spotifyData', () => SpotifyService.getNowPlaying(), { refreshInterval: 30000, errorRetryCount: 3, dedupingInterval: 10000 });
+
   // State untuk subtitle yang sync dengan terminal output
   const [currentSubtitleLines, setCurrentSubtitleLines] = useState<string[]>(['Fahmi Bahtiar Adi N']);
   const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState(0);
-  
-  // Set mounted state and login time on client side only
-  useEffect(() => {
-    setIsMounted(true);
-    setLoginTime(new Date().toLocaleString());
-  }, []);
   
   // State untuk typing animation subtitle
   const [typedSubtitle, setTypedSubtitle] = useState('');
@@ -78,115 +69,11 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
     social: false,
   });
 
-  // Load hero profile data from API with retry mechanism
+  // Set mounted state and login time on client side only
   useEffect(() => {
-    let retryCount = 0;
-    const maxRetries = 3;
-    const retryDelay = 1000; // 1 second
-
-    const loadHeroProfile = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await HeroService.getHeroProfile();
-        setHeroProfile(data);
-        retryCount = 0; // Reset on success
-      } catch (error) {
-        console.error('Failed to load hero profile:', error);
-        
-        // Retry logic
-        if (retryCount < maxRetries) {
-          retryCount++;
-          setTimeout(loadHeroProfile, retryDelay * retryCount);
-        } else {
-          setError('Connection Error');
-          setLoading(false);
-        }
-      } finally {
-        if (retryCount === 0) {
-          setLoading(false);
-        }
-      }
-    };
-
-    loadHeroProfile();
+    setIsMounted(true);
+    setLoginTime(new Date().toLocaleString());
   }, []);
-
-  // Load social links data from API with retry mechanism
-  useEffect(() => {
-    let retryCount = 0;
-    const maxRetries = 3;
-    const retryDelay = 1000;
-
-    const loadSocialLinks = async () => {
-      try {
-        setSocialLinksLoading(true);
-        const data = await HeroService.getSocialLinks();
-        setSocialLinks(data);
-        retryCount = 0;
-      } catch (error) {
-        console.error('Failed to load social links:', error);
-        
-        if (retryCount < maxRetries) {
-          retryCount++;
-          setTimeout(loadSocialLinks, retryDelay * retryCount);
-        } else {
-          setSocialLinksLoading(false);
-        }
-      } finally {
-        if (retryCount === 0) {
-          setSocialLinksLoading(false);
-        }
-      }
-    };
-
-    loadSocialLinks();
-  }, []);
-
-  // Load Spotify Now Playing data - Deferred to improve initial load
-  useEffect(() => {
-    // Defer Spotify loading by 2 seconds to prioritize critical content
-    const deferTimeout = setTimeout(() => {
-      const loadSpotifyData = async () => {
-        try {
-          // Only show loading on initial load, not on subsequent polls
-          if (spotifyInitialLoad) {
-            setSpotifyLoading(true);
-          }
-          const data = await SpotifyService.getNowPlaying();
-          setSpotifyData(data);
-          setSpotifyErrorCount(0); // Reset error count on success
-        } catch (error) {
-          // Increment error count
-          setSpotifyErrorCount(prev => prev + 1);
-          
-          // Only update to "not listening" after 3 consecutive failures
-          if (spotifyErrorCount >= 2) {
-            setSpotifyData({
-              isPlaying: false,
-              song: null,
-            });
-          }
-          
-          console.error('Spotify API error:', error);
-        } finally {
-          if (spotifyInitialLoad) {
-            setSpotifyLoading(false);
-            setSpotifyInitialLoad(false);
-          }
-        }
-      };
-
-      loadSpotifyData();
-      
-      // Poll Spotify API every 30 seconds instead of 10 to reduce overhead
-      const interval = setInterval(loadSpotifyData, 30000);
-      
-      return () => clearInterval(interval);
-    }, 2000);
-
-    return () => clearTimeout(deferTimeout);
-  }, [spotifyInitialLoad, spotifyErrorCount]);
 
   // Generate commands based on hero profile data
   const commands: Command[] = heroProfile ? [
@@ -507,7 +394,8 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
           transition={{ duration: 0.3, delay: 0.1 }}
           className="order-1 lg:order-1 will-change-transform"
         >
-          <div className="bg-slate-900/80 md:backdrop-blur-md rounded-2xl p-8 lg:p-10 border border-slate-700/50 shadow-2xl min-h-[500px] flex flex-col justify-center">
+          <Card className="bg-slate-900/40 md:backdrop-blur-md rounded-2xl border-white/5 shadow-2xl min-h-[500px] flex flex-col justify-center overflow-hidden hover:bg-slate-900/60 hover:border-white/10 transition-colors">
+            <CardContent className="p-8 lg:p-10 flex-1 flex flex-col justify-center">
             {/* Badge */}
             {visibleSections.badge && (
               <motion.div
@@ -600,7 +488,8 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                       className="relative"
                     >
                       {/* Mini HUD Card */}
-                      <div className={`relative bg-slate-900/40 md:backdrop-blur-sm border ${colors.border} rounded-lg p-3 overflow-hidden`}>
+                      <Card className={`relative bg-slate-900/40 border-0 hover:bg-slate-900/60 overflow-hidden`}>
+                        <CardContent className="p-3">
                         
                         {/* Corner Brackets */}
                         <div className={`absolute top-0 left-0 w-2 h-2 border-t border-l ${colors.border}`} />
@@ -624,7 +513,8 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                             {item.label}
                           </div>
                         </div>
-                      </div>
+                        </CardContent>
+                      </Card>
                     </motion.div>
                   );
                 })}
@@ -775,7 +665,8 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                 <span className="font-mono">Scroll to explore my journey</span>
               </motion.div>
             )}
-          </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Terminal Window - Right Side */}
@@ -783,11 +674,10 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="hidden md:flex order-2 lg:order-2 cursor-pointer will-change-transform"
+          className="hidden md:flex order-2 lg:order-2 cursor-pointer will-change-transform h-full"
           onClick={handleClick}
         >
-          <div className="w-full bg-slate-900/95 md:backdrop-blur-md rounded-lg shadow-2xl border border-slate-700 overflow-hidden"
-          >
+          <Card className="w-full bg-slate-900/80 md:backdrop-blur-md rounded-2xl shadow-2xl border-white/5 overflow-hidden hover:bg-slate-900/90 hover:border-white/10 transition-colors h-full flex flex-col">
         {/* Terminal Header */}
         <div className="flex items-center gap-2 px-4 py-3 bg-slate-800/90 border-b border-slate-700">
           <div className="flex gap-2">
@@ -899,7 +789,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
             </motion.div>
           )}
           </div>
-        </div>
+        </Card>
       </motion.div>
       </div>
       )}

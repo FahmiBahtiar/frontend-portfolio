@@ -2,6 +2,7 @@
 
 import { motion } from 'motion/react';
 import { useState, useEffect } from 'react';
+import { ImageWithFallback } from '@/components/figma/ImageWithFallback';
 
 interface CarouselItem {
   id: number;
@@ -123,7 +124,7 @@ export function Carousel3D({ items, currentIndex }: Carousel3DProps) {
                 style={{
                   transformStyle: 'preserve-3d',
                   filter: `blur(${blur}px) brightness(${brightness})`,
-                  willChange: 'filter',
+                  willChange: 'filter, transform, opacity',
                 }}
                 animate={{
                   filter: `blur(${blur}px) brightness(${brightness})`,
@@ -133,10 +134,10 @@ export function Carousel3D({ items, currentIndex }: Carousel3DProps) {
                   ease: [0.25, 0.1, 0.25, 1],
                 }}
               >
-                <img
+                <ImageWithFallback
                   src={item.image}
-                  alt=""
-                  className="w-full h-full object-cover"
+                  alt="Carousel Image"
+                  className="object-cover"
                 />
               </motion.div>
             </motion.div>

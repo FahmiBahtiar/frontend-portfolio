@@ -7,6 +7,7 @@ import { DeleteDialog } from '@/components/admin/DeleteDialog';
 import { ImageUpload } from '@/components/admin/ImageUpload';
 import { galleryApi, MissionPhoto } from '@/lib/services/gallery';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 export default function GalleryPage() {
   const [photos, setPhotos] = useState<MissionPhoto[]>([]);
@@ -126,13 +127,14 @@ export default function GalleryPage() {
       key: 'image' as keyof MissionPhoto,
       label: 'Image',
       render: (item: MissionPhoto) => (
-        <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
-          <img
+        <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 relative">
+          <Image
             src={item.image}
             alt="Mission photo"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
             onError={(e) => {
-              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjMzc0MTUxIi8+CjxwYXRoIGQ9Ik0xNSAxMEwxMSAxNFYxMEgxNVoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=';
+              e.currentTarget.srcset = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjMzc0MTUxIi8+CjxwYXRoIGQ9Ik0xNSAxMEwxMSAxNFYxMEgxNVoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=';
             }}
           />
         </div>

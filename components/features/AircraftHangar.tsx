@@ -3,6 +3,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import useSWR from 'swr';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   Github,
   Star,
@@ -67,46 +70,21 @@ export function AircraftHangar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSystem, setSelectedSystem] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
-  const [hangarItems, setHangarItems] = useState<HangarItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [showMore, setShowMore] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
-  const getIconForCategory = (category: CategoryType) => {
-    switch (category) {
-      case 'github':
-        return <Github className="w-6 h-6" />;
-      default:
-        return <Github className="w-6 h-6" />;
-    }
+  const fetcher = async (url: string): Promise<HangarItem[]> => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to fetch data');
+    const result = await res.json();
+    return result.success && result.data ? result.data.sort((a: HangarItem, b: HangarItem) => a.order - b.order) : [];
   };
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await fetch('/api/admin/experience/projects');
-        if (!response.ok) {
-          throw new Error('Failed to fetch project data');
-        }
-        const result = await response.json();
-        if (result.success && result.data) {
-          // Sort by order
-          const sortedData = result.data.sort((a: HangarItem, b: HangarItem) => a.order - b.order);
-          setHangarItems(sortedData);
-        } else {
-          setError('Failed to load project data');
-        }
-      } catch (err) {
-        setError('Failed to load project data');
-        console.error('Error fetching projects:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: hangarItems = [], error: fetchError, isLoading: loading } = useSWR(
+    '/api/admin/experience/projects',
+    fetcher
+  );
 
-    fetchProjects();
-  }, []);
+  const error = fetchError ? 'Failed to load project data' : null;
 
   useEffect(() => {
     const checkMobile = () => {
@@ -307,96 +285,76 @@ export function AircraftHangar() {
             const colors = getColorClasses(item.color);
 
             return (
-              <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ delay: index * 0.05 }}
-                className="relative group cursor-pointer"
-                onClick={() => setSelectedItem(item)}
-              >
-                {/* Spotlight Effect */}
                 <motion.div
-                  className="absolute inset-0 rounded-2xl blur-2xl opacity-0 group-hover:opacity-40 transition-opacity -z-10"
-                  style={{ background: colors.glow }}
-                />
-
-                {/* Item Card */}
-                <motion.div
-                  className={`relative h-full rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border overflow-hidden transition-all ${colors.border}`}
-                  whileHover={{ y: -4, boxShadow: `0 20px 40px ${colors.glow}` }}
-                  whileTap={{ scale: 0.98 }}
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ delay: index * 0.05 }}
+                  onClick={() => setSelectedItem(item)}
                 >
-                  {/* Header */}
-                  <div
-                    className="px-4 py-3 border-b"
-                    style={{
-                      background: `linear-gradient(135deg, ${colors.main}15, ${colors.main}05)`,
-                      borderBottomColor: `${colors.main}20`
-                    }}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      {/* Icon */}
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-10 h-10 rounded-xl flex items-center justify-center border-2 text-xl"
-                          style={{
-                            background: `radial-gradient(circle, ${colors.main}40, ${colors.main}10)`,
-                            borderColor: colors.main,
-                            boxShadow: `0 0 15px ${colors.glow}`
-                          }}
-                        >
-                          {getIconForCategory(item.category)}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <div className="text-xs text-white/40 uppercase tracking-wider">
-                              {item.classification}
+                  <Card className="group cursor-pointer bg-slate-900/40 border-white/5 hover:bg-slate-900/60 hover:border-white/20 transition-all overflow-hidden h-full">
+                    {/* Header */}
+                    <div
+                      className="px-4 py-3 border-b"
+                      style={{
+                        background: `linear-gradient(135deg, ${colors.main}15, ${colors.main}05)`,
+                        borderBottomColor: `${colors.main}20`
+                      }}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        {/* Icon */}
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-10 h-10 rounded-xl flex items-center justify-center border-2 text-xl"
+                            style={{
+                              background: `radial-gradient(circle, ${colors.main}40, ${colors.main}10)`,
+                              borderColor: colors.main,
+                              boxShadow: `0 0 15px ${colors.glow}`
+                            }}
+                          >
+                            <Github className="w-6 h-6" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <div className="text-xs text-white/40 uppercase tracking-wider">
+                                {item.classification}
+                              </div>
+                            </div>
+                            <div className="text-xs font-mono text-white/70 truncate">
+                              {item.model}
                             </div>
                           </div>
-                          <div className="text-xs font-mono text-white/70 truncate">
-                            {item.model}
-                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Content */}
-                  <div className="p-4 space-y-4">
-                    {/* Title & Description */}
-                    <div>
-                      <h4 className="text-white font-mono mb-2 truncate">{item.name}</h4>
-                      <p className="text-white/60 text-sm line-clamp-2 leading-relaxed">
-                        {item.description}
-                      </p>
-                    </div>
+                    {/* Content */}
+                    <CardContent className="p-4 space-y-4">
+                      {/* Title & Description */}
+                      <div>
+                        <h4 className="text-white font-mono mb-2 truncate">{item.name}</h4>
+                        <p className="text-white/60 text-sm line-clamp-2 leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
 
-                    {/* Stats Panel */}
-                    <div className="grid grid-cols-1 gap-2">
-                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                        <Shield className="w-3.5 h-3.5" style={{ color: colors.main }} />
-                        <div className="min-w-0 flex-1">
-                          <div className="text-[10px] text-white/40 uppercase">On board system</div>
-                          <div className="text-xs text-white/70 font-mono truncate">
-                            {item.systems.slice(0, 3).join(', ')}{item.systems.length > 3 ? '...' : ''}
+                      {/* Stats Panel */}
+                      <div className="grid grid-cols-1 gap-2">
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                          <Shield className="w-3.5 h-3.5" style={{ color: colors.main }} />
+                          <div className="min-w-0 flex-1">
+                            <div className="text-[10px] text-white/40 uppercase">On board system</div>
+                            <div className="text-xs text-white/70 font-mono truncate">
+                              {item.systems.slice(0, 3).join(', ')}{item.systems.length > 3 ? '...' : ''}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Background Pattern */}
-                  <div
-                    className="absolute bottom-0 left-0 right-0 h-16 opacity-[0.03] pointer-events-none"
-                    style={{
-                      backgroundImage: `repeating-linear-gradient(45deg, ${colors.main} 0px, transparent 2px, transparent 10px, ${colors.main} 12px)`
-                    }}
-                  />
+                    </CardContent>
+                  </Card>
                 </motion.div>
-              </motion.div>
             );
           })}
         </AnimatePresence>
@@ -405,14 +363,13 @@ export function AircraftHangar() {
       {/* Show More Button */}
       {filteredItems.length > (isMobile ? 3 : 6) && (
         <div className="flex justify-center mt-8">
-          <motion.button
+          <Button
             onClick={() => setShowMore(!showMore)}
-            className="px-6 py-3 rounded-lg bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 hover:bg-cyan-500/30 transition-all font-mono uppercase tracking-wider text-sm"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            variant="outline"
+            className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 font-mono uppercase tracking-wider text-sm"
           >
             {showMore ? 'Show Less' : `Show ${filteredItems.length - (isMobile ? 3 : 6)} More Projects`}
-          </motion.button>
+          </Button>
         </div>
       )}
 
@@ -466,7 +423,7 @@ export function AircraftHangar() {
                               boxShadow: `0 0 20px ${colors.glow}`
                             }}
                           >
-                            {getIconForCategory(selectedItem.category)}
+                            <Github className="w-6 h-6" />
                           </div>
                           <div className="min-w-0 flex-1">
                             <h3 className="text-white text-sm md:text-base mb-1 truncate">{selectedItem.name}</h3>

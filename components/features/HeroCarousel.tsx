@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 
 interface CarouselItem {
   id: number;
@@ -73,10 +74,11 @@ export function HeroCarousel({ items }: HeroCarouselProps) {
           whileHover={{ scale: 1.05, opacity: 0.8 }}
           onClick={() => paginate(-1)}
         >
-          <img
+          <Image
             src={items[(currentIndex - 1 + items.length) % items.length].image}
             alt="Previous"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         </motion.div>
 
@@ -108,10 +110,11 @@ export function HeroCarousel({ items }: HeroCarouselProps) {
               }}
               className="absolute w-full h-full rounded-3xl overflow-hidden shadow-2xl cursor-grab active:cursor-grabbing"
             >
-              <img
+              <Image
                 src={items[currentIndex].image}
                 alt={items[currentIndex].title}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
               
@@ -151,10 +154,11 @@ export function HeroCarousel({ items }: HeroCarouselProps) {
           whileHover={{ scale: 1.05, opacity: 0.8 }}
           onClick={() => paginate(1)}
         >
-          <img
+          <Image
             src={items[(currentIndex + 1) % items.length].image}
             alt="Next"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         </motion.div>
       </div>

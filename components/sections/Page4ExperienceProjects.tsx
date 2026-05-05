@@ -62,8 +62,8 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
             </div>
           </motion.div>
 
-          <h2 className="text-white mb-4">Experience and Projects</h2>
-          <p className="text-white/70 max-w-2xl mx-auto mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">Experience and Projects</h2>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto mb-6">
             Professional journey and portfolio showcase
           </p>
 

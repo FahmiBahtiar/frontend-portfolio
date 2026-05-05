@@ -90,7 +90,7 @@ export default async function RootLayout({
           </>
         )}
       </head>
-      <body suppressHydrationWarning className={`${inter.className} bg-slate-900`}>
+      <body suppressHydrationWarning className={`${inter.className}`} style={{ backgroundColor: '#060612' }}>
         <WebVitals />
         {children}
       </body>

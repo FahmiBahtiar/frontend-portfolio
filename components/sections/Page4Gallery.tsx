@@ -56,7 +56,7 @@ export function PageGallery() {
   // Loading state with skeleton
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-cyan-400 border-t-transparent mb-4"></div>
           <div className="text-cyan-400 font-mono text-sm">Loading mission photos...</div>
@@ -68,7 +68,7 @@ export function PageGallery() {
   // Error state
   if (isError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-400 text-lg mb-2">⚠️ Failed to load mission photos</div>
           <div className="text-white/60 text-sm">Please try again later</div>
@@ -80,7 +80,7 @@ export function PageGallery() {
   // Empty state
   if (missionPhotos.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-white font-mono">No mission photos available</div>
       </div>
     );

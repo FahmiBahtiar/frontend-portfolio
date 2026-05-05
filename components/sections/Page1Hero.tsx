@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 
-const TerminalHero = dynamic(() => import('@/components/features/TerminalHero').then(mod => ({ default: mod.TerminalHero })), {
+const CinematicHero = dynamic(() => import('@/components/features/CinematicHero').then(mod => ({ default: mod.CinematicHero })), {
   ssr: false,
 });
 
@@ -9,5 +9,5 @@ interface Page1HeroProps {
 }
 
 export function Page1Hero({ onNavigate }: Page1HeroProps) {
-  return <TerminalHero onNavigate={onNavigate} />;
+  return <CinematicHero onNavigate={onNavigate} />;
 }

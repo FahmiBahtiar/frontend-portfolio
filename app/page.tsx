@@ -159,12 +159,7 @@ export default function HomePage() {
 
       {/* Main App - Only render after loading is complete */}
       {!isLoading && (
-        <div className="relative w-full overflow-x-hidden bg-slate-900">
-          {/* Background gradient */}
-          <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 pointer-events-none" aria-hidden="true" />
-          
-          {/* Animated background overlay */}
-          <div className="fixed inset-0 md:backdrop-blur-sm bg-black/10 pointer-events-none z-[1]" aria-hidden="true" />
+        <div className="relative w-full overflow-x-hidden" style={{ backgroundColor: '#060612' }}>
 
           {/* Main Content - All sections stacked vertically */}
           <main id="main-content" tabIndex={-1} className="relative z-[2] focus:outline-none">

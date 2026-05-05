@@ -3,6 +3,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import useSWR from 'swr';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   Plane,
   MapPin,
@@ -63,35 +66,19 @@ export function FlightLogbook() {
   const [listItemsToShow, setListItemsToShow] = useState(3); // Show 3 items initially in list view
   const [showMore, setShowMore] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [flightEntries, setFlightEntries] = useState<FlightEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const fetcher = async (url: string): Promise<FlightEntry[]> => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to fetch data');
+    const result = await res.json();
+    return result.success && result.data ? result.data.sort((a: FlightEntry, b: FlightEntry) => a.order - b.order) : [];
+  };
 
-  useEffect(() => {
-    const fetchFlights = async () => {
-      try {
-        const response = await fetch('/api/admin/experience/flights');
-        if (!response.ok) {
-          throw new Error('Failed to fetch flight data');
-        }
-        const result = await response.json();
-        if (result.success && result.data) {
-          // Sort by order
-          const sortedData = result.data.sort((a: FlightEntry, b: FlightEntry) => a.order - b.order);
-          setFlightEntries(sortedData);
-        } else {
-          setError('Failed to load flight data');
-        }
-      } catch (err) {
-        setError('Failed to load flight data');
-        console.error('Error fetching flights:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: flightEntries = [], error: fetchError, isLoading: loading } = useSWR(
+    '/api/admin/experience/flights',
+    fetcher
+  );
 
-    fetchFlights();
-  }, []);
+  const error = fetchError ? 'Failed to load flight data' : null;
 
   // Reset list items to show when filters change
   useEffect(() => {
@@ -441,15 +428,11 @@ export function FlightLogbook() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className={`group cursor-pointer relative p-4 rounded-xl bg-gradient-to-br backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all`}
-                  style={{
-                    background: `linear-gradient(135deg, ${colors.main}10, ${colors.main}05)`,
-                    borderColor: `${colors.main}30`
-                  }}
-                  whileHover={{ scale: 1.02 }}
                   onClick={() => setSelectedEntry(entry)}
                 >
-                  {/* Grid Card Content */}
+                  <Card className="group cursor-pointer bg-slate-900/40 border-white/5 hover:bg-slate-900/60 hover:border-white/20 transition-all overflow-hidden h-full">
+                    <CardContent className="p-5">
+                      {/* Grid Card Content */}
                   <div className="flex items-start gap-3 mb-3">
                     <div
                       className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -505,7 +488,8 @@ export function FlightLogbook() {
                     )}
                   </div>
 
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    </CardContent>
+                  </Card>
                 </motion.div>
               );
             })}
@@ -513,14 +497,13 @@ export function FlightLogbook() {
             {/* Show More Button for Grid View */}
             {viewMode === 'grid' && filteredEntries.length > (isMobile ? 3 : 6) && (
               <div className="flex justify-center mt-8">
-                <motion.button
+                <Button
                   onClick={() => setShowMore(!showMore)}
-                  className="px-6 py-3 rounded-lg bg-purple-500/20 border border-purple-400/50 text-purple-400 hover:bg-purple-500/30 transition-all font-mono uppercase tracking-wider text-sm"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  variant="outline"
+                  className="border-purple-500/50 text-purple-400 hover:bg-purple-500/10 font-mono uppercase tracking-wider text-sm"
                 >
                   {showMore ? 'Show Less' : `Show ${filteredEntries.length - (isMobile ? 3 : 6)} More Experiences`}
-                </motion.button>
+                </Button>
               </div>
             )}
 
@@ -531,12 +514,9 @@ export function FlightLogbook() {
                   const colors = getColorClasses(entry.color);
 
                   return (
-                    <motion.div
+                    <Card
                       key={entry.id}
-                      initial={{ opacity: 0, x: -30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1, duration: 0.5 }}
-                      className="relative rounded-2xl bg-gradient-to-br backdrop-blur-xl border overflow-hidden transition-all cursor-pointer"
+                      className="group cursor-pointer bg-slate-900/40 border-white/5 hover:bg-slate-900/60 hover:border-white/20 transition-all overflow-hidden"
                       onClick={() => setSelectedEntry(entry)}
                     >
                       {/* List Card Content */}
@@ -685,49 +665,33 @@ export function FlightLogbook() {
                         </div>
                       </div>
 
-                      <div
-                        className="absolute bottom-0 left-0 right-0 h-20 opacity-[0.03] pointer-events-none"
-                        style={{
-                          backgroundImage: `repeating-linear-gradient(90deg, ${colors.main} 0px, transparent 2px, transparent 20px, ${colors.main} 22px)`
-                        }}
-                      />
-                    </motion.div>
+                    </Card>
                   );
                 })}
 
                 {/* Show More/Less Button for List View */}
                 {filteredEntries.length > 3 && viewMode === 'list' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex justify-center pt-4"
-                  >
+                  <div className="flex justify-center pt-4">
                     {listItemsToShow < filteredEntries.length ? (
-                      <motion.button
+                      <Button
                         onClick={() => setListItemsToShow(prev => Math.min(prev + 3, filteredEntries.length))}
-                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500/20 to-orange-500/20 border border-cyan-400/30 text-cyan-400 hover:bg-cyan-500/30 hover:border-cyan-400/50 transition-all font-medium"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        variant="outline"
+                        className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
                       >
-                        <div className="flex items-center gap-2">
-                          <ChevronRight className="w-4 h-4" />
-                          <span>Show More ({filteredEntries.length - listItemsToShow} remaining)</span>
-                        </div>
-                      </motion.button>
+                        <ChevronRight className="w-4 h-4 mr-2" />
+                        Show More ({filteredEntries.length - listItemsToShow} remaining)
+                      </Button>
                     ) : (
-                      <motion.button
+                      <Button
                         onClick={() => setListItemsToShow(3)}
-                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500/20 to-cyan-500/20 border border-orange-400/30 text-orange-400 hover:bg-orange-500/30 hover:border-orange-400/50 transition-all font-medium"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        variant="outline"
+                        className="border-orange-500/50 text-orange-400 hover:bg-orange-500/10"
                       >
-                        <div className="flex items-center gap-2">
-                          <ChevronUp className="w-4 h-4" />
-                          <span>Show Less</span>
-                        </div>
-                      </motion.button>
+                        <ChevronUp className="w-4 h-4 mr-2" />
+                        Show Less
+                      </Button>
                     )}
-                  </motion.div>
+                  </div>
                 )}
               </>
             )}

@@ -27,6 +27,7 @@ async function serverFetch<T>(
       revalidate: 3600, // Revalidate setiap 1 jam (default)
       ...options.next,
     },
+    signal: AbortSignal.timeout(3000), // Fast fail timeout to prevent SSR hanging
     ...options,
   };
 

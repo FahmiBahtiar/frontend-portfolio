@@ -1,12 +1,14 @@
 'use client';
 
-import { motion } from 'motion/react';
-import { useState, useEffect } from 'react';
-// Removed unused icon imports
+import { motion, useInView } from 'motion/react';
+import { useState, useEffect, useRef } from 'react';
+import { Heart } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [lastModified, setLastModified] = useState<string>('2025.11.04');
+  const footerRef = useRef<HTMLElement>(null);
+  const isInView = useInView(footerRef, { once: true, amount: 0.5 });
 
   useEffect(() => {
     fetchLastModified();
@@ -29,100 +31,70 @@ export default function Footer() {
     }
   };
 
-  // Removed social links as we now use BLIMBING text
-
   return (
-    <footer 
-      className="relative z-[2] bg-gradient-to-t from-slate-900/95 via-slate-900/90 to-slate-900/80 backdrop-blur-xl border-t border-white/5"
+    <footer
+      ref={footerRef}
+      className="relative z-[2]"
+      style={{ background: '#060612' }}
       aria-label="Site footer"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-center">
-          {/* Left Section - Copyright & Last Modified */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center md:text-left order-3 md:order-1"
-          >
-            <div className="space-y-1 sm:space-y-2">
-              <p className="text-slate-400 text-sm font-medium">
-                © {currentYear} All rights reserved.
-              </p>
-              <p className="text-slate-500 text-xs">
-                Last modified on {lastModified}
-              </p>
-            </div>
-          </motion.div>
+      {/* Top divider */}
+      <div
+        className="h-px w-full"
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(34,211,238,0.15), rgba(148,163,184,0.1), rgba(34,211,238,0.15), transparent)',
+        }}
+      />
 
-          {/* Center Section - BLIMBING Text */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex justify-center order-1 md:order-2"
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : {}}
+        transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+        className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-10 py-6 sm:py-8 flex flex-col sm:flex-row items-center justify-between gap-3"
+      >
+        {/* Copyright + last modified */}
+        <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-4">
+          <p
+            className="text-[12px] font-medium"
+            style={{ color: '#475569' }}
           >
-            <motion.div
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.2 }}
-              className="relative px-4 py-1"
-            >
-              <span className="text-lg md:text-xl font-medium tracking-[0.15em] text-slate-300">
-                BLIMBING
-              </span>
-              <div className="absolute -bottom-1 left-0 w-0 h-[1px] bg-slate-400/30 group-hover:w-full transition-all duration-300"></div>
-              <div className="absolute -bottom-1 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-slate-400/50 to-transparent"></div>
-            </motion.div>
-          </motion.div>
-
-          {/* Right Section - Designed By */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-center md:text-right order-2 md:order-3"
+            © {currentYear} Blimbing. All rights reserved.
+          </p>
+          <span
+            className="hidden sm:block w-1 h-1 rounded-full"
+            style={{ background: '#1e293b' }}
+          />
+          <p
+            className="text-[11px]"
+            style={{ color: '#334155' }}
           >
-            <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 text-sm font-medium">
-              <div className="flex items-center gap-2">
-                <span className="text-slate-400">Designed & Build with</span>
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-                >
-                  <svg 
-                    viewBox="0 0 24 24" 
-                    className="w-4 h-4 drop-shadow-sm" 
-                    fill="#ff3366"
-                  >
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                  </svg>
-                </motion.div>
-                <span className="text-slate-400">by</span>
-                <span className="text-emerald-400 font-semibold hover:text-emerald-300 transition-colors duration-300">
-                  Fahmi Bahtiar
-                </span>
-              </div>
-            </div>
-          </motion.div>
+            Last modified {lastModified}
+          </p>
         </div>
 
-        {/* Bottom Divider */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-white/5"
+        {/* Credits */}
+        <div
+          className="flex items-center gap-1.5 text-[12px] font-medium"
+          style={{ color: '#475569' }}
         >
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="flex items-center justify-center"
+          <span>Designed & built with</span>
+          <motion.span
+            className="inline-flex"
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           >
-
-          </motion.div>
-        </motion.div>
-      </div>
+            <Heart
+              className="w-3 h-3"
+              fill="#f472b6"
+              style={{ color: '#f472b6' }}
+            />
+          </motion.span>
+          <span>by</span>
+          <span style={{ color: '#22d3ee' }}>
+            Fahmi Bahtiar
+          </span>
+        </div>
+      </motion.div>
     </footer>
   );
 }

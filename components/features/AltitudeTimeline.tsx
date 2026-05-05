@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, useInView, useMotionValue, useSpring, useTransform, AnimatePresence } from 'motion/react';
@@ -69,7 +70,7 @@ const defaultTimelineData: TimelinePoint[] = [
     title: 'Intensive Bootcamp',
     subtitle: 'STEM Specialization',
     institution: 'SMA Negeri 8 Jakarta',
-    level: 'senior',
+    level: 'bootcamp',
     icon: Trophy,
     badge: 'Camp 2',
     description: 'Science major focus on Mathematics & Physics. Won regional robotics competition. Developed first web applications.',
@@ -85,7 +86,7 @@ const defaultTimelineData: TimelinePoint[] = [
     title: 'Senior High School',
     subtitle: 'Full-Stack Development',
     institution: 'Tech Academy Scholarship',
-    level: 'bootcamp',
+    level: 'senior',
     icon: Code2,
     badge: 'Camp 3',
     description: 'Received full scholarship for intensive coding bootcamp. Mastered modern web technologies, agile development, and real-world projects.',
@@ -113,8 +114,8 @@ const defaultTimelineData: TimelinePoint[] = [
 const categoryColors = {
   elementary: { main: '#22d3ee', glow: 'rgba(34, 211, 238, 0.5)', bg: 'from-cyan-400/20 to-blue-400/20', text: 'text-cyan-300' },
   junior: { main: '#4ade80', glow: 'rgba(74, 222, 128, 0.5)', bg: 'from-green-400/20 to-emerald-400/20', text: 'text-green-300' },
-  senior: { main: '#fb923c', glow: 'rgba(251, 146, 60, 0.5)', bg: 'from-orange-400/20 to-pink-400/20', text: 'text-orange-300' },
   bootcamp: { main: '#f59e0b', glow: 'rgba(245, 158, 11, 0.5)', bg: 'from-amber-400/20 to-orange-400/20', text: 'text-amber-300' },
+  senior: { main: '#fb923c', glow: 'rgba(251, 146, 60, 0.5)', bg: 'from-orange-400/20 to-pink-400/20', text: 'text-orange-300' },
   university: { main: '#a78bfa', glow: 'rgba(167, 139, 250, 0.5)', bg: 'from-purple-400/20 to-pink-400/20', text: 'text-purple-300' },
 };
 
@@ -129,11 +130,11 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
 
     return records.map((record, index) => {
       // Map education order to timeline level
-      const levelMap: Record<number, 'elementary' | 'junior' | 'senior' | 'bootcamp' | 'university'> = {
+      const levelMap: Record<number, 'elementary' | 'junior' | 'bootcamp' | 'senior' | 'university'> = {
         1: 'elementary',
         2: 'junior',
-        3: 'senior',
-        4: 'bootcamp',
+        3: 'bootcamp',
+        4: 'senior',
         5: 'university'
       };
 
@@ -167,7 +168,9 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
   };
 
   // Use education records if available, otherwise use default data
-  const timelineData = (educationRecords && educationRecords.length > 0) ? convertEducationToTimeline(educationRecords) : defaultTimelineData;
+  const timelineData = React.useMemo(() => {
+    return (educationRecords && educationRecords.length > 0) ? convertEducationToTimeline(educationRecords) : defaultTimelineData;
+  }, [educationRecords]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
@@ -277,15 +280,17 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
   };
 
   // Map data to coordinates with equal spacing
-  const points = timelineData.map((point, index) => {
-    // Calculate x position with equal spacing between waypoints
-    const xProgress = index / (timelineData.length - 1);
-    const x = padding.left + xProgress * chartWidth;
-    // Use SAME calculation as grid lines to ensure alignment
-    const y = padding.top + chartHeight - (point.altitude / 100) * chartHeight;
+  const points = React.useMemo(() => {
+    return timelineData.map((point, index) => {
+      // Calculate x position with equal spacing between waypoints
+      const xProgress = index / (timelineData.length - 1);
+      const x = padding.left + xProgress * chartWidth;
+      // Use SAME calculation as grid lines to ensure alignment
+      const y = padding.top + chartHeight - (point.altitude / 100) * chartHeight;
 
-    return { ...point, x, y };
-  });
+      return { ...point, x, y };
+    });
+  }, [timelineData, chartWidth, chartHeight, padding.left, padding.top]);
 
   // Function to detect which waypoint climber is near
   const detectNearestWaypoint = (progress: number) => {
@@ -322,15 +327,17 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
   };
 
   // Generate SVG path
-  const pathData = points.reduce((path, point, index) => {
-    if (index === 0) {
-      return `M ${point.x} ${point.y}`;
-    }
-    // Smooth curve using quadratic bezier
-    const prevPoint = points[index - 1];
-    const midX = (prevPoint.x + point.x) / 2;
-    return `${path} Q ${midX} ${prevPoint.y}, ${midX} ${(prevPoint.y + point.y) / 2} Q ${midX} ${point.y}, ${point.x} ${point.y}`;
-  }, '');
+  const pathData = React.useMemo(() => {
+    return points.reduce((path, point, index) => {
+      if (index === 0) {
+        return `M ${point.x} ${point.y}`;
+      }
+      // Smooth curve using quadratic bezier
+      const prevPoint = points[index - 1];
+      const midX = (prevPoint.x + point.x) / 2;
+      return `${path} Q ${midX} ${prevPoint.y}, ${midX} ${(prevPoint.y + point.y) / 2} Q ${midX} ${point.y}, ${point.x} ${point.y}`;
+    }, '');
+  }, [points]);
 
   // Get point at progress for climber position
   const getClimberPosition = (progress: number) => {
@@ -610,7 +617,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
         <div className="absolute left-0 right-0 bg-gradient-to-t from-orange-400/5 to-transparent" style={{ bottom: '50%', height: '20%' }}>
           <div className="absolute top-2 left-2 md:top-4 md:left-4 text-orange-300/50 text-[9px] md:text-xs flex items-center gap-1 md:gap-2">
             <Trophy className="w-2.5 h-2.5 md:w-3 md:h-3 flex-shrink-0" />
-            <span className="hidden sm:inline">Camp 2 • Senior High School</span>
+            <span className="hidden sm:inline">Camp 2 • Intensive Bootcamp</span>
             <span className="sm:hidden truncate">Senior High</span>
           </div>
         </div>
@@ -618,7 +625,7 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
         <div className="absolute left-0 right-0 bg-gradient-to-t to-transparent" style={{ bottom: '70%', height: '15%', backgroundImage: 'linear-gradient(to top, rgba(251, 191, 36, 0.07), transparent)' }}>
           <div className="absolute top-2 left-2 md:top-4 md:left-4 text-[9px] md:text-xs flex items-center gap-1 md:gap-2" style={{ color: 'rgba(251, 191, 36, 0.6)' }}>
             <Code2 className="w-2.5 h-2.5 md:w-3 md:h-3 flex-shrink-0" />
-            <span className="hidden sm:inline">Camp 3 • Intensive Bootcamp</span>
+            <span className="hidden sm:inline">Camp 3 • Senior High School </span>
             <span className="sm:hidden truncate">Bootcamp</span>
           </div>
         </div>

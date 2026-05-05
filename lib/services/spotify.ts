@@ -20,6 +20,7 @@ export const SpotifyService = {
       try {
         const response = await fetch(`${API_URL}/spotify/now-playing`, {
           next: { revalidate: 0 }, // No caching for real-time data
+          signal: AbortSignal.timeout(3000), // Fast fail timeout
         });
 
         if (!response.ok) {

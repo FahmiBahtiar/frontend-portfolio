@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
+import Image from 'next/image';
 import { CreditCard, Save, Edit3, Globe, Loader2 } from 'lucide-react';
 import { ImageUpload } from '@/components/admin/ImageUpload';
 
@@ -606,9 +607,9 @@ export default function LanyardCardPage() {
               {/* Main Content */}
               <div className="flex gap-4">
                 {/* Photo */}
-                <div className="w-24 h-28 bg-white/20 rounded border-2" style={{ borderColor: formData!.accentColor }}>
+                <div className="w-24 h-28 bg-white/20 rounded border-2 relative" style={{ borderColor: formData!.accentColor }}>
                   {currentAvatarUrl && (
-                    <img src={currentAvatarUrl} alt="Avatar" className="w-full h-full object-cover rounded" />
+                    <Image src={currentAvatarUrl} alt="Avatar" fill className="object-cover rounded" />
                   )}
                 </div>
 

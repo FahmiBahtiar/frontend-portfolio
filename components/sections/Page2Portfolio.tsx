@@ -1,155 +1,86 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Code2, Plane, Mountain, GraduationCap, Briefcase, Trophy, Target, Heart, Code } from 'lucide-react';
+import useSWR from 'swr';
+import { Code2, Plane, Mountain, GraduationCap, Briefcase, Trophy, Target, Heart, Code, ArrowRight } from 'lucide-react';
 import { LanyardCard } from '@/components/features/LanyardCard';
 import { AboutService } from '@/lib/services/about';
 import { Passion, Highlight } from '@/lib/types/admin';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 interface Page2PortfolioProps {
   onNavigate?: (sectionIndex: number) => void;
 }
 
 export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
-  const [passions, setPassions] = useState<Passion[]>([]);
-  const [highlights, setHighlights] = useState<Highlight[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Use SWR for data fetching
+  const { data: passions = [], isLoading: passionsLoading, error: passionsError } = useSWR('passions', () => AboutService.getPassions());
+  const { data: highlights = [], isLoading: highlightsLoading, error: highlightsError } = useSWR('highlights', () => AboutService.getHighlights());
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const [passionsData, highlightsData] = await Promise.all([
-          AboutService.getPassions(),
-          AboutService.getHighlights(),
-        ]);
-        setPassions(passionsData);
-        setHighlights(highlightsData);
-      } catch (err) {
-        console.error('❌ Failed to fetch about data:', err);
-        setError('Unable to load portfolio data.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const loading = passionsLoading || highlightsLoading;
+  const error = passionsError || highlightsError ? 'Unable to load portfolio data.' : null;
 
   // Icon mapping function
   const getIcon = (iconName: string) => {
-    const iconMap: Record<string, any> = {
-      Code,
-      Code2,
-      Plane,
-      Mountain,
-      GraduationCap,
-      Briefcase,
-      Trophy,
-      Target,
-      Heart,
+    const iconMap: Record<string, React.ElementType> = {
+      Code, Code2, Plane, Mountain, GraduationCap, Briefcase, Trophy, Target, Heart,
     };
     return iconMap[iconName] || Code;
   };
 
-  // Color mapping function
+  // Color mapping function for Tailwind semantic colors
   const getColorClasses = (color: string) => {
     const colorMap: Record<string, string> = {
-      cyan: 'text-cyan-400 border-cyan-400/20 bg-cyan-400/10',
-      blue: 'text-blue-400 border-blue-400/20 bg-blue-400/10',
-      green: 'text-green-400 border-green-400/20 bg-green-400/10',
-      purple: 'text-purple-400 border-purple-400/20 bg-purple-400/10',
-      orange: 'text-orange-400 border-orange-400/20 bg-orange-400/10',
-      yellow: 'text-yellow-400 border-yellow-400/20 bg-yellow-400/10',
-      pink: 'text-pink-400 border-pink-400/20 bg-pink-400/10',
+      cyan: 'text-cyan-400 border-cyan-500/20 bg-cyan-500/10 hover:border-cyan-500/40',
+      blue: 'text-blue-400 border-blue-500/20 bg-blue-500/10 hover:border-blue-500/40',
+      green: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10 hover:border-emerald-500/40',
+      purple: 'text-purple-400 border-purple-500/20 bg-purple-500/10 hover:border-purple-500/40',
+      orange: 'text-orange-400 border-orange-500/20 bg-orange-500/10 hover:border-orange-500/40',
+      yellow: 'text-yellow-400 border-yellow-500/20 bg-yellow-500/10 hover:border-yellow-500/40',
+      pink: 'text-pink-400 border-pink-500/20 bg-pink-500/10 hover:border-pink-500/40',
     };
     return colorMap[color] || colorMap.cyan;
   };
 
-  // Color mapping function for hex colors (text only, no background)
-  const getColorFromHex = (hexColor: string) => {
-    // Map hex colors to appropriate text colors only
+  // Convert named colors to text classes
+  const getTextColor = (color: string) => {
     const colorMap: Record<string, string> = {
-      '#00ffff': 'text-cyan-400', // cyan
-      '#0080ff': 'text-blue-400', // blue
-      '#00ff00': 'text-green-400', // green
-      '#8458fd': 'text-purple-400', // purple
-      '#ff8000': 'text-orange-400', // orange
-      '#ffff00': 'text-yellow-400', // yellow
-      '#ff00ff': 'text-pink-400', // pink
+      cyan: 'text-cyan-400',
+      blue: 'text-blue-400',
+      green: 'text-emerald-400',
+      purple: 'text-purple-400',
+      orange: 'text-orange-400',
+      yellow: 'text-yellow-400',
+      pink: 'text-pink-400',
     };
-    return colorMap[hexColor.toLowerCase()] || 'text-cyan-400';
-  };
-
-  // Convert named colors to RGB values for inline styles
-  const getColorValue = (color: string) => {
-    const colorMap: Record<string, string> = {
-      cyan: '6, 182, 212',    // cyan-400
-      blue: '59, 130, 246',   // blue-400  
-      green: '34, 197, 94',   // green-400
-      purple: '147, 51, 234', // purple-400
-      orange: '251, 146, 60', // orange-400
-      yellow: '250, 204, 21', // yellow-400
-      pink: '236, 72, 153',   // pink-400
-    };
-    return colorMap[color] || colorMap.cyan;
-  };
-
-  // Handle gradient backgrounds
-  const getGradientColors = (gradient: string) => {
-    // For gradients like "from-cyan-500/20 to-blue-500/20"
-    if (gradient.includes('from-') && gradient.includes('to-')) {
-      // This is already a Tailwind gradient, convert to CSS
-      const fromMatch = gradient.match(/from-(\w+)-(\d+)/);
-      const toMatch = gradient.match(/to-(\w+)-(\d+)/);
-      
-      if (fromMatch && toMatch) {
-        const fromColor = getColorValue(fromMatch[1]);
-        const toColor = getColorValue(toMatch[1]);
-        const fromOpacity = parseInt(fromMatch[2]) / 100;
-        const toOpacity = parseInt(toMatch[2]) / 100;
-        
-        return `rgba(${fromColor}, ${fromOpacity}) 0%, rgba(${toColor}, ${toOpacity}) 100%`;
-      }
+    // Map hex colors if present
+    if (color.startsWith('#')) {
+      const hexMap: Record<string, string> = {
+        '#00ffff': 'text-cyan-400',
+        '#0080ff': 'text-blue-400',
+        '#00ff00': 'text-emerald-400',
+        '#8458fd': 'text-purple-400',
+        '#ff8000': 'text-orange-400',
+        '#ffff00': 'text-yellow-400',
+        '#ff00ff': 'text-pink-400',
+      };
+      return hexMap[color.toLowerCase()] || 'text-cyan-400';
     }
-    return `rgba(${getColorValue('cyan')}, 0.2) 0%, rgba(${getColorValue('blue')}, 0.2) 100%`;
-  };
-
-  const getSolidColor = (color: string) => {
-    return `rgba(${getColorValue(color)}, 0.2) 0%, rgba(${getColorValue(color)}, 0.1) 100%`;
-  };
-
-  const getGlowStyle = (hexColor: string) => {
-    return {
-      background: `linear-gradient(135deg, ${hexColor}00 0%, ${hexColor}00 100%)`,
-    };
-  };
-
-  const getHoverGlowStyle = (hexColor: string) => {
-    return {
-      background: `linear-gradient(135deg, ${hexColor}1a 0%, ${hexColor}0d 100%)`,
-    };
+    return colorMap[color] || 'text-cyan-400';
   };
 
   // Helper function to get stats data
   const getStatsData = (passion: Passion) => {
-    if (passion.stats) {
-      return passion.stats;
-    }
+    if (passion.stats) return passion.stats;
     if (passion.statsLabel && passion.statsValue) {
-      return {
-        label: passion.statsLabel,
-        value: passion.statsValue,
-      };
+      return { label: passion.statsLabel, value: passion.statsValue };
     }
     return { label: 'Stats', value: 'N/A' };
   };
 
   return (
-    <div className="min-h-screen w-full px-4 md:px-8 py-12 md:py-16 pt-24 lg:pt-28 overflow-hidden">
+    <div className="min-h-screen w-full px-4 md:px-8 py-12 md:py-16 pt-24 lg:pt-28">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -157,20 +88,14 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8"
+          className="text-center mb-12 md:mb-16"
         >
-          {/* Icon Container */}
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/20 to-cyan-500/20 backdrop-blur-sm border border-white/20 mb-6"
-          >
-            <Heart className="w-8 h-8 text-purple-400" />
-          </motion.div>
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900 border border-purple-500/30 mb-8 rotate-3 hover:rotate-0 transition-transform duration-500">
+            <Heart className="w-10 h-10 text-purple-400" />
+          </div>
 
-          <h2 className="text-white mb-3">About Me</h2>
-          <p className="text-white/70 max-w-2xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">About Me</h2>
+          <p className="text-slate-400 max-w-2xl mx-auto text-lg">
             Pull the lanyard to reveal my identity card
           </p>
         </motion.div>
@@ -179,8 +104,8 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
         {loading && (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <div className="inline-block w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p className="text-white/70">Loading portfolio data...</p>
+              <div className="inline-block w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p className="text-slate-400 font-mono">Loading portfolio data...</p>
             </div>
           </div>
         )}
@@ -189,9 +114,10 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
         {error && (
           <div className="flex items-center justify-center py-12">
             <div className="text-center max-w-md">
-              <div className="text-red-400 text-4xl mb-4">⚠️</div>
-              <p className="text-red-400 font-medium mb-2">Connection Error</p>
-              <p className="text-white/60 text-sm">{error}</p>
+              <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-6">
+                <span className="text-red-400 text-2xl">⚠️</span>
+              </div>
+              <p className="text-red-400 font-mono mb-4">{error}</p>
             </div>
           </div>
         )}
@@ -201,8 +127,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
           <div className="flex items-center justify-center py-12">
             <div className="text-center max-w-md">
               <div className="text-white/40 text-4xl mb-4">📄</div>
-              <p className="text-white/60">No portfolio data available</p>
-              <p className="text-white/40 text-sm mt-2">Data will be loaded when available</p>
+              <p className="text-slate-400 font-mono">No portfolio data available</p>
             </div>
           </div>
         )}
@@ -230,33 +155,29 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ delay: 0.3, duration: 0.6 }}
               >
-                <h3 className="text-white mb-4">Highlights</h3>
+                <div className="flex items-center gap-4 mb-6">
+                  <h3 className="text-white font-mono font-bold tracking-wider">HIGHLIGHTS</h3>
+                  <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/50 to-transparent" />
+                </div>
+                
                 <div className="grid grid-cols-2 gap-4">
                   {highlights.map((item, index) => {
                     const Icon = getIcon(item.icon);
                     return (
                       <motion.div
                         key={item.label}
-                        initial={{ opacity: 0, scale: 0.8 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ delay: 0.1 * index, duration: 0.5 }}
-                        whileHover={{ scale: 1.05, y: -5 }}
-                        className="relative p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all group overflow-hidden"
                       >
-                        {/* Glow effect */}
-                        <div 
-                          className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-all duration-300"
-                          style={{
-                            background: `linear-gradient(135deg, ${item.color}1a 0%, ${item.color}0d 100%)`
-                          }}
-                        />
-                        
-                        <div className="relative">
-                          <Icon className={`w-6 h-6 ${getColorFromHex(item.color)} mb-2`} strokeWidth={2} />
-                          <p className="text-white/50 text-xs mb-1">{item.label}</p>
-                          <p className="text-white">{item.value}</p>
-                        </div>
+                        <Card className="bg-slate-900/40 hover:bg-slate-900/60 transition-colors h-full group">
+                          <CardContent className="p-5 flex flex-col items-center text-center">
+                            <Icon className={`w-8 h-8 ${getTextColor(item.color)} mb-3 group-hover:scale-110 transition-transform`} strokeWidth={1.5} />
+                            <p className="text-slate-400 text-xs font-mono mb-1 uppercase tracking-wider">{item.label}</p>
+                            <p className="text-white font-bold">{item.value}</p>
+                          </CardContent>
+                        </Card>
                       </motion.div>
                     );
                   })}
@@ -270,11 +191,18 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6 }}
               >
-                <h3 className="text-white mb-4">My Three Passions</h3>
+                <div className="flex items-center gap-4 mb-6 mt-10">
+                  <h3 className="text-white font-mono font-bold tracking-wider">MY THREE PASSIONS</h3>
+                  <div className="flex-1 h-px bg-gradient-to-r from-purple-500/50 to-transparent" />
+                </div>
+                
                 <div className="space-y-4">
                   {passions.map((passion, index) => {
                     const Icon = getIcon(passion.icon);
                     const statsData = getStatsData(passion);
+                    const colorClass = getColorClasses(passion.color);
+                    const textColor = getTextColor(passion.color);
+                    
                     return (
                       <motion.div
                         key={passion.title}
@@ -282,69 +210,31 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: index * 0.1, duration: 0.6 }}
-                        whileHover={{ x: 5 }}
-                        className="relative p-5 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all group overflow-hidden"
                       >
-                        {/* Background gradient */}
-                        <div 
-                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                          style={{
-                            background: (passion.gradient && passion.gradient.startsWith('from-'))
-                              ? `linear-gradient(135deg, ${getGradientColors(passion.gradient)})`
-                              : `linear-gradient(135deg, ${getSolidColor(passion.gradient || '')})`
-                          }}
-                        />
-                        
-                        <div className="relative flex items-start gap-4">
-                          {/* Icon */}
-                          <div className="relative flex-shrink-0">
-                            <motion.div
-                              className="absolute inset-0 rounded-full blur-xl"
-                              style={{
-                                backgroundColor: `rgba(${getColorValue(passion.color)}, 0.4)`,
-                              }}
-                              animate={{
-                                scale: [1, 1.2, 1],
-                                opacity: [0.3, 0.6, 0.3]
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: 'easeInOut'
-                              }}
-                            />
-                            <div 
-                              className="relative w-12 h-12 rounded-full flex items-center justify-center"
-                              style={{
-                                backgroundColor: `rgba(${getColorValue(passion.color)}, 0.2)`,
-                                border: `1px solid rgba(${getColorValue(passion.color)}, 0.3)`,
-                              }}
-                            >
-                              <Icon 
-                                className={`w-6 h-6`}
-                                style={{ color: `rgb(${getColorValue(passion.color)})` }}
-                                strokeWidth={2}
-                              />
-                            </div>
-                          </div>
+                        <Card className={`bg-slate-900/40 border-slate-700/50 hover:bg-slate-800/60 transition-all overflow-hidden group`}>
+                          <CardContent className="p-5">
+                            <div className="flex items-start gap-5">
+                              {/* Icon */}
+                              <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${colorClass}`}>
+                                <Icon className={`w-7 h-7`} strokeWidth={1.5} />
+                              </div>
 
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-4 mb-2">
-                              <h4 className="text-white">{passion.title}</h4>
-                              <div className="text-right flex-shrink-0">
-                                <p 
-                                  className="font-medium"
-                                  style={{ color: `rgb(${getColorValue(passion.color)})` }}
-                                >
-                                  {getStatsData(passion).value}
-                                </p>
-                                <p className="text-white/50 text-xs">{getStatsData(passion).label}</p>
+                              {/* Content */}
+                              <div className="flex-1 min-w-0 pt-1">
+                                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
+                                  <h4 className="text-white font-bold text-lg leading-tight">{passion.title}</h4>
+                                  <div className="text-left sm:text-right shrink-0">
+                                    <p className={`font-mono font-bold ${textColor}`}>
+                                      {statsData.value}
+                                    </p>
+                                    <p className="text-slate-500 text-xs font-mono uppercase tracking-wider">{statsData.label}</p>
+                                  </div>
+                                </div>
+                                <p className="text-slate-400 text-sm leading-relaxed">{passion.description}</p>
                               </div>
                             </div>
-                            <p className="text-white/60 text-sm mb-3">{passion.description}</p>
-                          </div>
-                        </div>
+                          </CardContent>
+                        </Card>
                       </motion.div>
                     );
                   })}
@@ -357,21 +247,16 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6 }}
-                className="text-center lg:text-left"
+                className="text-center lg:text-left pt-6"
               >
-                <motion.button
-                  whileHover={{ scale: 1.05, x: 5 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-8 py-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:shadow-lg hover:shadow-cyan-500/25 transition-all inline-flex items-center gap-2"
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-full group"
+                  onClick={() => onNavigate && onNavigate(4)} // Assuming section 4 is Contact based on Page5Contact name
                 >
-                  <span>Let's Collaborate</span>
-                  <motion.span
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    →
-                  </motion.span>
-                </motion.button>
+                  Let's Collaborate
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
               </motion.div>
             </div>
           </div>
