@@ -1,22 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Star, Plus, Trash2, Save, Loader2 } from 'lucide-react';
+import useSWR from 'swr';
+import { Star, Plus, Save, Loader2 } from 'lucide-react';
 import { DataTable, type Column } from '@/components/admin/DataTable';
 import { DeleteDialog } from '@/components/admin/DeleteDialog';
 import { AboutService } from '@/lib/services/about';
 import { Highlight } from '@/lib/types/admin';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 export default function HighlightsPage() {
+  const { data: highlights = [], mutate, isLoading } = useSWR('highlights', () => AboutService.getHighlights());
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [highlights, setHighlights] = useState<Highlight[]>([]);
 
-  // Form state
   const [formData, setFormData] = useState({
     icon: '',
     label: '',
@@ -24,23 +28,6 @@ export default function HighlightsPage() {
     color: 'cyan' as 'cyan' | 'blue' | 'green' | 'purple' | 'orange' | 'yellow' | 'pink',
     order: 0,
   });
-
-  // Load highlights data
-  useEffect(() => {
-    const loadHighlights = async () => {
-      try {
-        setLoading(true);
-        const data = await AboutService.getHighlights();
-        setHighlights(data);
-      } catch (error) {
-        // Error handled by UI state
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadHighlights();
-  }, []);
 
   const handleEdit = (highlight: Highlight) => {
     setFormData({
@@ -59,7 +46,7 @@ export default function HighlightsPage() {
 
     try {
       await AboutService.deleteHighlight(deleteId);
-      setHighlights(highlights.filter(h => h.id !== deleteId));
+      mutate(highlights.filter(h => h.id !== deleteId), false);
       setDeleteId(null);
     } catch (error) {
       alert('Failed to delete highlight');
@@ -71,41 +58,22 @@ export default function HighlightsPage() {
     setSaving(true);
 
     try {
+      const payload = {
+        icon: formData.icon,
+        label: formData.label,
+        value: formData.value,
+        color: formData.color,
+        order: formData.order,
+      };
+
       if (editingId) {
-        // Update existing highlight
-        const updateData = {
-          icon: formData.icon,
-          label: formData.label,
-          value: formData.value,
-          color: formData.color,
-          order: formData.order,
-        };
-        await AboutService.updateHighlight(editingId, updateData);
-        setHighlights(highlights.map(h =>
-          h.id === editingId ? { ...h, ...updateData } : h
-        ));
+        await AboutService.updateHighlight(editingId, payload);
       } else {
-        // Create new highlight
-        const newHighlight = {
-          icon: formData.icon,
-          label: formData.label,
-          value: formData.value,
-          color: formData.color,
-          order: formData.order,
-        };
-        const created = await AboutService.createHighlight(newHighlight);
-        setHighlights([...highlights, created]);
+        await AboutService.createHighlight(payload);
       }
 
-      setIsFormOpen(false);
-      setEditingId(null);
-      setFormData({
-        icon: '',
-        label: '',
-        value: '',
-        color: 'cyan',
-        order: 0,
-      });
+      await mutate();
+      resetForm();
     } catch (error) {
       alert('Failed to save highlight');
     } finally {
@@ -129,198 +97,113 @@ export default function HighlightsPage() {
     {
       key: 'icon',
       label: 'Icon',
-      render: (highlight: Highlight) => (
-        <span className="text-2xl">{highlight.icon}</span>
-      ),
+      render: (highlight: Highlight) => <span className="text-2xl">{highlight.icon}</span>,
     },
-    {
-      key: 'label',
-      label: 'Label',
-    },
+    { key: 'label', label: 'Label' },
     {
       key: 'value',
       label: 'Value',
-      render: (highlight: Highlight) => (
-        <span className="text-white font-bold">
-          {highlight.value}
-        </span>
-      ),
+      render: (highlight: Highlight) => <span className="text-white font-bold">{highlight.value}</span>,
     },
     {
       key: 'color',
       label: 'Color',
       render: (highlight: Highlight) => (
         <div className="flex items-center gap-2">
-          <div 
-            className="w-6 h-6 rounded border border-white/20"
-            style={{ backgroundColor: highlight.color }}
-          />
-          <span className="text-white/60 text-sm font-mono">{highlight.color}</span>
+          <div className="w-4 h-4 rounded border border-white/20" style={{ backgroundColor: highlight.color }} />
+          <span className="text-muted-foreground text-xs font-mono">{highlight.color}</span>
         </div>
       ),
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-yellow-500" />
+        <p className="text-sm text-muted-foreground animate-pulse">Loading highlights...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Loading State */}
-      {loading && (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <Loader2 className="w-8 h-8 animate-spin text-cyan-400 mx-auto mb-4" />
-            <p className="text-white/70">Loading highlights...</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">
+            <Star className="w-6 h-6 text-yellow-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-white">Highlights</h1>
+            <p className="text-sm text-muted-foreground">Showcase your key achievements and statistics</p>
           </div>
         </div>
-      )}
 
-      {/* Main Content */}
-      {!loading && (
-        <>
-          {/* Header */}
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/50">
-                  <Star className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-white">Highlights</h1>
-                  <p className="text-white/60 text-sm mt-1">Showcase your achievements and statistics</p>
-                </div>
-              </div>
-            </div>
+        <Button onClick={() => setIsFormOpen(true)} className="bg-yellow-600 hover:bg-yellow-700 text-white">
+          <Plus className="w-4 h-4 mr-2" /> Add Highlight
+        </Button>
+      </div>
 
-            <button
-              onClick={() => setIsFormOpen(true)}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Add Highlight
-            </button>
-          </div>
-
-          {/* Form */}
-          {isFormOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-slate-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
-            >
-              <h2 className="text-xl font-bold text-white mb-6">
-                {editingId ? 'Edit Highlight' : 'Add New Highlight'}
-              </h2>
-
+      {isFormOpen && (
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+          <Card className="bg-black/20 border-white/5">
+            <CardHeader className="border-b border-white/5 pb-4">
+              <CardTitle className="text-lg">{editingId ? 'Edit Highlight' : 'Add New Highlight'}</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-white/80 mb-2">
-                      Icon (Emoji)
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.icon}
-                      onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all text-2xl text-center"
-                      placeholder="🚀"
-                      required
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Icon (Emoji)</Label>
+                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white/5 border-white/10 text-xl text-center" placeholder="🚀" />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-white/80 mb-2">
-                      Color
-                    </label>
-                    <input
-                      type="color"
-                      value={formData.color}
-                      onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })}
-                      className="w-full h-[52px] rounded-xl bg-white/5 border border-white/10 cursor-pointer"
-                      required
-                    />
+                  <div className="space-y-2">
+                    <Label>Color (Hex)</Label>
+                    <div className="flex items-center gap-3">
+                      <input type="color" value={formData.color.startsWith('#') ? formData.color : '#06b6d4'} onChange={(e) => setFormData({ ...formData, color: e.target.value as any })} className="w-12 h-10 rounded-md bg-white/5 border border-white/10 cursor-pointer" required />
+                      <Input value={formData.color} onChange={(e) => setFormData({ ...formData, color: e.target.value as any })} className="flex-1 bg-white/5 border-white/10" placeholder="#06b6d4 or cyan" />
+                    </div>
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-white/80 mb-2">
-                    Label
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.label}
-                    onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all"
-                    placeholder="Projects Completed"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white/80 mb-2">
-                    Value
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.value}
-                    onChange={(e) => setFormData({ ...formData, value: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all"
-                    placeholder="50"
-                    required
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Label</Label>
+                    <Input value={formData.label} onChange={(e) => setFormData({ ...formData, label: e.target.value })} required className="bg-white/5 border-white/10" placeholder="Projects Completed" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Value</Label>
+                    <Input value={formData.value} onChange={(e) => setFormData({ ...formData, value: e.target.value })} required className="bg-white/5 border-white/10" placeholder="50" />
+                  </div>
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="px-4 py-2 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 transition-all"
-                  >
+                  <Button type="button" variant="ghost" onClick={resetForm} className="text-muted-foreground hover:text-white">
                     Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all flex items-center gap-2"
-                  >
-                    {saving ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4" />
-                        {editingId ? 'Update' : 'Create'}
-                      </>
-                    )}
-                  </button>
+                  </Button>
+                  <Button type="submit" disabled={saving} className="bg-yellow-600 hover:bg-yellow-700 text-white">
+                    {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                    {editingId ? 'Update' : 'Create'}
+                  </Button>
                 </div>
               </form>
-            </motion.div>
-          )}
-
-          {/* Table */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <DataTable
-              data={highlights}
-              columns={columns}
-              onEdit={handleEdit}
-              onDelete={(highlight) => setDeleteId(highlight.id)}
-            />
-          </motion.div>
-
-          {/* Delete Dialog */}
-          <DeleteDialog
-            isOpen={!!deleteId}
-            onClose={() => setDeleteId(null)}
-            onConfirm={handleDelete}
-            title="Delete Highlight"
-            description="Are you sure you want to delete this highlight? This action cannot be undone."
-            itemName={highlights.find(h => h.id === deleteId)?.label || ''}
-          />
-        </>
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
+
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <DataTable data={highlights} columns={columns} onEdit={handleEdit} onDelete={(highlight) => setDeleteId(highlight.id)} />
+      </motion.div>
+
+      <DeleteDialog
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleDelete}
+        title="Delete Highlight"
+        description="Are you sure you want to delete this highlight? This action cannot be undone."
+        itemName={highlights.find(h => h.id === deleteId)?.label || ''}
+      />
     </div>
   );
 }

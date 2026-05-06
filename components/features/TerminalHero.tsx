@@ -615,7 +615,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                         {spotifyData.song.albumImageUrl && (
                           <Image 
                             src={spotifyData.song.albumImageUrl} 
-                            alt={spotifyData.song.album}
+                            alt={spotifyData.song.title}
                             width={32}
                             height={32}
                             className="rounded shadow-sm"
@@ -623,14 +623,9 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
                           />
                         )}
                         <div className="flex-1 min-w-0">
-                          <a 
-                            href={spotifyData.song.songUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-green-400 font-mono hover:text-green-300 transition-colors truncate block"
-                          >
+                          <span className="text-sm text-green-400 font-mono truncate block">
                             {spotifyData.song.title}
-                          </a>
+                          </span>
                           <div className="text-xs text-slate-400 truncate">
                             {spotifyData.song.artist}
                           </div>

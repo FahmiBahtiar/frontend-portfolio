@@ -1,20 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import useSWR from 'swr';
 import { Radio, Plus, X, Save, Loader2 } from 'lucide-react';
 import { DataTable } from '@/components/admin/DataTable';
 import { DeleteDialog } from '@/components/admin/DeleteDialog';
 import type { ContactFrequency } from '@/lib/types/admin';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch contacts');
+  const data = await res.json();
+  return Array.isArray(data) ? data : data.data || [];
+};
 
 export default function ContactPage() {
-  const [contacts, setContacts] = useState<ContactFrequency[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: contacts = [], mutate, isLoading, error } = useSWR<ContactFrequency[]>('/api/admin/contact-info', fetcher);
+  
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<ContactFrequency | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ContactFrequency | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  
   const [formData, setFormData] = useState<Partial<ContactFrequency>>({
     frequency: '',
     label: '',
@@ -24,28 +36,6 @@ export default function ContactPage() {
     color: 'from-cyan-500 to-blue-500',
     link: '',
   });
-
-  // Fetch contacts on component mount
-  useEffect(() => {
-    fetchContacts();
-  }, []);
-
-  const fetchContacts = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await fetch('/api/admin/contact-info');
-      if (!response.ok) {
-        throw new Error('Failed to fetch contacts');
-      }
-      const data = await response.json();
-      setContacts(Array.isArray(data) ? data : data.data || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch contacts');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const types = [
     { value: 'primary', label: 'Primary Contact' },
@@ -95,46 +85,30 @@ export default function ContactPage() {
 
     try {
       if (editingContact) {
-        // Update existing contact
         const { id, createdAt, updatedAt, isActive, __v, ...updateData } = formData as any;
         const response = await fetch(`/api/admin/contact-info/${editingContact.id}`, {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updateData),
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to update contact');
-        }
-
-        const updatedContact = await response.json();
-        setContacts(contacts.map(contact =>
-          contact.id === editingContact.id ? (Array.isArray(updatedContact) ? updatedContact[0] : updatedContact) : contact
-        ));
+        if (!response.ok) throw new Error('Failed to update contact');
       } else {
-        // Create new contact
         const response = await fetch('/api/admin/contact-info', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to create contact');
-        }
-
-        const newContact = await response.json();
-        setContacts([...contacts, Array.isArray(newContact) ? newContact[0] : newContact]);
+        if (!response.ok) throw new Error('Failed to create contact');
       }
-
+      
+      await mutate();
       setIsFormOpen(false);
       setEditingContact(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save contact');
+      console.error(err);
+      alert('Failed to save contact');
     } finally {
       setSubmitting(false);
     }
@@ -152,14 +126,13 @@ export default function ContactPage() {
         method: 'DELETE',
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to delete contact');
-      }
+      if (!response.ok) throw new Error('Failed to delete contact');
 
-      setContacts(contacts.filter(contact => contact.id !== deleteTarget.id));
+      await mutate(contacts.filter(c => c.id !== deleteTarget.id), false);
       setDeleteTarget(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete contact');
+      console.error(err);
+      alert('Failed to delete contact');
     }
   };
 
@@ -169,7 +142,7 @@ export default function ContactPage() {
       label: 'Frequency',
       sortable: true,
       render: (item: ContactFrequency) => (
-        <span className="inline-flex items-center px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 font-mono font-bold">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 font-mono text-xs font-bold">
           {item.frequency}
         </span>
       ),
@@ -192,7 +165,7 @@ export default function ContactPage() {
       label: 'Type',
       sortable: true,
       render: (item: ContactFrequency) => (
-        <span className={`inline-flex items-center px-3 py-1 rounded-full ${
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs ${
           item.type === 'primary'
             ? 'bg-cyan-500/10 border border-cyan-500/20 text-cyan-400'
             : 'bg-purple-500/10 border border-purple-500/20 text-purple-400'
@@ -203,270 +176,177 @@ export default function ContactPage() {
     },
   ];
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-white" />
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-cyan-500" />
+        <p className="text-sm text-muted-foreground animate-pulse">Loading contacts...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-20">
-        <h2 className="text-2xl font-bold text-white mb-4">Error</h2>
-        <p className="text-white/60">{error}</p>
-        <button
-          onClick={fetchContacts}
-          className="mt-4 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-cyan-500 text-white font-medium hover:shadow-lg transition-all"
-        >
-          Retry
-        </button>
+      <div className="flex items-center justify-center py-12">
+        <div className="text-red-400">Failed to load contacts.</div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500/20 to-cyan-500/20 flex items-center justify-center">
-            <Radio className="w-6 h-6 text-orange-400" />
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+              <Radio className="w-6 h-6 text-orange-500" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-white">Contact Information</h1>
+              <p className="text-sm text-muted-foreground">Manage contact frequencies and social links</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-white">Contact Information</h1>
-            <p className="text-white/60">Manage contact frequencies and social links</p>
-          </div>
+
+          <Button onClick={handleCreate} className="bg-orange-600 hover:bg-orange-700 text-white">
+            <Plus className="w-4 h-4 mr-2" /> Add Contact
+          </Button>
         </div>
       </motion.div>
 
-      {error && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-red-500/10 border border-red-500/20 rounded-xl p-4"
-        >
-          <p className="text-red-400">{error}</p>
-          <button
-            onClick={fetchContacts}
-            className="mt-2 text-sm text-red-300 hover:text-red-200 underline"
-          >
-            Try again
-          </button>
-        </motion.div>
-      )}
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <DataTable
-          data={contacts}
-          columns={columns}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onCreate={handleCreate}
-          searchPlaceholder="Search contacts..."
-          emptyMessage={loading ? "Loading contacts..." : "No contacts found. Add your first contact!"}
-        />
-      </motion.div>
-
-      {/* Form Modal */}
       <AnimatePresence>
         {isFormOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsFormOpen(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
-            />
-
-            <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="bg-slate-900 border border-white/10 rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden"
-              >
-                <div className="bg-gradient-to-r from-orange-500/20 to-cyan-500/20 border-b border-orange-500/30 p-6">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h2 className="text-2xl font-bold text-white mb-1">
-                        {editingContact ? 'Edit Contact' : 'Add Contact'}
-                      </h2>
-                      <p className="text-white/60">
-                        {editingContact ? 'Update contact information' : 'Add a new contact method'}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => setIsFormOpen(false)}
-                      className="text-white/50 hover:text-white transition-colors"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-2">
-                        Frequency
-                      </label>
-                      <input
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+            <Card className="bg-black/20 border-white/5">
+              <CardHeader className="border-b border-white/5 pb-4">
+                <CardTitle className="text-lg">{editingContact ? 'Edit Contact' : 'Add Contact'}</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Frequency</Label>
+                      <Input
                         type="text"
                         value={formData.frequency}
-                        onChange={(e) =>
-                          setFormData({ ...formData, frequency: e.target.value })
-                        }
-                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
+                        onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
+                        className="bg-white/5 border-white/10"
                         placeholder="e.g., 121.5"
                         required
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-2">
-                        Type
-                      </label>
+                    <div className="space-y-2">
+                      <Label>Type</Label>
                       <select
                         value={formData.type}
-                        onChange={(e) =>
-                          setFormData({ ...formData, type: e.target.value as any })
-                        }
-                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
+                        onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+                        className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                         required
                       >
                         {types.map((type) => (
-                          <option key={type.value} value={type.value}>
+                          <option key={type.value} value={type.value} className="bg-slate-900">
                             {type.label}
                           </option>
                         ))}
                       </select>
                     </div>
+
+                    <div className="space-y-2">
+                      <Label>Label</Label>
+                      <Input
+                        type="text"
+                        value={formData.label}
+                        onChange={(e) => setFormData({ ...formData, label: e.target.value.toUpperCase() })}
+                        className="bg-white/5 border-white/10"
+                        placeholder="e.g., EMAIL"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Value</Label>
+                      <Input
+                        type="text"
+                        value={formData.value}
+                        onChange={(e) => setFormData({ ...formData, value: e.target.value })}
+                        className="bg-white/5 border-white/10"
+                        placeholder="e.g., email@example.com"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Icon</Label>
+                      <select
+                        value={formData.icon}
+                        onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                        className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                        required
+                      >
+                        {icons.map((icon) => (
+                          <option key={icon.value} value={icon.value} className="bg-slate-900">
+                            {icon.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Color Gradient</Label>
+                      <select
+                        value={formData.color}
+                        onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                        className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                        required
+                      >
+                        {colors.map((color) => (
+                          <option key={color.value} value={color.value} className="bg-slate-900">
+                            {color.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="md:col-span-2 space-y-2">
+                      <Label>Link (Optional)</Label>
+                      <Input
+                        type="url"
+                        value={formData.link || ''}
+                        onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                        className="bg-white/5 border-white/10"
+                        placeholder="https://..."
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-white mb-2">
-                      Label
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.label}
-                      onChange={(e) =>
-                        setFormData({ ...formData, label: e.target.value.toUpperCase() })
-                      }
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
-                      placeholder="e.g., EMAIL"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-white mb-2">
-                      Value
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.value}
-                      onChange={(e) =>
-                        setFormData({ ...formData, value: e.target.value })
-                      }
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
-                      placeholder="e.g., email@example.com"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-white mb-2">
-                      Icon
-                    </label>
-                    <select
-                      value={formData.icon}
-                      onChange={(e) =>
-                        setFormData({ ...formData, icon: e.target.value })
-                      }
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
-                      required
-                    >
-                      {icons.map((icon) => (
-                        <option key={icon.value} value={icon.value}>
-                          {icon.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-white mb-2">
-                      Color Gradient
-                    </label>
-                    <select
-                      value={formData.color}
-                      onChange={(e) =>
-                        setFormData({ ...formData, color: e.target.value })
-                      }
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
-                      required
-                    >
-                      {colors.map((color) => (
-                        <option key={color.value} value={color.value}>
-                          {color.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-white mb-2">
-                      Link (Optional)
-                    </label>
-                    <input
-                      type="url"
-                      value={formData.link || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, link: e.target.value })
-                      }
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
-                      placeholder="https://..."
-                    />
-                  </div>
-
-                  <div className="flex gap-3 pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setIsFormOpen(false)}
-                      disabled={submitting}
-                      className="flex-1 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-all disabled:opacity-50"
-                    >
+                  <div className="flex justify-end gap-3 pt-4">
+                    <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} disabled={submitting} className="text-muted-foreground hover:text-white">
                       Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-cyan-500 text-white font-medium hover:shadow-lg hover:shadow-orange-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {submitting ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <Save className="w-5 h-5" />
-                      )}
-                      <span>{editingContact ? 'Update' : 'Create'}</span>
-                    </button>
+                    </Button>
+                    <Button type="submit" disabled={submitting} className="bg-orange-600 hover:bg-orange-700 text-white">
+                      {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                      {editingContact ? 'Update' : 'Create'}
+                    </Button>
                   </div>
                 </form>
-              </motion.div>
-            </div>
-          </>
+              </CardContent>
+            </Card>
+          </motion.div>
         )}
       </AnimatePresence>
+
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <div className="bg-black/20 border border-white/5 rounded-2xl p-6">
+          <DataTable
+            data={contacts}
+            columns={columns}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            searchPlaceholder="Search contacts..."
+            emptyMessage="No contacts found."
+          />
+        </div>
+      </motion.div>
 
       <DeleteDialog
         isOpen={!!deleteTarget}

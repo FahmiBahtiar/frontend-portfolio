@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Plane, Plus, X, Save, Star, GitFork, GripVertical } from 'lucide-react';
-import { DataTable } from '@/components/admin/DataTable';
+import { useState } from 'react';
+import { motion } from 'motion/react';
+import useSWR from 'swr';
+import { Plane, Plus, X, Save, Star, GitFork, GripVertical, Loader2 } from 'lucide-react';
 import { DeleteDialog } from '@/components/admin/DeleteDialog';
 import {
   DndContext,
@@ -23,22 +23,30 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { HangarItem } from '@/lib/types/admin';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch projects');
+  const json = await res.json();
+  if (!json.success) throw new Error('Failed to load projects');
+  return json.data.sort((a: HangarItem, b: HangarItem) => (a.order || 0) - (b.order || 0));
+};
 
 export default function AircraftHangarPage() {
-  const [hangarItems, setHangarItems] = useState<HangarItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: hangarItems = [], mutate, isLoading, error } = useSWR<HangarItem[]>('/api/admin/experience/projects', fetcher);
+  const [saving, setSaving] = useState(false);
 
   const getIconForCategory = (category: string) => {
     switch (category) {
-      case 'github':
-        return '🐙'; // GitHub icon
-      case 'flight':
-        return '✈️'; // Airplane icon
-      case 'mountain':
-        return '🏔️'; // Mountain icon
-      default:
-        return '✈️';
+      case 'github': return '🐙';
+      case 'flight': return '✈️';
+      case 'mountain': return '🏔️';
+      default: return '✈️';
     }
   };
 
@@ -83,39 +91,9 @@ export default function AircraftHangarPage() {
     { value: 'blue', label: 'Blue' },
   ];
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/admin/experience/projects');
-      if (!response.ok) {
-        throw new Error('Failed to fetch projects');
-      }
-      const result = await response.json();
-      if (result.success) {
-        // Sort by order
-        const sortedItems = result.data.sort((a: HangarItem, b: HangarItem) => a.order - b.order);
-        setHangarItems(sortedItems);
-      } else {
-        setError('Failed to load projects');
-      }
-    } catch (err) {
-      setError('Failed to load projects');
-      console.error('Error fetching projects:', err);
-      alert('Failed to load projects: ' + (err instanceof Error ? err.message : 'Unknown error'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -127,32 +105,27 @@ export default function AircraftHangarPage() {
 
       const newItems = arrayMove(hangarItems, oldIndex, newIndex);
       
-      // Update order property for all items
       const updatedItems = newItems.map((item, index) => ({
         ...item,
         order: index,
       }));
 
-      setHangarItems(updatedItems);
+      mutate(updatedItems, false);
 
-      // Save the new order to backend
       try {
         await Promise.all(
           updatedItems.map((item) =>
             fetch(`/api/admin/experience/projects/${item.id}`, {
               method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ order: item.order }),
             })
           )
         );
-      } catch (error) {
-        console.error('Error updating project order:', error);
+      } catch (err) {
+        console.error('Error updating project order:', err);
         alert('Failed to update project order');
-        // Revert on error
-        fetchProjects();
+        mutate();
       }
     }
   };
@@ -167,19 +140,14 @@ export default function AircraftHangarPage() {
       description: '',
       icon: '✈️',
       color: 'cyan',
-      systems: [] as string[],
+      systems: [],
       specifications: {
-        language: '',
-        engine: '',
-        maxSpeed: '',
-        range: '',
-        location: '',
-        date: '',
-        elevation: '',
+        language: '', engine: '', maxSpeed: '', range: '',
+        location: '', date: '', elevation: '',
       },
       stats: {},
       url: '',
-      achievements: [] as string[],
+      achievements: [],
       order: 0,
     });
     setIsFormOpen(true);
@@ -216,65 +184,42 @@ export default function AircraftHangarPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Client-side validation
     if (!formData.name?.trim() || !formData.model?.trim() || !formData.classification?.trim() || !formData.description?.trim()) {
       alert('Please fill in all required fields: Name, Model, Classification, and Description');
       return;
     }
 
+    setSaving(true);
     try {
       const projectData = {
-        category: formData.category,
-        name: formData.name,
-        model: formData.model,
-        classification: formData.classification,
-        description: formData.description,
-        stats: formData.stats,
-        specifications: formData.specifications,
-        systems: formData.systems,
-        url: formData.url,
-        icon: formData.icon,
-        color: formData.color,
-        achievements: formData.achievements,
+        ...formData,
         order: formData.order || hangarItems.length + 1,
       };
 
       if (editingItem) {
         const response = await fetch(`/api/admin/experience/projects/${editingItem.id}`, {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(projectData),
         });
-        if (response.ok) {
-          await fetchProjects();
-        } else {
-          console.error('Failed to update project:', await response.text());
-          alert('Failed to update project');
-        }
+        if (!response.ok) throw new Error('Failed to update project');
       } else {
         const response = await fetch('/api/admin/experience/projects', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(projectData),
         });
-        if (response.ok) {
-          await fetchProjects();
-        } else {
-          console.error('Failed to create project:', await response.text());
-          alert('Failed to create project');
-        }
+        if (!response.ok) throw new Error('Failed to create project');
       }
 
+      await mutate();
       setIsFormOpen(false);
       setEditingItem(null);
-      resetForm();
-    } catch (error) {
-      console.error('Error saving project:', error);
-      alert('Error saving project: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    } catch (err) {
+      console.error('Error saving project:', err);
+      alert('Error saving project');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -285,14 +230,12 @@ export default function AircraftHangarPage() {
   const confirmDelete = async () => {
     if (deleteTarget) {
       try {
-        const response = await fetch(`/api/admin/experience/projects/${deleteTarget.id}`, {
-          method: 'DELETE',
-        });
+        const response = await fetch(`/api/admin/experience/projects/${deleteTarget.id}`, { method: 'DELETE' });
         if (response.ok) {
-          await fetchProjects();
+          mutate(hangarItems.filter((item) => item.id !== deleteTarget.id), false);
         }
-      } catch (error) {
-        console.error('Error deleting project:', error);
+      } catch (err) {
+        console.error('Error deleting project:', err);
       }
       setDeleteTarget(null);
     }
@@ -300,390 +243,202 @@ export default function AircraftHangarPage() {
 
   const addSystem = (system: string) => {
     if (system.trim() && formData.systems) {
-      setFormData({
-        ...formData,
-        systems: [...formData.systems, system.trim()],
-      });
+      setFormData({ ...formData, systems: [...formData.systems, system.trim()] });
     }
   };
 
   const removeSystem = (index: number) => {
     if (formData.systems) {
-      setFormData({
-        ...formData,
-        systems: formData.systems.filter((_, i) => i !== index),
-      });
+      setFormData({ ...formData, systems: formData.systems.filter((_, i) => i !== index) });
     }
   };
 
-  const resetForm = () => {
-    const defaultCategory = 'github';
-    setFormData({
-      category: defaultCategory,
-      name: '',
-      model: '',
-      classification: '',
-      description: '',
-      icon: getIconForCategory(defaultCategory),
-      color: 'cyan',
-      systems: [] as string[],
-      specifications: {
-        language: '',
-        engine: '',
-        maxSpeed: '',
-        range: '',
-        location: '',
-        date: '',
-        elevation: '',
-      },
-      stats: {},
-      url: '',
-      achievements: [] as string[],
-      order: 0,
-    });
-  };
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-cyan-500" />
+        <p className="text-sm text-muted-foreground animate-pulse">Loading aircraft hangar...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-red-400">Failed to load projects.</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {loading && (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-white/60">Loading aircraft hangar...</div>
-        </div>
-      )}
-
-      {error && (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-red-400">{error}</div>
-        </div>
-      )}
-
-      {!loading && !error && (
-        <>
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500/20 to-cyan-500/20 flex items-center justify-center">
-                <Plane className="w-6 h-6 text-orange-400" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-white">Aircraft Hangar</h1>
-                <p className="text-white/60">Manage your projects and achievements</p>
-              </div>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+              <Plane className="w-6 h-6 text-cyan-500" />
             </div>
-
-            {/* Add Project Button */}
-            <div className="ml-auto">
-              <motion.button
-                onClick={handleCreate}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 hover:bg-cyan-500/30 transition-all font-mono uppercase tracking-wider text-sm"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Project</span>
-              </motion.button>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-white">Aircraft Hangar</h1>
+              <p className="text-sm text-muted-foreground">Manage your projects and achievements</p>
             </div>
-          </motion.div>
+          </div>
 
-          {/* Sortable List */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-              <div className="mb-4">
-                <p className="text-white/60 text-sm">
-                  Drag and drop to reorder projects
-                </p>
-              </div>
+          <Button onClick={handleCreate} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+            <Plus className="w-4 h-4 mr-2" /> Add Project
+          </Button>
+        </div>
+      </motion.div>
 
-              {hangarItems.length === 0 ? (
-                <div className="text-center py-12 text-white/40">
-                  No projects found. Add your first project!
-                </div>
-              ) : (
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext
-                    items={hangarItems.map((item) => item.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <div className="space-y-3">
-                      {hangarItems.map((item) => (
-                        <SortableHangarItem
-                          key={item.id}
-                          item={item}
-                          onEdit={handleEdit}
-                          onDelete={handleDelete}
-                        />
+      {isFormOpen && (
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+          <Card className="bg-black/20 border-white/5">
+            <CardHeader className="border-b border-white/5 pb-4">
+              <CardTitle className="text-lg">{editingItem ? 'Edit Project' : 'Add New Project'}</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Category</Label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) => {
+                        const newCategory = e.target.value as any;
+                        setFormData({ ...formData, category: newCategory, icon: getIconForCategory(newCategory) });
+                      }}
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                      required
+                    >
+                      {categories.map((cat) => (
+                        <option key={cat.value} value={cat.value} className="bg-slate-900">{cat.label}</option>
                       ))}
-                    </div>
-                  </SortableContext>
-                </DndContext>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Form Modal */}
-          <AnimatePresence>
-            {isFormOpen && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setIsFormOpen(false)}
-                  className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
-                />
-
-                <div className="fixed inset-0 flex items-center justify-center z-50 p-4 overflow-y-auto">
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="bg-slate-900 border border-white/10 rounded-2xl shadow-2xl max-w-3xl w-full my-8 overflow-hidden"
-                  >
-                    <div className="bg-gradient-to-r from-orange-500/20 to-cyan-500/20 border-b border-orange-500/30 p-6">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h2 className="text-2xl font-bold text-white mb-1">
-                            {editingItem ? 'Edit Project' : 'Add Project'}
-                          </h2>
-                          <p className="text-white/60">
-                            {editingItem ? 'Update project information' : 'Add a new project to your hangar'}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => setIsFormOpen(false)}
-                          className="text-white/50 hover:text-white transition-colors"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-white mb-2">
-                            Category
-                          </label>
-                          <select
-                            value={formData.category}
-                            onChange={(e) => {
-                              const newCategory = e.target.value as any;
-                              setFormData({ 
-                                ...formData, 
-                                category: newCategory,
-                                icon: getIconForCategory(newCategory)
-                              });
-                            }}
-                            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
-                            required
-                          >
-                            {categories.map((cat) => (
-                              <option key={cat.value} value={cat.value}>
-                                {cat.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-white mb-2">
-                            Color
-                          </label>
-                          <select
-                            value={formData.color}
-                            onChange={(e) =>
-                              setFormData({ ...formData, color: e.target.value as any })
-                            }
-                            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
-                            required
-                          >
-                            {colors.map((color) => (
-                              <option key={color.value} value={color.value}>
-                                {color.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-white mb-2">
-                          Project Name
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.name}
-                          onChange={(e) =>
-                            setFormData({ ...formData, name: e.target.value })
-                          }
-                          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
-                          placeholder="e.g., react-dashboard-pro"
-                          required
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-white mb-2">
-                            Model/Aircraft
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.model}
-                            onChange={(e) =>
-                              setFormData({ ...formData, model: e.target.value })
-                            }
-                            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
-                            placeholder="e.g., Boeing 787"
-                            required
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-white mb-2">
-                            Classification
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.classification}
-                            onChange={(e) =>
-                              setFormData({ ...formData, classification: e.target.value })
-                            }
-                            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
-                            placeholder="e.g., Heavy Jet"
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-white mb-2">
-                          Description
-                        </label>
-                        <textarea
-                          value={formData.description}
-                          onChange={(e) =>
-                            setFormData({ ...formData, description: e.target.value })
-                          }
-                          rows={3}
-                          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all resize-none"
-                          placeholder="Project description..."
-                          required
-                        />
-                      </div>
-
-                      {formData.category === 'github' && (
-                        <div>
-                          <label className="block text-sm font-medium text-white mb-2">
-                            GitHub URL
-                          </label>
-                          <input
-                            type="url"
-                            value={formData.url || ''}
-                            onChange={(e) =>
-                              setFormData({ ...formData, url: e.target.value })
-                            }
-                            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
-                            placeholder="https://github.com/..."
-                          />
-                        </div>
-                      )}
-
-                      <div>
-                        <label className="block text-sm font-medium text-white mb-2">
-                          Technologies/Systems
-                        </label>
-                        <div className="flex flex-wrap gap-2 mb-2">
-                          {formData.systems?.map((system, index) => (
-                            <span
-                              key={index}
-                              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-sm"
-                            >
-                              {system}
-                              <button
-                                type="button"
-                                onClick={() => removeSystem(index)}
-                                className="text-red-400 hover:text-red-300"
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                            </span>
-                          ))}
-                        </div>
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            id="system-input"
-                            className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all"
-                            placeholder="Add technology..."
-                            onKeyPress={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                const input = e.target as HTMLInputElement;
-                                addSystem(input.value);
-                                input.value = '';
-                              }
-                            }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const input = document.getElementById('system-input') as HTMLInputElement;
-                              addSystem(input.value);
-                              input.value = '';
-                            }}
-                            className="px-4 py-3 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/30 transition-all"
-                          >
-                            <Plus className="w-5 h-5" />
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-3 pt-4">
-                        <button
-                          type="button"
-                          onClick={() => setIsFormOpen(false)}
-                          className="flex-1 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-all"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-cyan-500 text-white font-medium hover:shadow-lg hover:shadow-orange-500/50 transition-all"
-                        >
-                          <Save className="w-5 h-5" />
-                          <span>{editingItem ? 'Update' : 'Create'}</span>
-                        </button>
-                      </div>
-                    </form>
-                  </motion.div>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Color</Label>
+                    <select
+                      value={formData.color}
+                      onChange={(e) => setFormData({ ...formData, color: e.target.value as any })}
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                      required
+                    >
+                      {colors.map((color) => (
+                        <option key={color.value} value={color.value} className="bg-slate-900">{color.label}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              </>
-            )}
-          </AnimatePresence>
 
-          {/* Delete Dialog */}
-          <DeleteDialog
-            isOpen={!!deleteTarget}
-            onClose={() => setDeleteTarget(null)}
-            onConfirm={confirmDelete}
-            title="Delete Project"
-            description="Are you sure you want to delete this project?"
-            itemName={deleteTarget?.name}
-          />
-        </>
+                <div className="space-y-2">
+                  <Label>Project Name</Label>
+                  <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., react-dashboard-pro" />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Model/Aircraft</Label>
+                    <Input value={formData.model} onChange={(e) => setFormData({ ...formData, model: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., Boeing 787" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Classification</Label>
+                    <Input value={formData.classification} onChange={(e) => setFormData({ ...formData, classification: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., Heavy Jet" />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white/5 border-white/10 resize-none" placeholder="Project description..." required />
+                </div>
+
+                {formData.category === 'github' && (
+                  <div className="space-y-2">
+                    <Label>GitHub URL</Label>
+                    <Input type="url" value={formData.url || ''} onChange={(e) => setFormData({ ...formData, url: e.target.value })} className="bg-white/5 border-white/10" placeholder="https://github.com/..." />
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label>Technologies/Systems</Label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {formData.systems?.map((system, index) => (
+                      <span key={index} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs">
+                        {system}
+                        <button type="button" onClick={() => removeSystem(index)} className="text-red-400 hover:text-red-300"><X className="w-3 h-3" /></button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      id="system-input"
+                      className="bg-white/5 border-white/10"
+                      placeholder="Add technology..."
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const input = e.target as HTMLInputElement;
+                          addSystem(input.value);
+                          input.value = '';
+                        }
+                      }}
+                    />
+                    <Button type="button" onClick={() => {
+                      const input = document.getElementById('system-input') as HTMLInputElement;
+                      addSystem(input.value);
+                      input.value = '';
+                    }} className="bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30">
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4">
+                  <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} className="text-muted-foreground hover:text-white">
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={saving} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+                    {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                    {editingItem ? 'Update' : 'Create'}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
+
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <div className="bg-black/20 border border-white/5 rounded-2xl p-6">
+          <div className="mb-4">
+            <p className="text-muted-foreground text-sm">Drag and drop to reorder projects</p>
+          </div>
+
+          {hangarItems.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              No projects found. Add your first project!
+            </div>
+          ) : (
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={hangarItems.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+                <div className="space-y-3">
+                  {hangarItems.map((item) => (
+                    <SortableHangarItem key={item.id} item={item} onEdit={handleEdit} onDelete={handleDelete} />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          )}
+        </div>
+      </motion.div>
+
+      <DeleteDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title="Delete Project"
+        description="Are you sure you want to delete this project?"
+        itemName={deleteTarget?.name}
+      />
     </div>
   );
 }
@@ -695,14 +450,7 @@ interface SortableHangarItemProps {
 }
 
 function SortableHangarItem({ item, onEdit, onDelete }: SortableHangarItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: item.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -711,82 +459,48 @@ function SortableHangarItem({ item, onEdit, onDelete }: SortableHangarItemProps)
 
   const getIconForCategory = (category: string) => {
     switch (category) {
-      case 'github':
-        return '🐙';
-      case 'flight':
-        return '✈️';
-      case 'mountain':
-        return '🏔️';
-      default:
-        return '✈️';
+      case 'github': return '🐙';
+      case 'flight': return '✈️';
+      case 'mountain': return '🏔️';
+      default: return '✈️';
     }
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all ${
-        isDragging ? 'opacity-50' : ''
-      }`}
-    >
+    <div ref={setNodeRef} style={style} className={`bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all ${isDragging ? 'opacity-50' : ''}`}>
       <div className="flex items-center gap-4">
-        {/* Drag Handle */}
-        <button
-          {...attributes}
-          {...listeners}
-          className="text-white/40 hover:text-white/60 transition-colors p-1"
-        >
+        <button {...attributes} {...listeners} className="text-white/40 hover:text-white/60 transition-colors p-1 cursor-grab active:cursor-grabbing">
           <GripVertical className="w-5 h-5" />
         </button>
 
-        {/* Icon */}
         <div className="text-2xl">{getIconForCategory(item.category)}</div>
 
-        {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-semibold text-white truncate">{item.name}</h3>
-            <span className={`px-2 py-0.5 rounded-full text-xs ${
-              item.category === 'github' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' :
-              item.category === 'flight' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
-              'bg-green-500/10 text-green-400 border border-green-500/20'
-            }`}>
+            <span className={`px-2 py-0.5 rounded-full text-xs ${item.category === 'github' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : item.category === 'flight' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20'}`}>
               {item.category}
             </span>
           </div>
-          <p className="text-sm text-white/60 truncate">{item.description}</p>
+          <p className="text-sm text-muted-foreground truncate">{item.description}</p>
           <div className="flex items-center gap-4 mt-2 text-xs text-white/40">
             <span>{item.model}</span>
             {item.stats?.stars !== undefined && (
-              <span className="flex items-center gap-1">
-                <Star className="w-3 h-3 text-yellow-400" />
-                {item.stats.stars}
-              </span>
+              <span className="flex items-center gap-1"><Star className="w-3 h-3 text-yellow-400" />{item.stats.stars}</span>
             )}
             {item.stats?.forks !== undefined && (
-              <span className="flex items-center gap-1">
-                <GitFork className="w-3 h-3 text-cyan-400" />
-                {item.stats.forks}
-              </span>
+              <span className="flex items-center gap-1"><GitFork className="w-3 h-3 text-cyan-400" />{item.stats.forks}</span>
             )}
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => onEdit(item)}
-            className="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-all text-sm"
-          >
+          <Button variant="ghost" size="sm" onClick={() => onEdit(item)} className="text-cyan-400 hover:bg-cyan-500/20 hover:text-cyan-300">
             Edit
-          </button>
-          <button
-            onClick={() => onDelete(item)}
-            className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all text-sm"
-          >
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => onDelete(item)} className="text-red-400 hover:bg-red-500/20 hover:text-red-300">
             Delete
-          </button>
+          </Button>
         </div>
       </div>
     </div>

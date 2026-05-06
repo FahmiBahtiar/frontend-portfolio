@@ -391,7 +391,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
                   {spotifyData.song.albumImageUrl && (
                     <Image
                       src={spotifyData.song.albumImageUrl}
-                      alt={spotifyData.song.album}
+                      alt={spotifyData.song.title}
                       width={28}
                       height={28}
                       className="rounded shadow-sm"
@@ -399,14 +399,9 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
                     />
                   )}
                   <div className="flex-1 min-w-0">
-                    <a
-                      href={spotifyData.song.songUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-[#1DB954] hover:text-[#1ed760] transition-colors truncate block font-medium"
-                    >
+                    <span className="text-sm text-[#1DB954] truncate block font-medium">
                       {spotifyData.song.title}
-                    </a>
+                    </span>
                     <p className="text-xs text-slate-500 truncate">{spotifyData.song.artist}</p>
                   </div>
                 </div>

@@ -1,320 +1,252 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
+import useSWR from 'swr';
 import {
   LayoutDashboard,
-  TrendingUp,
   Users,
-  FileText,
   Award,
-  Activity,
-  ArrowUpRight,
-  Calendar,
   Eye,
-  Plane,
-  Heart,
-  Star,
   Loader2,
+  Star,
+  Briefcase,
+  GraduationCap,
+  ArrowUpRight,
+  Activity
 } from 'lucide-react';
 import Link from 'next/link';
 import { AboutService } from '@/lib/services/about';
-
-interface DashboardStats {
-  label: string;
-  value: string;
-  change: string;
-  trend: 'up' | 'down' | 'neutral';
-  icon: any;
-  iconColor: string;
-  bgColor: string;
-  borderColor: string;
-}
+import { HeroService } from '@/lib/services/hero';
+import { EducationService } from '@/lib/services/education';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<DashboardStats[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Fetch real data via SWR
+  const { data: profile, isLoading: isProfileLoading } = useSWR('hero-profile', () => HeroService.getHeroProfile());
+  const { data: passions, isLoading: isPassionsLoading } = useSWR('passions', () => AboutService.getPassions());
+  const { data: highlights, isLoading: isHighlightsLoading } = useSWR('highlights', () => AboutService.getHighlights());
+  const { data: education, isLoading: isEducationLoading } = useSWR('education', () => EducationService.getEducationRecords());
+  const { data: achievements, isLoading: isAchievementsLoading } = useSWR('achievements', () => EducationService.getAchievements());
 
-  useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-        setLoading(true);
-        
-        // Load data from various APIs
-        const [passions, highlights] = await Promise.all([
-          AboutService.getPassions(),
-          AboutService.getHighlights(),
-        ]);
+  const isLoading = isProfileLoading || isPassionsLoading || isHighlightsLoading || isEducationLoading || isAchievementsLoading;
 
-        // Create dynamic stats based on real data
-        const dynamicStats: DashboardStats[] = [
-          {
-            label: 'Passions',
-            value: passions.length.toString(),
-            change: '+0',
-            trend: 'neutral',
-            icon: Users,
-            iconColor: 'text-pink-400',
-            bgColor: 'bg-pink-500/10',
-            borderColor: 'border-pink-500/20',
-          },
-          {
-            label: 'Highlights',
-            value: highlights.length.toString(),
-            change: '+0',
-            trend: 'neutral',
-            icon: Award,
-            iconColor: 'text-yellow-400',
-            bgColor: 'bg-yellow-500/10',
-            borderColor: 'border-yellow-500/20',
-          },
-          {
-            label: 'Total Projects',
-            value: highlights.find(h => h.label.toLowerCase().includes('project'))?.value || '0',
-            change: '+0',
-            trend: 'neutral',
-            icon: FileText,
-            iconColor: 'text-cyan-400',
-            bgColor: 'bg-cyan-500/10',
-            borderColor: 'border-cyan-500/20',
-          },
-          {
-            label: 'Experience Years',
-            value: highlights.find(h => h.label.toLowerCase().includes('experience') || h.label.toLowerCase().includes('year'))?.value || '0',
-            change: '+0',
-            trend: 'neutral',
-            icon: Calendar,
-            iconColor: 'text-green-400',
-            bgColor: 'bg-green-500/10',
-            borderColor: 'border-green-500/20',
-          },
-        ];
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+        <p className="text-sm text-muted-foreground animate-pulse">Loading dashboard data...</p>
+      </div>
+    );
+  }
 
-        setStats(dynamicStats);
-      } catch (error) {
-        // Error handled by UI state
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadDashboardData();
-  }, []);
-
-  const recentActivities = [
+  const stats = [
     {
-      type: 'project',
-      title: 'Added new project: React Dashboard Pro',
-      time: '2 hours ago',
-      dotColor: 'bg-cyan-400',
+      label: 'Passions',
+      value: passions?.length?.toString() || '0',
+      icon: Users,
+      color: 'text-blue-400',
+      bgColor: 'bg-blue-500/10',
     },
     {
-      type: 'education',
-      title: 'Updated Bachelor degree information',
-      time: '5 hours ago',
-      dotColor: 'bg-purple-400',
+      label: 'Highlights',
+      value: highlights?.length?.toString() || '0',
+      icon: Star,
+      color: 'text-indigo-400',
+      bgColor: 'bg-indigo-500/10',
     },
     {
-      type: 'achievement',
-      title: 'Added AWS Cloud Practitioner certification',
-      time: '1 day ago',
-      dotColor: 'bg-orange-400',
+      label: 'Education Records',
+      value: education?.length?.toString() || '0',
+      icon: GraduationCap,
+      color: 'text-cyan-400',
+      bgColor: 'bg-cyan-500/10',
     },
     {
-      type: 'contact',
-      title: 'Updated contact information',
-      time: '2 days ago',
-      dotColor: 'bg-green-400',
+      label: 'Achievements',
+      value: achievements?.length?.toString() || '0',
+      icon: Award,
+      color: 'text-emerald-400',
+      bgColor: 'bg-emerald-500/10',
     },
   ];
 
-  const quickLinks = [
-    {
-      title: 'Hero Profile',
-      description: 'Update your main profile information',
-      href: '/admin/hero/profile',
-      icon: Users,
-      color: 'from-cyan-500 to-blue-500',
-    },
-    {
-      title: 'Projects',
-      description: 'Manage your project portfolio',
-      href: '/admin/projects/hangar',
-      icon: FileText,
-      color: 'from-purple-500 to-pink-500',
-    },
-    {
-      title: 'Education',
-      description: 'Update education records',
-      href: '/admin/education/records',
+  // Map to recent activities dynamically based on data
+  const recentActivities = [
+    ...(achievements?.slice(0, 3).map(a => ({
+      title: a.title,
+      description: `New achievement added in ${a.category}`,
+      date: new Date(a.date).toLocaleDateString(),
+      type: 'Achievement',
       icon: Award,
-      color: 'from-orange-500 to-red-500',
-    },
+      color: 'text-emerald-400'
+    })) || []),
+    ...(education?.slice(0, 2).map(e => ({
+      title: e.degree || 'Degree',
+      description: `Studied at ${e.institution}`,
+      date: e.period || 'Present',
+      type: 'Education',
+      icon: GraduationCap,
+      color: 'text-cyan-400'
+    })) || []),
+  ].slice(0, 5);
+
+  const quickLinks = [
+    { title: 'Hero Profile', href: '/admin/hero/profile', icon: Users, desc: 'Manage intro & roles' },
+    { title: 'Education', href: '/admin/education/records', icon: GraduationCap, desc: 'Update academic history' },
+    { title: 'Projects', href: '/admin/projects/hangar', icon: Briefcase, desc: 'Manage portfolio items' },
   ];
 
   return (
-    <div className="space-y-8">
-      {/* Loading State */}
-      {loading && (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <Loader2 className="w-8 h-8 animate-spin text-cyan-400 mx-auto mb-4" />
-            <p className="text-white/70">Loading dashboard data...</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+            <LayoutDashboard className="w-6 h-6 text-blue-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-white">
+              Welcome back, {profile?.name?.split(' ')[0] || 'Admin'}
+            </h1>
+            <p className="text-sm text-muted-foreground">Here's your data-dense portfolio overview.</p>
           </div>
         </div>
-      )}
+        
+        <div className="flex items-center gap-3">
+          <Link
+            href="/"
+            target="_blank"
+            className="flex items-center gap-2 px-4 py-2 rounded-md bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition-colors"
+          >
+            <Eye className="w-4 h-4" />
+            View Live
+          </Link>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-emerald-500/10 border border-emerald-500/20">
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-emerald-400 text-xs font-medium uppercase tracking-wider">Live API</span>
+          </div>
+        </div>
+      </motion.div>
 
-      {/* Main Content */}
-      {!loading && (
-        <>
-          {/* Header */}
-          <div className="relative">
+      {/* KPI Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, i) => {
+          const Icon = stat.icon;
+          return (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-between flex-wrap gap-4"
+              key={stat.label}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.05 }}
             >
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/50">
-                    <LayoutDashboard className="w-6 h-6 text-white" />
+              <Card className="hover:border-blue-500/30 transition-colors bg-black/20 border-white/5">
+                <CardContent className="p-5 flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-md ${stat.bgColor} flex items-center justify-center shrink-0`}>
+                    <Icon className={`w-6 h-6 ${stat.color}`} />
                   </div>
                   <div>
-                    <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-                    <p className="text-white/60 text-sm mt-1">Welcome back! Here's your portfolio overview</p>
+                    <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+                    <h3 className="text-2xl font-semibold tracking-tight mt-0.5">{stat.value}</h3>
                   </div>
-                </div>
-              </div>
-              
-              {/* Live indicator */}
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20">
-                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span className="text-green-400 text-sm font-medium">Live</span>
-              </div>
+                </CardContent>
+              </Card>
             </motion.div>
-          </div>
+          );
+        })}
+      </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="relative group"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className={`relative bg-slate-800/50 backdrop-blur-xl border ${stat.borderColor} rounded-2xl p-6 hover:border-cyan-500/30 transition-all duration-300`}>
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center border ${stat.borderColor}`}>
-                        <Icon className={`w-6 h-6 ${stat.iconColor}`} />
-                      </div>
-                      <div className="flex items-center gap-1 text-green-400 text-sm font-medium">
-                        <ArrowUpRight className="w-4 h-4" />
-                        <span className="font-semibold">{stat.change}</span>
-                      </div>
-                    </div>
-                    <h3 className="text-3xl font-bold text-white mb-2 tracking-tight">{stat.value}</h3>
-                    <p className="text-white/60 text-sm font-medium">{stat.label}</p>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recent Activities */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="lg:col-span-2 bg-slate-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-white">Recent Activities</h2>
-                <button className="text-cyan-400 hover:text-cyan-300 text-sm transition-colors">
-                  View All
-                </button>
-              </div>
-              <div className="space-y-4">
-                {recentActivities.map((activity, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 + index * 0.1 }}
-                    className="flex items-start gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all border border-white/5 hover:border-cyan-500/20"
-                  >
-                    <div className={`w-2 h-2 rounded-full ${activity.dotColor} mt-2 flex-shrink-0`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm font-medium">{activity.title}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Calendar className="w-3 h-3 text-white/40" />
-                        <p className="text-white/40 text-xs">{activity.time}</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Quick Links */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-slate-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
-            >
-              <h2 className="text-xl font-bold text-white mb-6">Quick Actions</h2>
-              <div className="space-y-3">
-                {quickLinks.map((link, index) => {
-                  const Icon = link.icon;
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Activities Table */}
+        <Card className="lg:col-span-2 bg-black/20 border-white/5 overflow-hidden flex flex-col">
+          <CardHeader className="border-b border-white/5 pb-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Activity className="w-5 h-5 text-blue-400" />
+                Recent Activities
+              </CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0 flex-1 overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-white/5">
+                <TableRow className="border-white/5 hover:bg-transparent">
+                  <TableHead className="w-[50px]"></TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead className="hidden md:table-cell">Type</TableHead>
+                  <TableHead className="text-right">Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentActivities.map((activity, idx) => {
+                  const Icon = activity.icon;
                   return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="block group"
-                    >
-                      <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.6 + index * 0.1 }}
-                        className="p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-cyan-500/30 transition-all"
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${link.color} flex items-center justify-center flex-shrink-0`}>
-                            <Icon className="w-5 h-5 text-white" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">
-                              {link.title}
-                            </h3>
-                            <p className="text-white/60 text-xs mt-1">{link.description}</p>
-                          </div>
-                          <ArrowUpRight className="w-4 h-4 text-white/40 group-hover:text-cyan-400 transition-colors" />
+                    <TableRow key={idx} className="border-white/5 group">
+                      <TableCell>
+                        <div className={`w-8 h-8 rounded bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors ${activity.color}`}>
+                          <Icon className="w-4 h-4" />
                         </div>
-                      </motion.div>
-                    </Link>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium text-white/90">{activity.title}</div>
+                        <div className="text-xs text-muted-foreground">{activity.description}</div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
+                        {activity.type}
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground text-sm whitespace-nowrap">
+                        {activity.date}
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
-              </div>
+                {recentActivities.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                      No recent activities found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
 
-              {/* View Portfolio Button */}
-              <Link
-                href="/"
-                target="_blank"
-                className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all"
-              >
-                <Eye className="w-4 h-4" />
-                View Live Portfolio
-              </Link>
-            </motion.div>
-          </div>
-        </>
-      )}
+        {/* Quick Links Column */}
+        <div className="space-y-6">
+          <Card className="bg-black/20 border-white/5">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg">Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {quickLinks.map((link, idx) => {
+                const Icon = link.icon;
+                return (
+                  <Link href={link.href} key={idx} className="block">
+                    <motion.div
+                      whileHover={{ x: 4 }}
+                      className="flex items-center gap-3 p-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-blue-500/30 transition-all group cursor-pointer"
+                    >
+                      <div className="w-10 h-10 rounded bg-black/20 flex items-center justify-center shrink-0">
+                        <Icon className="w-5 h-5 text-muted-foreground group-hover:text-blue-400 transition-colors" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-medium text-white/90">{link.title}</h4>
+                        <p className="text-xs text-muted-foreground truncate">{link.desc}</p>
+                      </div>
+                      <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </motion.div>
+                  </Link>
+                );
+              })}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

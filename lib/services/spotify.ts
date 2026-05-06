@@ -5,10 +5,9 @@ export interface SpotifyNowPlaying {
   song: {
     title: string;
     artist: string;
-    album: string;
     albumImageUrl: string | null;
-    songUrl: string;
   } | null;
+  error?: string;
 }
 
 export const SpotifyService = {
