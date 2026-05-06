@@ -13,6 +13,9 @@ interface Page2PortfolioProps {
   onNavigate?: (sectionIndex: number) => void;
 }
 
+// Noise grain SVG filter as data URI
+const GRAIN_SVG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`;
+
 export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
   // Use SWR for data fetching
   const { data: passions = [], isLoading: passionsLoading, error: passionsError } = useSWR('passions', () => AboutService.getPassions());
@@ -80,8 +83,80 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
   };
 
   return (
-    <div className="min-h-screen w-full px-4 md:px-8 py-12 md:py-16 pt-24 lg:pt-28">
-      <div className="max-w-7xl mx-auto">
+    <div className="relative min-h-screen w-full px-4 md:px-8 py-12 md:py-16 pt-24 lg:pt-28 overflow-hidden">
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)',
+        }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse 75% 45% at 50% 35%, rgba(15, 23, 42, 0.6) 0%, transparent 70%)',
+          }}
+        />
+
+        <div className="absolute inset-0 overflow-hidden">
+          <div
+            className="absolute w-[520px] h-[520px] rounded-full opacity-[0.06]"
+            style={{
+              background: 'radial-gradient(circle, rgba(56, 189, 248, 0.8) 0%, transparent 70%)',
+              top: '12%',
+              left: '10%',
+              filter: 'blur(90px)',
+            }}
+          />
+          <div
+            className="absolute w-[420px] h-[420px] rounded-full opacity-[0.05]"
+            style={{
+              background: 'radial-gradient(circle, rgba(99, 102, 241, 0.8) 0%, transparent 70%)',
+              bottom: '18%',
+              right: '8%',
+              filter: 'blur(90px)',
+            }}
+          />
+          <div
+            className="absolute w-[360px] h-[360px] rounded-full opacity-[0.04]"
+            style={{
+              background: 'radial-gradient(circle, rgba(34, 211, 238, 0.8) 0%, transparent 70%)',
+              top: '45%',
+              left: '60%',
+              filter: 'blur(110px)',
+            }}
+          />
+        </div>
+
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(148, 163, 184, 0.3) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(148, 163, 184, 0.3) 1px, transparent 1px)
+            `,
+            backgroundSize: '60px 60px',
+          }}
+        />
+
+        <div
+          className="absolute inset-0 opacity-[0.035] mix-blend-overlay"
+          style={{
+            backgroundImage: GRAIN_SVG,
+            backgroundRepeat: 'repeat',
+            backgroundSize: '256px 256px',
+          }}
+        />
+
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse 70% 60% at 50% 40%, transparent 0%, rgba(6, 6, 18, 0.5) 100%)',
+          }}
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -90,7 +165,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
           transition={{ duration: 0.6 }}
           className="text-center mb-12 md:mb-16"
         >
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900 border border-purple-500/30 mb-8 rotate-3 hover:rotate-0 transition-transform duration-500">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900/70 border border-purple-500/30 mb-8 rotate-2 hover:rotate-0 transition-transform duration-500 shadow-[0_12px_30px_-16px_rgba(168,85,247,0.6)]">
             <Heart className="w-10 h-10 text-purple-400" />
           </div>
 
@@ -134,7 +209,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
 
         {/* Main Content */}
         {!loading && !error && (passions.length > 0 || highlights.length > 0) && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-8 lg:gap-12 items-start">
             {/* Left Side - Lanyard Card */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -143,7 +218,12 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="flex justify-center lg:sticky lg:top-8"
             >
-              <LanyardCard />
+              <div className="relative w-full">
+                <div className="absolute inset-6 rounded-[36px] bg-gradient-to-b from-cyan-500/10 via-transparent to-purple-500/10 blur-2xl" />
+                <div className="relative rounded-[32px] border border-slate-800/60 bg-slate-900/40 backdrop-blur-xl shadow-[0_30px_70px_-50px_rgba(15,23,42,0.9)]">
+                  <LanyardCard />
+                </div>
+              </div>
             </motion.div>
 
             {/* Right Side - About Info */}
@@ -155,12 +235,13 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ delay: 0.3, duration: 0.6 }}
               >
-                <div className="flex items-center gap-4 mb-6">
-                  <h3 className="text-white font-mono font-bold tracking-wider">HIGHLIGHTS</h3>
-                  <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/50 to-transparent" />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-3xl border border-slate-800/60 bg-slate-900/40 p-6 md:p-7 shadow-[0_24px_60px_-50px_rgba(15,23,42,0.9)]">
+                  <div className="flex items-center gap-4 mb-6">
+                    <h3 className="text-white font-mono font-bold tracking-wider">HIGHLIGHTS</h3>
+                    <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/50 to-transparent" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
                   {highlights.map((item, index) => {
                     const Icon = getIcon(item.icon);
                     return (
@@ -171,16 +252,19 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ delay: 0.1 * index, duration: 0.5 }}
                       >
-                        <Card className="bg-slate-900/40 hover:bg-slate-900/60 transition-colors h-full group">
+                        <Card className="group relative h-full overflow-hidden border border-slate-800/60 bg-gradient-to-br from-slate-900/80 via-slate-900/50 to-slate-950/80 transition-all hover:-translate-y-0.5 hover:border-slate-700/80">
                           <CardContent className="p-5 flex flex-col items-center text-center">
-                            <Icon className={`w-8 h-8 ${getTextColor(item.color)} mb-3 group-hover:scale-110 transition-transform`} strokeWidth={1.5} />
+                            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-slate-800/60 bg-slate-950/40">
+                              <Icon className={`w-6 h-6 ${getTextColor(item.color)} group-hover:scale-110 transition-transform`} strokeWidth={1.5} />
+                            </div>
                             <p className="text-slate-400 text-xs font-mono mb-1 uppercase tracking-wider">{item.label}</p>
-                            <p className="text-white font-bold">{item.value}</p>
+                            <p className="text-white text-lg font-bold">{item.value}</p>
                           </CardContent>
                         </Card>
                       </motion.div>
                     );
                   })}
+                  </div>
                 </div>
               </motion.div>
 
@@ -191,12 +275,13 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6 }}
               >
-                <div className="flex items-center gap-4 mb-6 mt-10">
-                  <h3 className="text-white font-mono font-bold tracking-wider">MY THREE PASSIONS</h3>
-                  <div className="flex-1 h-px bg-gradient-to-r from-purple-500/50 to-transparent" />
-                </div>
-                
-                <div className="space-y-4">
+                <div className="rounded-3xl border border-slate-800/60 bg-slate-900/40 p-6 md:p-7 shadow-[0_24px_60px_-50px_rgba(15,23,42,0.9)]">
+                  <div className="flex items-center gap-4 mb-6">
+                    <h3 className="text-white font-mono font-bold tracking-wider">MY THREE PASSIONS</h3>
+                    <div className="flex-1 h-px bg-gradient-to-r from-purple-500/50 to-transparent" />
+                  </div>
+
+                  <div className="space-y-4">
                   {passions.map((passion, index) => {
                     const Icon = getIcon(passion.icon);
                     const statsData = getStatsData(passion);
@@ -211,12 +296,12 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: index * 0.1, duration: 0.6 }}
                       >
-                        <Card className={`bg-slate-900/40 border-slate-700/50 hover:bg-slate-800/60 transition-all overflow-hidden group`}>
+                        <Card className="group relative overflow-hidden border border-slate-800/60 bg-gradient-to-br from-slate-900/80 via-slate-900/50 to-slate-950/80 transition-all hover:-translate-y-0.5 hover:border-slate-700/80">
                           <CardContent className="p-5">
                             <div className="flex items-start gap-5">
                               {/* Icon */}
                               <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${colorClass}`}>
-                                <Icon className={`w-7 h-7`} strokeWidth={1.5} />
+                                <Icon className="w-7 h-7" strokeWidth={1.5} />
                               </div>
 
                               {/* Content */}
@@ -238,6 +323,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                       </motion.div>
                     );
                   })}
+                  </div>
                 </div>
               </motion.div>
 

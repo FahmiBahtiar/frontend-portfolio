@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 import useSWR, { mutate } from 'swr';
-import { GraduationCap, Award, Code2, Plane, Mountain, Calendar, MapPin, Trophy, Star, CheckCircle2, ExternalLink, Loader2, X } from 'lucide-react';
+import { GraduationCap, Award, Code2, Plane, Mountain, Calendar, MapPin, Trophy, Star, CheckCircle2, ExternalLink, Loader2, X, ChevronLeft } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -234,7 +234,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                     <AccordionContent className="px-6 pb-6 border-t border-white/5">
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-6">
                         {/* Left: Achievement List */}
-                        <div className="lg:col-span-1 lg:h-[600px] overflow-hidden flex flex-col">
+                        <div className={`lg:col-span-1 lg:h-[600px] overflow-hidden flex-col ${selectedAchievement?.category === category.id ? 'hidden lg:flex' : 'flex'}`}>
                           {/* List */}
                           <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
                             {category.achievements.map((achievement) => {
@@ -270,7 +270,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                         </div>
 
                         {/* Right: Detail Preview */}
-                        <div className="lg:col-span-2 h-[600px] flex">
+                        <div className={`lg:col-span-2 min-h-[500px] lg:h-[600px] flex-col ${selectedAchievement?.category === category.id ? 'flex' : 'hidden lg:flex'}`}>
                           <AnimatePresence mode="wait">
                             {selectedAchievement?.category === category.id ? (
                               <motion.div
@@ -284,6 +284,17 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                 <div className={`absolute top-0 right-0 w-64 h-64 bg-${category.color}-500/5 rounded-full blur-3xl`} />
 
                                 <div className="relative flex-1 flex flex-col">
+                                  {/* Mobile Back Button */}
+                                  <button
+                                    onClick={() => setSelectedAchievement(null)}
+                                    className={`lg:hidden flex items-center gap-2 text-sm text-${category.color}-400 hover:text-white mb-6 w-fit transition-colors`}
+                                  >
+                                    <div className={`w-8 h-8 rounded-full bg-${category.color}-500/10 flex items-center justify-center border border-${category.color}-500/20`}>
+                                      <ChevronLeft className="w-4 h-4" />
+                                    </div>
+                                    Back to list
+                                  </button>
+
                                   {getSelectedAchievementDetail()?.achievement.certificateUrl ? (
                                     <>
                                       <div className="flex-1 relative mb-6 min-h-[300px]">

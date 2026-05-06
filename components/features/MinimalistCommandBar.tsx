@@ -111,24 +111,29 @@ export function MinimalistCommandBar({
           damping: 28,
           mass: 0.8,
         }}
-        className="hidden lg:flex fixed top-5 left-1/2 -translate-x-1/2 z-50 will-change-transform"
+        className="hidden lg:flex fixed top-5 left-0 w-full justify-center z-50 pointer-events-none"
         role="navigation"
         aria-label="Main navigation"
       >
         <div
-          className="relative flex items-center gap-1 px-2 py-2 rounded-2xl"
-          style={{
-            background: ACCENT.barBg,
-            backdropFilter: 'blur(24px) saturate(1.4)',
-            WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
-            border: `1px solid ${ACCENT.barBorder}`,
-            boxShadow: `
-              0 0 0 0.5px rgba(255,255,255,0.04),
-              0 4px 24px -4px rgba(0,0,0,0.5),
-              0 0 80px -20px rgba(34, 211, 238, 0.06)
-            `,
-          }}
+          className="relative flex items-center gap-1 px-2 py-2 rounded-2xl pointer-events-auto"
         >
+          {/* Background Layer to prevent backdrop-filter from blurring text */}
+          <div 
+            className="absolute inset-0 rounded-2xl -z-10"
+            style={{
+              background: ACCENT.barBg,
+              backdropFilter: 'blur(24px) saturate(1.4)',
+              WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
+              border: `1px solid ${ACCENT.barBorder}`,
+              boxShadow: `
+                0 0 0 0.5px rgba(255,255,255,0.04),
+                0 4px 24px -4px rgba(0,0,0,0.5),
+                0 0 80px -20px rgba(34, 211, 238, 0.06)
+              `,
+            }}
+          />
+
           {/* Brand Mark */}
           <motion.button
             onClick={() => handleNavClick(0)}
@@ -314,14 +319,19 @@ export function MinimalistCommandBar({
         aria-label="Mobile navigation"
       >
         <div
-          className="px-4 py-3 flex items-center justify-between"
-          style={{
-            background: ACCENT.barBg,
-            backdropFilter: 'blur(24px) saturate(1.3)',
-            WebkitBackdropFilter: 'blur(24px) saturate(1.3)',
-            borderBottom: `1px solid ${ACCENT.barBorder}`,
-          }}
+          className="relative px-4 py-3 flex items-center justify-between"
         >
+          {/* Background Layer */}
+          <div 
+            className="absolute inset-0 -z-10"
+            style={{
+              background: ACCENT.barBg,
+              backdropFilter: 'blur(24px) saturate(1.3)',
+              WebkitBackdropFilter: 'blur(24px) saturate(1.3)',
+              borderBottom: `1px solid ${ACCENT.barBorder}`,
+            }}
+          />
+          
           {/* Brand */}
           <button
             onClick={() => handleNavClick(0)}
@@ -459,14 +469,19 @@ export function MinimalistCommandBar({
                 damping: 30,
               }}
               className="lg:hidden fixed top-[52px] left-3 right-3 z-50 rounded-2xl overflow-hidden"
-              style={{
-                background: 'rgba(12, 12, 30, 0.95)',
-                backdropFilter: 'blur(32px)',
-                border: `1px solid ${ACCENT.barBorder}`,
-                boxShadow: '0 16px 48px -8px rgba(0,0,0,0.6)',
-              }}
             >
-              <div className="p-3 space-y-0.5">
+              {/* Background Layer */}
+              <div 
+                className="absolute inset-0 -z-10"
+                style={{
+                  background: 'rgba(12, 12, 30, 0.95)',
+                  backdropFilter: 'blur(32px)',
+                  WebkitBackdropFilter: 'blur(32px)',
+                  border: `1px solid ${ACCENT.barBorder}`,
+                  boxShadow: '0 16px 48px -8px rgba(0,0,0,0.6)',
+                }}
+              />
+              <div className="relative p-3 space-y-0.5">
                 {sections.map((section, idx) => {
                   const isActive = activeSection === section.id;
                   const Icon = section.icon;

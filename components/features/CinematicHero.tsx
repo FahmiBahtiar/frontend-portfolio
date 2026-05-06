@@ -318,33 +318,79 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           {heroProfile?.description || ''}
         </motion.p>
 
+        {/* ===== TECH STACK / PASSIONS (INLINE RAIL) ===== */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+          className="mb-8 sm:mb-10"
+        >
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            {(heroProfile?.techStack || []).map((item, idx) => {
+              const IconComponent = iconMap[item.icon] || Code2;
+              const colors = colorMap[item.icon] || colorMap.Code2;
+              return (
+                <motion.div
+                  key={item.callsign}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.3, delay: 0.2 + idx * 0.08 }}
+                  className="group relative flex items-center gap-3"
+                >
+                  <div className="relative flex items-center gap-2">
+                    <div className={`h-8 w-8 rounded-full border ${colors.border} ${colors.bg} flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-0.5`}>
+                      <IconComponent className={`h-4 w-4 ${colors.accent}`} />
+                    </div>
+                    <div className="text-left">
+                      <div className={`text-[9px] font-mono ${colors.accent} tracking-[0.22em] uppercase opacity-70`}>
+                        {item.callsign}
+                      </div>
+                      <div className="text-sm text-slate-200 font-semibold tracking-wide">
+                        {item.label}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="hidden sm:block h-8 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+                  <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+
         {/* ===== BENTO INFO GRID ===== */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-          className="w-full max-w-2xl mb-10 sm:mb-14"
+          className="w-full max-w-3xl mb-10 sm:mb-14"
         >
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Status */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: 0 }}
-              className="group relative p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300"
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:translate-y-[-2px]"
             >
-              <div className="flex items-center gap-2 mb-2">
-                <div className="relative">
-                  <motion.div
-                    className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-emerald-400/40"
-                    animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                  />
-                  <div className="relative w-2.5 h-2.5 rounded-full bg-emerald-400" />
+              <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(120px 80px at 20% 0%, rgba(56, 189, 248, 0.16), transparent 70%)' }} />
+              <div className="relative flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <motion.div
+                      className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-emerald-400/40"
+                      animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    />
+                    <div className="relative w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                  </div>
+                  <span className="text-[11px] text-slate-400 uppercase tracking-[0.22em] font-medium">Status</span>
                 </div>
-                <span className="text-[10px] text-slate-500 uppercase tracking-[0.15em] font-medium">Status</span>
+                <span className="text-[11px] text-slate-500 uppercase tracking-[0.2em]">Live</span>
               </div>
-              <p className="text-sm text-emerald-400 font-medium">{heroProfile?.status || ''}</p>
+              <p className="relative mt-2 text-base text-emerald-300 font-semibold tracking-wide">
+                {heroProfile?.status || ''}
+              </p>
             </motion.div>
 
             {/* Location */}
@@ -352,13 +398,16 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
               initial={{ opacity: 0, y: 15 }}
               animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: 0.08 }}
-              className="group relative p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300"
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:translate-y-[-2px]"
             >
-              <div className="flex items-center gap-2 mb-2">
-                <MapPin className="w-3 h-3 text-slate-500" />
-                <span className="text-[10px] text-slate-500 uppercase tracking-[0.15em] font-medium">Location</span>
+              <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(120px 80px at 20% 0%, rgba(99, 102, 241, 0.16), transparent 70%)' }} />
+              <div className="relative flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                <span className="text-[11px] text-slate-400 uppercase tracking-[0.22em] font-medium">Location</span>
               </div>
-              <p className="text-sm text-slate-300 font-medium">{heroProfile?.location || ''}</p>
+              <p className="relative mt-2 text-base text-slate-200 font-semibold tracking-wide">
+                {heroProfile?.location || ''}
+              </p>
             </motion.div>
 
             {/* Spotify */}
@@ -366,9 +415,10 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
               initial={{ opacity: 0, y: 15 }}
               animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: 0.16 }}
-              className="group relative p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300 col-span-2 md:col-span-1"
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:translate-y-[-2px]"
             >
-              <div className="flex items-center gap-2 mb-2">
+              <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(140px 90px at 20% 0%, rgba(29, 185, 84, 0.18), transparent 70%)' }} />
+              <div className="relative flex items-center gap-2">
                 <div className="relative">
                   {spotifyData?.isPlaying && (
                     <motion.div
@@ -381,66 +431,35 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
                     <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
                   </svg>
                 </div>
-                <span className="text-[10px] text-slate-500 uppercase tracking-[0.15em] font-medium">Now Playing</span>
+                <span className="text-[11px] text-slate-400 uppercase tracking-[0.22em] font-medium">Now Playing</span>
               </div>
 
               {spotifyLoading ? (
-                <p className="text-sm text-slate-500">Loading...</p>
+                <p className="relative mt-2 text-sm text-slate-500">Loading...</p>
               ) : spotifyData?.isPlaying && spotifyData.song ? (
-                <div className="flex items-center gap-2.5">
+                <div className="relative mt-2 flex items-center gap-3">
                   {spotifyData.song.albumImageUrl && (
                     <Image
                       src={spotifyData.song.albumImageUrl}
                       alt={spotifyData.song.title}
-                      width={28}
-                      height={28}
-                      className="rounded shadow-sm"
+                      width={32}
+                      height={32}
+                      className="rounded-md border border-white/10 shadow-sm"
                       loading="lazy"
                     />
                   )}
                   <div className="flex-1 min-w-0">
-                    <span className="text-sm text-[#1DB954] truncate block font-medium">
+                    <span className="text-sm text-[#1DB954] truncate block font-semibold">
                       {spotifyData.song.title}
                     </span>
                     <p className="text-xs text-slate-500 truncate">{spotifyData.song.artist}</p>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500">Not listening</p>
+                <p className="relative mt-2 text-sm text-slate-500">Not listening</p>
               )}
             </motion.div>
           </div>
-        </motion.div>
-
-        {/* ===== TECH STACK / PASSIONS ===== */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-          className="flex flex-wrap items-center justify-center gap-3 mb-12 sm:mb-16"
-        >
-          {(heroProfile?.techStack || []).map((item, idx) => {
-            const IconComponent = iconMap[item.icon] || Code2;
-            const colors = colorMap[item.icon] || colorMap.Code2;
-            return (
-              <motion.div
-                key={item.callsign}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={revealPhase >= 4 ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.3, delay: 0.25 + idx * 0.06 }}
-                whileHover={{ y: -3, scale: 1.04 }}
-                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl ${colors.bg} border ${colors.border} hover:shadow-lg ${colors.glow} transition-all duration-300 cursor-default`}
-              >
-                <IconComponent className={`w-4 h-4 ${colors.accent}`} />
-                <div className="flex flex-col">
-                  <span className={`text-[9px] font-mono ${colors.accent} tracking-[0.15em] uppercase opacity-70`}>
-                    {item.callsign}
-                  </span>
-                  <span className="text-xs text-slate-300">{item.label}</span>
-                </div>
-              </motion.div>
-            );
-          })}
         </motion.div>
 
         {/* ===== SCROLL HINT ===== */}

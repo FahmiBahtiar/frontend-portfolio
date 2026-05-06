@@ -33,7 +33,7 @@ export const CockpitCarousel = memo(function CockpitCarousel({ items, currentInd
   }, []);
 
   return (
-    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] xl:h-[clamp(400px,30vh,600px)] flex items-center justify-center overflow-hidden px-4 md:px-8">
+    <div className="relative w-full h-[40vh] min-h-[300px] max-h-[600px] xl:max-h-[700px] flex items-center justify-center px-4 md:px-8 shrink-0">
       {/* Crosshair Overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
         <div className="relative w-full h-full max-w-[1600px]">
@@ -75,10 +75,10 @@ export const CockpitCarousel = memo(function CockpitCarousel({ items, currentInd
             : Math.abs(wrappedPosition) <= 2;
 
           // Calculate responsive offsets based on viewport
-          const baseOffset = Math.min(viewportWidth * 0.15, 280); // Max 280px or 15% of viewport
-          const mobileOffset = Math.min(viewportWidth * 0.08, 140); // Max 140px or 8% of viewport
-          const adjacentOffset = Math.min(viewportWidth * 0.12, 220); // Max 220px or 12% of viewport
-          const farOffset = Math.min(viewportWidth * 0.13, 230); // Max 230px or 13% of viewport
+          const baseOffset = Math.min(viewportWidth * 0.18, 340); // Max 340px or 18% of viewport
+          const mobileOffset = Math.min(viewportWidth * 0.1, 160); // Max 160px or 10% of viewport
+          const adjacentOffset = Math.min(viewportWidth * 0.15, 280); // Max 280px or 15% of viewport
+          const farOffset = Math.min(viewportWidth * 0.16, 300); // Max 300px or 16% of viewport
 
           let xOffset = wrappedPosition * baseOffset;
           let scale = 1;
@@ -166,8 +166,8 @@ export const CockpitCarousel = memo(function CockpitCarousel({ items, currentInd
                 {/* Image Frame */}
                 <div className={`relative ${
                   isCenter
-                    ? 'w-[280px] h-[158px] md:w-[480px] md:h-[270px] lg:w-[640px] lg:h-[360px] xl:w-[clamp(400px,25vw,640px)] xl:h-[clamp(225px,14vh,360px)]'
-                    : 'w-[224px] h-[126px] md:w-[384px] md:h-[216px] lg:w-[512px] lg:h-[288px] xl:w-[clamp(320px,20vw,512px)] xl:h-[clamp(180px,11vh,288px)]'
+                    ? 'w-[50vw] max-w-[540px] aspect-video'
+                    : 'w-[40vw] max-w-[400px] aspect-video'
                 }`}>
                   {/* Cockpit Window Frame */}
                   <div className={`absolute inset-0 pointer-events-none z-10 ${
