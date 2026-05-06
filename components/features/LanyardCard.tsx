@@ -337,78 +337,78 @@ export function LanyardCard() {
                   </div>
 
                   {/* Personal Info - Main Details (Right side) */}
-                  <div className="flex-1 space-y-2 sm:space-y-2.5 md:space-y-3">
+                  <div className="flex-1 flex flex-col justify-between py-1 sm:py-2">
                     {/* Country Code */}
                     <div>
-                      <p className="text-blue-900/50 text-[9px] sm:text-[10px] md:text-xs uppercase mb-0.5 tracking-wider">COUNTRY CODE</p>
-                      <p className="text-blue-900 text-sm sm:text-base md:text-lg lg:text-xl font-semibold">{lanyardData.countryCode}</p>
+                      <p className="text-blue-900/60 text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 tracking-wider">COUNTRY CODE</p>
+                      <p className="text-blue-900 text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-wide">{lanyardData.countryCode}</p>
                     </div>
 
                     {/* Passport No */}
                     <div>
-                      <p className="text-blue-900/50 text-[9px] sm:text-[10px] md:text-xs uppercase mb-0.5 tracking-wider">PASSPORT NO.</p>
-                      <p className="text-blue-900 font-mono text-sm sm:text-base md:text-lg lg:text-xl font-semibold">{lanyardData.passportNo}</p>
+                      <p className="text-blue-900/60 text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 tracking-wider">PASSPORT NO.</p>
+                      <p className="text-blue-900 font-mono text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-wide">{lanyardData.passportNo}</p>
                     </div>
 
                     {/* Surname */}
                     <div>
-                      <p className="text-blue-900/50 text-[9px] sm:text-[10px] md:text-xs uppercase mb-0.5 tracking-wider">SURNAME/NAMA BELAKANG</p>
-                      <p className="text-blue-900 uppercase text-sm sm:text-base md:text-lg lg:text-xl font-semibold">{lanyardData.surname}</p>
+                      <p className="text-blue-900/60 text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 tracking-wider">SURNAME/NAMA BELAKANG</p>
+                      <p className="text-blue-900 uppercase text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-wide">{lanyardData.surname}</p>
                     </div>
 
                     {/* Given Names */}
                     <div>
-                      <p className="text-blue-900/50 text-[9px] sm:text-[10px] md:text-xs uppercase mb-0.5 tracking-wider">GIVEN NAMES/NAMA DEPAN</p>
-                      <p className="text-blue-900 uppercase text-sm sm:text-base md:text-lg lg:text-xl font-semibold">{lanyardData.givenNames}</p>
+                      <p className="text-blue-900/60 text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 tracking-wider">GIVEN NAMES/NAMA DEPAN</p>
+                      <p className="text-blue-900 uppercase text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-wide">{lanyardData.givenNames}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Additional Details Grid */}
-                <div className="grid grid-cols-2 gap-x-4 md:gap-x-6 gap-y-2.5 sm:gap-y-3 mb-2 border-t-2 border-blue-900/10 pt-3 sm:pt-4">
+                <div className="grid grid-cols-2 gap-x-4 md:gap-x-6 gap-y-3 sm:gap-y-4 mb-2 border-t-2 border-blue-900/10 pt-4 sm:pt-5">
                   {/* Nationality */}
                   <div>
-                    <p className="text-blue-900/50 text-[9px] sm:text-[10px] md:text-xs uppercase mb-0.5 tracking-wider">NATIONALITY</p>
-                    <div className="flex items-center gap-1.5">
-                      <Globe className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-700" />
-                      <p className="text-blue-900 text-xs sm:text-sm md:text-base lg:text-lg font-medium">{lanyardData.nationality}</p>
+                    <p className="text-blue-900/60 text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-1 tracking-wider">NATIONALITY</p>
+                    <div className="flex items-center gap-2">
+                      <Globe className="w-4 h-4 md:w-5 md:h-5 text-blue-700" />
+                      <p className="text-blue-900 text-sm sm:text-base md:text-lg lg:text-xl font-semibold">{lanyardData.nationality}</p>
                     </div>
                   </div>
 
                   {/* Date of Birth */}
                   <div>
-                    <p className="text-blue-900/50 text-[9px] sm:text-[10px] md:text-xs uppercase mb-0.5 tracking-wider">DATE OF BIRTH</p>
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-700" />
-                      <p className="text-blue-900 text-xs sm:text-sm md:text-base lg:text-lg font-medium">{lanyardData.dateOfBirth}</p>
+                    <p className="text-blue-900/60 text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-1 tracking-wider">DATE OF BIRTH</p>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 md:w-5 md:h-5 text-blue-700" />
+                      <p className="text-blue-900 text-sm sm:text-base md:text-lg lg:text-xl font-semibold">{lanyardData.dateOfBirth}</p>
                     </div>
                   </div>
 
                   {/* Place of Birth */}
                   <div>
-                    <p className="text-blue-900/50 text-[9px] sm:text-[10px] md:text-xs uppercase mb-0.5 tracking-wider">PLACE OF BIRTH</p>
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-700" />
-                      <p className="text-blue-900 text-xs sm:text-sm md:text-base lg:text-lg font-medium">{lanyardData.placeOfBirth}</p>
+                    <p className="text-blue-900/60 text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-1 tracking-wider">PLACE OF BIRTH</p>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 md:w-5 md:h-5 text-blue-700" />
+                      <p className="text-blue-900 text-sm sm:text-base md:text-lg lg:text-xl font-semibold">{lanyardData.placeOfBirth}</p>
                     </div>
                   </div>
 
                   {/* Sex */}
                   <div>
-                    <p className="text-blue-900/50 text-[9px] sm:text-[10px] md:text-xs uppercase mb-0.5 tracking-wider">SEX/JENIS KELAMIN</p>
-                    <p className="text-blue-900 text-xs sm:text-sm md:text-base lg:text-lg font-semibold">{lanyardData.sex} / {lanyardData.sex === 'M' ? 'L' : 'P'}</p>
+                    <p className="text-blue-900/60 text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-1 tracking-wider">SEX/JENIS KELAMIN</p>
+                    <p className="text-blue-900 text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-wide">{lanyardData.sex} / {lanyardData.sex === 'M' ? 'L' : 'P'}</p>
                   </div>
 
                   {/* Date of Issue */}
                   <div>
-                    <p className="text-blue-900/50 text-[9px] sm:text-[10px] md:text-xs uppercase mb-0.5 tracking-wider">DATE OF ISSUE</p>
-                    <p className="text-blue-900 text-xs sm:text-sm md:text-base lg:text-lg font-medium">{lanyardData.dateOfIssue}</p>
+                    <p className="text-blue-900/60 text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-1 tracking-wider">DATE OF ISSUE</p>
+                    <p className="text-blue-900 text-sm sm:text-base md:text-lg lg:text-xl font-semibold">{lanyardData.dateOfIssue}</p>
                   </div>
 
                   {/* Date of Expiry */}
                   <div>
-                    <p className="text-blue-900/50 text-[9px] sm:text-[10px] md:text-xs uppercase mb-0.5 tracking-wider">DATE OF EXPIRY</p>
-                    <p className="text-red-700 text-xs sm:text-sm md:text-base lg:text-lg font-bold">{lanyardData.dateOfExpiry}</p>
+                    <p className="text-blue-900/60 text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-1 tracking-wider">DATE OF EXPIRY</p>
+                    <p className="text-red-700 text-sm sm:text-base md:text-lg lg:text-xl font-bold">{lanyardData.dateOfExpiry}</p>
                   </div>
                 </div>
 
