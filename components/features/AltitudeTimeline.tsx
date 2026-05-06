@@ -543,14 +543,14 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
 
   return (
     <div ref={containerRef} className="relative w-full">
-      {/* Current Achievement Title Display */}
+      {/* Current Achievement Title Display - Desktop Only */}
       <AnimatePresence>
         {showingTitle && currentWaypoint && (
           <motion.div
             initial={{ opacity: 0, y: -30, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.8 }}
-            className="absolute top-0 left-1/2 -translate-x-1/2 z-50 mb-4 md:mb-6 px-2 w-full"
+            className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 z-50 mb-4 md:mb-6 px-2 w-full"
             style={{ maxWidth: '95%' }}
           >
             <div
@@ -595,8 +595,8 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
         )}
       </AnimatePresence>
 
-      {/* Altitude Labels & Background Zones */}
-      <div className="absolute inset-0 pointer-events-none">
+      {/* Altitude Labels & Background Zones - Desktop Only */}
+      <div className="absolute inset-0 pointer-events-none hidden md:block">
         {/* Elementary Zone - 0-25% altitude */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-cyan-400/5 to-transparent" style={{ height: '25%' }}>
           <div className="absolute top-2 left-2 md:top-4 md:left-4 text-cyan-300/50 text-[9px] md:text-xs flex items-center gap-1 md:gap-2">
@@ -651,8 +651,8 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
         />
       </div>
 
-      {/* SVG Chart */}
-      <div className="relative w-full overflow-x-auto overflow-y-hidden">
+      {/* SVG Chart - Desktop Only */}
+      <div className="relative w-full overflow-hidden hidden md:block">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="w-full h-auto"
@@ -966,7 +966,92 @@ export function AltitudeTimeline({ educationRecords }: AltitudeTimelineProps = {
         </svg>
       </div>
 
-
+      {/* Mobile Vertical Timeline (Only visible on small screens) */}
+      <div className="md:hidden flex flex-col relative py-4 space-y-6">
+        {/* Vertical line connecting items */}
+        <div className="absolute left-[31px] top-10 bottom-10 w-[2px] bg-gradient-to-b from-cyan-500 via-orange-500 to-purple-500 opacity-20" />
+        
+        {timelineData.map((point) => {
+          const colors = categoryColors[point.level];
+          const Icon = point.icon;
+          const isSelected = selectedPoint === point.id;
+          
+          return (
+            <motion.div 
+              key={`mobile-${point.id}`}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              className="relative pl-14 pr-4 cursor-pointer"
+              onClick={() => setSelectedPoint(selectedPoint === point.id ? null : point.id)}
+            >
+              {/* Waypoint Dot */}
+              <div 
+                className="absolute left-[22px] top-6 w-[20px] h-[20px] rounded-full border-[3px] border-slate-900 z-10 flex items-center justify-center shadow-lg transition-transform duration-300"
+                style={{ backgroundColor: colors.main, boxShadow: `0 0 12px ${colors.glow}`, transform: isSelected ? 'scale(1.2)' : 'scale(1)' }}
+              />
+              
+              {/* Content Card */}
+              <div 
+                className={`bg-slate-900/60 border rounded-xl p-4 shadow-lg backdrop-blur-md transition-all duration-300 ${isSelected ? 'scale-[1.02] bg-slate-800/80' : ''}`}
+                style={{ 
+                  borderColor: isSelected ? colors.main : `${colors.main}30`,
+                  boxShadow: isSelected ? `0 4px 20px ${colors.glow}` : 'none'
+                }}
+              >
+                <div className="flex justify-between items-start mb-3 gap-3">
+                  <div className="flex items-center gap-2 flex-shrink-0 bg-slate-900/50 px-2 py-1.5 rounded-md border" style={{ borderColor: `${colors.main}20` }}>
+                    <Calendar className="w-3.5 h-3.5" style={{ color: colors.main }} />
+                    <span className="text-[11px] font-mono whitespace-nowrap" style={{ color: colors.main }}>{point.year}</span>
+                  </div>
+                  {point.badge && (
+                    <div className="flex items-center justify-end text-right">
+                      <span 
+                        className="text-[10px] px-2.5 py-1 rounded-md font-medium leading-tight"
+                        style={{ 
+                          backgroundColor: `${colors.main}15`, 
+                          color: colors.main,
+                          border: `1px solid ${colors.main}30`
+                        }}
+                      >
+                        {point.badge}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                
+                <h3 className="text-white font-bold text-[15px] leading-tight mb-1.5">{point.title}</h3>
+                <h4 className="text-slate-300 text-xs mb-3 flex items-center gap-1.5">
+                  <MapPin className="w-3 h-3 text-slate-500" />
+                  {point.institution}
+                </h4>
+                
+                <p className="text-slate-400 text-[11px] leading-relaxed mb-4 line-clamp-3">
+                  {point.description || point.subtitle}
+                </p>
+                
+                <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                  {point.gpa ? (
+                    <div className="inline-flex items-center gap-1.5">
+                      <TrendingUp className="w-3.5 h-3.5" style={{ color: colors.main }} />
+                      <span className="text-[11px] text-slate-300 font-mono">{point.gpa}</span>
+                    </div>
+                  ) : <div />}
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="text-[10px] font-mono opacity-60 flex items-center gap-1 text-white">
+                      <Icon className="w-3.5 h-3.5" style={{ color: colors.main }} />
+                    </div>
+                    <div className="text-[10px] font-mono flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5 text-slate-300 border border-white/5">
+                       <Mountain className="w-3 h-3 text-slate-500" /> ALT {point.altitude}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
 
       {/* Click Modal - Full details */}
       {typeof document !== 'undefined' && createPortal(
