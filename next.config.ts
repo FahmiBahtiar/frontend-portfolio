@@ -85,6 +85,7 @@ const nextConfig: NextConfig = {
               "connect-src 'self' https: wss:",
               "media-src 'self' https:",
               "frame-src 'self'",
+              "worker-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
