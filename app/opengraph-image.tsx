@@ -119,7 +119,7 @@ export default async function Image() {
                 fontFamily: 'monospace',
               }}
             >
-              blimbing.dev
+              blimbing.me
             </div>
           </div>
           

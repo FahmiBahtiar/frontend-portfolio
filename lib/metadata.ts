@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { getAllDataForSEO } from './services/server-data';
 
 // Base URL dari environment atau default
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://blimbing.dev';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://blimbing.me';
 
 // Default metadata
 export const defaultMetadata: Metadata = {
@@ -28,6 +28,11 @@ export const defaultMetadata: Metadata = {
   authors: [{ name: 'Fahmi Bahtiar Adi Nugroho', url: BASE_URL }],
   creator: 'Fahmi Bahtiar Adi Nugroho',
   publisher: 'Fahmi Bahtiar Adi Nugroho',
+  // SafeSearch compatibility - mark content as safe/general
+  other: {
+    'rating': 'general',
+    'classification': 'personal portfolio',
+  },
   formatDetection: {
     email: false,
     address: false,

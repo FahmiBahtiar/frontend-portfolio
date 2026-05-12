@@ -2,7 +2,7 @@
 import { MetadataRoute } from 'next';
 import { getFlightsServer, getEducationRecordsServer } from '@/lib/services/server-data';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://blimbing.dev';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://blimbing.me';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages
