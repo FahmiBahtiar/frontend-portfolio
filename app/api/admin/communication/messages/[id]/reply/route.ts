@@ -11,12 +11,15 @@ export async function PUT(
   try {
     const body = await request.json();
 
-    const response = await fetch(`${BACKEND_URL}/contact_messages/${id}/reply`, {
+    const response = await fetch(`${BACKEND_URL}/contact-messages/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        reply: body.reply,
+        status: 'replied',
+      }),
     });
 
     if (!response.ok) {

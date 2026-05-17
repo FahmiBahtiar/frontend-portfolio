@@ -63,28 +63,30 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const url = `${API_CONFIG.BASE_URL}${endpoint}`;
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, API_CONFIG.TIMEOUT);
+
+  if (options.signal) {
+    if (options.signal.aborted) {
+      clearTimeout(timeoutId);
+      throw new ApiError('Request aborted', 499);
+    }
+    options.signal.addEventListener('abort', () => controller.abort(), { once: true });
+  }
+
   const config: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
       ...options.headers,
     },
-    signal: AbortSignal.timeout(API_CONFIG.TIMEOUT),
+    signal: controller.signal,
     ...options,
   };
 
-  // Create timeout promise
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(() => {
-      reject(new ApiError('Request timeout', 408));
-    }, API_CONFIG.TIMEOUT);
-  });
-
   try {
-    // Race between fetch and timeout
-    const response = await Promise.race([
-      fetch(url, config),
-      timeoutPromise
-    ]) as Response;
+    const response = await fetch(url, config);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -103,6 +105,9 @@ export async function apiRequest<T>(
     const data = await response.json();
     return data;
   } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new ApiError('Request timeout', 408);
+    }
     if (error instanceof ApiError) {
       throw error;
     }
@@ -113,5 +118,7 @@ export async function apiRequest<T>(
       0,
       error
     );
+  } finally {
+    clearTimeout(timeoutId);
   }
 }

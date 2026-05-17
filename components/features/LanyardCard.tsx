@@ -60,11 +60,12 @@ export function LanyardCard() {
   }, []);
 
   useEffect(() => {
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     const fetchLanyardData = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch('/api/admin/about/lanyard');
+        const response = await fetch(`${API_BASE}/api/admin/about/lanyard`);
         if (!response.ok) {
           throw new Error('Failed to fetch lanyard data');
         }
@@ -73,33 +74,13 @@ export function LanyardCard() {
           if (Array.isArray(result.data)) {
             const raw = result.data[0] || null;
             if (raw) {
-              setLanyardData({
-                id: raw.id,
-                serviceName: raw.service_name,
-                serviceType: raw.service_type,
-                passportLabel: raw.passport_label,
-                type: raw.type,
-                countryCode: raw.country_code,
-                passportNo: raw.passport_no,
-                surname: raw.surname,
-                givenNames: raw.given_names,
-                nationality: raw.nationality,
-                placeOfBirth: raw.place_of_birth,
-                sex: raw.sex,
-                dateOfBirth: raw.date_of_birth,
-                dateOfIssue: raw.date_of_issue,
-                dateOfExpiry: raw.date_of_expiry,
-                avatarUrl: raw.avatar_url,
-                backgroundColor: raw.background_color,
-                textColor: raw.text_color,
-                accentColor: raw.accent_color,
-              });
+              // Backend now returns camelCase via transformToDto
+              setLanyardData(raw as LanyardData);
             } else {
               setLanyardData(null);
             }
           } else {
-            // If not array, fallback to old behavior (assume already camelCase)
-            setLanyardData(result.data);
+            setLanyardData(result.data as LanyardData);
           }
         } else {
           setError('No lanyard data available');

@@ -1,4 +1,4 @@
-import { apiRequest, API_CONFIG, ApiResponse } from '@/lib/api';
+import { apiRequest, API_CONFIG, ApiResponse, ApiError } from '@/lib/api';
 import { Education, Achievement } from '@/lib/types/admin';
 
 // Education Section API Services
@@ -88,18 +88,21 @@ export class EducationService {
   }
 
   static async updateAchievement(id: string, achievement: Partial<Achievement>): Promise<Achievement | null> {
-    const response = await apiRequest<ApiResponse<Achievement>>(
-      `${API_CONFIG.ENDPOINTS.ACHIEVEMENTS}/${id}`,
-      {
-        method: 'PUT',
-        body: JSON.stringify(achievement),
+    try {
+      const response = await apiRequest<ApiResponse<Achievement>>(
+        `${API_CONFIG.ENDPOINTS.ACHIEVEMENTS}/${id}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify(achievement),
+        }
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return null;
       }
-    );
-    if (!response.success) {
-      console.error('Update achievement failed:', response.message);
-      return null;
+      throw error;
     }
-    return response.data;
   }
 
   static async deleteAchievement(id: string): Promise<void> {

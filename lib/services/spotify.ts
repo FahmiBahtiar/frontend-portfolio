@@ -17,10 +17,17 @@ export const SpotifyService = {
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const response = await fetch(`${API_URL}/spotify/now-playing`, {
-          next: { revalidate: 0 }, // No caching for real-time data
-          signal: AbortSignal.timeout(3000), // Fast fail timeout
-        });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        let response: Response;
+        try {
+          response = await fetch(`${API_URL}/spotify/now-playing`, {
+            next: { revalidate: 0 }, // No caching for real-time data
+            signal: controller.signal, // Fast fail timeout
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);

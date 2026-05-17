@@ -57,28 +57,29 @@ export default function LanyardCardPage() {
     if (rawData) {
       const raw = Array.isArray(rawData) ? rawData[0] : rawData;
       if (raw) {
-        const mappedData = {
+        // Backend now returns camelCase via transformToDto
+        const mappedData: LanyardData = {
           id: raw.id,
-          serviceName: raw.service_name || '',
-          serviceType: raw.service_type || '',
-          passportLabel: raw.passport_label || '',
+          serviceName: raw.serviceName || '',
+          serviceType: raw.serviceType || '',
+          passportLabel: raw.passportLabel || '',
           type: raw.type || '',
-          countryCode: raw.country_code || '',
-          passportNo: raw.passport_no || '',
+          countryCode: raw.countryCode || '',
+          passportNo: raw.passportNo || '',
           surname: raw.surname || '',
-          givenNames: raw.given_names || '',
+          givenNames: raw.givenNames || '',
           nationality: raw.nationality || '',
-          placeOfBirth: raw.place_of_birth || '',
+          placeOfBirth: raw.placeOfBirth || '',
           sex: raw.sex || 'M',
-          dateOfBirth: raw.date_of_birth || '',
-          dateOfIssue: raw.date_of_issue || '',
-          dateOfExpiry: raw.date_of_expiry || '',
-          avatarUrl: raw.avatar_url,
-          backgroundColor: raw.background_color || '#f5e6d3',
-          textColor: raw.text_color || '#1e3a8a',
-          accentColor: raw.accent_color || '#3b82f6',
-          createdAt: raw.created_at || '',
-          updatedAt: raw.updated_at || '',
+          dateOfBirth: raw.dateOfBirth || '',
+          dateOfIssue: raw.dateOfIssue || '',
+          dateOfExpiry: raw.dateOfExpiry || '',
+          avatarUrl: raw.avatarUrl,
+          backgroundColor: raw.backgroundColor || '#f5e6d3',
+          textColor: raw.textColor || '#1e3a8a',
+          accentColor: raw.accentColor || '#3b82f6',
+          createdAt: raw.createdAt || '',
+          updatedAt: raw.updatedAt || '',
         };
         setFormData(mappedData);
         setOriginalData(mappedData);

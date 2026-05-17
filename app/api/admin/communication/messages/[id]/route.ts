@@ -11,7 +11,7 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const response = await fetch(`${BACKEND_URL}/contact_messages/${id}`);
+    const response = await fetch(`${BACKEND_URL}/contact-messages/${id}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch message');
@@ -39,7 +39,7 @@ export async function PUT(
   try {
     const body = await request.json();
 
-    const response = await fetch(`${BACKEND_URL}/contact_messages/${id}`, {
+    const response = await fetch(`${BACKEND_URL}/contact-messages/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export async function DELETE(
   const { id } = await params;
 
   try {
-    const response = await fetch(`${BACKEND_URL}/contact_messages/${id}`, {
+    const response = await fetch(`${BACKEND_URL}/contact-messages/${id}`, {
       method: 'DELETE',
     });
 

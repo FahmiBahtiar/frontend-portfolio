@@ -1,5 +1,10 @@
 import type { NextConfig } from "next";
 
+const isProd = process.env.NODE_ENV === 'production';
+const scriptSrc = isProd
+  ? "script-src 'self' 'unsafe-inline'"
+  : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -12,9 +17,9 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
-    dangerouslyAllowSVG: true,
+    dangerouslyAllowSVG: !isProd,
     contentDispositionType: 'attachment',
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    contentSecurityPolicy: `default-src 'self'; ${scriptSrc}; sandbox;`,
   },
   experimental: {
     optimizePackageImports: ['motion', 'lucide-react', '@radix-ui/react-accordion'],
@@ -78,11 +83,11 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              scriptSrc,
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https:",
-              "connect-src 'self' https: wss:",
+              `connect-src 'self' https: wss: ${isProd ? '' : 'http://localhost:3001'} ${process.env.NEXT_PUBLIC_API_URL || ''}`.trim(),
               "media-src 'self' https:",
               "frame-src 'self'",
               "worker-src 'self' blob:",

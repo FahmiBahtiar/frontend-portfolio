@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo, memo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'motion/react';
 import { HeroService } from '@/lib/services/hero';
@@ -34,6 +34,7 @@ export default function HomePage() {
   const [sectionsLoaded, setSectionsLoaded] = useState(false);
   const [isApiLoaded, setIsApiLoaded] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const sectionsLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const sections = [
     { id: 'hero', name: 'Hero', component: Page1Hero },
@@ -44,12 +45,6 @@ export default function HomePage() {
   ];
 
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  // Skip to main content for accessibility
-  const skipToMain = () => {
-    const mainContent = document.getElementById('main-content');
-    mainContent?.focus();
-  };
 
   // Prefetch hero data early to avoid loading issues
   useEffect(() => {
@@ -83,10 +78,21 @@ export default function HomePage() {
     };
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (sectionsLoadTimeoutRef.current) {
+        clearTimeout(sectionsLoadTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleLoadingComplete = () => {
     setIsLoading(false);
     // Preload sections after loading screen
-    setTimeout(() => setSectionsLoaded(true), 100);
+    if (sectionsLoadTimeoutRef.current) {
+      clearTimeout(sectionsLoadTimeoutRef.current);
+    }
+    sectionsLoadTimeoutRef.current = setTimeout(() => setSectionsLoaded(true), 100);
   };
 
   const handleNavigate = (sectionIndex: number) => {
@@ -101,7 +107,7 @@ export default function HomePage() {
   };
 
   const handleGalleryToggle = () => {
-    setShowGallery(!showGallery);
+    setShowGallery(prev => !prev);
   };
 
   // Optimized scroll spy with Intersection Observer
@@ -178,11 +184,7 @@ export default function HomePage() {
                     containIntrinsicSize: index > 1 ? '0 800px' : 'none',
                   }}
                 >
-                  {index === 0 ? (
-                    <SectionComponent onNavigate={handleNavigate} />
-                  ) : (
-                    <SectionComponent onNavigate={handleNavigate} />
-                  )}
+                  <SectionComponent onNavigate={handleNavigate} />
                 </div>
               );
             })}
