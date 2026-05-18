@@ -1,7 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
-  TIMEOUT: 3000, // 3 seconds timeout for fast fail
+  TIMEOUT: 8000, // 8 seconds — enough for cold start
   ENDPOINTS: {
     // Hero Section
     HERO_PROFILE: '/api/admin/hero/profile',
@@ -121,4 +121,48 @@ export async function apiRequest<T>(
   } finally {
     clearTimeout(timeoutId);
   }
+}
+
+// ----------------------------------------------------------------
+// Retry helper — up to maxAttempts with progressive delay
+// Does NOT add per-request timeout; uses API_CONFIG.TIMEOUT above.
+// Returns { data, warmingUp } so callers can reflect warming-up state.
+// ----------------------------------------------------------------
+export interface RetryCallbacks {
+  onWarmingUp?: () => void; // called after first failure
+  onSuccess?: () => void;
+}
+
+export async function apiRequestWithRetry<T>(
+  endpoint: string,
+  options: RequestInit = {},
+  maxAttempts = 4,
+  callbacks: RetryCallbacks = {},
+): Promise<T> {
+  const delays = [2000, 3000, 4000]; // wait between retries
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const result = await apiRequest<T>(endpoint, options);
+      callbacks.onSuccess?.();
+      return result;
+    } catch (err) {
+      const isLastAttempt = attempt === maxAttempts - 1;
+
+      if (isLastAttempt) throw err;
+
+      // First failure → notify caller to show warming-up state
+      if (attempt === 0) {
+        callbacks.onWarmingUp?.();
+      }
+
+      // Wait before next attempt
+      await new Promise<void>((resolve) =>
+        setTimeout(resolve, delays[attempt] ?? 4000),
+      );
+    }
+  }
+
+  // TypeScript: unreachable, but satisfies return type
+  throw new ApiError('Max retries exceeded', 0);
 }

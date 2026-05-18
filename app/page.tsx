@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'motion/react';
-import { HeroService } from '@/lib/services/hero';
 import { SpotifyService } from '@/lib/services/spotify';
+import { apiRequestWithRetry, API_CONFIG, ApiResponse } from '@/lib/api';
 
 // Lazy load components untuk mengurangi initial bundle
 const LoadingScreen = dynamic(() => import('@/components/features/LoadingScreen').then(mod => ({ default: mod.LoadingScreen })), {
@@ -33,6 +33,7 @@ export default function HomePage() {
   const [showGallery, setShowGallery] = useState(false);
   const [sectionsLoaded, setSectionsLoaded] = useState(false);
   const [isApiLoaded, setIsApiLoaded] = useState(false);
+  const [isWarmingUp, setIsWarmingUp] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const sectionsLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -49,34 +50,42 @@ export default function HomePage() {
   // Prefetch hero data early to avoid loading issues
   useEffect(() => {
     const prefetchData = async () => {
+      setApiError(null);
+      setIsWarmingUp(false);
+
       try {
-        setApiError(null);
-        // Prefetch all required API data
+        // Use retry-aware fetcher with warming-up feedback
         await Promise.all([
-          HeroService.getHeroProfile(),
-          HeroService.getSocialLinks(),
-          SpotifyService.getNowPlaying(),
+          apiRequestWithRetry<ApiResponse<unknown>>(
+            API_CONFIG.ENDPOINTS.HERO_PROFILE,
+            {},
+            4,
+            {
+              onWarmingUp: () => setIsWarmingUp(true),
+              onSuccess: () => setIsWarmingUp(false),
+            },
+          ),
+          apiRequestWithRetry<ApiResponse<unknown>>(
+            API_CONFIG.ENDPOINTS.HERO_SOCIAL,
+            {},
+            4,
+          ),
+          SpotifyService.getNowPlaying().catch(() => null), // non-critical
         ]);
+
         setIsApiLoaded(true);
+        setIsWarmingUp(false);
       } catch (error) {
         console.error('Failed to prefetch API data:', error);
-        setApiError('Failed to connect to API server. Please check your connection and try again.');
+        setIsWarmingUp(false);
+        setApiError('Unable to connect to server. Please try again later.');
         setIsApiLoaded(false);
       }
     };
 
     prefetchData();
-
-    // Listen for retry events from LoadingScreen
-    const retryHandler = () => {
-      prefetchData();
-    };
-    window.addEventListener('loading-screen-retry', retryHandler as EventListener);
-
-    return () => {
-      window.removeEventListener('loading-screen-retry', retryHandler as EventListener);
-    };
   }, []);
+
 
   useEffect(() => {
     return () => {
@@ -158,6 +167,7 @@ export default function HomePage() {
           <LoadingScreen
             onComplete={handleLoadingComplete}
             isApiLoaded={isApiLoaded}
+            isWarmingUp={isWarmingUp}
             apiError={apiError}
           />
         )}

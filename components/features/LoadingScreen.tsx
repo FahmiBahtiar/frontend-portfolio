@@ -6,6 +6,7 @@ import { motion } from 'motion/react';
 interface LoadingScreenProps {
   onComplete: () => void;
   isApiLoaded?: boolean;
+  isWarmingUp?: boolean;
   apiError?: string | null;
 }
 
@@ -191,6 +192,7 @@ function LogoMark() {
 export function LoadingScreen({
   onComplete,
   isApiLoaded = false,
+  isWarmingUp = false,
   apiError = null,
 }: LoadingScreenProps) {
   const [loadingText, setLoadingText] = useState('Initializing');
@@ -200,6 +202,11 @@ export function LoadingScreen({
   useEffect(() => {
     if (apiError) {
       setLoadingText('Connection failed');
+      return;
+    }
+
+    if (isWarmingUp) {
+      setLoadingText('Warming up server');
       return;
     }
 
@@ -214,15 +221,22 @@ export function LoadingScreen({
     );
 
     return () => timeouts.forEach(clearTimeout);
-  }, [apiError]);
+  }, [apiError, isWarmingUp]);
 
   // Progress bar animation — sync with API loading
   useEffect(() => {
     if (apiError) return;
 
     if (!isApiLoaded) {
+      // When warming up, keep progress oscillating gently around 70-80%
+      // to signal activity without implying completion
       const interval = setInterval(() => {
         setProgress((prev) => {
+          if (isWarmingUp) {
+            // Slow pulse between 65-85 during warming up
+            if (prev >= 85) return 65;
+            return prev + 1;
+          }
           if (prev >= 90) {
             clearInterval(interval);
             return 90;
@@ -252,12 +266,12 @@ export function LoadingScreen({
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [isApiLoaded, apiError, onComplete]);
+  }, [isApiLoaded, isWarmingUp, apiError, onComplete]);
 
   // Fallback auto-complete
   useEffect(() => {
     if (apiError || isApiLoaded) return;
-    const timer = setTimeout(() => onComplete(), 10000);
+    const timer = setTimeout(() => onComplete(), 15000);
     return () => clearTimeout(timer);
   }, [onComplete, isApiLoaded, apiError]);
 
@@ -371,14 +385,22 @@ export function LoadingScreen({
               style={{
                 background: apiError
                   ? '#f87171'
-                  : 'linear-gradient(135deg, #38bdf8, #7dd3fc)',
+                  : isWarmingUp
+                    ? 'linear-gradient(135deg, #fbbf24, #f59e0b)'
+                    : 'linear-gradient(135deg, #38bdf8, #7dd3fc)',
               }}
               animate={{ opacity: [0.4, 1, 0.4] }}
               transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
             />
             <span
               className="text-xs tracking-[0.2em] uppercase font-light"
-              style={{ color: apiError ? '#f87171' : 'rgba(148,163,184,0.6)' }}
+              style={{
+                color: apiError
+                  ? '#f87171'
+                  : isWarmingUp
+                    ? 'rgba(251,191,36,0.75)'
+                    : 'rgba(148,163,184,0.6)',
+              }}
             >
               {loadingText}
             </span>
