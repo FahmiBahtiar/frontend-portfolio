@@ -2,6 +2,19 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from '@/lib/auth';
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const PUBLIC_FILE = /\.(.*)$/;
+
+const shouldSkipMaintenance = (pathname: string) =>
+  pathname.startsWith('/admin') ||
+  pathname.startsWith('/api/admin') ||
+  pathname.startsWith('/api/auth') ||
+  pathname.startsWith('/api/maintenance') ||
+  pathname.startsWith('/maintenance') ||
+  pathname.startsWith('/_next') ||
+  pathname.startsWith('/favicon') ||
+  PUBLIC_FILE.test(pathname);
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const startTime = Date.now();
@@ -15,6 +28,30 @@ export async function proxy(request: NextRequest) {
   // Only log if not in skip list
   if (!shouldSkipLogging) {
     logRequestToBackend(request, startTime).catch(console.error);
+  }
+
+  if (!shouldSkipMaintenance(pathname)) {
+    try {
+      const response = await fetch(`${BACKEND_URL}/maintenance`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store',
+      });
+
+      if (response.ok) {
+        const payload = await response.json();
+        const settings = payload?.data;
+
+        if (settings?.isActive) {
+          const url = request.nextUrl.clone();
+          url.pathname = '/maintenance';
+          return NextResponse.rewrite(url);
+        }
+      }
+    } catch (error) {
+      // Fail open to avoid blocking traffic if maintenance check fails.
+    }
   }
 
   // Protect all admin routes except login

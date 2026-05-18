@@ -209,6 +209,19 @@ export interface ContactMessage {
   updatedAt: string;
 }
 
+// ==================== MAINTENANCE SETTINGS ====================
+export interface MaintenanceSettings {
+  id: string;
+  enabled: boolean;
+  startAt?: string | null;
+  endAt?: string | null;
+  note?: string | null;
+  title?: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ==================== COMMON TYPES ====================
 export interface PaginationParams {
   page: number;
