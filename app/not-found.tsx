@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import { motion } from 'motion/react';
 
+const linearEase = (t: number) => t;
+
 const sweepTransition = {
   duration: 10,
   repeat: Infinity,
-  ease: 'linear',
+  ease: linearEase,
 };
 
 export default function NotFoundPage() {
