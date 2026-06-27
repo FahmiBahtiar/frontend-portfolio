@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Lint (errors fail; warnings allowed for now)
+        run: npm run lint
+      - name: Build (type-checks routes + pages)
+        run: npm run build
+      - name: Test
+        run: npm test
+      - name: Dependency audit (report-only)
+        run: npm audit --omit=dev --audit-level=high || true

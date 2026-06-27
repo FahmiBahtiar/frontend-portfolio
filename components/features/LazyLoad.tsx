@@ -23,15 +23,17 @@ export function LazyLoad({ children, fallback = <div className="min-h-screen" />
  * Higher-order component untuk lazy load komponen berat
  * Usage: const HeavyComponent = lazyLoadComponent(() => import('./HeavyComponent'))
  */
-export function lazyLoadComponent<T extends ComponentType<any>>(
-  importFunc: () => Promise<{ default: T }>,
+export function lazyLoadComponent<P extends object>(
+  importFunc: () => Promise<{ default: ComponentType<P> }>,
   fallback?: ReactNode
 ) {
   const LazyComponent = lazy(importFunc);
-  
-  return (props: React.ComponentProps<T>) => (
+
+  const LazyLoaded = (props: P) => (
     <Suspense fallback={fallback || <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-4 border-cyan-400 border-t-transparent" /></div>}>
       <LazyComponent {...props} />
     </Suspense>
   );
+  LazyLoaded.displayName = 'LazyLoaded';
+  return LazyLoaded;
 }

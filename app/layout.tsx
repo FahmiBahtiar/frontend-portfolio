@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import { headers } from 'next/headers';
 import { Inter, Dancing_Script } from 'next/font/google';
 import "./globals.css";
-import { generateDynamicMetadata, generateStructuredData } from '@/lib/metadata';
+import { generateDynamicMetadata, generateStructuredData, serializeJsonLd } from '@/lib/metadata';
 import { WebVitals } from '@/components/features/WebVitals';
+import { MotionProvider } from '@/components/providers/MotionProvider';
+import { GraphicsModeProvider } from '@/components/providers/GraphicsModeProvider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -42,6 +45,10 @@ export default async function RootLayout({
 }>) {
   // Generate JSON-LD structured data untuk SEO
   const structuredData = await generateStructuredData();
+  // Per-request nonce set by proxy.ts; used to allow the JSON-LD inline scripts
+  // under the nonce-based CSP. Reading headers() also forces dynamic rendering,
+  // which is required for the per-request nonce to apply.
+  const nonce = (await headers()).get('x-nonce') ?? undefined;
 
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${dancingScript.variable}`}>
@@ -63,27 +70,31 @@ export default async function RootLayout({
           <>
             <script
               type="application/ld+json"
+              nonce={nonce}
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify(structuredData.personSchema),
+                __html: serializeJsonLd(structuredData.personSchema),
               }}
             />
             <script
               type="application/ld+json"
+              nonce={nonce}
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify(structuredData.websiteSchema),
+                __html: serializeJsonLd(structuredData.websiteSchema),
               }}
             />
             <script
               type="application/ld+json"
+              nonce={nonce}
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify(structuredData.profilePageSchema),
+                __html: serializeJsonLd(structuredData.profilePageSchema),
               }}
             />
             {structuredData.portfolioSchema && (
               <script
                 type="application/ld+json"
+                nonce={nonce}
                 dangerouslySetInnerHTML={{
-                  __html: JSON.stringify(structuredData.portfolioSchema),
+                  __html: serializeJsonLd(structuredData.portfolioSchema),
                 }}
               />
             )}
@@ -92,7 +103,9 @@ export default async function RootLayout({
       </head>
       <body suppressHydrationWarning className={`${inter.className}`} style={{ backgroundColor: '#060612' }}>
         <WebVitals />
-        {children}
+        <MotionProvider>
+          <GraphicsModeProvider>{children}</GraphicsModeProvider>
+        </MotionProvider>
       </body>
     </html>
   );

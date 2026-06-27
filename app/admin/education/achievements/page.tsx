@@ -175,7 +175,7 @@ export default function AchievementsPage() {
 
   const handleEdit = (achievement: Achievement) => {
     setEditingAchievement(achievement);
-    const achievementData = achievement as any;
+    const achievementData = achievement as Achievement & { _id?: string; __v?: number };
     const { _id, __v, createdAt, updatedAt, ...cleanAchievement } = achievementData;
     setFormData({
       ...cleanAchievement,
@@ -361,7 +361,7 @@ export default function AchievementsPage() {
                     <Label>Category</Label>
                     <select
                       value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value as Achievement['category'] })}
                       className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50"
                       required
                     >

@@ -222,7 +222,7 @@ export default function CommunicationPage() {
 
           <select
             value={filter}
-            onChange={(e) => setFilter(e.target.value as any)}
+            onChange={(e) => setFilter(e.target.value as typeof filter)}
             className="h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
           >
             <option value="all" className="bg-slate-900">All Messages</option>

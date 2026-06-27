@@ -1,9 +1,33 @@
 // Dynamic Metadata Generator untuk SEO
 import { Metadata } from 'next';
 import { getAllDataForSEO } from './services/server-data';
+import { SITE_URL } from '@/lib/config';
+import type { Passion, SocialLink, Education, HeroProfile } from '@/lib/types/admin';
+
+// Hero data as consumed for JSON-LD: the schema reads an optional `photo`
+// field that the API may include beyond the base HeroProfile type.
+type SEOHero = HeroProfile & { photo?: string };
+
+// Shape of project entries consumed by the structured-data generator.
+// Projects are not yet served by the backend, so this is a forward-looking type.
+interface SEOProject {
+  title?: string;
+  description?: string;
+  demoUrl?: string;
+  githubUrl?: string;
+  date?: string;
+  tags?: string[];
+}
+
+// Education records as consumed for JSON-LD: the SEO schema reads optional
+// startDate/endDate fields that the API may include beyond the base Education type.
+type SEOEducation = Education & {
+  startDate?: string;
+  endDate?: string;
+};
 
 // Base URL dari environment atau default
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://blimbing.me';
+const BASE_URL = SITE_URL;
 
 // Default metadata
 export const defaultMetadata: Metadata = {
@@ -108,13 +132,13 @@ export async function generateDynamicMetadata(): Promise<Metadata> {
     const fullTitle = `${title} | ${primaryTitle}`;
     
     // Build description
-    const passionsList = passions.map((p: any) => p.title).join(', ');
+    const passionsList = passions.map((p: Passion) => p.title).join(', ');
     const description = hero.description || 
       `${primaryTitle} specializing in modern web technologies. ${passionsList ? `Passionate about ${passionsList}` : ''}`;
     
     // Build keywords
-    const skillKeywords = hero.techStack?.map((tech: any) => tech.label.toLowerCase()) || [];
-    const passionKeywords = passions.map((p: any) => p.title.toLowerCase());
+    const skillKeywords = hero.techStack?.map((tech) => tech.label.toLowerCase()) || [];
+    const passionKeywords = passions.map((p: Passion) => p.title.toLowerCase());
     const keywords = [
       ...skillKeywords,
       ...passionKeywords,
@@ -149,6 +173,9 @@ export async function generateDynamicMetadata(): Promise<Metadata> {
   }
 }
 
+// Re-exported from ./json-ld for isolated unit testing.
+export { serializeJsonLd } from './json-ld';
+
 // Generate JSON-LD structured data untuk SEO
 export async function generateStructuredData() {
   try {
@@ -158,7 +185,8 @@ export async function generateStructuredData() {
       return null;
     }
 
-    const { hero, social, education, projects } = data;
+    const { social, education, projects } = data;
+    const hero = data.hero as SEOHero;
 
     // Person Schema
     const personSchema = {
@@ -170,14 +198,14 @@ export async function generateStructuredData() {
       description: hero.description,
       url: BASE_URL,
       image: hero.photo || `${BASE_URL}/profile.jpg`,
-      sameAs: social.map((s: any) => s.url).filter(Boolean),
-      alumniOf: education.map((edu: any) => ({
+      sameAs: social.map((s: SocialLink) => s.url).filter(Boolean),
+      alumniOf: education.map((edu: SEOEducation) => ({
         '@type': 'EducationalOrganization',
         name: edu.institution,
         startDate: edu.startDate,
         endDate: edu.endDate,
       })),
-      knowsAbout: hero.techStack?.map((tech: any) => tech.label) || [],
+      knowsAbout: hero.techStack?.map((tech) => tech.label) || [],
     };
 
     // Website Schema
@@ -211,7 +239,7 @@ export async function generateStructuredData() {
       name: 'Portfolio Projects',
       description: 'Collection of projects and work',
       numberOfItems: projects.length,
-      itemListElement: projects.map((project: any, index: number) => ({
+      itemListElement: projects.map((project: SEOProject, index: number) => ({
         '@type': 'ListItem',
         position: index + 1,
         item: {

@@ -53,11 +53,14 @@ export default function HomePage() {
       setApiError(null);
       setIsWarmingUp(false);
 
+      // Non-critical: warm Spotify in the background — do NOT block content.
+      SpotifyService.getNowPlaying().catch(() => null);
+
       try {
-        // Use retry-aware fetcher with warming-up feedback
+        // Only the hero data gates the loading->content transition.
         await Promise.all([
           apiRequestWithRetry<ApiResponse<unknown>>(
-            API_CONFIG.ENDPOINTS.HERO_PROFILE,
+            API_CONFIG.PUBLIC_ENDPOINTS.HERO_PROFILE,
             {},
             4,
             {
@@ -66,11 +69,10 @@ export default function HomePage() {
             },
           ),
           apiRequestWithRetry<ApiResponse<unknown>>(
-            API_CONFIG.ENDPOINTS.HERO_SOCIAL,
+            API_CONFIG.PUBLIC_ENDPOINTS.HERO_SOCIAL,
             {},
             4,
           ),
-          SpotifyService.getNowPlaying().catch(() => null), // non-critical
         ]);
 
         setIsApiLoaded(true);
@@ -191,7 +193,12 @@ export default function HomePage() {
                   className="min-h-screen"
                   style={{
                     contentVisibility: index > 1 ? 'auto' : 'visible',
-                    containIntrinsicSize: index > 1 ? '0 800px' : 'none',
+                    // `auto` makes the browser remember each section's real
+                    // rendered height after the first paint, so scrolling back
+                    // into it no longer triggers a layout jump from a wrong
+                    // estimate (the sections are min-h-screen, far taller than
+                    // the old fixed 800px guess).
+                    containIntrinsicSize: index > 1 ? 'auto 1000px' : 'none',
                   }}
                 >
                   <SectionComponent onNavigate={handleNavigate} />

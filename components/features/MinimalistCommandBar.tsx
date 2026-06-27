@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'motion/react';
+import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from 'motion/react';
 import { Camera, User, GraduationCap, Briefcase, Mail, Compass, Menu, X } from 'lucide-react';
 
 interface MinimalistCommandBarProps {
@@ -46,27 +46,49 @@ export function MinimalistCommandBar({
   onGalleryToggle,
 }: MinimalistCommandBarProps) {
   const { scrollYProgress } = useScroll();
-  const [scrollPercent, setScrollPercent] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  // `isScrolling` is true only while the page is actively moving. We use it to
+  // drop the navbar's backdrop-filter blur during scroll (re-blurring the whole
+  // page behind a fixed bar every frame is the main scroll-jank source) and
+  // restore it shortly after scrolling stops. It flips at most twice per gesture
+  // — not per frame.
+  const [isScrolling, setIsScrolling] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const lastScrollY = useRef(0);
   const scrollDirection = useRef<'up' | 'down'>('up');
 
-  // Track scroll progress for the progress indicator
+  // Progress indicator width, driven straight off the scroll motion value — no
+  // React state, so scrolling no longer re-renders the whole navbar tree.
+  const progressWidth = useTransform(scrollYProgress, (v) => `${Math.round(v * 100)}%`);
+  // The "NN%" text is updated imperatively (textContent) for the same reason.
+  const pctDesktopRef = useRef<HTMLSpanElement>(null);
+  const pctMobileRef = useRef<HTMLSpanElement>(null);
+
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    setScrollPercent(Math.round(latest * 100));
+    const t = `${Math.round(latest * 100)}%`;
+    if (pctDesktopRef.current) pctDesktopRef.current.textContent = t;
+    if (pctMobileRef.current) pctMobileRef.current.textContent = t;
   });
+
+  // Seed the percent text on mount / when the mobile menu opens (the change
+  // event only fires on subsequent scrolls).
+  useEffect(() => {
+    const t = `${Math.round(scrollYProgress.get() * 100)}%`;
+    if (pctDesktopRef.current) pctDesktopRef.current.textContent = t;
+    if (pctMobileRef.current) pctMobileRef.current.textContent = t;
+  }, [mobileOpen, scrollYProgress]);
 
   // Auto-hide navbar on scroll down, show on scroll up
   useEffect(() => {
     let ticking = false;
+    let scrollStopTimer: ReturnType<typeof setTimeout>;
 
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const currentY = window.scrollY;
           const direction = currentY > lastScrollY.current ? 'down' : 'up';
-          
+
           // Only update visibility after a meaningful scroll
           if (Math.abs(currentY - lastScrollY.current) > 8) {
             if (direction !== scrollDirection.current) {
@@ -74,16 +96,25 @@ export function MinimalistCommandBar({
               setIsVisible(direction === 'up' || currentY < 100);
             }
           }
-          
+
           lastScrollY.current = currentY;
           ticking = false;
         });
         ticking = true;
       }
+
+      // Mark scrolling (idempotent — React bails out if already true), then
+      // clear it ~160ms after the last scroll event.
+      setIsScrolling(true);
+      clearTimeout(scrollStopTimer);
+      scrollStopTimer = setTimeout(() => setIsScrolling(false), 160);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(scrollStopTimer);
+    };
   }, []);
 
   const handleNavClick = useCallback((id: number) => {
@@ -119,12 +150,12 @@ export function MinimalistCommandBar({
           className="relative flex items-center gap-1 px-2 py-2 rounded-2xl pointer-events-auto"
         >
           {/* Background Layer to prevent backdrop-filter from blurring text */}
-          <div 
+          <div
             className="absolute inset-0 rounded-2xl -z-10"
             style={{
-              background: ACCENT.barBg,
-              backdropFilter: 'blur(24px) saturate(1.4)',
-              WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
+              background: isScrolling ? 'rgba(8, 8, 24, 0.92)' : ACCENT.barBg,
+              backdropFilter: isScrolling ? 'none' : 'blur(24px) saturate(1.4)',
+              WebkitBackdropFilter: isScrolling ? 'none' : 'blur(24px) saturate(1.4)',
               border: `1px solid ${ACCENT.barBorder}`,
               boxShadow: `
                 0 0 0 0.5px rgba(255,255,255,0.04),
@@ -278,16 +309,16 @@ export function MinimalistCommandBar({
                 className="absolute inset-y-0 left-0 rounded-full"
                 style={{
                   background: `linear-gradient(90deg, ${ACCENT.active}, rgba(34,211,238,0.5))`,
-                  width: `${scrollPercent}%`,
+                  width: progressWidth,
                 }}
-                transition={{ duration: 0.1, ease: 'easeOut' }}
               />
             </div>
             <span
+              ref={pctDesktopRef}
               className="text-[10px] font-mono tabular-nums w-7 text-right"
               style={{ color: ACCENT.text, opacity: 0.6 }}
             >
-              {scrollPercent}%
+              0%
             </span>
           </div>
 
@@ -322,12 +353,12 @@ export function MinimalistCommandBar({
           className="relative px-4 py-3 flex items-center justify-between"
         >
           {/* Background Layer */}
-          <div 
+          <div
             className="absolute inset-0 -z-10"
             style={{
-              background: ACCENT.barBg,
-              backdropFilter: 'blur(24px) saturate(1.3)',
-              WebkitBackdropFilter: 'blur(24px) saturate(1.3)',
+              background: isScrolling ? 'rgba(8, 8, 24, 0.92)' : ACCENT.barBg,
+              backdropFilter: isScrolling ? 'none' : 'blur(24px) saturate(1.3)',
+              WebkitBackdropFilter: isScrolling ? 'none' : 'blur(24px) saturate(1.3)',
               borderBottom: `1px solid ${ACCENT.barBorder}`,
             }}
           />
@@ -436,9 +467,8 @@ export function MinimalistCommandBar({
             className="h-full rounded-full"
             style={{
               background: `linear-gradient(90deg, ${ACCENT.active}, rgba(34,211,238,0.5))`,
-              width: `${scrollPercent}%`,
+              width: progressWidth,
             }}
-            transition={{ duration: 0.1, ease: 'easeOut' }}
           />
         </div>
       </motion.nav>
@@ -557,19 +587,20 @@ export function MinimalistCommandBar({
                     className="w-12 h-1 rounded-full overflow-hidden"
                     style={{ background: ACCENT.progressTrack }}
                   >
-                    <div
-                      className="h-full rounded-full transition-all duration-200"
+                    <motion.div
+                      className="h-full rounded-full"
                       style={{
                         background: ACCENT.active,
-                        width: `${scrollPercent}%`,
+                        width: progressWidth,
                       }}
                     />
                   </div>
                   <span
+                    ref={pctMobileRef}
                     className="text-[10px] font-mono tabular-nums"
                     style={{ color: ACCENT.text, opacity: 0.5 }}
                   >
-                    {scrollPercent}%
+                    0%
                   </span>
                 </div>
               </div>

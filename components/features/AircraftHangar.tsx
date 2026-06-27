@@ -27,6 +27,7 @@ import {
   Award,
   Plus
 } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/config';
 
 type CategoryType = 'github';
 
@@ -80,7 +81,8 @@ export function AircraftHangar() {
   };
 
   const { data: hangarItems = [], error: fetchError, isLoading: loading } = useSWR(
-    '/api/admin/experience/projects',
+    // Public read — fetch the backend's public route directly.
+    `${API_BASE_URL}/api/experience/projects`,
     fetcher
   );
 

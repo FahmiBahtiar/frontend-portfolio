@@ -15,14 +15,17 @@ import {
   Check,
   Radar,
   X,
-  Loader2
+  Loader2,
+  type LucideIcon
 } from 'lucide-react';
 import { useState, useActionState, useEffect } from 'react';
+import { safeExternalUrl } from '@/lib/safe-url';
 import Image from 'next/image';
 import useSWR from 'swr';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+import { API_BASE_URL } from '@/lib/config';
 
 interface ContactFrequency {
   id: string;
@@ -44,7 +47,9 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 async function submitMessage(prevState: { status: string }, formData: FormData) {
   try {
-    const response = await fetch('/api/admin/communication/messages', {
+    // Public contact form -> backend's public, rate-limited /contact-messages endpoint.
+    const API_BASE = API_BASE_URL;
+    const response = await fetch(`${API_BASE}/contact-messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -54,8 +59,6 @@ async function submitMessage(prevState: { status: string }, formData: FormData) 
         email: formData.get('email'),
         subject: formData.get('subject'),
         message: formData.get('message'),
-        ipAddress: '',
-        userAgent: navigator.userAgent,
       }),
     });
 
@@ -177,7 +180,7 @@ function ContactForm() {
                 <span className="font-medium">Message sent successfully!</span>
               </div>
               <p className="text-emerald-300/80 text-sm mt-1">
-                Thank you for reaching out. I'll get back to you as soon as possible.
+                Thank you for reaching out. I&apos;ll get back to you as soon as possible.
               </p>
             </motion.div>
           )}
@@ -217,7 +220,7 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
 
   // Icon mapping function
   const getIconComponent = (iconName: string) => {
-    const iconMap: Record<string, any> = {
+    const iconMap: Record<string, LucideIcon> = {
       Mail,
       Phone,
       Linkedin,
@@ -248,8 +251,9 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
   };
 
   const handleContact = (freq: ContactFrequency) => {
-    if (freq.link) {
-      window.open(freq.link, '_blank');
+    const safeLink = safeExternalUrl(freq.link);
+    if (safeLink) {
+      window.open(safeLink, '_blank', 'noopener,noreferrer');
     } else if (freq.id === 'email') {
       window.location.href = `mailto:${freq.value}`;
     } else if (freq.id === 'phone') {
@@ -272,14 +276,14 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
             COMMUNICATION PANEL
-          </h1>
+          </h2>
           
           <div className="flex items-center justify-center gap-2 text-cyan-400/80 mb-6">
             <MapPin className="w-4 h-4" />
             <span className="text-sm md:text-base font-mono tracking-widest">
-              7°15'S 112°45'E • ALT 667M
+              7°15&apos;S 112°45&apos;E • ALT 667M
             </span>
           </div>
 

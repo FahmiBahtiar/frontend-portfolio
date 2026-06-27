@@ -160,8 +160,8 @@ export default function HighlightsPage() {
                   <div className="space-y-2">
                     <Label>Color (Hex)</Label>
                     <div className="flex items-center gap-3">
-                      <input type="color" value={formData.color.startsWith('#') ? formData.color : '#06b6d4'} onChange={(e) => setFormData({ ...formData, color: e.target.value as any })} className="w-12 h-10 rounded-md bg-white/5 border border-white/10 cursor-pointer" required />
-                      <Input value={formData.color} onChange={(e) => setFormData({ ...formData, color: e.target.value as any })} className="flex-1 bg-white/5 border-white/10" placeholder="#06b6d4 or cyan" />
+                      <input type="color" value={formData.color.startsWith('#') ? formData.color : '#06b6d4'} onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })} className="w-12 h-10 rounded-md bg-white/5 border border-white/10 cursor-pointer" required />
+                      <Input value={formData.color} onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })} className="flex-1 bg-white/5 border-white/10" placeholder="#06b6d4 or cyan" />
                     </div>
                   </div>
                 </div>

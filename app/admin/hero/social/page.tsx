@@ -47,7 +47,7 @@ export default function SocialLinksPage() {
   const handleEdit = (link: SocialLink) => {
     setEditingLink(link);
     setFormData({
-      platform: link.platform as any,
+      platform: link.platform,
       url: link.url,
       username: link.username,
     });
@@ -198,7 +198,7 @@ export default function SocialLinksPage() {
                       <Label>Platform</Label>
                       <select
                         value={formData.platform}
-                        onChange={(e) => setFormData({ ...formData, platform: e.target.value as any })}
+                        onChange={(e) => setFormData({ ...formData, platform: e.target.value as SocialLink['platform'] })}
                         className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                         required
                       >

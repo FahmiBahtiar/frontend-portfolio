@@ -1,6 +1,12 @@
 // Performance monitoring utilities for Next.js
 
-export const reportWebVitals = (metric: any) => {
+interface WebVitalsMetric {
+  name: string;
+  value: number;
+  id: string;
+}
+
+export const reportWebVitals = (metric: WebVitalsMetric) => {
   // Send to analytics in production
   if (process.env.NODE_ENV === 'production') {
     // Example: Send to Google Analytics, Vercel Analytics, etc.
@@ -22,7 +28,7 @@ export const measurePerformance = (componentName: string, callback: () => void) 
 };
 
 // Debounce helper for scroll/resize events
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: never[]) => unknown>(
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) => {
@@ -35,7 +41,7 @@ export const debounce = <T extends (...args: any[]) => any>(
 };
 
 // Throttle helper for high-frequency events
-export const throttle = <T extends (...args: any[]) => any>(
+export const throttle = <T extends (...args: never[]) => unknown>(
   func: T,
   limit: number
 ): ((...args: Parameters<T>) => void) => {

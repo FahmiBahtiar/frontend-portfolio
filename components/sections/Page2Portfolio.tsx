@@ -340,7 +340,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                   className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-full group"
                   onClick={() => onNavigate && onNavigate(4)} // Assuming section 4 is Contact based on Page5Contact name
                 >
-                  Let's Collaborate
+                  Let&apos;s Collaborate
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </motion.div>

@@ -1,91 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server';
-
-
-// Use new Backend API endpoint
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import { proxyToBackend } from '@/lib/admin-proxy';
 
 export async function GET(
-  request: NextRequest,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-
-  try {
-    // Backend API endpoint (new)
-    const response = await fetch(`${BACKEND_URL}/contact-info/${id}`);
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch contact information');
-    }
-
-    // Data from backend already uses 'id', no _id transform needed
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error fetching contact information:', error);
-    return NextResponse.json(
-      { success: false, message: 'Failed to fetch contact information' },
-      { status: 500 }
-    );
-  }
+  return proxyToBackend(`/contact-info/${encodeURIComponent(id)}`);
 }
 
 export async function PUT(
-  request: NextRequest,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-
-  try {
-    const body = await request.json();
-
-    const response = await fetch(`${BACKEND_URL}/contact-info/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update contact information');
-    }
-
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error updating contact information:', error);
-    return NextResponse.json(
-      { success: false, message: 'Failed to update contact information' },
-      { status: 500 }
-    );
-  }
+  const body = await request.text();
+  return proxyToBackend(`/contact-info/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    body,
+  });
 }
 
 export async function DELETE(
-  request: NextRequest,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-
-  try {
-    const response = await fetch(`${BACKEND_URL}/contact-info/${id}`, {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete contact information');
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: 'Contact information deleted successfully',
-    });
-  } catch (error) {
-    console.error('Error deleting contact information:', error);
-    return NextResponse.json(
-      { success: false, message: 'Failed to delete contact information' },
-      { status: 500 }
-    );
-  }
+  return proxyToBackend(`/contact-info/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+  });
 }

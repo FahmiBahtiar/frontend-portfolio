@@ -129,7 +129,7 @@ export const viewportConfig = {
 };
 
 // Reduced motion preferences
-export const respectReducedMotion = (animation: any) => {
+export const respectReducedMotion = <T extends object>(animation: T) => {
   if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return {
       ...animation,

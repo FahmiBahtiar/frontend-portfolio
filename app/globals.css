@@ -47,3 +47,42 @@
 @utility glass-panel-hover {
   @apply hover:bg-white/10 hover:border-white/20 transition-all duration-300;
 }
+
+/* Respect the OS "reduce motion" preference (WCAG 2.3.3 / vestibular safety).
+   Neutralizes CSS animations/transitions; framer-motion is handled globally via
+   <MotionConfig reducedMotion="user">. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Lite graphics mode (auto-enabled by GraphicsModeProvider when the browser has
+   no GPU acceleration / is software-rendered). Neutralizes paint-heavy effects
+   so the CPU compositor stays smooth. transform/opacity are deliberately NOT
+   touched, so Framer Motion animations keep running. Add `keep-gfx` to any
+   element that must retain its effect. */
+html.lite-graphics *:not(.keep-gfx),
+html.lite-graphics *:not(.keep-gfx)::before,
+html.lite-graphics *:not(.keep-gfx)::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;       /* kills blur()/drop-shadow(), not transform/opacity */
+  box-shadow: none !important;   /* kills glow */
+}
+
+/* Fixed-attachment parallax forces full-page repaints — make it scroll normally. */
+html.lite-graphics * {
+  background-attachment: scroll !important;
+}
+
+/* glass-panel relies on backdrop-blur; once the blur is gone it would be too
+   see-through, so give it a solid translucent fill instead. */
+html.lite-graphics .glass-panel {
+  background-color: rgba(15, 23, 42, 0.85) !important;
+}

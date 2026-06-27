@@ -6,6 +6,7 @@ import { AviationHUD } from '@/components/features/AviationHUD';
 import { CockpitCarousel } from '@/components/features/CockpitCarousel';
 import { FlightDataCard } from '@/components/features/FlightDataCard';
 import { useGallery } from '@/lib/hooks/useGallery';
+import { cld } from '@/lib/cloudinary';
 import { Loader2, AlertTriangle, ShieldAlert } from 'lucide-react';
 
 export function PageGallery() {
@@ -14,8 +15,13 @@ export function PageGallery() {
   // Use optimized gallery hook with automatic caching
   const { photos: missionPhotos, isLoading, isError } = useGallery();
 
-  // Memoize current data to prevent unnecessary recalculations
-  const currentBackground = useMemo(() => missionPhotos[currentIndex]?.image, [missionPhotos, currentIndex]);
+  // Memoize current data to prevent unnecessary recalculations. The full-bleed
+  // background is a raw Cloudinary URL, so route it through cld() for an
+  // optimized (WebP/AVIF, width-capped) delivery — it's not a next/image <Image>.
+  const currentBackground = useMemo(() => {
+    const src = missionPhotos[currentIndex]?.image;
+    return src ? cld(src, { width: 1920 }) : src;
+  }, [missionPhotos, currentIndex]);
   const currentPhotoData = useMemo(() => missionPhotos[currentIndex], [missionPhotos, currentIndex]);
 
   // Adapter for CockpitCarousel - memoized

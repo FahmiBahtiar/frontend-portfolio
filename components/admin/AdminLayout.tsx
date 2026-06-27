@@ -23,7 +23,8 @@ import {
   Code2,
   Mountain,
   Users,
-  Shield
+  Shield,
+  type LucideIcon
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -33,7 +34,7 @@ interface AdminLayoutProps {
 interface NavItem {
   label: string;
   href: string;
-  icon: any;
+  icon: LucideIcon;
   badge?: number;
   subItems?: {
     label: string;

@@ -304,7 +304,7 @@ export default function AircraftHangarPage() {
                     <select
                       value={formData.category}
                       onChange={(e) => {
-                        const newCategory = e.target.value as any;
+                        const newCategory = e.target.value;
                         setFormData({ ...formData, category: newCategory, icon: getIconForCategory(newCategory) });
                       }}
                       className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
@@ -319,7 +319,7 @@ export default function AircraftHangarPage() {
                     <Label>Color</Label>
                     <select
                       value={formData.color}
-                      onChange={(e) => setFormData({ ...formData, color: e.target.value as any })}
+                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
                       className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                       required
                     >

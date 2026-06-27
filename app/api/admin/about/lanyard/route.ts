@@ -1,118 +1,41 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { proxyToBackend } from '@/lib/admin-proxy';
 
-
-// Use new Supabase backend endpoint
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
-export async function GET() {
-  try {
-    // Supabase backend endpoint (new)
-    const response = await fetch(`${BACKEND_URL}/api/admin/about/lanyard`);
-
-    if (!response.ok) {
-      throw new Error(`Backend responded with status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, message: 'Failed to fetch lanyard data' },
-      { status: 500 }
-    );
-  }
+export async function GET(request: Request) {
+  const searchParams = new URL(request.url).searchParams.toString();
+  return proxyToBackend('/api/about/lanyard', { searchParams });
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-
-    const response = await fetch(`${BACKEND_URL}/api/admin/about/lanyard`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Backend responded with status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, message: 'Failed to create lanyard' },
-      { status: 500 }
-    );
-  }
+export async function POST(request: Request) {
+  const body = await request.text();
+  return proxyToBackend('/api/admin/about/lanyard', { method: 'POST', body });
 }
 
-export async function PUT(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(
-        { success: false, message: 'Lanyard ID is required' },
-        { status: 400 }
-      );
-    }
-
-    const response = await fetch(`${BACKEND_URL}/api/admin/about/lanyard/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Backend responded with status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch (error) {
+export async function PUT(request: Request) {
+  const id = new URL(request.url).searchParams.get('id');
+  if (!id) {
+    const { NextResponse } = await import('next/server');
     return NextResponse.json(
-      { success: false, message: 'Failed to update lanyard' },
-      { status: 500 }
+      { success: false, message: 'Lanyard ID is required' },
+      { status: 400 }
     );
   }
+  const body = await request.text();
+  return proxyToBackend(`/api/admin/about/lanyard/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    body,
+  });
 }
 
-export async function DELETE(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(
-        { success: false, message: 'Lanyard ID is required' },
-        { status: 400 }
-      );
-    }
-
-    const response = await fetch(`${BACKEND_URL}/api/admin/about/lanyard/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Backend responded with status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch (error) {
+export async function DELETE(request: Request) {
+  const id = new URL(request.url).searchParams.get('id');
+  if (!id) {
+    const { NextResponse } = await import('next/server');
     return NextResponse.json(
-      { success: false, message: 'Failed to delete lanyard' },
-      { status: 500 }
+      { success: false, message: 'Lanyard ID is required' },
+      { status: 400 }
     );
   }
+  return proxyToBackend(`/api/admin/about/lanyard/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+  });
 }

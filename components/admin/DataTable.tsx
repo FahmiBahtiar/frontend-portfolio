@@ -60,8 +60,8 @@ export function DataTable<T extends { id: string }>({
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortKey) return 0;
-    const aValue = String((a as any)[sortKey]);
-    const bValue = String((b as any)[sortKey]);
+    const aValue = String((a as Record<string, unknown>)[sortKey]);
+    const bValue = String((b as Record<string, unknown>)[sortKey]);
     if (sortOrder === 'asc') {
       return aValue.localeCompare(bValue);
     }
@@ -176,7 +176,7 @@ export function DataTable<T extends { id: string }>({
                       <td key={String(column.key)} className="px-6 py-4 text-white/80">
                         {column.render
                           ? column.render(item)
-                          : String((item as any)[column.key])}
+                          : String((item as Record<string, unknown>)[column.key as string])}
                       </td>
                     ))}
                     {(onEdit || onDelete || onView) && (

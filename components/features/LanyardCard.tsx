@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { Code2, Calendar, MapPin, User, Globe, Plane, Mountain, Loader2, RefreshCw } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/config';
 
 interface LanyardData {
   id: string;
@@ -60,12 +61,12 @@ export function LanyardCard() {
   }, []);
 
   useEffect(() => {
-    const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const API_BASE = API_BASE_URL;
     const fetchLanyardData = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch(`${API_BASE}/api/admin/about/lanyard`);
+        const response = await fetch(`${API_BASE}/api/about/lanyard`);
         if (!response.ok) {
           throw new Error('Failed to fetch lanyard data');
         }
@@ -395,7 +396,7 @@ export function LanyardCard() {
 
                 {/* Signature */}
                 <div className="flex-1 flex flex-col border-t-2 border-blue-900/10 pt-3 sm:pt-4 md:pt-5 px-1 mt-auto">
-                  <p className="text-blue-900/50 text-[9px] sm:text-[10px] md:text-xs uppercase mb-1 tracking-wider">HOLDER'S SIGNATURE/TANDA TANGAN</p>
+                  <p className="text-blue-900/50 text-[9px] sm:text-[10px] md:text-xs uppercase mb-1 tracking-wider">HOLDER&apos;S SIGNATURE/TANDA TANGAN</p>
                   <div className="flex-1 border-b-2 border-blue-900/20 flex items-end pb-1 min-h-[3rem] sm:min-h-[3.5rem] md:min-h-[4rem] lg:min-h-[5rem]">
                     <p className="text-blue-900/80 font-thin tracking-wide leading-none -rotate-3 origin-bottom transition-transform hover:rotate-0 whitespace-nowrap translate-y-[1px]" style={{ fontFamily: 'var(--font-dancing-script), cursive', fontSize: 'clamp(1.5rem, 4vw, 4rem)' }}>
                       {(lanyardData.givenNames || '').toLowerCase()}
@@ -474,10 +475,10 @@ export function LanyardCard() {
                 className="space-y-4"
               >
                 <p className="text-white/90 text-base sm:text-lg md:text-2xl leading-relaxed max-w-3xl italic">
-                  "Code like a <span className="text-cyan-400 not-italic">developer</span>, 
-                  think like a <span className="text-orange-400 not-italic">pilot</span>, 
-                  persevere like a <span className="text-green-400 not-italic">mountaineer</span>. 
-                  Every challenge is just another peak to conquer."
+                  &quot;Code like a <span className="text-cyan-400 not-italic">developer</span>,
+                  think like a <span className="text-orange-400 not-italic">pilot</span>,
+                  persevere like a <span className="text-green-400 not-italic">mountaineer</span>.
+                  Every challenge is just another peak to conquer.&quot;
                 </p>
               </motion.div>
 

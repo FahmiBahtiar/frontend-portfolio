@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 import useSWR, { mutate } from 'swr';
-import { GraduationCap, Award, Code2, Plane, Mountain, Calendar, MapPin, Trophy, Star, CheckCircle2, ExternalLink, Loader2, X, ChevronLeft } from 'lucide-react';
+import { GraduationCap, Award, Code2, Plane, Mountain, Calendar, MapPin, Trophy, Star, CheckCircle2, ExternalLink, Loader2, X, ChevronLeft, type LucideIcon } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -13,15 +13,34 @@ import {
 } from '@/components/ui/accordion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AltitudeTimeline } from '@/components/features/AltitudeTimeline';
+import dynamic from 'next/dynamic';
 import { EducationService } from '@/lib/services/education';
-import { Education, Achievement } from '@/lib/types/admin';
+import { Achievement } from '@/lib/types/admin';
+import { JourneyScrollStory } from '@/components/features/JourneyScrollStory';
+import { useIsLiteGraphics } from '@/components/providers/GraphicsModeProvider';
+import { useIsMobile } from '@/components/ui/use-mobile';
+
+// WebGL (three.js / R3F) is heavy and GPU-only — load the 3D flythrough as its
+// own client-only chunk, on demand, so it never bloats the section's initial JS.
+// Lite-graphics devices fall back to the lightweight 2D scroll story instead.
+const Journey3DFlythrough = dynamic(
+  () =>
+    import('@/components/features/Journey3DFlythrough').then((m) => ({
+      default: m.Journey3DFlythrough,
+    })),
+  { ssr: false, loading: () => <div className="min-h-[520px]" /> },
+);
 
 interface Page3EducationProps {
   onNavigate?: (sectionIndex: number) => void;
 }
 
 export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
+  const lite = useIsLiteGraphics();
+  const isMobile = useIsMobile();
+  // The 3D flythrough is framed for wide screens — on phones (or GPU-less
+  // devices) use the responsive 2D scroll story instead.
+  const use2D = lite || isMobile;
   const [selectedAchievement, setSelectedAchievement] = useState<{
     category: string;
     achievementId: string;
@@ -69,7 +88,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
 
   // Icon mapping function
   const getIcon = (iconName: string) => {
-    const iconMap: Record<string, any> = {
+    const iconMap: Record<string, LucideIcon> = {
       Code2, Plane, Mountain, Award, Trophy, Star, GraduationCap, Calendar, MapPin, CheckCircle2, ExternalLink,
     };
     return iconMap[iconName] || Award;
@@ -178,10 +197,12 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                 </div>
                 <div>
                   <p className="text-slate-200 text-sm font-semibold mb-1">
-                    Altitude Chart Mode
+                    {use2D ? 'Scroll to explore' : 'Fly the journey'}
                   </p>
                   <p className="text-slate-400 text-xs font-mono">
-                    Click waypoints to explore • Higher altitude indicates advanced milestones
+                    {use2D
+                      ? 'The path draws itself as you scroll • Each milestone reveals as you reach it'
+                      : 'Scroll or drag to glide through the 3D journey • Each milestone floats into view'}
                   </p>
                 </div>
               </div>
@@ -189,8 +210,12 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
           </Card>
 
           <Card className="border-white/5 bg-slate-900/40 overflow-hidden shadow-2xl">
-            <CardContent className="p-6 md:p-8">
-              <AltitudeTimeline educationRecords={educationRecords} />
+            <CardContent className={use2D ? 'p-6 md:p-10' : 'p-2 md:p-3'}>
+              {use2D ? (
+                <JourneyScrollStory educationRecords={educationRecords} />
+              ) : (
+                <Journey3DFlythrough educationRecords={educationRecords} />
+              )}
             </CardContent>
           </Card>
         </div>
@@ -300,10 +325,9 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                       <div className="flex-1 relative mb-6 min-h-[300px]">
                                         <Image
                                           src={getSelectedAchievementDetail()?.achievement.certificateUrl as string}
-                                          alt="Certificate"
+                                          alt={`Certificate: ${getSelectedAchievementDetail()?.achievement.title ?? 'achievement'}`}
                                           fill
                                           className="object-contain rounded-xl"
-                                          unoptimized
                                         />
                                       </div>
                                       {getSelectedAchievementDetail()?.achievement.credentialUrl && (

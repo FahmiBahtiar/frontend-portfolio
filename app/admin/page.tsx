@@ -113,7 +113,7 @@ export default function AdminDashboard() {
             <h1 className="text-2xl font-semibold tracking-tight text-white">
               Welcome back, {profile?.name?.split(' ')[0] || 'Admin'}
             </h1>
-            <p className="text-sm text-muted-foreground">Here's your data-dense portfolio overview.</p>
+            <p className="text-sm text-muted-foreground">Here&apos;s your data-dense portfolio overview.</p>
           </div>
         </div>
         

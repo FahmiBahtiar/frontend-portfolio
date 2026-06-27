@@ -27,6 +27,7 @@ import {
   List,
   ChevronUp
 } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/config';
 
 interface FlightEntry {
   id: string;
@@ -74,7 +75,8 @@ export function FlightLogbook() {
   };
 
   const { data: flightEntries = [], error: fetchError, isLoading: loading } = useSWR(
-    '/api/admin/experience/flights',
+    // Public read — fetch the backend's public route directly.
+    `${API_BASE_URL}/api/experience/flights`,
     fetcher
   );
 

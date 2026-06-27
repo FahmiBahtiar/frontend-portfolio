@@ -2,6 +2,18 @@
 // File ini hanya digunakan di Server Components (tidak di client-side)
 
 import { API_CONFIG } from '@/lib/api';
+import type {
+  ApiResponse,
+  HeroProfile,
+  SocialLink,
+  Passion,
+  Highlight,
+  LanyardData,
+  Education,
+  Achievement,
+  FlightEntry,
+  ContactFrequency,
+} from '@/lib/types/admin';
 
 // Extend cache options untuk Next.js 15
 interface FetchOptions extends RequestInit {
@@ -49,8 +61,8 @@ async function serverFetch<T>(
 // ==================== HERO SECTION ====================
 export async function getHeroProfileServer() {
   try {
-    const response = await serverFetch<any>(
-      API_CONFIG.ENDPOINTS.HERO_PROFILE,
+    const response = await serverFetch<ApiResponse<HeroProfile>>(
+      API_CONFIG.PUBLIC_ENDPOINTS.HERO_PROFILE,
       {
         next: {
           revalidate: 3600, // Cache 1 jam
@@ -67,8 +79,8 @@ export async function getHeroProfileServer() {
 
 export async function getSocialLinksServer() {
   try {
-    const response = await serverFetch<any>(
-      API_CONFIG.ENDPOINTS.HERO_SOCIAL,
+    const response = await serverFetch<ApiResponse<SocialLink[]>>(
+      API_CONFIG.PUBLIC_ENDPOINTS.HERO_SOCIAL,
       {
         next: {
           revalidate: 3600, // Cache 1 jam
@@ -76,7 +88,7 @@ export async function getSocialLinksServer() {
         },
       }
     );
-    return response.data;
+    return response.data ?? [];
   } catch (error) {
     console.error('Failed to fetch social links:', error);
     return [];
@@ -86,8 +98,8 @@ export async function getSocialLinksServer() {
 // ==================== ABOUT SECTION ====================
 export async function getPassionsServer() {
   try {
-    const response = await serverFetch<any>(
-      API_CONFIG.ENDPOINTS.PASSIONS,
+    const response = await serverFetch<ApiResponse<Passion[]>>(
+      API_CONFIG.PUBLIC_ENDPOINTS.PASSIONS,
       {
         next: {
           revalidate: 3600,
@@ -95,7 +107,7 @@ export async function getPassionsServer() {
         },
       }
     );
-    return response.data;
+    return response.data ?? [];
   } catch (error) {
     console.error('Failed to fetch passions:', error);
     return [];
@@ -104,8 +116,8 @@ export async function getPassionsServer() {
 
 export async function getHighlightsServer() {
   try {
-    const response = await serverFetch<any>(
-      API_CONFIG.ENDPOINTS.HIGHLIGHTS,
+    const response = await serverFetch<ApiResponse<Highlight[]>>(
+      API_CONFIG.PUBLIC_ENDPOINTS.HIGHLIGHTS,
       {
         next: {
           revalidate: 3600,
@@ -113,7 +125,7 @@ export async function getHighlightsServer() {
         },
       }
     );
-    return response.data;
+    return response.data ?? [];
   } catch (error) {
     console.error('Failed to fetch highlights:', error);
     return [];
@@ -142,8 +154,8 @@ export async function getHighlightsServer() {
 
 export async function getLanyardServer() {
   try {
-    const response = await serverFetch<any>(
-      API_CONFIG.ENDPOINTS.LANYARD,
+    const response = await serverFetch<ApiResponse<LanyardData>>(
+      API_CONFIG.PUBLIC_ENDPOINTS.LANYARD,
       {
         next: {
           revalidate: 3600,
@@ -161,8 +173,8 @@ export async function getLanyardServer() {
 // ==================== EDUCATION SECTION ====================
 export async function getEducationRecordsServer() {
   try {
-    const response = await serverFetch<any>(
-      `${API_CONFIG.ENDPOINTS.EDUCATION}/records`,
+    const response = await serverFetch<ApiResponse<Education[]>>(
+      `${API_CONFIG.PUBLIC_ENDPOINTS.EDUCATION}/records`,
       {
         next: {
           revalidate: 3600,
@@ -170,7 +182,7 @@ export async function getEducationRecordsServer() {
         },
       }
     );
-    return response.data;
+    return response.data ?? [];
   } catch (error) {
     console.error('Failed to fetch education records:', error);
     return [];
@@ -179,8 +191,8 @@ export async function getEducationRecordsServer() {
 
 export async function getAchievementsServer() {
   try {
-    const response = await serverFetch<any>(
-      API_CONFIG.ENDPOINTS.ACHIEVEMENTS,
+    const response = await serverFetch<ApiResponse<Achievement[]>>(
+      API_CONFIG.PUBLIC_ENDPOINTS.ACHIEVEMENTS,
       {
         next: {
           revalidate: 3600,
@@ -188,7 +200,7 @@ export async function getAchievementsServer() {
         },
       }
     );
-    return response.data;
+    return response.data ?? [];
   } catch (error) {
     console.error('Failed to fetch achievements:', error);
     return [];
@@ -198,8 +210,8 @@ export async function getAchievementsServer() {
 // ==================== EXPERIENCE & PROJECTS ====================
 export async function getFlightsServer() {
   try {
-    const response = await serverFetch<any>(
-      API_CONFIG.ENDPOINTS.FLIGHTS,
+    const response = await serverFetch<ApiResponse<FlightEntry[]>>(
+      API_CONFIG.PUBLIC_ENDPOINTS.FLIGHTS,
       {
         next: {
           revalidate: 3600,
@@ -207,7 +219,7 @@ export async function getFlightsServer() {
         },
       }
     );
-    return response.data;
+    return response.data ?? [];
   } catch (error) {
     console.error('Failed to fetch flights:', error);
     return [];
@@ -237,7 +249,7 @@ export async function getFlightsServer() {
 // ==================== CONTACT SECTION ====================
 export async function getContactInfoServer() {
   try {
-    const response = await serverFetch<any>(
+    const response = await serverFetch<ApiResponse<ContactFrequency[]>>(
       API_CONFIG.ENDPOINTS.CONTACT,
       {
         next: {

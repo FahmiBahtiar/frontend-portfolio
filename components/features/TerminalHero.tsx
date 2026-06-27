@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
 import useSWR from 'swr';
-import { Sparkles, Github, Linkedin, Instagram, ExternalLink, Plane, Mountain, Code2, Compass } from 'lucide-react';
+import { Sparkles, Github, Linkedin, Instagram, ExternalLink, Plane, Mountain, Code2, Compass, type LucideIcon } from 'lucide-react';
 import { HeroService } from '@/lib/services/hero';
 import { SpotifyService, SpotifyNowPlaying } from '@/lib/services/spotify';
 import { HeroProfile, SocialLink } from '@/lib/types/admin';
@@ -461,7 +461,7 @@ export function TerminalHero({ onNavigate }: TerminalHeroProps) {
               >
                 {(heroProfile?.techStack || []).map((item, idx) => {
                   // Map icon names to components
-                  const iconMap: Record<string, any> = {
+                  const iconMap: Record<string, LucideIcon> = {
                     Code2, Plane, Mountain
                   };
                   const IconComponent = iconMap[item.icon] || Code2;

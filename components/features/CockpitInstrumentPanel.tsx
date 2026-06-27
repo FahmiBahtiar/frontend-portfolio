@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform, type MotionValue } from 'motion/react';
 import { Camera } from 'lucide-react';
 
 interface CockpitInstrumentPanelProps {
@@ -20,6 +20,76 @@ interface GaugeConfig {
   unit: string;
   maxValue: number;
   icon?: string;
+}
+
+// Extracted so useTransform is called at a component's top level (not inside a
+// .map() callback, which violates the Rules of Hooks).
+function GaugeNeedle({
+  scrollYProgress,
+  gauge,
+  totalSections,
+  activeSection,
+}: {
+  scrollYProgress: MotionValue<number>;
+  gauge: GaugeConfig;
+  totalSections: number;
+  activeSection: number;
+}) {
+  const rotate = useTransform(
+    scrollYProgress,
+    [gauge.id / totalSections, (gauge.id + 1) / totalSections],
+    [-135, 135],
+  );
+  const isActive = activeSection === gauge.id;
+  return (
+    <motion.div
+      className="absolute inset-0 flex items-center justify-center"
+      style={{ rotate }}
+    >
+      <div
+        className="absolute w-[2px] h-8 origin-bottom"
+        style={{
+          background: `linear-gradient(to top, ${gauge.color}, ${gauge.color}dd)`,
+          boxShadow: isActive ? `0 0 8px ${gauge.color}` : 'none',
+          filter: isActive ? `drop-shadow(0 0 4px ${gauge.color})` : 'none',
+        }}
+      />
+      {/* Needle tip */}
+      <div
+        className="absolute -top-[2px] w-1.5 h-1.5 rounded-full"
+        style={{ backgroundColor: gauge.color }}
+      />
+    </motion.div>
+  );
+}
+
+function GaugeProgressRing({
+  scrollYProgress,
+  gauge,
+  totalSections,
+}: {
+  scrollYProgress: MotionValue<number>;
+  gauge: GaugeConfig;
+  totalSections: number;
+}) {
+  const strokeDashoffset = useTransform(
+    scrollYProgress,
+    [gauge.id / totalSections, (gauge.id + 1) / totalSections],
+    [2 * Math.PI * 20, 0],
+  );
+  return (
+    <motion.circle
+      cx="24"
+      cy="24"
+      r="20"
+      fill="none"
+      stroke={gauge.color}
+      strokeWidth="2"
+      strokeDasharray={`${2 * Math.PI * 20}`}
+      style={{ strokeDashoffset }}
+      strokeLinecap="round"
+    />
+  );
 }
 
 export function CockpitInstrumentPanel({ 
@@ -255,32 +325,12 @@ export function CockpitInstrumentPanel({
                         </div>
 
                         {/* Needle */}
-                        <motion.div
-                          className="absolute inset-0 flex items-center justify-center"
-                          style={{
-                            rotate: useTransform(
-                              scrollYProgress,
-                              [gauge.id / totalSections, (gauge.id + 1) / totalSections],
-                              [-135, 135]
-                            )
-                          }}
-                        >
-                          <div className="absolute w-[2px] h-8 origin-bottom"
-                            style={{
-                              background: `linear-gradient(to top, ${gauge.color}, ${gauge.color}dd)`,
-                              boxShadow: activeSection === gauge.id 
-                                ? `0 0 8px ${gauge.color}` 
-                                : 'none',
-                              filter: activeSection === gauge.id 
-                                ? `drop-shadow(0 0 4px ${gauge.color})` 
-                                : 'none'
-                            }}
-                          />
-                          {/* Needle tip */}
-                          <div className="absolute -top-[2px] w-1.5 h-1.5 rounded-full"
-                            style={{ backgroundColor: gauge.color }}
-                          />
-                        </motion.div>
+                        <GaugeNeedle
+                          scrollYProgress={scrollYProgress}
+                          gauge={gauge}
+                          totalSections={totalSections}
+                          activeSection={activeSection}
+                        />
 
                         {/* Center rivet */}
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -479,22 +529,10 @@ export function CockpitInstrumentPanel({
                           stroke={`${gauge.color}30`}
                           strokeWidth="2"
                         />
-                        <motion.circle
-                          cx="24"
-                          cy="24"
-                          r="20"
-                          fill="none"
-                          stroke={gauge.color}
-                          strokeWidth="2"
-                          strokeDasharray={`${2 * Math.PI * 20}`}
-                          style={{
-                            strokeDashoffset: useTransform(
-                              scrollYProgress,
-                              [gauge.id / totalSections, (gauge.id + 1) / totalSections],
-                              [2 * Math.PI * 20, 0]
-                            ),
-                          }}
-                          strokeLinecap="round"
+                        <GaugeProgressRing
+                          scrollYProgress={scrollYProgress}
+                          gauge={gauge}
+                          totalSections={totalSections}
                         />
                       </svg>
 

@@ -19,6 +19,8 @@ interface Skill {
   icon?: string;
   color: string;
   order: number;
+  // MongoDB documents may use `_id` instead of `id`.
+  _id?: string;
 }
 
 const fetcher = async (url: string) => {
@@ -55,7 +57,7 @@ export default function SkillsPage() {
     : skills.filter(s => s.category === filterCategory);
 
   const handleEdit = (skill: Skill) => {
-    setEditingId(skill.id || (skill as any)._id);
+    setEditingId(skill.id || skill._id || null);
     setFormData({
       name: skill.name,
       category: skill.category,
@@ -72,7 +74,7 @@ export default function SkillsPage() {
     try {
       const response = await fetch(`/api/admin/about/skills/${deleteId}`, { method: 'DELETE' });
       if (response.ok) {
-        await mutate(skills.filter(s => (s.id || (s as any)._id) !== deleteId), false);
+        await mutate(skills.filter(s => (s.id || s._id) !== deleteId), false);
       } else {
         alert('Failed to delete skill');
       }
@@ -352,7 +354,7 @@ export default function SkillsPage() {
             data={filteredSkills}
             columns={columns}
             onEdit={handleEdit}
-            onDelete={(skill) => setDeleteId(skill.id || (skill as any)._id)}
+            onDelete={(skill) => setDeleteId(skill.id || skill._id || null)}
             emptyMessage="No skills found."
           />
         </div>
@@ -364,7 +366,7 @@ export default function SkillsPage() {
         onConfirm={handleDelete}
         title="Delete Skill"
         description="Are you sure you want to delete this skill? This action cannot be undone."
-        itemName={skills.find(s => (s.id || (s as any)._id) === deleteId)?.name || ''}
+        itemName={skills.find(s => (s.id || s._id) === deleteId)?.name || ''}
       />
     </div>
   );

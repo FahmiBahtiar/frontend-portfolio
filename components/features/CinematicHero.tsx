@@ -6,6 +6,7 @@ import useSWR from 'swr';
 import { Sparkles, Code2, Plane, Mountain, MapPin, ChevronDown } from 'lucide-react';
 import { HeroService } from '@/lib/services/hero';
 import { SpotifyService } from '@/lib/services/spotify';
+import { useIsLiteGraphics } from '@/components/providers/GraphicsModeProvider';
 import Image from 'next/image';
 
 interface CinematicHeroProps {
@@ -19,6 +20,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const lite = useIsLiteGraphics();
 
   // ---- Data fetching (same SWR hooks) ----
   const { data: heroProfile, isLoading: loading } = useSWR(
@@ -168,50 +170,68 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           }}
         />
 
-        {/* Layer 2: Gradient mesh orbs */}
+        {/* Layer 2: Gradient mesh orbs. In lite mode (no GPU), the blur filter is
+            stripped by global CSS and the infinite transform loops would still burn
+            CPU — so render a single static, blur-free ambient gradient instead. */}
         <div className="absolute inset-0 overflow-hidden">
-          <motion.div
-            className="absolute w-[600px] h-[600px] rounded-full opacity-[0.07]"
-            style={{
-              background: 'radial-gradient(circle, rgba(56, 189, 248, 0.8) 0%, transparent 70%)',
-              top: '10%',
-              left: '15%',
-              filter: 'blur(80px)',
-            }}
-            animate={{
-              x: [0, 40, -20, 0],
-              y: [0, -30, 20, 0],
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <motion.div
-            className="absolute w-[500px] h-[500px] rounded-full opacity-[0.05]"
-            style={{
-              background: 'radial-gradient(circle, rgba(99, 102, 241, 0.8) 0%, transparent 70%)',
-              bottom: '20%',
-              right: '10%',
-              filter: 'blur(80px)',
-            }}
-            animate={{
-              x: [0, -30, 20, 0],
-              y: [0, 20, -30, 0],
-            }}
-            transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <motion.div
-            className="absolute w-[400px] h-[400px] rounded-full opacity-[0.04]"
-            style={{
-              background: 'radial-gradient(circle, rgba(34, 211, 238, 0.8) 0%, transparent 70%)',
-              top: '50%',
-              left: '60%',
-              filter: 'blur(100px)',
-            }}
-            animate={{
-              x: [0, 20, -40, 0],
-              y: [0, -40, 10, 0],
-            }}
-            transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut' }}
-          />
+          {lite ? (
+            <div
+              className="absolute w-[600px] h-[600px] rounded-full opacity-[0.06]"
+              style={{
+                background: 'radial-gradient(circle, rgba(56, 189, 248, 0.6) 0%, transparent 70%)',
+                top: '10%',
+                left: '20%',
+              }}
+            />
+          ) : (
+            <>
+              <motion.div
+                className="absolute w-[600px] h-[600px] rounded-full opacity-[0.07]"
+                style={{
+                  background: 'radial-gradient(circle, rgba(56, 189, 248, 0.8) 0%, transparent 70%)',
+                  top: '10%',
+                  left: '15%',
+                  filter: 'blur(80px)',
+                }}
+                whileInView={{
+                  x: [0, 40, -20, 0],
+                  y: [0, -30, 20, 0],
+                }}
+                viewport={{ once: false, amount: 0 }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <motion.div
+                className="absolute w-[500px] h-[500px] rounded-full opacity-[0.05]"
+                style={{
+                  background: 'radial-gradient(circle, rgba(99, 102, 241, 0.8) 0%, transparent 70%)',
+                  bottom: '20%',
+                  right: '10%',
+                  filter: 'blur(80px)',
+                }}
+                whileInView={{
+                  x: [0, -30, 20, 0],
+                  y: [0, 20, -30, 0],
+                }}
+                viewport={{ once: false, amount: 0 }}
+                transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <motion.div
+                className="absolute w-[400px] h-[400px] rounded-full opacity-[0.04]"
+                style={{
+                  background: 'radial-gradient(circle, rgba(34, 211, 238, 0.8) 0%, transparent 70%)',
+                  top: '50%',
+                  left: '60%',
+                  filter: 'blur(100px)',
+                }}
+                whileInView={{
+                  x: [0, 20, -40, 0],
+                  y: [0, -40, 10, 0],
+                }}
+                viewport={{ once: false, amount: 0 }}
+                transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            </>
+          )}
         </div>
 
         {/* Layer 3: Grid lines */}
@@ -267,28 +287,27 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           style={{ x: nameTranslateX, y: nameTranslateY }}
           className="mb-6 sm:mb-8 will-change-transform"
         >
-          {nameLines.map((line, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40, filter: 'blur(12px)' }}
-              animate={revealPhase >= 2 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-              transition={{
-                duration: 0.7,
-                delay: i * 0.15,
-                ease: [0.25, 0.1, 0.25, 1],
-              }}
-              className=""
-            >
-              <h1
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.05] text-white"
-                style={{
-                  textShadow: '0 0 80px rgba(56, 189, 248, 0.15)',
+          {/* Single <h1> for the document; each name line is an animated span. */}
+          <h1
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.05] text-white"
+            style={{ textShadow: '0 0 80px rgba(56, 189, 248, 0.15)' }}
+          >
+            {nameLines.map((line, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0, y: 40, filter: 'blur(12px)' }}
+                animate={revealPhase >= 2 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+                transition={{
+                  duration: 0.7,
+                  delay: i * 0.15,
+                  ease: [0.25, 0.1, 0.25, 1],
                 }}
+                className="block"
               >
                 {line}
-              </h1>
-            </motion.div>
-          ))}
+              </motion.span>
+            ))}
+          </h1>
         </motion.div>
 
         {/* Subtitle with typing effect */}

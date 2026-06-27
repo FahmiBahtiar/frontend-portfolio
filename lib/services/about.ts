@@ -6,7 +6,7 @@ export class AboutService {
   // Passions API
   static async getPassions(): Promise<Passion[]> {
     const response = await apiRequest<ApiResponse<Passion[]>>(
-      API_CONFIG.ENDPOINTS.PASSIONS
+      API_CONFIG.PUBLIC_ENDPOINTS.PASSIONS
     );
     return response.data;
   }
@@ -45,7 +45,7 @@ export class AboutService {
   // Highlights API
   static async getHighlights(): Promise<Highlight[]> {
     const response = await apiRequest<ApiResponse<Highlight[]>>(
-      API_CONFIG.ENDPOINTS.HIGHLIGHTS
+      API_CONFIG.PUBLIC_ENDPOINTS.HIGHLIGHTS
     );
     return response.data;
   }

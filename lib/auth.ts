@@ -1,8 +1,10 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+import { mintInternalToken } from "@/lib/backend-auth";
+import { API_BASE_URL } from "@/lib/config";
 
 // Get backend URL (without /api prefix for direct backend calls)
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const BACKEND_URL = API_BASE_URL;
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -20,10 +22,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       try {
         const checkUrl = `${BACKEND_URL}/api/admin/auth/users/check/${encodeURIComponent(user.email)}`;
-        
+        const internalToken = await mintInternalToken();
+
         const response = await fetch(checkUrl, {
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${internalToken}`,
           },
         });
 
@@ -48,11 +52,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user && user.email) {
         // Fetch user details from backend on first sign in
         try {
+          const internalToken = await mintInternalToken();
           const response = await fetch(
             `${BACKEND_URL}/api/admin/auth/users/check/${encodeURIComponent(user.email)}`,
             {
               headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${internalToken}`,
               },
             }
           );

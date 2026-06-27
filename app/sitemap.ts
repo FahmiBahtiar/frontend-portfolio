@@ -1,62 +1,20 @@
-// Dynamic Sitemap untuk SEO
+// Sitemap untuk SEO
 import { MetadataRoute } from 'next';
-import { getFlightsServer, getEducationRecordsServer } from '@/lib/services/server-data';
+import { SITE_URL } from '@/lib/config';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://blimbing.me';
+const BASE_URL = SITE_URL;
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Static pages
-  const staticPages = [
+export default function sitemap(): MetadataRoute.Sitemap {
+  // Only real, crawlable routes. The site is a single page; #fragment anchors
+  // are NOT separate URLs (search engines drop the fragment), so they were
+  // removed to avoid duplicate-of-homepage entries. Add per-detail routes here
+  // once pages like /projects/[id] actually exist.
+  return [
     {
       url: BASE_URL,
       lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
+      changeFrequency: 'weekly',
       priority: 1.0,
     },
-    {
-      url: `${BASE_URL}/#about`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.9,
-    },
-    {
-      url: `${BASE_URL}/#education`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/#projects`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.9,
-    },
-    {
-      url: `${BASE_URL}/#contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    },
   ];
-
-  try {
-    // Fetch dynamic data untuk projects (jika ada halaman detail)
-    const projects = await getFlightsServer();
-    
-    // Jika nanti ada halaman detail project, bisa ditambahkan seperti ini:
-    // const projectPages = projects.map((project: any) => ({
-    //   url: `${BASE_URL}/projects/${project.id}`,
-    //   lastModified: new Date(project.updatedAt || project.createdAt),
-    //   changeFrequency: 'monthly' as const,
-    //   priority: 0.6,
-    // }));
-
-    return [
-      ...staticPages,
-      // ...projectPages, // Uncomment ketika ada halaman detail
-    ];
-  } catch (error) {
-    console.error('Error generating sitemap:', error);
-    return staticPages;
-  }
 }

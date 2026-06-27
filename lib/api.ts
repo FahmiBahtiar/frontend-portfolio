@@ -1,7 +1,12 @@
 // API Configuration
+import { API_BASE_URL } from '@/lib/config';
+
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
+  BASE_URL: API_BASE_URL,
   TIMEOUT: 8000, // 8 seconds — enough for cold start
+
+  // Admin (authenticated write) endpoints. Used for POST/PUT/DELETE that go
+  // straight to the backend. Reads are served from PUBLIC_ENDPOINTS below.
   ENDPOINTS: {
     // Hero Section
     HERO_PROFILE: '/api/admin/hero/profile',
@@ -27,6 +32,28 @@ export const API_CONFIG = {
     // Gallery Section
     GALLERY: '/gallery',
   },
+
+  // Public (unauthenticated read) endpoints consumed by the landing page.
+  // These map to the backend's *PublicController routes — no "admin" in the path.
+  PUBLIC_ENDPOINTS: {
+    // Hero Section
+    HERO_PROFILE: '/api/hero/profile',
+    HERO_SOCIAL: '/api/hero/social',
+
+    // About Section
+    PASSIONS: '/api/about/passions',
+    HIGHLIGHTS: '/api/about/highlights',
+    SKILLS: '/api/about/skills',
+    LANYARD: '/api/about/lanyard',
+
+    // Education Section
+    EDUCATION: '/api/education',
+    ACHIEVEMENTS: '/api/education/achievements',
+
+    // Experience & Projects Section
+    FLIGHTS: '/api/experience/flights',
+    PROJECTS: '/api/experience/projects',
+  },
 };
 
 // API Response Types
@@ -49,7 +76,7 @@ export class ApiError extends Error {
   constructor(
     message: string,
     public status: number,
-    public data?: any
+    public data?: unknown
   ) {
     super(message);
     this.name = 'ApiError';

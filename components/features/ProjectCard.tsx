@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { ExternalLink, Github } from 'lucide-react';
 import Image from 'next/image';
+import { safeExternalUrl } from '@/lib/safe-url';
 
 interface ProjectCardProps {
   title: string;
@@ -23,6 +24,9 @@ export function ProjectCard({
   githubUrl,
   index,
 }: ProjectCardProps) {
+  // Only allow safe http(s) links (blocks javascript:/data: from backend data).
+  const safeLiveUrl = safeExternalUrl(liveUrl);
+  const safeGithubUrl = safeExternalUrl(githubUrl);
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -46,9 +50,9 @@ export function ProjectCard({
         
         {/* Hover links */}
         <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          {liveUrl && (
+          {safeLiveUrl && (
             <a
-              href={liveUrl}
+              href={safeLiveUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
@@ -56,9 +60,9 @@ export function ProjectCard({
               <ExternalLink className="w-5 h-5 text-white" />
             </a>
           )}
-          {githubUrl && (
+          {safeGithubUrl && (
             <a
-              href={githubUrl}
+              href={safeGithubUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"

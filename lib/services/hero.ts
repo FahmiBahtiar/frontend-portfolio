@@ -2,7 +2,7 @@ import { apiRequest, API_CONFIG, ApiResponse } from '@/lib/api';
 import { HeroProfile, SocialLink } from '@/lib/types/admin';
 
 // Simple in-memory cache
-const cache = new Map<string, { data: any; timestamp: number }>();
+const cache = new Map<string, { data: unknown; timestamp: number }>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 function getCachedData<T>(key: string): T | null {
@@ -30,9 +30,9 @@ export class HeroService {
     }
 
     const response = await apiRequest<ApiResponse<HeroProfile>>(
-      API_CONFIG.ENDPOINTS.HERO_PROFILE
+      API_CONFIG.PUBLIC_ENDPOINTS.HERO_PROFILE
     );
-    
+
     // Cache the result
     setCachedData(cacheKey, response.data);
     return response.data;
@@ -63,9 +63,9 @@ export class HeroService {
     }
 
     const response = await apiRequest<ApiResponse<SocialLink[]>>(
-      API_CONFIG.ENDPOINTS.HERO_SOCIAL
+      API_CONFIG.PUBLIC_ENDPOINTS.HERO_SOCIAL
     );
-    
+
     // Cache the result
     setCachedData(cacheKey, response.data);
     return response.data;

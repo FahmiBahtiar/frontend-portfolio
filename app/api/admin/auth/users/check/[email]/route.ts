@@ -1,23 +1,13 @@
-import { NextResponse } from 'next/server';
+import { proxyInternal } from '@/lib/admin-proxy';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
+// Admin UI duplicate-check. Gated on an admin session; forwards to the backend's
+// @Internal() check endpoint with an internal-scoped token.
 export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ email: string }> }
+  _request: Request,
+  { params }: { params: Promise<{ email: string }> },
 ) {
-  try {
-    const { email } = await params;
-    const response = await fetch(
-      `${BACKEND_URL}/api/admin/auth/users/check/${email}`,
-      { cache: 'no-store' }
-    );
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, message: 'Failed to check authorization' },
-      { status: 500 }
-    );
-  }
+  const { email } = await params;
+  return proxyInternal(
+    `/api/admin/auth/users/check/${encodeURIComponent(email)}`,
+  );
 }

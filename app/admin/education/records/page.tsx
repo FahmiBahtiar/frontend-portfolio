@@ -194,7 +194,7 @@ export default function EducationRecordsPage() {
                     <Label>Theme Color</Label>
                     <select
                       value={formData.color}
-                      onChange={(e) => setFormData({ ...formData, color: e.target.value as any })}
+                      onChange={(e) => setFormData({ ...formData, color: e.target.value as Education['color'] })}
                       className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                       required
                     >

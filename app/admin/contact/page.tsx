@@ -85,7 +85,8 @@ export default function ContactPage() {
 
     try {
       if (editingContact) {
-        const { id, createdAt, updatedAt, isActive, __v, ...updateData } = formData as any;
+        const { id, createdAt, updatedAt, isActive, __v, ...updateData } =
+          formData as Partial<ContactFrequency> & { isActive?: boolean; __v?: number };
         const response = await fetch(`/api/admin/contact-info/${editingContact.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -239,7 +240,7 @@ export default function ContactPage() {
                       <Label>Type</Label>
                       <select
                         value={formData.type}
-                        onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+                        onChange={(e) => setFormData({ ...formData, type: e.target.value as ContactFrequency['type'] })}
                         className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                         required
                       >
