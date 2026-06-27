@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react';
 import useSWR from 'swr';
-import { Code2, Plane, Mountain, GraduationCap, Briefcase, Trophy, Target, Heart, Code, ArrowRight } from 'lucide-react';
+import { Code2, Plane, Mountain, GraduationCap, Briefcase, Trophy, Target, Heart, Code, ArrowRight, type LucideIcon } from 'lucide-react';
 import { LanyardCard } from '@/components/features/LanyardCard';
 import { AboutService } from '@/lib/services/about';
 import { Passion, Highlight } from '@/lib/types/admin';
@@ -25,8 +25,8 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
   const error = passionsError || highlightsError ? 'Unable to load portfolio data.' : null;
 
   // Icon mapping function
-  const getIcon = (iconName: string) => {
-    const iconMap: Record<string, React.ElementType> = {
+  const getIcon = (iconName: string): LucideIcon => {
+    const iconMap: Record<string, LucideIcon> = {
       Code, Code2, Plane, Mountain, GraduationCap, Briefcase, Trophy, Target, Heart,
     };
     return iconMap[iconName] || Code;
