@@ -64,7 +64,6 @@
     "react-dom": "^19.2.3",
     "react-hook-form": "^7.71.1",
     "react-resizable-panels": "^4.4.1",
-    "recharts": "^3.6.0",
     "sonner": "^2.0.7",
     "swr": "^2.3.8",
     "tailwind-merge": "*",
@@ -81,5 +80,12 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.9"
-  }
+  },
+  "browserslist": [
+    "last 3 Chrome versions",
+    "last 3 Firefox versions",
+    "last 3 Safari versions",
+    "last 3 Edge versions",
+    "not dead"
+  ]
 }

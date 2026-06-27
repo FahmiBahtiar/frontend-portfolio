@@ -40,6 +40,8 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
   const isMobile = useIsMobile();
   // The 3D flythrough is framed for wide screens — on phones (or GPU-less
   // devices) use the responsive 2D scroll story instead.
+  // three.js stays off the initial load because the whole Education section is
+  // lazy-mounted (see LazySection in app/page.tsx) only when scrolled near.
   const use2D = lite || isMobile;
   const [selectedAchievement, setSelectedAchievement] = useState<{
     category: string;
@@ -186,7 +188,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
               <h3 className="text-white font-mono font-bold tracking-wider">JOURNEY TIMELINE</h3>
             </div>
             <div className="flex-1 h-px bg-gradient-to-r from-emerald-500/50 to-transparent" />
-            <span className="text-slate-500 font-mono text-sm hidden sm:block">2010 → Now</span>
+            <span className="text-slate-400 font-mono text-sm hidden sm:block">2010 → Now</span>
           </div>
 
           <Card className="bg-slate-900/60 border-emerald-500/20 mb-8 overflow-hidden">
@@ -285,7 +287,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                       <p className={`font-semibold text-sm mb-1 line-clamp-2 ${isSelected ? 'text-white' : 'text-slate-300'}`}>
                                         {achievement.title}
                                       </p>
-                                      <p className="text-slate-500 text-xs font-mono truncate">{achievement.issuer}</p>
+                                      <p className="text-slate-400 text-xs font-mono truncate">{achievement.issuer}</p>
                                     </div>
                                   </div>
                                 </button>
@@ -354,7 +356,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                       <p className="text-slate-400 text-lg mb-8">
                                         {getSelectedAchievementDetail()?.achievement.issuer}
                                       </p>
-                                      <div className="flex items-center gap-6 text-sm font-mono text-slate-500">
+                                      <div className="flex items-center gap-6 text-sm font-mono text-slate-400">
                                         <div className="flex items-center gap-2">
                                           <Calendar className="w-4 h-4" />
                                           {getSelectedAchievementDetail()?.achievement.date}
@@ -369,7 +371,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                 </div>
                               </motion.div>
                             ) : (
-                              <div className="w-full h-full rounded-2xl border-2 border-dashed border-white/5 flex flex-col items-center justify-center text-slate-500">
+                              <div className="w-full h-full rounded-2xl border-2 border-dashed border-white/5 flex flex-col items-center justify-center text-slate-400">
                                 <Award className="w-12 h-12 mb-4 opacity-50" />
                                 <p className="font-mono text-sm">SELECT RECORD TO VIEW</p>
                               </div>

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useInView } from 'motion/react';
 import { SpotifyService } from '@/lib/services/spotify';
 import { apiRequestWithRetry, API_CONFIG, ApiResponse } from '@/lib/api';
 
@@ -26,6 +26,62 @@ const PageGallery = dynamic(() => import('@/components/sections/Page4Gallery').t
   ssr: false,
 });
 const Footer = dynamic(() => import('@/components/layout/Footer'));
+
+/**
+ * Mounts a section only once it scrolls near the viewport. The wrapper div
+ * always renders at full height (min-h-screen) so layout is reserved (no CLS)
+ * and the scroll-spy observer / nav scrollIntoView keep working — only the
+ * section's children (its data fetches, JS, animations) are deferred. This
+ * keeps off-screen sections out of the initial main-thread crunch, which is the
+ * dominant TBT/long-tasks cost on mobile. `eager` keeps the hero immediate.
+ */
+function LazySection({
+  id,
+  index,
+  eager,
+  registerRef,
+  children,
+}: {
+  id: string;
+  index: number;
+  eager: boolean;
+  registerRef: (el: HTMLDivElement | null) => void;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: '300px' });
+  const setRefs = useCallback(
+    (el: HTMLDivElement | null) => {
+      ref.current = el;
+      registerRef(el);
+    },
+    [registerRef],
+  );
+  return (
+    <div
+      id={id}
+      ref={setRefs}
+      className="min-h-screen"
+      style={{
+        contentVisibility: index > 1 ? 'auto' : 'visible',
+        containIntrinsicSize: index > 1 ? 'auto 1000px' : 'none',
+      }}
+    >
+      {(eager || inView) && children}
+    </div>
+  );
+}
+
+/** Footer is below the last section — defer its mount until scrolled near. */
+function LazyFooter() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: '300px' });
+  return (
+    <div ref={ref} className="min-h-[160px]">
+      {inView && <Footer />}
+    </div>
+  );
+}
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -184,31 +240,23 @@ export default function HomePage() {
             {sections.map((section, index) => {
               const SectionComponent = section.component;
               return (
-                <div
+                <LazySection
                   key={section.id}
                   id={section.id}
-                  ref={(el) => {
+                  index={index}
+                  eager={index === 0}
+                  registerRef={(el) => {
                     sectionRefs.current[index] = el;
-                  }}
-                  className="min-h-screen"
-                  style={{
-                    contentVisibility: index > 1 ? 'auto' : 'visible',
-                    // `auto` makes the browser remember each section's real
-                    // rendered height after the first paint, so scrolling back
-                    // into it no longer triggers a layout jump from a wrong
-                    // estimate (the sections are min-h-screen, far taller than
-                    // the old fixed 800px guess).
-                    containIntrinsicSize: index > 1 ? 'auto 1000px' : 'none',
                   }}
                 >
                   <SectionComponent onNavigate={handleNavigate} />
-                </div>
+                </LazySection>
               );
             })}
           </main>
 
           {/* Footer */}
-          <Footer />
+          <LazyFooter />
 
           {/* Gallery Modal/Overlay */}
           <AnimatePresence mode="wait">

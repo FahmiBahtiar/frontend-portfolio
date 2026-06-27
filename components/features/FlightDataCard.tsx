@@ -43,13 +43,14 @@ export const FlightDataCard = memo(function FlightDataCard({
           {/* Header with Navigation */}
           <div className="flex items-center justify-between gap-4 mb-4">
             {/* Left Navigation */}
-            <motion.button 
+            <motion.button
               onClick={() => onPaginate(-1)}
+              aria-label="Misi sebelumnya"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="group flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-500/50 transition-all"
             >
-              <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" />
+              <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" aria-hidden="true" />
               <span className="hidden md:inline text-cyan-400 text-sm font-mono">PREV MISSION</span>
             </motion.button>
 
@@ -60,14 +61,15 @@ export const FlightDataCard = memo(function FlightDataCard({
             </div>
 
             {/* Right Navigation */}
-            <motion.button 
+            <motion.button
               onClick={() => onPaginate(1)}
+              aria-label="Misi berikutnya"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="group flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-500/50 transition-all"
             >
               <span className="hidden md:inline text-cyan-400 text-sm font-mono">NEXT MISSION</span>
-              <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" />
+              <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" aria-hidden="true" />
             </motion.button>
           </div>
 

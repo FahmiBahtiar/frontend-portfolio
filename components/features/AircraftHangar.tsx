@@ -188,9 +188,10 @@ export function AircraftHangar() {
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
+                  aria-label="Hapus pencarian"
                   className="text-white/40 hover:text-white transition-colors flex-shrink-0"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               )}
             </div>
@@ -198,6 +199,8 @@ export function AircraftHangar() {
             {/* Filter Toggle */}
             <motion.button
               onClick={() => setShowFilters(!showFilters)}
+              aria-label="Tampilkan filter"
+              aria-pressed={showFilters}
               className={`p-2 rounded-lg border transition-all flex-shrink-0 ${
                 showFilters
                   ? 'bg-orange-500/20 border-orange-400/50 text-orange-400'
@@ -206,7 +209,7 @@ export function AircraftHangar() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Filter className="w-4 h-4" />
+              <Filter className="w-4 h-4" aria-hidden="true" />
             </motion.button>
           </div>
         </div>
@@ -229,9 +232,10 @@ export function AircraftHangar() {
                     setSelectedSystem('');
                     setShowFilters(false);
                   }}
+                  aria-label="Tutup filter"
                   className="text-white/60 hover:text-white p-1"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
 
@@ -435,9 +439,10 @@ export function AircraftHangar() {
 
                         <button
                           onClick={() => setSelectedItem(null)}
+                          aria-label="Tutup detail"
                           className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-colors flex-shrink-0"
                         >
-                          <X className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                          <X className="w-4 h-4 md:w-5 md:h-5 text-white" aria-hidden="true" />
                         </button>
                       </div>
                     </div>

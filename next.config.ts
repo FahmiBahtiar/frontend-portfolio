@@ -66,6 +66,18 @@ const nextConfig: NextConfig = {
             value: 'strict-origin-when-cross-origin',
           },
           {
+            // Origin isolation (Lighthouse "origin isolation with COOP"). We do
+            // NOT set COEP (require-corp) because that would block our external
+            // images (Lanyard/IVAO/Unsplash), which don't send CORP headers.
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+          {
+            // Drop access to powerful features we never use.
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+          },
+          {
             key: 'Rating',
             value: 'General',
           },

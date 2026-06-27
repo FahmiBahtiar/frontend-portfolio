@@ -149,7 +149,7 @@ function Milestone({
           >
             {w.badge}
           </span>
-          <span className="font-mono text-xs text-slate-500">{w.period}</span>
+          <span className="font-mono text-xs text-slate-400">{w.period}</span>
         </div>
 
         <h4 className="mt-3 text-xl font-bold text-white md:text-2xl">

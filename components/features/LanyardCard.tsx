@@ -308,10 +308,16 @@ export function LanyardCard() {
                   <div className="flex-shrink-0 w-28 h-40 sm:w-32 sm:h-44 md:w-36 md:h-52 lg:w-48 lg:h-72">
                     <div className="relative w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 rounded border-2 border-slate-300 overflow-hidden shadow-lg">
                       {lanyardData.avatarUrl ? (
-                        <Image src={lanyardData.avatarUrl} alt="Avatar" fill className="object-cover" />
+                        <Image
+                          src={lanyardData.avatarUrl}
+                          alt="Avatar"
+                          fill
+                          sizes="(max-width: 640px) 112px, (max-width: 768px) 128px, (max-width: 1024px) 144px, 192px"
+                          className="object-cover"
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300">
-                          <User className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 text-slate-500" />
+                          <User className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 text-slate-400" />
                         </div>
                       )}
                       

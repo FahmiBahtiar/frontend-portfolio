@@ -17,11 +17,12 @@ export function InfoCard({ onPaginate }: InfoCardProps) {
       className="flex items-center justify-center gap-2 md:gap-3 px-4 md:px-6 py-2.5 md:py-3 rounded-full bg-white/15 backdrop-blur-md border border-white/20 max-w-md mx-auto w-full"
     >
       {/* Left arrow */}
-      <button 
+      <button
         onClick={() => onPaginate(-1)}
+        aria-label="Foto sebelumnya"
         className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/20 hover:bg-white/30 transition-colors flex items-center justify-center flex-shrink-0"
       >
-        <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-white" />
+        <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-white" aria-hidden="true" />
       </button>
 
       {/* Avatar */}
@@ -43,11 +44,12 @@ export function InfoCard({ onPaginate }: InfoCardProps) {
       </div>
 
       {/* Right arrow */}
-      <button 
+      <button
         onClick={() => onPaginate(1)}
+        aria-label="Foto berikutnya"
         className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/20 hover:bg-white/30 transition-colors flex items-center justify-center flex-shrink-0"
       >
-        <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-white" />
+        <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-white" aria-hidden="true" />
       </button>
     </motion.div>
   );

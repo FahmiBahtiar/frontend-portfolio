@@ -53,14 +53,15 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${dancingScript.variable}`}>
       <head>
-        {/* Critical Resource Hints */}
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        
-        {/* Preconnect to your API if hosted elsewhere */}
+        {/* No preconnect to Google Fonts: next/font self-hosts the fonts from
+            our own origin, so a gstatic/googleapis hint would go unused. */}
+
+        {/* Preconnect to the API origin. Public API calls are cross-origin and
+            credential-less, so the connection is anonymous — the crossOrigin
+            attribute must match for the preconnect to be reused by fetch(). */}
         {process.env.NEXT_PUBLIC_API_URL && (
           <>
-            <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL} />
+            <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL} crossOrigin="anonymous" />
             <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL} />
           </>
         )}

@@ -4,12 +4,18 @@ import { motion } from 'motion/react';
 import { Plane, CloudSun } from 'lucide-react';
 import { FlightLogbook } from '@/components/features/FlightLogbook';
 import { AircraftHangar } from '@/components/features/AircraftHangar';
+import { useIsLiteGraphics } from '@/components/providers/GraphicsModeProvider';
+import { useIsMobile } from '@/components/ui/use-mobile';
 
 interface Page4ExperienceProjectsProps {
   onNavigate?: (sectionIndex: number) => void;
 }
 
 export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsProps = {}) {
+  // Static radar rings on weak/mobile CPUs (the infinite pulse is decorative).
+  const lite = useIsLiteGraphics();
+  const isMobile = useIsMobile();
+  const calm = lite || isMobile;
   return (
     <div className="min-h-screen w-full px-4 md:px-8 py-12 md:py-16 pt-24 lg:pt-28">
       <div className="max-w-7xl mx-auto">
@@ -32,11 +38,11 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
             {/* Radar Circle */}
             <motion.div
               className="absolute inset-0 rounded-full border-2 border-orange-400/30"
-              animate={{ 
+              animate={calm ? undefined : {
                 scale: [1, 1.2, 1],
                 opacity: [0.3, 0.1, 0.3]
               }}
-              transition={{ 
+              transition={calm ? undefined : {
                 duration: 3,
                 repeat: Infinity,
                 ease: 'easeInOut'
@@ -44,11 +50,11 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
             />
             <motion.div
               className="absolute inset-2 rounded-full border-2 border-cyan-400/30"
-              animate={{ 
+              animate={calm ? undefined : {
                 scale: [1, 1.15, 1],
                 opacity: [0.5, 0.2, 0.5]
               }}
-              transition={{ 
+              transition={calm ? undefined : {
                 duration: 2,
                 repeat: Infinity,
                 ease: 'easeInOut',
@@ -100,9 +106,9 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
               <div className="flex items-center gap-3 mb-2">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
                 <div className="px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/20 to-orange-500/10 border border-orange-400/30">
-                  <span className="text-orange-400 uppercase tracking-widest text-sm font-mono">
-                    📋 Experience
-                  </span>
+                  <h3 className="text-orange-400 uppercase tracking-widest text-sm font-mono">
+                    <span aria-hidden="true">📋 </span>Experience
+                  </h3>
                 </div>
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
               </div>
@@ -125,9 +131,9 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
               <div className="flex items-center gap-3 mb-2">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
                 <div className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-cyan-500/10 border border-cyan-400/30">
-                  <span className="text-cyan-400 uppercase tracking-widest text-sm font-mono">
-                    🛩️ Projects
-                  </span>
+                  <h3 className="text-cyan-400 uppercase tracking-widest text-sm font-mono">
+                    <span aria-hidden="true">🛩️ </span>Projects
+                  </h3>
                 </div>
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
               </div>

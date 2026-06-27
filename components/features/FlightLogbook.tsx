@@ -276,9 +276,10 @@ export function FlightLogbook() {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
+                aria-label="Hapus pencarian"
                 className="text-white/40 hover:text-white transition-colors flex-shrink-0"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             )}
           </div>
@@ -286,6 +287,8 @@ export function FlightLogbook() {
           {/* Filter Toggle */}
           <motion.button
             onClick={() => setShowFilters(!showFilters)}
+            aria-label="Tampilkan filter"
+            aria-pressed={showFilters}
             className={`p-2 rounded-lg border transition-all flex-shrink-0 ${
               showFilters
                 ? 'bg-orange-500/20 border-orange-400/50 text-orange-400'
@@ -294,30 +297,34 @@ export function FlightLogbook() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Filter className="w-4 h-4" />
+            <Filter className="w-4 h-4" aria-hidden="true" />
           </motion.button>
 
           {/* View Mode Toggle */}
           <div className="flex rounded-lg border border-white/10 bg-white/5 flex-shrink-0">
             <button
               onClick={() => setViewMode('grid')}
+              aria-label="Tampilan grid"
+              aria-pressed={viewMode === 'grid'}
               className={`p-2 rounded-l-lg transition-all ${
                 viewMode === 'grid'
                   ? 'bg-cyan-500/20 text-cyan-400 border-r border-white/10'
                   : 'text-white/60 hover:bg-white/10'
               }`}
             >
-              <Grid3X3 className="w-4 h-4" />
+              <Grid3X3 className="w-4 h-4" aria-hidden="true" />
             </button>
             <button
               onClick={() => setViewMode('list')}
+              aria-label="Tampilan daftar"
+              aria-pressed={viewMode === 'list'}
               className={`p-2 rounded-r-lg transition-all ${
                 viewMode === 'list'
                   ? 'bg-cyan-500/20 text-cyan-400'
                   : 'text-white/60 hover:bg-white/10'
               }`}
             >
-              <List className="w-4 h-4" />
+              <List className="w-4 h-4" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -341,9 +348,10 @@ export function FlightLogbook() {
                     setSelectedTech('');
                     setShowFilters(false);
                   }}
+                  aria-label="Tutup filter"
                   className="text-white/60 hover:text-white p-1"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
 
@@ -756,9 +764,10 @@ export function FlightLogbook() {
                             </div>
                             <button
                               onClick={() => setSelectedEntry(null)}
+                              aria-label="Tutup detail"
                               className="text-white/60 hover:text-white p-2"
                             >
-                              ✕
+                              <span aria-hidden="true">✕</span>
                             </button>
                           </div>
 

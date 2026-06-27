@@ -3,12 +3,18 @@
 import { motion, useInView } from 'motion/react';
 import { useState, useEffect, useRef } from 'react';
 import { Heart } from 'lucide-react';
+import { useIsLiteGraphics } from '@/components/providers/GraphicsModeProvider';
+import { useIsMobile } from '@/components/ui/use-mobile';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [lastModified, setLastModified] = useState<string>('2025.11.04');
   const footerRef = useRef<HTMLElement>(null);
   const isInView = useInView(footerRef, { once: true, amount: 0.5 });
+  // Skip the infinite heart pulse on weak/mobile CPUs.
+  const lite = useIsLiteGraphics();
+  const isMobile = useIsMobile();
+  const calm = lite || isMobile;
 
   useEffect(() => {
     fetchLastModified();
@@ -56,7 +62,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-4">
           <p
             className="text-[12px] font-medium"
-            style={{ color: '#475569' }}
+            style={{ color: '#94a3b8' }}
           >
             © {currentYear} Blimbing. All rights reserved.
           </p>
@@ -66,7 +72,7 @@ export default function Footer() {
           />
           <p
             className="text-[11px]"
-            style={{ color: '#334155' }}
+            style={{ color: '#94a3b8' }}
           >
             Last modified {lastModified}
           </p>
@@ -75,13 +81,13 @@ export default function Footer() {
         {/* Credits */}
         <div
           className="flex items-center gap-1.5 text-[12px] font-medium"
-          style={{ color: '#475569' }}
+          style={{ color: '#94a3b8' }}
         >
           <span>Designed & built with</span>
           <motion.span
             className="inline-flex"
-            animate={{ scale: [1, 1.15, 1] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+            animate={calm ? undefined : { scale: [1, 1.15, 1] }}
+            transition={calm ? undefined : { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           >
             <Heart
               className="w-3 h-3"

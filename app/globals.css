@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+/* Safelist for data-driven theme colors. category.color (Page3Education) and
+   freq.color (Page5Contact) come from the API as a base color name (e.g. "cyan"),
+   and the components build class names dynamically — `bg-${color}-500/10`,
+   `text-${color}-400`, `hover:border-${color}-500/40`, etc. Tailwind's scanner
+   can't see those interpolated strings, so without this the colors silently fail.
+   Generate the combinations actually used for the accent palette the admin offers. */
+@source inline("text-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose}-400");
+@source inline("{hover:,}bg-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose}-500/{5,10,20}");
+@source inline("{hover:,}border-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose}-500/{20,30,40,50}");
+@source inline("shadow-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose}-500/10");
+
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-dancing: var(--font-dancing-script);

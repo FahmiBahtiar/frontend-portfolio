@@ -63,10 +63,10 @@ function OrbitalDots() {
 /* ------------------------------------------------------------------ */
 /*  Floating ambient particles                                         */
 /* ------------------------------------------------------------------ */
-function AmbientParticles() {
+function AmbientParticles({ count = 30 }: { count?: number }) {
   const particles = useMemo(
     () =>
-      Array.from({ length: 30 }, (_, i) => ({
+      Array.from({ length: count }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
@@ -75,7 +75,7 @@ function AmbientParticles() {
         delay: Math.random() * 4,
         opacity: Math.random() * 0.4 + 0.1,
       })),
-    [],
+    [count],
   );
 
   return (
@@ -197,6 +197,11 @@ export function LoadingScreen({
 }: LoadingScreenProps) {
   const [loadingText, setLoadingText] = useState('Initializing');
   const [progress, setProgress] = useState(0);
+  // Fewer animated particles on small screens (weak CPU) — keeps the loading
+  // phase from eating the main thread. Lazy init runs once (component is ssr:false).
+  const [isSmallScreen] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
+  );
 
   // Loading text sequence
   useEffect(() => {
@@ -311,7 +316,7 @@ export function LoadingScreen({
       />
 
       {/* ---- Ambient particles ---- */}
-      <AmbientParticles />
+      <AmbientParticles count={isSmallScreen ? 6 : 30} />
 
       {/* ---- Central composition ---- */}
       <div className="relative flex flex-col items-center gap-10 z-10 select-none">

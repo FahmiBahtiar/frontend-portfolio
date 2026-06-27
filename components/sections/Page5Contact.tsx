@@ -315,7 +315,7 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
                 <div className="text-red-400 mb-2">Failed to load communication protocols.</div>
               </div>
             ) : frequencies.filter(f => f.type === 'primary').length === 0 ? (
-              <div className="col-span-full text-center py-12 text-slate-500">
+              <div className="col-span-full text-center py-12 text-slate-400">
                 No emergency frequencies configured.
               </div>
             ) : (
@@ -326,13 +326,13 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
                     <CardContent className="p-0">
                       <div className="p-6 md:p-8 flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className={`w-14 h-14 rounded-xl bg-${freq.color}/10 border border-${freq.color}/20 flex items-center justify-center shrink-0`}>
-                            <Icon className={`w-7 h-7 text-${freq.color}`} />
+                          <div className={`w-14 h-14 rounded-xl bg-${freq.color}-500/10 border border-${freq.color}-500/20 flex items-center justify-center shrink-0`}>
+                            <Icon className={`w-7 h-7 text-${freq.color}-400`} />
                           </div>
                           <div>
                             <div className="flex items-baseline gap-2 mb-1">
                               <span className="text-2xl md:text-3xl text-white font-mono font-bold tracking-tight">{freq.frequency}</span>
-                              <span className="text-slate-500 text-sm font-semibold">MHz</span>
+                              <span className="text-slate-400 text-sm font-semibold">MHz</span>
                             </div>
                             <span className="text-sm text-slate-400 font-mono tracking-wide">{freq.label}</span>
                           </div>
@@ -392,12 +392,12 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
                   </div>
                 </div>
                 <div className="rounded-lg overflow-hidden border border-white/5 bg-black/40 p-2">
-                  <Image 
-                    src="https://lanyard.cnrad.dev/api/467600406000697354?borderRadius=8px&theme=dark" 
+                  <Image
+                    src="https://lanyard.cnrad.dev/api/467600406000697354?borderRadius=8px&theme=dark"
                     alt="Discord Status"
                     width={400}
                     height={150}
-                    className="w-full h-auto opacity-90 hover:opacity-100 transition-opacity"
+                    className="w-full aspect-[8/3] object-contain opacity-90 hover:opacity-100 transition-opacity"
                     unoptimized
                   />
                 </div>
@@ -417,12 +417,12 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
                   </div>
                 </div>
                 <div className="rounded-lg overflow-hidden border border-white/5 bg-slate-950 flex items-center justify-center min-h-[160px] p-2">
-                  <Image 
-                    src="https://status.ivao.aero/704291.png" 
+                  <Image
+                    src="https://status.ivao.aero/704291.png"
                     alt="IVAO Flight Status"
                     width={400}
                     height={200}
-                    className="w-full h-auto mix-blend-lighten opacity-80 hover:opacity-100 transition-opacity"
+                    className="w-full aspect-[2/1] object-contain mix-blend-lighten opacity-80 hover:opacity-100 transition-opacity"
                     style={{ filter: 'invert(0.92) hue-rotate(180deg) brightness(1.1) contrast(0.9)' }}
                     unoptimized
                   />
@@ -457,13 +457,13 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
                 >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <div className={`w-12 h-12 rounded-full bg-${freq.color}/10 flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        <Icon className={`w-6 h-6 text-${freq.color}`} />
+                      <div className={`w-12 h-12 rounded-full bg-${freq.color}-500/10 flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <Icon className={`w-6 h-6 text-${freq.color}-400`} />
                       </div>
                       <div className="text-right">
                         <div className="flex items-baseline gap-1">
                           <span className="text-2xl text-white font-mono font-bold">{freq.frequency}</span>
-                          <span className="text-xs text-slate-500 font-bold">MHz</span>
+                          <span className="text-xs text-slate-400 font-bold">MHz</span>
                         </div>
                       </div>
                     </div>

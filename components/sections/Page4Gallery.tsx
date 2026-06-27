@@ -133,7 +133,7 @@ export function PageGallery() {
         <div className="text-center z-10 p-8 border border-white/10 bg-black/40 backdrop-blur-md rounded-2xl relative">
           <ShieldAlert className="w-10 h-10 md:w-12 md:h-12 text-slate-400 mx-auto mb-4 opacity-60" />
           <div className="text-slate-300 font-mono text-xs md:text-sm tracking-[0.2em]">NO TARGETS FOUND</div>
-          <div className="text-slate-500 font-mono text-[10px] md:text-xs mt-2 tracking-widest">AWAITING NEW MISSION DATA</div>
+          <div className="text-slate-400 font-mono text-[10px] md:text-xs mt-2 tracking-widest">AWAITING NEW MISSION DATA</div>
         </div>
       </div>
     );

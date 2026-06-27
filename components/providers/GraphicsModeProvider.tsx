@@ -38,6 +38,7 @@ export function GraphicsModeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
+    let idleId: number | undefined;
 
     const applyLite = () => {
       if (cancelled) return;
@@ -53,15 +54,32 @@ export function GraphicsModeProvider({ children }: { children: ReactNode }) {
     }
 
     // Renderer string was masked/generic — let a short fps probe decide so we
-    // still catch software rendering on privacy-hardened browsers.
+    // still catch software rendering on privacy-hardened browsers. The probe
+    // runs ~400ms, so defer it to idle time: blocking here would add to TBT
+    // during the initial load (especially on mobile).
     if (sync.inconclusive) {
-      probeFps().then((fps) => {
-        if (!cancelled && fps < LOW_FPS_THRESHOLD) applyLite();
-      });
+      const w = window as Window & {
+        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+        cancelIdleCallback?: (id: number) => void;
+      };
+      const runProbe = () => {
+        probeFps().then((fps) => {
+          if (!cancelled && fps < LOW_FPS_THRESHOLD) applyLite();
+        });
+      };
+      idleId =
+        typeof w.requestIdleCallback === 'function'
+          ? w.requestIdleCallback(runProbe, { timeout: 3000 })
+          : (window.setTimeout(runProbe, 1200) as unknown as number);
     }
 
     return () => {
       cancelled = true;
+      if (idleId !== undefined) {
+        const w = window as Window & { cancelIdleCallback?: (id: number) => void };
+        if (typeof w.cancelIdleCallback === 'function') w.cancelIdleCallback(idleId);
+        else window.clearTimeout(idleId);
+      }
     };
   }, []);
 

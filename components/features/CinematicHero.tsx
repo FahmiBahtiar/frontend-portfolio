@@ -7,6 +7,7 @@ import { Sparkles, Code2, Plane, Mountain, MapPin, ChevronDown } from 'lucide-re
 import { HeroService } from '@/lib/services/hero';
 import { SpotifyService } from '@/lib/services/spotify';
 import { useIsLiteGraphics } from '@/components/providers/GraphicsModeProvider';
+import { useIsMobile } from '@/components/ui/use-mobile';
 import Image from 'next/image';
 
 interface CinematicHeroProps {
@@ -21,6 +22,10 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
   const nameRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
   const lite = useIsLiteGraphics();
+  const isMobile = useIsMobile();
+  // On weak/mobile CPUs, run a calm variant: static background orbs, no typing
+  // loop, no infinite blink/pulse. Desktop keeps the full animated experience.
+  const calm = lite || isMobile;
 
   // ---- Data fetching (same SWR hooks) ----
   const { data: heroProfile, isLoading: loading } = useSWR(
@@ -99,6 +104,13 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
   useEffect(() => {
     if (revealPhase < 3) return;
 
+    // Calm mode (mobile/lite): show the first subtitle in full and skip the
+    // 25-40Hz setTimeout re-render loop entirely (big main-thread saving).
+    if (calm) {
+      setTypedSubtitle(subtitles[0] ?? '');
+      return;
+    }
+
     const currentText = subtitles[currentSubtitleIndex];
 
     if (!isDeleting) {
@@ -125,13 +137,15 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
         setCurrentSubtitleIndex((prev) => (prev + 1) % subtitles.length);
       }
     }
-  }, [subtitleCharIndex, isDeleting, currentSubtitleIndex, subtitles, revealPhase]);
+  }, [subtitleCharIndex, isDeleting, currentSubtitleIndex, subtitles, revealPhase, calm]);
 
-  // Split name into lines for dramatic reveal
+  // Split name into lines. Use a static fallback so the <h1> (the LCP element)
+  // can paint immediately on mount instead of waiting for the API — the real
+  // name from the API replaces it seamlessly once loaded.
   const nameLines = useMemo(() => {
-    if (!heroProfile?.name) return [];
-    const words = heroProfile.name.split(' ');
-    if (words.length <= 2) return [heroProfile.name];
+    const fullName = heroProfile?.name || 'Fahmi Bahtiar Adi Nugroho';
+    const words = fullName.split(' ');
+    if (words.length <= 2) return [fullName];
     const mid = Math.ceil(words.length / 2);
     return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
   }, [heroProfile]);
@@ -174,7 +188,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
             stripped by global CSS and the infinite transform loops would still burn
             CPU — so render a single static, blur-free ambient gradient instead. */}
         <div className="absolute inset-0 overflow-hidden">
-          {lite ? (
+          {calm ? (
             <div
               className="absolute w-[600px] h-[600px] rounded-full opacity-[0.06]"
               style={{
@@ -281,31 +295,25 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           </div>
         </motion.div>
 
-        {/* Name — the hero */}
+        {/* Name — the hero. The magnetic cursor effect is desktop-only: on
+            mobile/lite there's no pointer, so skip the transform + will-change
+            (an idle non-composited animation Lighthouse flags). */}
         <motion.div
           ref={nameRef}
-          style={{ x: nameTranslateX, y: nameTranslateY }}
-          className="mb-6 sm:mb-8 will-change-transform"
+          style={calm ? undefined : { x: nameTranslateX, y: nameTranslateY }}
+          className={calm ? 'mb-6 sm:mb-8' : 'mb-6 sm:mb-8 will-change-transform'}
         >
           {/* Single <h1> for the document; each name line is an animated span. */}
           <h1
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.05] text-white"
             style={{ textShadow: '0 0 80px rgba(56, 189, 248, 0.15)' }}
           >
+            {/* Rendered visible from first paint (no opacity/blur gate) so the
+                name is the LCP element and paints as soon as the hero mounts. */}
             {nameLines.map((line, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0, y: 40, filter: 'blur(12px)' }}
-                animate={revealPhase >= 2 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-                transition={{
-                  duration: 0.7,
-                  delay: i * 0.15,
-                  ease: [0.25, 0.1, 0.25, 1],
-                }}
-                className="block"
-              >
+              <span key={i} className="block">
                 {line}
-              </motion.span>
+              </span>
             ))}
           </h1>
         </motion.div>
@@ -320,8 +328,8 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           <span className="text-base sm:text-lg md:text-xl text-slate-400 font-mono tracking-wide">
             {typedSubtitle}
             <motion.span
-              animate={{ opacity: [1, 0, 1] }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              animate={calm ? undefined : { opacity: [1, 0, 1] }}
+              transition={calm ? undefined : { duration: 1, repeat: Infinity, ease: 'linear' }}
               className="inline-block w-[2px] h-[1.1em] bg-cyan-400 ml-0.5 align-middle"
             />
           </span>
@@ -332,7 +340,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           initial={{ opacity: 0, y: 15 }}
           animate={revealPhase >= 3 ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-          className="text-slate-500 text-sm sm:text-base max-w-xl leading-relaxed mb-10 sm:mb-14"
+          className="text-slate-400 text-sm sm:text-base max-w-xl leading-relaxed mb-10 sm:mb-14"
         >
           {heroProfile?.description || ''}
         </motion.p>
@@ -398,14 +406,14 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
                   <div className="relative">
                     <motion.div
                       className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-emerald-400/40"
-                      animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                      animate={calm ? undefined : { scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
+                      transition={calm ? undefined : { duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                     />
                     <div className="relative w-2.5 h-2.5 rounded-full bg-emerald-400" />
                   </div>
                   <span className="text-[11px] text-slate-400 uppercase tracking-[0.22em] font-medium">Status</span>
                 </div>
-                <span className="text-[11px] text-slate-500 uppercase tracking-[0.2em]">Live</span>
+                <span className="text-[11px] text-slate-400 uppercase tracking-[0.2em]">Live</span>
               </div>
               <p className="relative mt-2 text-base text-emerald-300 font-semibold tracking-wide">
                 {heroProfile?.status || ''}
@@ -442,8 +450,8 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
                   {spotifyData?.isPlaying && (
                     <motion.div
                       className="absolute -inset-0.5 rounded-full bg-[#1DB954]/30"
-                      animate={{ scale: [1, 1.4, 1], opacity: [0.4, 0, 0.4] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                      animate={calm ? undefined : { scale: [1, 1.4, 1], opacity: [0.4, 0, 0.4] }}
+                      transition={calm ? undefined : { duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                     />
                   )}
                   <svg className="w-3.5 h-3.5 text-[#1DB954] relative z-10" viewBox="0 0 24 24" fill="currentColor">
@@ -454,7 +462,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
               </div>
 
               {spotifyLoading ? (
-                <p className="relative mt-2 text-sm text-slate-500">Loading...</p>
+                <p className="relative mt-2 text-sm text-slate-400">Loading...</p>
               ) : spotifyData?.isPlaying && spotifyData.song ? (
                 <div className="relative mt-2 flex items-center gap-3">
                   {spotifyData.song.albumImageUrl && (
@@ -471,11 +479,11 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
                     <span className="text-sm text-[#1DB954] truncate block font-semibold">
                       {spotifyData.song.title}
                     </span>
-                    <p className="text-xs text-slate-500 truncate">{spotifyData.song.artist}</p>
+                    <p className="text-xs text-slate-400 truncate">{spotifyData.song.artist}</p>
                   </div>
                 </div>
               ) : (
-                <p className="relative mt-2 text-sm text-slate-500">Not listening</p>
+                <p className="relative mt-2 text-sm text-slate-400">Not listening</p>
               )}
             </motion.div>
           </div>
@@ -489,14 +497,14 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           className="flex flex-col items-center gap-2 cursor-pointer group"
           onClick={() => onNavigate(1)}
         >
-          <span className="text-[11px] text-slate-600 tracking-[0.2em] uppercase group-hover:text-slate-400 transition-colors">
+          <span className="text-[11px] text-slate-400 tracking-[0.2em] uppercase group-hover:text-slate-200 transition-colors">
             Scroll to explore
           </span>
           <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+            animate={calm ? undefined : { y: [0, 6, 0] }}
+            transition={calm ? undefined : { duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <ChevronDown className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 transition-colors" />
+            <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" />
           </motion.div>
         </motion.div>
       </div>

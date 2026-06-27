@@ -312,7 +312,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                                     <p className={`font-mono font-bold ${textColor}`}>
                                       {statsData.value}
                                     </p>
-                                    <p className="text-slate-500 text-xs font-mono uppercase tracking-wider">{statsData.label}</p>
+                                    <p className="text-slate-400 text-xs font-mono uppercase tracking-wider">{statsData.label}</p>
                                   </div>
                                 </div>
                                 <p className="text-slate-400 text-sm leading-relaxed">{passion.description}</p>
