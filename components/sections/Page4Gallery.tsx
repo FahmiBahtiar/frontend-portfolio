@@ -170,7 +170,18 @@ export function PageGallery() {
       
       {/* CRT Scanline Overlay */}
       <div className="fixed inset-0 pointer-events-none z-[1] opacity-20 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.5)_50%)] bg-[size:100%_4px]" />
-      
+
+      {/* Background Scanning Sweep — full viewport, top to bottom */}
+      <div className="fixed inset-0 pointer-events-none z-[2] overflow-hidden">
+        <motion.div
+          className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-transparent via-cyan-400/10 to-transparent"
+          initial={false}
+          animate={{ y: ['-20vh', '120vh'] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+          aria-hidden="true"
+        />
+      </div>
+
       {/* Vignette */}
       <div className="fixed inset-0 pointer-events-none z-[2] shadow-[inset_0_0_150px_rgba(0,0,0,0.9)]" />
 

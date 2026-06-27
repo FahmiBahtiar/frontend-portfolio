@@ -77,21 +77,6 @@ export const AviationHUD = memo(function AviationHUD({
         <div className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 border-cyan-400/40" />
         <div className="absolute top-0 right-0 w-8 h-8 border-r-2 border-t-2 border-cyan-400/40" />
       </div>
-
-      {/* Scanline Effect */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-400/5 to-transparent h-8"
-          animate={{
-            y: ['-100%', '200%'],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-        />
-      </div>
     </motion.div>
   );
 });

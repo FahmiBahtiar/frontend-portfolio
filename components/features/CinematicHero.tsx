@@ -200,12 +200,15 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           ) : (
             <>
               <motion.div
-                className="absolute w-[600px] h-[600px] rounded-full opacity-[0.07]"
+                className="absolute w-[600px] h-[600px] rounded-full opacity-[0.07] will-change-transform"
                 style={{
-                  background: 'radial-gradient(circle, rgba(56, 189, 248, 0.8) 0%, transparent 70%)',
+                  // No blur() filter: animating x/y on a blurred layer forces a
+                  // full re-raster every frame (scroll jank). A multi-stop radial
+                  // gradient keeps the soft glow while the transform stays on the
+                  // compositor — cheap to animate.
+                  background: 'radial-gradient(circle, rgba(56, 189, 248, 0.55) 0%, rgba(56, 189, 248, 0.12) 40%, transparent 72%)',
                   top: '10%',
                   left: '15%',
-                  filter: 'blur(80px)',
                 }}
                 whileInView={{
                   x: [0, 40, -20, 0],
@@ -215,12 +218,11 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
                 transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
               />
               <motion.div
-                className="absolute w-[500px] h-[500px] rounded-full opacity-[0.05]"
+                className="absolute w-[500px] h-[500px] rounded-full opacity-[0.05] will-change-transform"
                 style={{
-                  background: 'radial-gradient(circle, rgba(99, 102, 241, 0.8) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle, rgba(99, 102, 241, 0.55) 0%, rgba(99, 102, 241, 0.12) 40%, transparent 72%)',
                   bottom: '20%',
                   right: '10%',
-                  filter: 'blur(80px)',
                 }}
                 whileInView={{
                   x: [0, -30, 20, 0],
@@ -230,12 +232,11 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
                 transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
               />
               <motion.div
-                className="absolute w-[400px] h-[400px] rounded-full opacity-[0.04]"
+                className="absolute w-[400px] h-[400px] rounded-full opacity-[0.04] will-change-transform"
                 style={{
-                  background: 'radial-gradient(circle, rgba(34, 211, 238, 0.8) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle, rgba(34, 211, 238, 0.55) 0%, rgba(34, 211, 238, 0.12) 40%, transparent 72%)',
                   top: '50%',
                   left: '60%',
-                  filter: 'blur(100px)',
                 }}
                 whileInView={{
                   x: [0, 20, -40, 0],
@@ -398,7 +399,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
               initial={{ opacity: 0, y: 15 }}
               animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: 0 }}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:translate-y-[-2px]"
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:translate-y-[-2px]"
             >
               <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(120px 80px at 20% 0%, rgba(56, 189, 248, 0.16), transparent 70%)' }} />
               <div className="relative flex items-center justify-between">
@@ -425,7 +426,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
               initial={{ opacity: 0, y: 15 }}
               animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: 0.08 }}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:translate-y-[-2px]"
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:translate-y-[-2px]"
             >
               <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(120px 80px at 20% 0%, rgba(99, 102, 241, 0.16), transparent 70%)' }} />
               <div className="relative flex items-center gap-2">
@@ -442,7 +443,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
               initial={{ opacity: 0, y: 15 }}
               animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: 0.16 }}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:translate-y-[-2px]"
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:translate-y-[-2px]"
             >
               <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(140px 90px at 20% 0%, rgba(29, 185, 84, 0.18), transparent 70%)' }} />
               <div className="relative flex items-center gap-2">
