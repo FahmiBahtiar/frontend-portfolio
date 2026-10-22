@@ -43,7 +43,7 @@ export function JourneyScrollStory({
   return (
     <div ref={containerRef} className="relative py-4">
       {/* Static spine (dim rail) */}
-      <div className="pointer-events-none absolute top-0 bottom-0 left-5 md:left-1/2 w-px -translate-x-1/2 bg-white/10" />
+      <div className="pointer-events-none absolute top-0 bottom-0 left-5 md:left-1/2 w-px -translate-x-1/2 bg-[#B9E7E6]" />
 
       {/* Progress spine — scales from the top as you scroll */}
       <motion.div
@@ -152,22 +152,22 @@ function Milestone({
           <span className="font-mono text-xs text-slate-400">{w.period}</span>
         </div>
 
-        <h4 className="mt-3 text-xl font-bold text-[#FFFFFF] md:text-2xl">
+        <h4 className="mt-3 text-xl font-bold text-[#0c282d] md:text-2xl">
           {w.title}
         </h4>
-        <p className="mt-1 text-sm font-medium" style={{ color: w.color }}>
+        <p className="mt-1 text-sm font-semibold" style={{ color: w.color }}>
           {w.institution}
         </p>
 
         {w.description && (
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-[#E2F4F3]/80">
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-[#2d5f68]">
             {w.description}
           </p>
         )}
 
         {w.gpa && (
           <div className="mt-4">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#6FD4E1]/20 bg-slate-900/60 px-3 py-1.5 font-mono text-xs text-[#B9E7E6]">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#B9E7E6] bg-[#E2F4F3] px-3 py-1.5 font-mono text-xs text-[#0c282d] font-bold">
               <span
                 className="h-1.5 w-1.5 rounded-full"
                 style={{ background: w.color }}

@@ -25,19 +25,19 @@ const sections: SectionConfig[] = [
   { id: 4, name: 'Contact', icon: Mail },
 ];
 
-// Accent palette — Arctic Ice Cyan palette (6FD4E1, B9E7E6, E2F4F3, FFFFFF)
+// Accent palette — Arctic Ice Light Palette (6FD4E1, B9E7E6, E2F4F3, FFFFFF)
 const ACCENT = {
-  active: '#6FD4E1',        // Arctic Cyan
-  activeBg: 'rgba(111, 212, 225, 0.12)',
-  activeGlow: 'rgba(111, 212, 225, 0.25)',
-  gallery: '#B9E7E6',       // Soft Aqua
-  galleryBg: 'rgba(185, 231, 230, 0.08)',
-  text: '#B9E7E6',          // Soft Aqua
-  textHover: '#FFFFFF',     // Pure White
-  brand: '#FFFFFF',         // Pure White
-  barBg: 'rgba(6, 6, 18, 0.88)',
-  barBorder: 'rgba(185, 231, 230, 0.15)',
-  progressTrack: 'rgba(185, 231, 230, 0.08)',
+  active: '#0c282d',        // Deep Slate Cyan text for active item
+  activeBg: '#6FD4E1',      // Arctic Cyan active button
+  activeGlow: 'rgba(111, 212, 225, 0.35)',
+  gallery: '#0c282d',
+  galleryBg: '#B9E7E6',
+  text: '#1e4a52',          // Deep Teal text
+  textHover: '#0c282d',
+  brand: '#0c282d',
+  barBg: 'rgba(255, 255, 255, 0.88)',
+  barBorder: '#B9E7E6',
+  progressTrack: 'rgba(185, 231, 230, 0.5)',
 };
 
 export function MinimalistCommandBar({
@@ -153,14 +153,13 @@ export function MinimalistCommandBar({
           <div
             className="absolute inset-0 rounded-2xl -z-10"
             style={{
-              background: isScrolling ? 'rgba(8, 8, 24, 0.92)' : ACCENT.barBg,
-              backdropFilter: isScrolling ? 'none' : 'blur(24px) saturate(1.4)',
-              WebkitBackdropFilter: isScrolling ? 'none' : 'blur(24px) saturate(1.4)',
+              background: isScrolling ? '#FFFFFF' : ACCENT.barBg,
+              backdropFilter: isScrolling ? 'none' : 'blur(20px)',
+              WebkitBackdropFilter: isScrolling ? 'none' : 'blur(20px)',
               border: `1px solid ${ACCENT.barBorder}`,
               boxShadow: `
-                0 0 0 0.5px rgba(255,255,255,0.04),
-                0 4px 24px -4px rgba(0,0,0,0.5),
-                0 0 80px -20px rgba(34, 211, 238, 0.06)
+                0 4px 20px -2px rgba(111, 212, 225, 0.2),
+                0 2px 6px -1px rgba(0, 0, 0, 0.05)
               `,
             }}
           />
@@ -177,13 +176,13 @@ export function MinimalistCommandBar({
             <div
               className="relative flex items-center justify-center w-7 h-7 rounded-lg overflow-hidden"
               style={{
-                background: 'linear-gradient(135deg, rgba(34,211,238,0.15), rgba(34,211,238,0.05))',
-                border: '1px solid rgba(34,211,238,0.2)',
+                background: '#E2F4F3',
+                border: '1px solid #B9E7E6',
               }}
             >
               <span
-                className="text-xs font-semibold tracking-tight"
-                style={{ color: ACCENT.active, fontFamily: 'var(--font-sans)' }}
+                className="text-xs font-bold tracking-tight"
+                style={{ color: '#0c282d', fontFamily: 'var(--font-sans)' }}
               >
                 B
               </span>
@@ -191,13 +190,12 @@ export function MinimalistCommandBar({
               <div
                 className="absolute top-0 right-0 w-1.5 h-1.5"
                 style={{
-                  background: `linear-gradient(135deg, transparent 50%, ${ACCENT.active} 50%)`,
-                  opacity: 0.6,
+                  background: 'linear-gradient(135deg, transparent 50%, #6FD4E1 50%)',
                 }}
               />
             </div>
             <span
-              className="text-[13px] font-medium tracking-[0.08em] uppercase transition-colors duration-200"
+              className="text-[13px] font-bold tracking-[0.08em] uppercase transition-colors duration-200"
               style={{ color: ACCENT.brand }}
             >
               Blimbing
@@ -208,7 +206,7 @@ export function MinimalistCommandBar({
           <div
             className="w-px h-6 mx-1 flex-shrink-0"
             style={{
-              background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent)',
+              background: 'linear-gradient(to bottom, transparent, #B9E7E6, transparent)',
             }}
           />
 
@@ -356,10 +354,11 @@ export function MinimalistCommandBar({
           <div
             className="absolute inset-0 -z-10"
             style={{
-              background: isScrolling ? 'rgba(8, 8, 24, 0.92)' : ACCENT.barBg,
-              backdropFilter: isScrolling ? 'none' : 'blur(24px) saturate(1.3)',
-              WebkitBackdropFilter: isScrolling ? 'none' : 'blur(24px) saturate(1.3)',
+              background: isScrolling ? '#FFFFFF' : 'rgba(255, 255, 255, 0.92)',
+              backdropFilter: isScrolling ? 'none' : 'blur(20px)',
+              WebkitBackdropFilter: isScrolling ? 'none' : 'blur(20px)',
               borderBottom: `1px solid ${ACCENT.barBorder}`,
+              boxShadow: '0 2px 12px -2px rgba(111, 212, 225, 0.15)',
             }}
           />
           
@@ -372,27 +371,27 @@ export function MinimalistCommandBar({
             <div
               className="flex items-center justify-center w-7 h-7 rounded-lg"
               style={{
-                background: 'linear-gradient(135deg, rgba(34,211,238,0.15), rgba(34,211,238,0.05))',
-                border: '1px solid rgba(34,211,238,0.2)',
+                background: '#E2F4F3',
+                border: '1px solid #B9E7E6',
               }}
             >
               <span
-                className="text-xs font-semibold"
-                style={{ color: ACCENT.active }}
+                className="text-xs font-bold"
+                style={{ color: '#0c282d' }}
               >
                 B
               </span>
             </div>
             <div className="flex flex-col">
               <span
-                className="text-[13px] font-medium tracking-[0.08em] uppercase"
+                className="text-[13px] font-bold tracking-[0.08em] uppercase"
                 style={{ color: ACCENT.brand }}
               >
                 Blimbing
               </span>
               <span
                 className="text-[9px] font-medium tracking-[0.08em] uppercase -mt-0.5"
-                style={{ color: ACCENT.text, opacity: 0.5 }}
+                style={{ color: '#527d85' }}
               >
                 {sections[activeSection]?.name || 'Home'}
               </span>
@@ -405,8 +404,8 @@ export function MinimalistCommandBar({
               onClick={handleGalleryClick}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
               style={{
-                background: ACCENT.galleryBg,
-                border: `1px solid rgba(244,114,182,0.15)`,
+                background: '#E2F4F3',
+                border: `1px solid #B9E7E6`,
               }}
               whileTap={{ scale: 0.95 }}
               aria-label="Open gallery"
@@ -504,11 +503,11 @@ export function MinimalistCommandBar({
               <div 
                 className="absolute inset-0 -z-10"
                 style={{
-                  background: 'rgba(12, 12, 30, 0.95)',
-                  backdropFilter: 'blur(32px)',
-                  WebkitBackdropFilter: 'blur(32px)',
+                  background: 'rgba(255, 255, 255, 0.96)',
+                  backdropFilter: 'blur(24px)',
+                  WebkitBackdropFilter: 'blur(24px)',
                   border: `1px solid ${ACCENT.barBorder}`,
-                  boxShadow: '0 16px 48px -8px rgba(0,0,0,0.6)',
+                  boxShadow: '0 16px 40px -8px rgba(111, 212, 225, 0.25)',
                 }}
               />
               <div className="relative p-3 space-y-0.5">

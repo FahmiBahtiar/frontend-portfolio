@@ -174,11 +174,11 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16 md:mb-24">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900 border border-[#6FD4E1]/30 mb-8 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-sm text-[#6FD4E1]">
-            <GraduationCap className="w-10 h-10 text-[#6FD4E1]" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white border border-[#B9E7E6] mb-8 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-sm text-[#0891b2]">
+            <GraduationCap className="w-10 h-10 text-[#0891b2]" />
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-[#FFFFFF] mb-4 tracking-tight">Education & Achievement</h2>
-          <p className="text-[#E2F4F3]/80 max-w-2xl mx-auto text-lg">
+          <h2 className="text-4xl md:text-5xl font-bold text-[#0c282d] mb-4 tracking-tight">Education & Achievement</h2>
+          <p className="text-[#2d5f68] max-w-2xl mx-auto text-lg">
             Academic journey and certifications across development, aviation, and mountaineering
           </p>
         </div>
@@ -187,24 +187,24 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
         <div className="mb-20">
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
-              <Mountain className="w-6 h-6 text-[#6FD4E1]" />
-              <h3 className="text-[#FFFFFF] font-mono font-bold tracking-wider">JOURNEY TIMELINE</h3>
+              <Mountain className="w-6 h-6 text-[#0891b2]" />
+              <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">JOURNEY TIMELINE</h3>
             </div>
-            <div className="flex-1 h-px bg-slate-800" />
-            <span className="text-[#B9E7E6] font-mono text-sm hidden sm:block">2010 → Now</span>
+            <div className="flex-1 h-px bg-[#B9E7E6]" />
+            <span className="text-[#527d85] font-mono text-sm hidden sm:block">2010 → Now</span>
           </div>
 
-          <Card className="bg-slate-900/60 border border-slate-800/80 mb-8 overflow-hidden">
-            <CardContent className="p-4 bg-slate-900/40">
+          <Card className="bg-white/80 border border-[#B9E7E6] mb-8 overflow-hidden shadow-sm">
+            <CardContent className="p-4 bg-[#E2F4F3]/50">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-slate-800/80 border border-[#6FD4E1]/25 flex items-center justify-center shrink-0 text-[#6FD4E1]">
-                  <MapPin className="w-5 h-5 text-[#6FD4E1]" />
+                <div className="w-10 h-10 rounded-xl bg-white border border-[#B9E7E6] flex items-center justify-center shrink-0 text-[#0891b2] shadow-sm">
+                  <MapPin className="w-5 h-5 text-[#0891b2]" />
                 </div>
                 <div>
-                  <p className="text-[#FFFFFF] text-sm font-semibold mb-1">
+                  <p className="text-[#0c282d] text-sm font-bold mb-1">
                     {use2D ? 'Scroll to explore' : 'Fly the journey'}
                   </p>
-                  <p className="text-[#B9E7E6] text-xs font-mono">
+                  <p className="text-[#2d5f68] text-xs font-mono">
                     {use2D
                       ? 'The path draws itself as you scroll • Each milestone reveals as you reach it'
                       : 'Scroll or drag to glide through the 3D journey • Each milestone floats into view'}
@@ -214,7 +214,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="border border-slate-800/80 bg-slate-950/60 overflow-hidden shadow-2xl">
+          <Card className="border border-[#B9E7E6] bg-white/90 overflow-hidden shadow-md">
             <CardContent className={use2D ? 'p-6 md:p-10' : 'p-2 md:p-3'}>
               {use2D ? (
                 <JourneyScrollStory educationRecords={educationRecords} />
@@ -229,10 +229,10 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
         <div>
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
-              <Award className="w-6 h-6 text-[#6FD4E1]" />
-              <h3 className="text-[#FFFFFF] font-mono font-bold tracking-wider">CERTIFICATIONS</h3>
+              <Award className="w-6 h-6 text-[#0891b2]" />
+              <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">CERTIFICATIONS</h3>
             </div>
-            <div className="flex-1 h-px bg-slate-800" />
+            <div className="flex-1 h-px bg-[#B9E7E6]" />
           </div>
 
           <Accordion type="single" collapsible className="space-y-6">
@@ -240,28 +240,28 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
               const CategoryIcon = category.icon;
 
               return (
-                <Card key={category.id} className="overflow-hidden border border-slate-800/80 bg-slate-900/60 hover:border-[#6FD4E1]/40 transition-colors">
+                <Card key={category.id} className="overflow-hidden border border-[#B9E7E6] bg-white/90 hover:border-[#6FD4E1] shadow-sm transition-all">
                   <AccordionItem value={category.id} className="border-0">
                     <AccordionTrigger className="px-6 py-5 hover:no-underline group">
                       <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-4">
-                          <div className="w-14 h-14 rounded-xl bg-slate-800/80 border border-[#6FD4E1]/25 flex items-center justify-center text-[#6FD4E1] group-hover:scale-105 transition-transform">
-                            <CategoryIcon className="w-7 h-7 text-[#6FD4E1]" />
+                          <div className="w-14 h-14 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center text-[#0891b2] group-hover:scale-105 transition-transform shadow-sm">
+                            <CategoryIcon className="w-7 h-7 text-[#0891b2]" />
                           </div>
                           <div className="text-left">
-                            <h4 className="text-[#FFFFFF] font-bold text-lg mb-1">{category.label}</h4>
-                            <p className="text-[#B9E7E6] text-sm font-mono">
+                            <h4 className="text-[#0c282d] font-bold text-lg mb-1">{category.label}</h4>
+                            <p className="text-[#527d85] text-sm font-mono">
                               {category.achievements.length} records found
                             </p>
                           </div>
                         </div>
-                        <div className="px-3.5 py-1.5 rounded-full bg-[#6FD4E1]/10 border border-[#6FD4E1]/30 text-[#6FD4E1] font-mono text-sm font-semibold">
+                        <div className="px-3.5 py-1.5 rounded-full bg-[#B9E7E6]/40 border border-[#6FD4E1]/40 text-[#0c282d] font-mono text-sm font-bold">
                           {category.achievements.length}
                         </div>
                       </div>
                     </AccordionTrigger>
 
-                    <AccordionContent className="px-6 pb-6 border-t border-slate-800/80">
+                    <AccordionContent className="px-6 pb-6 border-t border-[#B9E7E6]">
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-6">
                         {/* Left: Achievement List */}
                         <div className={`lg:col-span-1 lg:h-[600px] overflow-hidden flex-col ${selectedAchievement?.category === category.id ? 'hidden lg:flex' : 'flex'}`}>
@@ -275,22 +275,22 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                   key={achievement.id}
                                   onClick={() => setSelectedAchievement({ category: category.id, achievementId: achievement.id })}
                                   className={`w-full p-4 rounded-xl border text-left group transition-all duration-300 ${isSelected
-                                      ? 'bg-slate-800/90 border-[#6FD4E1]/60 shadow-md'
-                                      : 'bg-slate-900/50 border-slate-800/80 hover:border-slate-700'
+                                      ? 'bg-[#E2F4F3] border-[#6FD4E1] shadow-sm'
+                                      : 'bg-white border-[#B9E7E6] hover:border-[#6FD4E1]'
                                     }`}
                                 >
                                   <div className="flex items-start gap-4">
-                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isSelected ? 'bg-[#6FD4E1]/20 text-[#6FD4E1]' : 'bg-slate-800 text-[#6FD4E1]'}`}>
+                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isSelected ? 'bg-[#6FD4E1]/20 text-[#0891b2]' : 'bg-[#E2F4F3] text-[#0891b2]'}`}>
                                       {(() => {
                                         const AchievementIcon = getIcon(achievement.icon);
-                                        return <AchievementIcon className="w-5 h-5 text-[#6FD4E1]" />;
+                                        return <AchievementIcon className="w-5 h-5 text-[#0891b2]" />;
                                       })()}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <p className={`font-semibold text-sm mb-1 line-clamp-2 ${isSelected ? 'text-[#FFFFFF]' : 'text-[#E2F4F3]'}`}>
+                                      <p className={`font-semibold text-sm mb-1 line-clamp-2 ${isSelected ? 'text-[#0c282d]' : 'text-[#1e4a52]'}`}>
                                         {achievement.title}
                                       </p>
-                                      <p className="text-[#B9E7E6] text-xs font-mono truncate">{achievement.issuer}</p>
+                                      <p className="text-[#527d85] text-xs font-mono truncate">{achievement.issuer}</p>
                                     </div>
                                   </div>
                                 </button>
@@ -308,7 +308,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
-                                className="w-full h-full rounded-2xl bg-slate-950/80 border border-slate-800 p-8 flex flex-col relative overflow-hidden"
+                                className="w-full h-full rounded-2xl bg-white border border-[#B9E7E6] p-8 flex flex-col relative overflow-hidden shadow-md"
                               >
                                 <div className="relative flex-1 flex flex-col">
                                   {/* Mobile Back Button */}

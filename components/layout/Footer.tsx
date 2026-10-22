@@ -40,13 +40,9 @@ export default function Footer() {
   return (
     <footer
       ref={footerRef}
-      className="relative z-[2]"
-      style={{ background: '#060612' }}
+      className="relative z-[2] bg-white border-t border-[#B9E7E6]"
       aria-label="Site footer"
     >
-      {/* Top divider */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-[#6FD4E1]/30 to-transparent" />
-
       <motion.div
         initial={{ opacity: 0 }}
         animate={isInView ? { opacity: 1 } : {}}
@@ -55,17 +51,17 @@ export default function Footer() {
       >
         {/* Copyright + last modified */}
         <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-4">
-          <p className="text-[12px] font-medium text-[#B9E7E6]">
+          <p className="text-[12px] font-medium text-[#527d85]">
             © {currentYear} Blimbing. All rights reserved.
           </p>
-          <span className="hidden sm:block w-1 h-1 rounded-full bg-[#6FD4E1]/40" />
-          <p className="text-[11px] text-[#B9E7E6]/70 font-mono">
+          <span className="hidden sm:block w-1 h-1 rounded-full bg-[#B9E7E6]" />
+          <p className="text-[11px] text-[#527d85] font-mono">
             Last modified {lastModified}
           </p>
         </div>
 
         {/* Credits */}
-        <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#B9E7E6]">
+        <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#527d85]">
           <span>Designed & built with</span>
           <motion.span
             className="inline-flex"
@@ -73,11 +69,11 @@ export default function Footer() {
             transition={calm ? undefined : { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           >
             <Heart
-              className="w-3 h-3 text-[#6FD4E1] fill-[#6FD4E1]/80"
+              className="w-3 h-3 text-[#6FD4E1] fill-[#6FD4E1]"
             />
           </motion.span>
           <span>by</span>
-          <span className="text-[#FFFFFF] font-semibold">
+          <span className="text-[#0c282d] font-bold">
             Fahmi Bahtiar
           </span>
         </div>

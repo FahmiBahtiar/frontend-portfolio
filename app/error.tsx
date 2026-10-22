@@ -26,8 +26,8 @@ export default function Error({
         gap: '1rem',
         padding: '2rem',
         textAlign: 'center',
-        backgroundColor: '#060612',
-        color: '#e2e8f0',
+        backgroundColor: '#E2F4F3',
+        color: '#0c282d',
       }}
     >
       <h1 style={{ fontSize: '1.5rem', fontWeight: 600 }}>Something went wrong</h1>

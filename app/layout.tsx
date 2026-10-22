@@ -102,7 +102,7 @@ export default async function RootLayout({
           </>
         )}
       </head>
-      <body suppressHydrationWarning className={`${plusJakartaSans.className} font-sans`} style={{ backgroundColor: '#060612' }}>
+      <body suppressHydrationWarning className={`${plusJakartaSans.className} font-sans`} style={{ backgroundColor: '#E2F4F3' }}>
         <WebVitals />
         <MotionProvider>
           <GraphicsModeProvider>{children}</GraphicsModeProvider>

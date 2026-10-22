@@ -28,12 +28,12 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
           className="text-center mb-12 md:mb-16"
         >
           {/* Control Tower Icon */}
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900 border border-[#6FD4E1]/30 mb-6 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-sm text-[#6FD4E1]">
-            <Plane className="w-10 h-10 text-[#6FD4E1]" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white border border-[#B9E7E6] mb-6 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-sm text-[#0891b2]">
+            <Plane className="w-10 h-10 text-[#0891b2]" />
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-bold text-[#FFFFFF] mb-4 tracking-tight">Experience and Projects</h2>
-          <p className="text-[#E2F4F3]/80 text-lg max-w-2xl mx-auto mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-[#0c282d] mb-4 tracking-tight">Experience and Projects</h2>
+          <p className="text-[#2d5f68] text-lg max-w-2xl mx-auto mb-6">
             Professional journey and portfolio showcase
           </p>
 
@@ -43,16 +43,16 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-4 px-5 py-2.5 rounded-full bg-slate-900/80 border border-slate-800 shadow-sm"
+            className="inline-flex items-center gap-4 px-5 py-2.5 rounded-full bg-white/90 border border-[#B9E7E6] shadow-sm"
           >
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[#6FD4E1]" />
-              <span className="text-xs text-[#E2F4F3] font-mono uppercase tracking-wider">All Systems Go</span>
+              <span className="text-xs text-[#0c282d] font-bold font-mono uppercase tracking-wider">All Systems Go</span>
             </div>
-            <div className="w-px h-3.5 bg-slate-700" />
+            <div className="w-px h-3.5 bg-[#B9E7E6]" />
             <div className="flex items-center gap-2">
-              <CloudSun className="w-4 h-4 text-[#6FD4E1]" />
-              <span className="text-xs text-[#B9E7E6] font-mono">VFR Conditions</span>
+              <CloudSun className="w-4 h-4 text-[#0891b2]" />
+              <span className="text-xs text-[#2d5f68] font-mono">VFR Conditions</span>
             </div>
           </motion.div>
         </motion.div>
@@ -68,15 +68,15 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
           >
             <div className="mb-6 md:mb-8">
               <div className="flex items-center gap-3 mb-2">
-                <div className="h-px flex-1 bg-slate-800" />
-                <div className="px-4 py-1.5 rounded-lg bg-slate-900 border border-[#6FD4E1]/30">
-                  <h3 className="text-[#6FD4E1] uppercase tracking-widest text-xs font-mono font-semibold">
+                <div className="h-px flex-1 bg-[#B9E7E6]" />
+                <div className="px-4 py-1.5 rounded-lg bg-white border border-[#B9E7E6] shadow-sm">
+                  <h3 className="text-[#0c282d] uppercase tracking-widest text-xs font-mono font-bold">
                     <span aria-hidden="true">📋 </span>Experience
                   </h3>
                 </div>
-                <div className="h-px flex-1 bg-slate-800" />
+                <div className="h-px flex-1 bg-[#B9E7E6]" />
               </div>
-              <p className="text-center text-[#B9E7E6] text-sm">
+              <p className="text-center text-[#2d5f68] text-sm">
                 Professional work experience and career journey
               </p>
             </div>
@@ -93,15 +93,15 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
           >
             <div className="mb-6 md:mb-8">
               <div className="flex items-center gap-3 mb-2">
-                <div className="h-px flex-1 bg-slate-800" />
-                <div className="px-4 py-1.5 rounded-lg bg-slate-900 border border-[#6FD4E1]/30">
-                  <h3 className="text-[#6FD4E1] uppercase tracking-widest text-xs font-mono font-semibold">
+                <div className="h-px flex-1 bg-[#B9E7E6]" />
+                <div className="px-4 py-1.5 rounded-lg bg-white border border-[#B9E7E6] shadow-sm">
+                  <h3 className="text-[#0c282d] uppercase tracking-widest text-xs font-mono font-bold">
                     <span aria-hidden="true">🛩️ </span>Projects
                   </h3>
                 </div>
-                <div className="h-px flex-1 bg-slate-800" />
+                <div className="h-px flex-1 bg-[#B9E7E6]" />
               </div>
-              <p className="text-center text-[#B9E7E6] text-sm">
+              <p className="text-center text-[#2d5f68] text-sm">
                 GitHub projects, flight awards, and mountain expeditions
               </p>
             </div>

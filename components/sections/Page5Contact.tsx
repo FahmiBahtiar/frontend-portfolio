@@ -84,12 +84,12 @@ function ContactForm() {
 
   return (
     <div>
-      <Card className="border-cyan-500/20 bg-slate-900/60 shadow-2xl">
+      <Card className="border border-[#B9E7E6] bg-white/95 shadow-md">
         <CardContent className="p-6 md:p-8">
           <form action={formAction} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-cyan-50 mb-2 font-mono">
+                <label htmlFor="name" className="block text-sm font-bold text-[#0c282d] mb-2 font-mono">
                   Name *
                 </label>
                 <Input
@@ -102,7 +102,7 @@ function ContactForm() {
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-cyan-50 mb-2 font-mono">
+                <label htmlFor="email" className="block text-sm font-bold text-[#0c282d] mb-2 font-mono">
                   Email *
                 </label>
                 <Input
@@ -117,7 +117,7 @@ function ContactForm() {
             </div>
 
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-cyan-50 mb-2 font-mono">
+              <label htmlFor="subject" className="block text-sm font-bold text-[#0c282d] mb-2 font-mono">
                 Subject *
               </label>
               <Input
@@ -131,7 +131,7 @@ function ContactForm() {
             </div>
 
             <div>
-              <label htmlFor="message" className="block text-sm font-medium text-cyan-50 mb-2 font-mono">
+              <label htmlFor="message" className="block text-sm font-bold text-[#0c282d] mb-2 font-mono">
                 Message *
               </label>
               <textarea
@@ -140,28 +140,28 @@ function ContactForm() {
                 required
                 rows={5}
                 disabled={isPending}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-md text-white placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-none transition-colors backdrop-blur-sm disabled:opacity-50"
+                className="w-full px-4 py-3 bg-white border border-[#B9E7E6] rounded-md text-[#0c282d] placeholder:text-[#527d85] focus:outline-none focus:ring-1 focus:ring-[#6FD4E1] focus:border-[#6FD4E1] resize-none transition-colors shadow-sm disabled:opacity-50"
                 placeholder="Tell me about your project, idea, or just say hello..."
               />
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-white/5">
-              <div className="text-xs text-slate-400 font-mono">
+            <div className="flex items-center justify-between pt-4 border-t border-[#B9E7E6]">
+              <div className="text-xs text-[#527d85] font-mono">
                 * Required fields
               </div>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-[#6FD4E1] text-slate-950 hover:bg-[#B9E7E6] transition-colors font-semibold shadow-sm"
+                className="bg-[#6FD4E1] text-[#0c282d] hover:bg-[#B9E7E6] transition-colors font-bold shadow-sm"
               >
                 {isPending ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin text-slate-950" />
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin text-[#0c282d]" />
                     <span className="font-mono">Sending...</span>
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4 mr-2 text-slate-950" />
+                    <Send className="w-4 h-4 mr-2 text-[#0c282d]" />
                     <span className="font-mono">Send Message</span>
                   </>
                 )}
@@ -297,60 +297,60 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
               <div className="w-2.5 h-2.5 rounded-full bg-[#6FD4E1]" />
-              <span className="text-[#FFFFFF] font-mono font-semibold tracking-wider text-sm md:text-base">EMERGENCY FREQUENCIES</span>
+              <span className="text-[#0c282d] font-mono font-bold tracking-wider text-sm md:text-base">EMERGENCY FREQUENCIES</span>
             </div>
-            <div className="flex-1 h-px bg-slate-800" />
+            <div className="flex-1 h-px bg-[#B9E7E6]" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {showLoading ? (
               <div className="col-span-full flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 text-[#6FD4E1] animate-spin" />
+                <Loader2 className="w-8 h-8 text-[#0891b2] animate-spin" />
               </div>
             ) : error ? (
               <div className="col-span-full text-center py-12">
-                <div className="text-red-400 mb-2">Failed to load communication protocols.</div>
+                <div className="text-red-500 mb-2">Failed to load communication protocols.</div>
               </div>
             ) : frequencies.filter(f => f.type === 'primary').length === 0 ? (
-              <div className="col-span-full text-center py-12 text-slate-400">
+              <div className="col-span-full text-center py-12 text-[#527d85]">
                 No emergency frequencies configured.
               </div>
             ) : (
               frequencies.filter(f => f.type === 'primary').map((freq) => {
                 const Icon = getIconComponent(freq.icon);
                 return (
-                  <Card key={freq.id} className="group overflow-hidden border border-slate-800/80 bg-slate-900/60 hover:border-[#6FD4E1]/40 transition-all duration-300">
+                  <Card key={freq.id} className="group overflow-hidden border border-[#B9E7E6] bg-white/90 hover:border-[#6FD4E1] hover:shadow-md transition-all duration-300 shadow-sm">
                     <CardContent className="p-0">
                       <div className="p-6 md:p-8 flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="w-14 h-14 rounded-xl bg-slate-800/80 border border-[#6FD4E1]/25 flex items-center justify-center shrink-0 text-[#6FD4E1]">
-                            <Icon className="w-7 h-7 text-[#6FD4E1]" />
+                          <div className="w-14 h-14 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shrink-0 text-[#0891b2] shadow-sm">
+                            <Icon className="w-7 h-7 text-[#0891b2]" />
                           </div>
                           <div>
                             <div className="flex items-baseline gap-2 mb-1">
-                              <span className="text-2xl md:text-3xl text-[#FFFFFF] font-mono font-bold tracking-tight">{freq.frequency}</span>
-                              <span className="text-[#B9E7E6] text-sm font-semibold">MHz</span>
+                              <span className="text-2xl md:text-3xl text-[#0c282d] font-mono font-bold tracking-tight">{freq.frequency}</span>
+                              <span className="text-[#527d85] text-sm font-semibold">MHz</span>
                             </div>
-                            <span className="text-sm text-[#B9E7E6] font-mono tracking-wide">{freq.label}</span>
+                            <span className="text-sm text-[#527d85] font-mono tracking-wide">{freq.label}</span>
                           </div>
                         </div>
                         <div className="w-full sm:w-auto flex flex-col gap-3">
-                          <div className="bg-slate-950/60 border border-slate-800 px-4 py-2 rounded-md truncate w-full sm:max-w-[200px] text-center sm:text-left">
-                            <span className="text-[#E2F4F3] font-mono text-sm">{freq.value}</span>
+                          <div className="bg-[#E2F4F3]/60 border border-[#B9E7E6] px-4 py-2 rounded-md truncate w-full sm:max-w-[200px] text-center sm:text-left">
+                            <span className="text-[#0c282d] font-mono text-sm font-medium">{freq.value}</span>
                           </div>
                           <div className="flex gap-2">
                             <Button
                               variant="glass"
                               size="sm"
                               onClick={() => handleCopy(freq.id, freq.value)}
-                              className="w-full border-slate-800 hover:border-[#6FD4E1]/40"
+                              className="w-full border-[#B9E7E6] text-[#0c282d] hover:border-[#6FD4E1]"
                             >
-                              {copiedId === freq.id ? <Check className="w-4 h-4 text-[#6FD4E1]" /> : <Copy className="w-4 h-4 text-[#B9E7E6]" />}
+                              {copiedId === freq.id ? <Check className="w-4 h-4 text-[#0891b2]" /> : <Copy className="w-4 h-4 text-[#527d85]" />}
                             </Button>
                             <Button
                               size="sm"
                               onClick={() => handleContact(freq)}
-                              className="w-full bg-[#6FD4E1] text-slate-950 hover:bg-[#B9E7E6] font-semibold"
+                              className="w-full bg-[#6FD4E1] text-[#0c282d] hover:bg-[#B9E7E6] font-bold shadow-sm"
                             >
                               Connect
                             </Button>
@@ -370,31 +370,31 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
               <div className="w-2.5 h-2.5 rounded-full bg-[#6FD4E1]" />
-              <span className="text-[#FFFFFF] font-mono font-semibold tracking-wider text-sm md:text-base">LIVE STATUS</span>
+              <span className="text-[#0c282d] font-mono font-bold tracking-wider text-sm md:text-base">LIVE STATUS</span>
             </div>
-            <div className="flex-1 h-px bg-slate-800" />
+            <div className="flex-1 h-px bg-[#B9E7E6]" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Discord Status Card */}
-            <Card className="border border-slate-800/80 hover:border-[#6FD4E1]/40 transition-colors bg-slate-900/60">
+            <Card className="border border-[#B9E7E6] hover:border-[#6FD4E1] hover:shadow-md transition-all bg-white/90 shadow-sm">
               <CardContent className="p-6 md:p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-slate-800/80 border border-[#6FD4E1]/25 flex items-center justify-center text-[#6FD4E1]">
-                    <Radio className="w-6 h-6 text-[#6FD4E1]" />
+                  <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center text-[#0891b2] shadow-sm">
+                    <Radio className="w-6 h-6 text-[#0891b2]" />
                   </div>
                   <div>
-                    <div className="text-sm font-mono text-[#6FD4E1] tracking-wide font-bold">DISCORD NETWORK</div>
-                    <div className="text-sm text-[#B9E7E6]">Real-time presence</div>
+                    <div className="text-sm font-mono text-[#0c282d] tracking-wide font-bold">DISCORD NETWORK</div>
+                    <div className="text-sm text-[#527d85]">Real-time presence</div>
                   </div>
                 </div>
-                <div className="rounded-lg overflow-hidden border border-slate-800 bg-slate-950/60 p-2">
+                <div className="rounded-xl overflow-hidden border border-[#B9E7E6] bg-[#E2F4F3]/30 p-2">
                   <Image
                     src="https://lanyard.cnrad.dev/api/467600406000697354?borderRadius=8px&theme=dark"
                     alt="Discord Status"
                     width={400}
                     height={150}
-                    className="w-full aspect-[8/3] object-contain opacity-90 hover:opacity-100 transition-opacity"
+                    className="w-full aspect-[8/3] object-contain opacity-95 hover:opacity-100 transition-opacity"
                     unoptimized
                   />
                 </div>
@@ -402,25 +402,24 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
             </Card>
 
             {/* IVAO Flight Status Card */}
-            <Card className="border border-slate-800/80 hover:border-[#6FD4E1]/40 transition-colors bg-slate-900/60">
+            <Card className="border border-[#B9E7E6] hover:border-[#6FD4E1] hover:shadow-md transition-all bg-white/90 shadow-sm">
               <CardContent className="p-6 md:p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-slate-800/80 border border-[#6FD4E1]/25 flex items-center justify-center text-[#6FD4E1]">
-                    <Radar className="w-6 h-6 text-[#6FD4E1]" />
+                  <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center text-[#0891b2] shadow-sm">
+                    <Radar className="w-6 h-6 text-[#0891b2]" />
                   </div>
                   <div>
-                    <div className="text-sm font-mono text-[#6FD4E1] tracking-wide font-bold">IVAO NETWORK</div>
-                    <div className="text-sm text-[#B9E7E6]">Flight Telemetry</div>
+                    <div className="text-sm font-mono text-[#0c282d] tracking-wide font-bold">IVAO NETWORK</div>
+                    <div className="text-sm text-[#527d85]">Flight Telemetry</div>
                   </div>
                 </div>
-                <div className="rounded-lg overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center min-h-[160px] p-2">
+                <div className="rounded-xl overflow-hidden border border-[#B9E7E6] bg-[#E2F4F3]/30 flex items-center justify-center min-h-[160px] p-2">
                   <Image
                     src="https://status.ivao.aero/704291.png"
                     alt="IVAO Flight Status"
                     width={400}
                     height={200}
-                    className="w-full aspect-[2/1] object-contain mix-blend-lighten opacity-80 hover:opacity-100 transition-opacity"
-                    style={{ filter: 'invert(0.92) hue-rotate(180deg) brightness(1.1) contrast(0.9)' }}
+                    className="w-full aspect-[2/1] object-contain mix-blend-multiply opacity-90 hover:opacity-100 transition-opacity"
                     unoptimized
                   />
                 </div>
@@ -434,39 +433,39 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
               <div className="w-2.5 h-2.5 rounded-full bg-[#6FD4E1]" />
-              <span className="text-[#FFFFFF] font-mono font-semibold tracking-wider text-sm md:text-base">NAVIGATION FREQUENCIES</span>
+              <span className="text-[#0c282d] font-mono font-bold tracking-wider text-sm md:text-base">NAVIGATION FREQUENCIES</span>
             </div>
-            <div className="flex-1 h-px bg-slate-800" />
+            <div className="flex-1 h-px bg-[#B9E7E6]" />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {showLoading ? (
               <div className="col-span-full flex items-center justify-center py-12">
-                <Loader2 className="w-6 h-6 animate-spin text-[#6FD4E1]" />
+                <Loader2 className="w-6 h-6 animate-spin text-[#0891b2]" />
               </div>
             ) : frequencies.filter(f => f.type === 'social').map((freq) => {
               const Icon = getIconComponent(freq.icon);
               return (
                 <Card 
                   key={freq.id} 
-                  className="group cursor-pointer border border-slate-800/80 bg-slate-900/60 hover:border-[#6FD4E1]/40 transition-all duration-300 hover:-translate-y-1"
+                  className="group cursor-pointer border border-[#B9E7E6] bg-white/90 hover:border-[#6FD4E1] hover:shadow-md transition-all duration-300 hover:-translate-y-1 shadow-sm"
                   onClick={() => handleContact(freq)}
                 >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <div className="w-12 h-12 rounded-xl bg-slate-800/80 border border-[#6FD4E1]/25 flex items-center justify-center text-[#6FD4E1] group-hover:scale-105 transition-transform">
-                        <Icon className="w-6 h-6 text-[#6FD4E1]" />
+                      <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center text-[#0891b2] group-hover:scale-105 transition-transform shadow-sm">
+                        <Icon className="w-6 h-6 text-[#0891b2]" />
                       </div>
                       <div className="text-right">
                         <div className="flex items-baseline gap-1">
-                          <span className="text-2xl text-[#FFFFFF] font-mono font-bold">{freq.frequency}</span>
-                          <span className="text-xs text-[#B9E7E6] font-bold">MHz</span>
+                          <span className="text-2xl text-[#0c282d] font-mono font-bold">{freq.frequency}</span>
+                          <span className="text-xs text-[#527d85] font-bold">MHz</span>
                         </div>
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-[#B9E7E6] font-mono uppercase tracking-wide mb-1">{freq.label}</div>
-                      <div className="text-[#E2F4F3] font-mono text-sm truncate opacity-85 group-hover:opacity-100 transition-opacity">{freq.value}</div>
+                      <div className="text-sm text-[#527d85] font-mono uppercase tracking-wide mb-1">{freq.label}</div>
+                      <div className="text-[#0c282d] font-mono text-sm truncate font-medium">{freq.value}</div>
                     </div>
                   </CardContent>
                 </Card>
@@ -479,10 +478,10 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
         <div>
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-emerald-500" />
-              <span className="text-emerald-400 font-mono font-semibold tracking-wider text-sm md:text-base">DIRECT TRANSMISSION</span>
+              <div className="w-3 h-3 rounded-full bg-[#6FD4E1]" />
+              <span className="text-[#0c282d] font-mono font-bold tracking-wider text-sm md:text-base">DIRECT TRANSMISSION</span>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-emerald-500/50 to-transparent" />
+            <div className="flex-1 h-px bg-[#B9E7E6]" />
           </div>
           <ContactForm />
         </div>

@@ -237,18 +237,18 @@ export function FlightLogbook() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-3.5 md:px-4 py-2 rounded-xl border transition-all ${
                     isActive
-                      ? 'bg-[#6FD4E1] border-[#6FD4E1] text-slate-950 font-semibold shadow-sm'
-                      : 'bg-slate-900/60 border-slate-800/80 text-[#B9E7E6] hover:text-[#FFFFFF] hover:border-[#6FD4E1]/40'
+                      ? 'bg-[#6FD4E1] border-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                      : 'bg-white/80 border-[#B9E7E6] text-[#2d5f68] hover:text-[#0c282d] hover:border-[#6FD4E1]'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
                   <span className="text-xs md:text-sm whitespace-nowrap">{tab.label}</span>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-mono ${
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-mono font-bold ${
                     isActive 
-                      ? 'bg-slate-950 text-[#6FD4E1] font-semibold'
-                      : 'bg-slate-800 text-[#B9E7E6]'
+                      ? 'bg-white text-[#0c282d]'
+                      : 'bg-[#E2F4F3] text-[#0c282d]'
                   }`}>
                     {tab.count}
                   </span>
@@ -260,35 +260,35 @@ export function FlightLogbook() {
           {/* Controls - In one row */}
           <div className="flex items-center gap-3 flex-shrink-0">
             {/* Search */}
-            <div className="flex items-center gap-2 px-3 py-2 bg-slate-900/60 border border-slate-800 rounded-xl hover:border-slate-700 focus-within:border-slate-600 transition-all w-full md:w-auto md:min-w-[200px]">
-            <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
+            <div className="flex items-center gap-2 px-3 py-2 bg-white border border-[#B9E7E6] rounded-xl hover:border-[#6FD4E1] focus-within:border-[#6FD4E1] shadow-sm transition-all w-full md:w-auto md:min-w-[200px]">
+            <Search className="w-4 h-4 text-[#527d85] flex-shrink-0" />
             <input
               type="text"
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none text-white text-sm placeholder-white/40 w-full"
+              className="bg-transparent border-none outline-none text-[#0c282d] text-sm placeholder:text-[#527d85] w-full"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
                 aria-label="Hapus pencarian"
-                className="text-white/40 hover:text-white transition-colors flex-shrink-0"
+                className="text-[#527d85] hover:text-[#0c282d] transition-colors flex-shrink-0"
               >
                 <X className="w-4 h-4" aria-hidden="true" />
               </button>
             )}
           </div>
 
-          {/* Filter Toggle */}
+          {/* Filters Toggle */}
           <motion.button
             onClick={() => setShowFilters(!showFilters)}
             aria-label="Tampilkan filter"
             aria-pressed={showFilters}
             className={`p-2 rounded-xl border transition-all flex-shrink-0 ${
               showFilters
-                ? 'bg-white border-white text-slate-950 font-semibold shadow-sm'
-                : 'bg-slate-900/60 border-slate-800/80 text-slate-400 hover:text-white hover:border-slate-700'
+                ? 'bg-[#6FD4E1] border-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                : 'bg-white border-[#B9E7E6] text-[#2d5f68] hover:text-[#0c282d] hover:border-[#6FD4E1]'
             }`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -297,15 +297,15 @@ export function FlightLogbook() {
           </motion.button>
 
           {/* View Mode Toggle */}
-          <div className="flex rounded-xl border border-slate-800 bg-slate-900/60 flex-shrink-0 p-0.5">
+          <div className="flex rounded-xl border border-[#B9E7E6] bg-white flex-shrink-0 p-0.5 shadow-sm">
             <button
               onClick={() => setViewMode('grid')}
               aria-label="Tampilan grid"
               aria-pressed={viewMode === 'grid'}
               className={`p-2 rounded-lg transition-all ${
                 viewMode === 'grid'
-                  ? 'bg-white text-slate-950 font-semibold shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                  : 'text-[#527d85] hover:text-[#0c282d]'
               }`}
             >
               <Grid3X3 className="w-4 h-4" aria-hidden="true" />
@@ -316,8 +316,8 @@ export function FlightLogbook() {
               aria-pressed={viewMode === 'list'}
               className={`p-2 rounded-lg transition-all ${
                 viewMode === 'list'
-                  ? 'bg-white text-slate-950 font-semibold shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                  : 'text-[#527d85] hover:text-[#0c282d]'
               }`}
             >
               <List className="w-4 h-4" aria-hidden="true" />
@@ -436,41 +436,41 @@ export function FlightLogbook() {
                   transition={{ delay: index * 0.05 }}
                   onClick={() => setSelectedEntry(entry)}
                 >
-                  <Card className="group cursor-pointer bg-slate-900/40 border-white/5 hover:bg-slate-900/60 hover:border-white/20 transition-all overflow-hidden h-full">
+                  <Card className="group cursor-pointer bg-white/95 border border-[#B9E7E6] hover:border-[#6FD4E1] hover:shadow-md transition-all overflow-hidden h-full shadow-sm">
                     <CardContent className="p-5">
                       {/* Grid Card Content */}
                   <div className="flex items-start gap-3 mb-3">
                     <div
                       className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                       style={{
-                        background: `radial-gradient(circle, ${colors.main}30, ${colors.main}10)`,
-                        border: `2px solid ${colors.main}40`
+                        background: '#E2F4F3',
+                        border: '1px solid #B9E7E6'
                       }}
                     >
-                      <Plane className="w-5 h-5" style={{ color: colors.main }} />
+                      <Plane className="w-5 h-5 text-[#0891b2]" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-white font-semibold text-sm truncate">{entry.company}</h4>
-                      <p className="text-white/60 text-xs truncate">{entry.departure.highlightedRole}</p>
-                      <p className="text-white/40 text-xs truncate">{entry.projectName}</p>
+                      <h4 className="text-[#0c282d] font-bold text-sm truncate">{entry.company}</h4>
+                      <p className="text-[#0891b2] text-xs font-semibold truncate">{entry.departure.highlightedRole}</p>
+                      <p className="text-[#2d5f68] text-xs truncate">{entry.projectName}</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 mb-3 text-xs">
                     <div className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-white/40" />
-                      <span className="text-white/70">{entry.duration} mo</span>
+                      <Clock className="w-3 h-3 text-[#527d85]" />
+                      <span className="text-[#2d5f68] font-medium">{entry.duration} mo</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-white/40" />
-                      <span className="text-white/70 truncate">{entry.location}</span>
+                      <MapPin className="w-3 h-3 text-[#527d85]" />
+                      <span className="text-[#2d5f68] font-medium truncate">{entry.location}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-white/50 text-xs">{entry.arrival.status}</span>
+                    <span className="text-[#527d85] text-xs">{entry.arrival.status}</span>
                     {entry.isActive && (
-                      <span className="px-2 py-0.5 rounded-full bg-green-400/10 border border-green-400/30 text-green-400 text-xs flex-shrink-0">
+                      <span className="px-2 py-0.5 rounded-full bg-[#E2F4F3] border border-[#6FD4E1] text-[#0891b2] text-xs font-semibold flex-shrink-0">
                         Active
                       </span>
                     )}
@@ -480,17 +480,13 @@ export function FlightLogbook() {
                     {entry.crew.slice(0, 4).map((tech, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-0.5 rounded text-xs font-mono"
-                        style={{
-                          backgroundColor: `${colors.main}15`,
-                          color: colors.main
-                        }}
+                        className="px-2 py-0.5 rounded text-xs font-mono bg-[#E2F4F3] border border-[#B9E7E6] text-[#0c282d] font-medium"
                       >
                         {tech}
                       </span>
                     ))}
                     {entry.crew.length > 4 && (
-                      <span className="text-white/40 text-xs">+{entry.crew.length - 4}</span>
+                      <span className="text-[#527d85] text-xs">+{entry.crew.length - 4}</span>
                     )}
                   </div>
 
@@ -520,39 +516,29 @@ export function FlightLogbook() {
                   const colors = getColorClasses(entry.color);
 
                   return (
-                    <Card
-                      key={entry.id}
-                      className="group cursor-pointer bg-slate-900/40 border-white/5 hover:bg-slate-900/60 hover:border-white/20 transition-all overflow-hidden"
+                    <Card 
+                      className="group cursor-pointer bg-white/95 border border-[#B9E7E6] hover:border-[#6FD4E1] hover:shadow-md transition-all overflow-hidden shadow-sm"
                       onClick={() => setSelectedEntry(entry)}
                     >
                       {/* List Card Content */}
                       <div
-                        className="px-4 md:px-6 py-4 border-b cursor-pointer"
-                        style={{
-                          background: `linear-gradient(90deg, ${colors.main}20, ${colors.main}05)`,
-                          borderBottomColor: `${colors.main}30`
-                        }}
+                        className="px-4 md:px-6 py-4 border-b border-[#B9E7E6] cursor-pointer bg-white"
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-3 mb-2">
                               <div
-                                className="w-10 h-10 rounded-xl flex items-center justify-center border-2"
-                                style={{
-                                  background: `radial-gradient(circle, ${colors.main}40, ${colors.main}10)`,
-                                  borderColor: colors.main,
-                                  boxShadow: `0 0 15px ${colors.glow}`
-                                }}
+                                className="w-10 h-10 rounded-xl flex items-center justify-center border border-[#B9E7E6] bg-[#E2F4F3]"
                               >
-                                <Plane className="w-5 h-5" style={{ color: colors.main }} />
+                                <Plane className="w-5 h-5 text-[#0891b2]" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h4 className="text-white font-bold text-lg truncate">{entry.company}</h4>
+                                <h4 className="text-[#0c282d] font-bold text-lg truncate">{entry.company}</h4>
                                 <div className="flex items-center gap-2">
-                                  <p className="text-white/50 text-sm truncate">{entry.projectName}</p>
+                                  <p className="text-[#2d5f68] text-sm truncate">{entry.projectName}</p>
                                   {entry.isActive && (
-                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 flex-shrink-0">
-                                      <Star className="w-3 h-3 fill-yellow-400" />
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-[#E2F4F3] border border-[#6FD4E1] text-[#0891b2] font-semibold flex-shrink-0">
+                                      <Star className="w-3 h-3 fill-[#0891b2]" />
                                       Active
                                     </span>
                                   )}
@@ -563,9 +549,9 @@ export function FlightLogbook() {
                             <div className="flex items-center gap-2 text-sm">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
-                                  <MapPin className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
-                                  <span className="text-white/70 font-mono truncate">{entry.departure.code}</span>
-                                  <span className="text-white/50 text-xs truncate">{entry.departure.highlightedRole}</span>
+                                  <MapPin className="w-3.5 h-3.5 text-[#0891b2] flex-shrink-0" />
+                                  <span className="text-[#0c282d] font-mono truncate">{entry.departure.code}</span>
+                                  <span className="text-[#527d85] text-xs truncate">{entry.departure.highlightedRole}</span>
                                 </div>
                               </div>
 

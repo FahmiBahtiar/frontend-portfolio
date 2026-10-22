@@ -110,12 +110,12 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
           transition={{ duration: 0.6 }}
           className="text-center mb-12 md:mb-16"
         >
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900 border border-[#6FD4E1]/30 mb-8 rotate-2 hover:rotate-0 transition-transform duration-500 shadow-sm text-[#6FD4E1]">
-            <Heart className="w-10 h-10 text-[#6FD4E1]" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white border border-[#B9E7E6] mb-8 rotate-2 hover:rotate-0 transition-transform duration-500 shadow-sm text-[#0891b2]">
+            <Heart className="w-10 h-10 text-[#0891b2]" />
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-bold text-[#FFFFFF] mb-4 tracking-tight">About Me</h2>
-          <p className="text-[#E2F4F3]/80 max-w-2xl mx-auto text-lg">
+          <h2 className="text-4xl md:text-5xl font-bold text-[#0c282d] mb-4 tracking-tight">About Me</h2>
+          <p className="text-[#2d5f68] max-w-2xl mx-auto text-lg">
             Pull the lanyard to reveal my identity card
           </p>
         </motion.div>
@@ -124,8 +124,8 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
         {loading && (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <div className="inline-block w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p className="text-slate-400 font-mono">Loading portfolio data...</p>
+              <div className="inline-block w-8 h-8 border-2 border-[#6FD4E1] border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p className="text-[#527d85] font-mono">Loading portfolio data...</p>
             </div>
           </div>
         )}
@@ -135,9 +135,9 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
           <div className="flex items-center justify-center py-12">
             <div className="text-center max-w-md">
               <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-6">
-                <span className="text-red-400 text-2xl">⚠️</span>
+                <span className="text-red-500 text-2xl">⚠️</span>
               </div>
-              <p className="text-red-400 font-mono mb-4">{error}</p>
+              <p className="text-red-500 font-mono mb-4">{error}</p>
             </div>
           </div>
         )}
@@ -146,8 +146,8 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
         {!loading && !error && passions.length === 0 && highlights.length === 0 && (
           <div className="flex items-center justify-center py-12">
             <div className="text-center max-w-md">
-              <div className="text-white/40 text-4xl mb-4">📄</div>
-              <p className="text-slate-400 font-mono">No portfolio data available</p>
+              <div className="text-[#527d85] text-4xl mb-4">📄</div>
+              <p className="text-[#527d85] font-mono">No portfolio data available</p>
             </div>
           </div>
         )}
@@ -164,7 +164,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
               className="flex justify-center lg:sticky lg:top-8"
             >
               <div className="relative w-full">
-                <div className="relative rounded-[32px] border border-slate-800/80 bg-slate-900/40 backdrop-blur-xl">
+                <div className="relative rounded-[32px] border border-[#B9E7E6] bg-white/70 backdrop-blur-xl shadow-sm">
                   <LanyardCard />
                 </div>
               </div>
@@ -179,10 +179,10 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ delay: 0.3, duration: 0.6 }}
               >
-                <div className="rounded-3xl border border-slate-800/80 bg-slate-900/40 p-6 md:p-7">
+                <div className="rounded-3xl border border-[#B9E7E6] bg-white/80 p-6 md:p-7 shadow-sm">
                   <div className="flex items-center gap-4 mb-6">
-                    <h3 className="text-white font-mono font-bold tracking-wider">HIGHLIGHTS</h3>
-                    <div className="flex-1 h-px bg-slate-800" />
+                    <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">HIGHLIGHTS</h3>
+                    <div className="flex-1 h-px bg-[#B9E7E6]" />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -196,13 +196,13 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ delay: 0.1 * index, duration: 0.5 }}
                       >
-                        <Card className="group relative h-full overflow-hidden border border-slate-800/80 bg-slate-950/60 transition-all hover:-translate-y-0.5 hover:border-[#6FD4E1]/40">
+                        <Card className="group relative h-full overflow-hidden border border-[#B9E7E6] bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#6FD4E1] hover:shadow-md">
                           <CardContent className="p-5 flex flex-col items-center text-center">
-                            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-[#6FD4E1]/25 bg-slate-900 text-[#6FD4E1]">
-                              <Icon className="w-6 h-6 text-[#6FD4E1] group-hover:scale-110 transition-transform" strokeWidth={1.5} />
+                            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-[#B9E7E6] bg-[#E2F4F3] text-[#0891b2]">
+                              <Icon className="w-6 h-6 text-[#0891b2] group-hover:scale-110 transition-transform" strokeWidth={1.5} />
                             </div>
-                            <p className="text-[#B9E7E6] text-xs font-mono mb-1 uppercase tracking-wider">{item.label}</p>
-                            <p className="text-[#FFFFFF] text-lg font-bold">{item.value}</p>
+                            <p className="text-[#527d85] text-xs font-mono mb-1 uppercase tracking-wider">{item.label}</p>
+                            <p className="text-[#0c282d] text-lg font-bold">{item.value}</p>
                           </CardContent>
                         </Card>
                       </motion.div>
@@ -219,10 +219,10 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6 }}
               >
-                <div className="rounded-3xl border border-slate-800/80 bg-slate-900/40 p-6 md:p-7">
+                <div className="rounded-3xl border border-[#B9E7E6] bg-white/80 p-6 md:p-7 shadow-sm">
                   <div className="flex items-center gap-4 mb-6">
-                    <h3 className="text-[#FFFFFF] font-mono font-bold tracking-wider">MY THREE PASSIONS</h3>
-                    <div className="flex-1 h-px bg-slate-800" />
+                    <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">MY THREE PASSIONS</h3>
+                    <div className="flex-1 h-px bg-[#B9E7E6]" />
                   </div>
 
                   <div className="space-y-4">
@@ -239,26 +239,26 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: index * 0.1, duration: 0.6 }}
                       >
-                        <Card className="group relative overflow-hidden border border-slate-800/80 bg-slate-950/60 transition-all hover:-translate-y-0.5 hover:border-[#6FD4E1]/40">
+                        <Card className="group relative overflow-hidden border border-[#B9E7E6] bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#6FD4E1] hover:shadow-md">
                           <CardContent className="p-5">
                             <div className="flex items-start gap-5">
                               {/* Icon */}
-                              <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 border border-[#6FD4E1]/25 bg-slate-900 text-[#6FD4E1] transition-transform group-hover:scale-105">
-                                <Icon className="w-7 h-7 text-[#6FD4E1]" strokeWidth={1.5} />
+                              <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 border border-[#B9E7E6] bg-[#E2F4F3] text-[#0891b2] transition-transform group-hover:scale-105">
+                                <Icon className="w-7 h-7 text-[#0891b2]" strokeWidth={1.5} />
                               </div>
 
                               {/* Content */}
                               <div className="flex-1 min-w-0 pt-1">
                                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
-                                  <h4 className="text-[#FFFFFF] font-bold text-lg leading-tight">{cleanTitle}</h4>
+                                  <h4 className="text-[#0c282d] font-bold text-lg leading-tight">{cleanTitle}</h4>
                                   <div className="text-left sm:text-right shrink-0">
-                                    <p className="font-mono font-bold text-[#6FD4E1]">
+                                    <p className="font-mono font-bold text-[#0891b2]">
                                       {statsData.value}
                                     </p>
-                                    <p className="text-[#B9E7E6] text-xs font-mono uppercase tracking-wider">{statsData.label}</p>
+                                    <p className="text-[#527d85] text-xs font-mono uppercase tracking-wider">{statsData.label}</p>
                                   </div>
                                 </div>
-                                <p className="text-[#E2F4F3]/85 text-sm leading-relaxed">{passion.description}</p>
+                                <p className="text-[#2d5f68] text-sm leading-relaxed">{passion.description}</p>
                               </div>
                             </div>
                           </CardContent>
@@ -280,7 +280,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
               >
                 <Button 
                   size="lg" 
-                  className="bg-[#6FD4E1] text-slate-950 hover:bg-[#B9E7E6] font-semibold rounded-full px-8 py-3 group transition-colors shadow-sm"
+                  className="bg-[#6FD4E1] text-[#0c282d] hover:bg-[#B9E7E6] font-bold rounded-full px-8 py-3 group transition-colors shadow-md"
                   onClick={() => onNavigate && onNavigate(4)}
                 >
                   Let&apos;s Collaborate

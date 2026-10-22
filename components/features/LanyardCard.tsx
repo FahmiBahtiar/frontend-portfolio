@@ -173,13 +173,13 @@ export function LanyardCard() {
                 aria-pressed={isFlipped}
                 aria-label="Flip passport card"
               >
-            {/* FRONT SIDE - Blue Cover */}
-            <div className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-[#1a3a5c] via-[#1e4466] to-[#1a3a5c] shadow-2xl overflow-hidden border-4 border-[#0f2847]" style={{ backfaceVisibility: 'hidden' }}>
+            {/* FRONT SIDE - Arctic Ice Cover */}
+            <div className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-[#FFFFFF] via-[#E2F4F3] to-[#B9E7E6] shadow-xl overflow-hidden border-4 border-[#6FD4E1]/40" style={{ backfaceVisibility: 'hidden' }}>
               {/* 3D Glare/Light reflection overlay */}
               <div
                 className="absolute inset-0 z-20 pointer-events-none rounded-2xl transition-opacity duration-300"
                 style={{
-                  background: `radial-gradient(circle at ${tilt.glareX}% ${tilt.glareY}%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
+                  background: `radial-gradient(circle at ${tilt.glareX}% ${tilt.glareY}%, rgba(255,255,255,0.4) 0%, transparent 60%)`,
                   opacity: isHovering ? 1 : 0,
                 }}
               />
@@ -188,7 +188,7 @@ export function LanyardCard() {
               <div className="relative w-full h-full flex flex-col items-center justify-between p-5 sm:p-8 md:p-12">
                 {/* Top: Country Name */}
                 <div className="text-center space-y-2">
-                  <h2 className="text-[#FFFFFF] font-bold tracking-[0.2em] md:tracking-[0.35em] lg:tracking-[0.4em] text-sm sm:text-base md:text-2xl lg:text-3xl">{lanyardData.serviceName}</h2>
+                  <h2 className="text-[#0c282d] font-bold tracking-[0.2em] md:tracking-[0.35em] lg:tracking-[0.4em] text-sm sm:text-base md:text-2xl lg:text-3xl">{lanyardData.serviceName}</h2>
                 </div>
 
                 {/* Center: Garuda-style emblem */}
@@ -203,28 +203,28 @@ export function LanyardCard() {
                   >
                     {/* Wings spread effect */}
                     <div className="absolute -left-16 sm:-left-20 lg:-left-24 top-1/2 -translate-y-1/2 w-14 h-24 sm:w-20 sm:h-28 lg:w-24 lg:h-32 opacity-30">
-                      <div className="w-full h-full bg-gradient-to-r from-transparent via-[#6FD4E1]/20 to-transparent rounded-full transform -skew-y-12" />
+                      <div className="w-full h-full bg-gradient-to-r from-transparent via-[#6FD4E1]/30 to-transparent rounded-full transform -skew-y-12" />
                     </div>
                     <div className="absolute -right-16 sm:-right-20 lg:-right-24 top-1/2 -translate-y-1/2 w-14 h-24 sm:w-20 sm:h-28 lg:w-24 lg:h-32 opacity-30">
-                      <div className="w-full h-full bg-gradient-to-l from-transparent via-[#6FD4E1]/20 to-transparent rounded-full transform skew-y-12" />
+                      <div className="w-full h-full bg-gradient-to-l from-transparent via-[#6FD4E1]/30 to-transparent rounded-full transform skew-y-12" />
                     </div>
 
                     {/* Main emblem */}
-                    <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-52 md:h-52 lg:w-60 lg:h-60 rounded-full border-2 md:border-4 border-[#6FD4E1]/40 bg-gradient-to-br from-[#6FD4E1]/15 via-[#B9E7E6]/10 to-transparent flex items-center justify-center backdrop-blur-sm shadow-2xl">
+                    <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-52 md:h-52 lg:w-60 lg:h-60 rounded-full border-2 md:border-4 border-[#6FD4E1] bg-white/70 flex items-center justify-center backdrop-blur-sm shadow-md">
                       {/* Inner glow */}
                       <div className="absolute inset-2 md:inset-3 rounded-full bg-gradient-to-br from-[#6FD4E1]/15 to-transparent" />
                       
                       {/* Three theme icons arranged vertically like Garuda */}
                       <div className="relative flex flex-col items-center gap-2 md:gap-4">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-[#6FD4E1]/20 border-2 border-[#6FD4E1]/40 flex items-center justify-center backdrop-blur-sm">
-                          <Plane className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-[#6FD4E1]" />
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-[#E2F4F3] border-2 border-[#6FD4E1] flex items-center justify-center backdrop-blur-sm shadow-sm">
+                          <Plane className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-[#0891b2]" />
                         </div>
                         <div className="flex gap-3 md:gap-5">
-                          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-[#6FD4E1]/20 border-2 border-[#6FD4E1]/40 flex items-center justify-center backdrop-blur-sm">
-                            <Code2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-[#6FD4E1]" />
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-[#E2F4F3] border-2 border-[#6FD4E1] flex items-center justify-center backdrop-blur-sm shadow-sm">
+                            <Code2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-[#0891b2]" />
                           </div>
-                          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-[#6FD4E1]/20 border-2 border-[#6FD4E1]/40 flex items-center justify-center backdrop-blur-sm">
-                            <Mountain className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-[#6FD4E1]" />
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-[#E2F4F3] border-2 border-[#6FD4E1] flex items-center justify-center backdrop-blur-sm shadow-sm">
+                            <Mountain className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-[#0891b2]" />
                           </div>
                         </div>
                       </div>
@@ -235,17 +235,17 @@ export function LanyardCard() {
                   <div className="mt-4 sm:mt-5 md:mt-8 relative">
                     <div className="w-36 sm:w-44 md:w-64 lg:w-72 h-0.5 bg-gradient-to-r from-transparent via-[#6FD4E1]/50 to-transparent mb-2 md:mb-3" />
                     <div className="text-center space-y-1">
-                      <p className="text-[#FFFFFF] text-xs sm:text-sm md:text-base font-medium tracking-wider">{lanyardData.passportLabel}</p>
-                      <p className="text-[#B9E7E6] text-[11px] sm:text-xs md:text-sm tracking-wide">{lanyardData.serviceType}</p>
+                      <p className="text-[#0c282d] text-xs sm:text-sm md:text-base font-bold tracking-wider">{lanyardData.passportLabel}</p>
+                      <p className="text-[#2d5f68] text-[11px] sm:text-xs md:text-sm tracking-wide font-medium">{lanyardData.serviceType}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Bottom: Logo symbol */}
                 <div className="text-center pb-6 sm:pb-7">
-                  <div className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl border border-[#6FD4E1]/30 bg-[#6FD4E1]/10 backdrop-blur-sm hover:border-[#6FD4E1]/50 hover:bg-[#6FD4E1]/20 transition-all duration-300 group">
-                    <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#6FD4E1] group-hover:rotate-180 transition-all duration-500" />
-                    <span className="text-xs sm:text-sm md:text-base text-[#6FD4E1] font-normal tracking-[0.15em] uppercase transition-colors duration-300">Click To Flip</span>
+                  <div className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl border border-[#6FD4E1] bg-white text-[#0c282d] shadow-sm hover:bg-[#6FD4E1]/20 transition-all duration-300 group">
+                    <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0891b2] group-hover:rotate-180 transition-all duration-500" />
+                    <span className="text-xs sm:text-sm md:text-base text-[#0c282d] font-semibold tracking-[0.15em] uppercase transition-colors duration-300">Click To Flip</span>
                   </div>
                 </div>
               </div>

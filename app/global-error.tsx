@@ -27,8 +27,8 @@ export default function GlobalError({
           gap: '1rem',
           padding: '2rem',
           textAlign: 'center',
-          backgroundColor: '#060612',
-          color: '#e2e8f0',
+          backgroundColor: '#E2F4F3',
+          color: '#0c282d',
           fontFamily: 'system-ui, sans-serif',
         }}
       >

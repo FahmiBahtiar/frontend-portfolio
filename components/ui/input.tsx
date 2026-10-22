@@ -12,7 +12,7 @@ function Input({ className, type, ref, ...props }: InputProps) {
     <input
       type={type}
       className={cn(
-        "flex h-10 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-colors backdrop-blur-sm",
+        "flex h-10 w-full rounded-md border border-[#B9E7E6] bg-white px-3 py-2 text-sm text-[#0c282d] placeholder:text-[#527d85] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#6FD4E1] focus-visible:border-[#6FD4E1] disabled:cursor-not-allowed disabled:opacity-50 transition-colors shadow-sm",
         className
       )}
       ref={ref}

@@ -237,7 +237,7 @@ export default function HomePage() {
 
       {/* Main App - Only render after loading is complete */}
       {!isLoading && (
-        <div className="relative w-full overflow-x-hidden" style={{ backgroundColor: '#060612' }}>
+        <div className="relative w-full overflow-x-hidden bg-[#E2F4F3] text-[#0c282d]">
 
           {/* Main Content - All sections stacked vertically */}
           <main id="main-content" tabIndex={-1} className="relative z-[2] focus:outline-none">

@@ -300,35 +300,26 @@ export function AircraftHangar() {
                   transition={{ delay: index * 0.05 }}
                   onClick={() => setSelectedItem(item)}
                 >
-                  <Card className="group cursor-pointer bg-slate-900/40 border-white/5 hover:bg-slate-900/60 hover:border-white/20 transition-all overflow-hidden h-full">
+                  <Card className="group cursor-pointer bg-white/95 border border-[#B9E7E6] hover:border-[#6FD4E1] hover:shadow-md transition-all overflow-hidden h-full shadow-sm">
                     {/* Header */}
                     <div
-                      className="px-4 py-3 border-b"
-                      style={{
-                        background: `linear-gradient(135deg, ${colors.main}15, ${colors.main}05)`,
-                        borderBottomColor: `${colors.main}20`
-                      }}
+                      className="px-4 py-3 border-b border-[#B9E7E6] bg-[#E2F4F3]/70"
                     >
                       <div className="flex items-center justify-between gap-2">
                         {/* Icon */}
                         <div className="flex items-center gap-3">
                           <div
-                            className="w-10 h-10 rounded-xl flex items-center justify-center border-2 text-xl"
-                            style={{
-                              background: `radial-gradient(circle, ${colors.main}40, ${colors.main}10)`,
-                              borderColor: colors.main,
-                              boxShadow: `0 0 15px ${colors.glow}`
-                            }}
+                            className="w-10 h-10 rounded-xl flex items-center justify-center border border-[#B9E7E6] bg-white text-[#0891b2] shadow-sm text-xl"
                           >
                             <Github className="w-6 h-6" />
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <div className="text-xs text-white/40 uppercase tracking-wider">
+                              <div className="text-xs text-[#527d85] font-bold uppercase tracking-wider font-mono">
                                 {item.classification}
                               </div>
                             </div>
-                            <div className="text-xs font-mono text-white/70 truncate">
+                            <div className="text-xs font-mono text-[#0c282d] font-semibold truncate">
                               {item.model}
                             </div>
                           </div>
@@ -337,22 +328,22 @@ export function AircraftHangar() {
                     </div>
 
                     {/* Content */}
-                    <CardContent className="p-4 space-y-4">
+                    <CardContent className="p-4 space-y-4 bg-white">
                       {/* Title & Description */}
                       <div>
-                        <h4 className="text-white font-mono mb-2 truncate">{item.name}</h4>
-                        <p className="text-white/60 text-sm line-clamp-2 leading-relaxed">
+                        <h4 className="text-[#0c282d] font-mono font-bold mb-2 truncate">{item.name}</h4>
+                        <p className="text-[#2d5f68] text-sm line-clamp-2 leading-relaxed">
                           {item.description}
                         </p>
                       </div>
 
                       {/* Stats Panel */}
                       <div className="grid grid-cols-1 gap-2">
-                        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                          <Shield className="w-3.5 h-3.5" style={{ color: colors.main }} />
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#E2F4F3]/50 border border-[#B9E7E6]">
+                          <Shield className="w-3.5 h-3.5 text-[#0891b2]" />
                           <div className="min-w-0 flex-1">
-                            <div className="text-[10px] text-white/40 uppercase">On board system</div>
-                            <div className="text-xs text-white/70 font-mono truncate">
+                            <div className="text-[10px] text-[#527d85] uppercase font-mono font-bold">On board system</div>
+                            <div className="text-xs text-[#0c282d] font-mono truncate font-medium">
                               {item.systems.slice(0, 3).join(', ')}{item.systems.length > 3 ? '...' : ''}
                             </div>
                           </div>
@@ -372,7 +363,7 @@ export function AircraftHangar() {
           <Button
             onClick={() => setShowMore(!showMore)}
             variant="outline"
-            className="border-[#6FD4E1]/40 bg-slate-900 text-[#6FD4E1] hover:bg-[#6FD4E1]/10 hover:text-[#FFFFFF] font-mono uppercase tracking-wider text-xs rounded-xl"
+            className="border border-[#6FD4E1] bg-white text-[#0c282d] hover:bg-[#6FD4E1]/20 font-mono uppercase tracking-wider text-xs rounded-xl font-bold shadow-sm"
           >
             {showMore ? 'Show Less' : `Show ${filteredItems.length - (isMobile ? 3 : 6)} More Projects`}
           </Button>

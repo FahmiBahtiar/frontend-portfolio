@@ -21,27 +21,27 @@
   --color-frost-white: #E2F4F3;
   --color-pure-white: #FFFFFF;
 
-  /* Semantic tokens */
-  --color-background: #060612;
-  --color-foreground: #E2F4F3;
+  /* Fresh Arctic Ice Light Theme */
+  --color-background: #E2F4F3;
+  --color-foreground: #0c282d;
   
-  --color-border: rgba(185, 231, 230, 0.15);
+  --color-border: #B9E7E6;
   --color-ring: #6FD4E1;
 
   --color-primary: #6FD4E1;
-  --color-primary-foreground: #060612;
+  --color-primary-foreground: #0c282d;
 
-  --color-secondary: rgba(111, 212, 225, 0.12);
-  --color-secondary-foreground: #FFFFFF;
+  --color-secondary: #B9E7E6;
+  --color-secondary-foreground: #0c282d;
 
-  --color-destructive: #f87171;
+  --color-destructive: #ef4444;
   --color-destructive-foreground: #FFFFFF;
   
-  --color-muted: rgba(185, 231, 230, 0.08);
-  --color-muted-foreground: #B9E7E6;
+  --color-muted: rgba(185, 231, 230, 0.4);
+  --color-muted-foreground: #33636c;
   
   --color-accent: #6FD4E1;
-  --color-accent-foreground: #060612;
+  --color-accent-foreground: #0c282d;
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -58,11 +58,11 @@
 
 /* Base custom utility patterns if needed */
 @utility glass-panel {
-  @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-xl;
+  @apply bg-white/80 backdrop-blur-md border border-[#B9E7E6] shadow-sm;
 }
 
 @utility glass-panel-hover {
-  @apply hover:bg-white/10 hover:border-white/20 transition-all duration-300;
+  @apply hover:bg-white/95 hover:border-[#6FD4E1] transition-all duration-300;
 }
 
 /* Respect the OS "reduce motion" preference (WCAG 2.3.3 / vestibular safety).
