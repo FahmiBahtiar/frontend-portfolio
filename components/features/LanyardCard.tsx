@@ -40,6 +40,7 @@ interface LanyardData {
 
 export function LanyardCard() {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipping, setIsFlipping] = useState(false);
   const [lanyardData, setLanyardData] = useState<LanyardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +75,11 @@ export function LanyardCard() {
     if (e) {
       e.stopPropagation();
     }
+    setIsFlipping(true);
     setIsFlipped((prev) => !prev);
+    setTimeout(() => {
+      setIsFlipping(false);
+    }, 850);
   }, []);
 
   useEffect(() => {
@@ -171,8 +176,12 @@ export function LanyardCard() {
           <div
             className="relative w-full max-w-[420px] sm:max-w-[440px] md:max-w-[600px] lg:max-w-[900px]"
             style={{
-              transform: `rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
-              transition: isHovering ? 'transform 0.1s ease-out, box-shadow 0.1s ease-out' : 'transform 0.5s ease-out, box-shadow 0.5s ease-out',
+              transform: isFlipping
+                ? 'rotateX(0deg) rotateY(0deg)'
+                : `rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
+              transition: isFlipping
+                ? 'transform 0.4s ease-out'
+                : isHovering ? 'transform 0.1s ease-out, box-shadow 0.1s ease-out' : 'transform 0.5s ease-out, box-shadow 0.5s ease-out',
               transformStyle: 'preserve-3d',
               WebkitTransformStyle: 'preserve-3d',
               boxShadow: isHovering
@@ -186,15 +195,18 @@ export function LanyardCard() {
               style={{ 
                 paddingTop: '140%', 
                 transformStyle: 'preserve-3d', 
-                WebkitTransformStyle: 'preserve-3d' 
+                WebkitTransformStyle: 'preserve-3d',
+                perspective: '1100px',
               }}
             >
               {/* Hardware-Accelerated 3D Flip Card */}
               <div 
-                className="absolute inset-0 w-full h-full"
+                className="absolute inset-0 w-full h-full passport-flipper allow-motion"
                 style={{
-                  transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                  transition: 'transform 0.8s cubic-bezier(0.34, 1.4, 0.64, 1)',
+                  transform: isFlipped 
+                    ? 'perspective(1100px) rotateY(180deg)' 
+                    : 'perspective(1100px) rotateY(0deg)',
+                  transition: 'transform 0.85s cubic-bezier(0.34, 1.25, 0.64, 1)',
                   transformStyle: 'preserve-3d',
                   WebkitTransformStyle: 'preserve-3d',
                 }}
@@ -203,7 +215,7 @@ export function LanyardCard() {
                 {/* FRONT SIDE - PASSPORT COVER (ARCTIC ICE)                  */}
                 {/* ======================================================== */}
                 <div 
-                  className="absolute inset-0 w-full h-full rounded-2xl shadow-xl border-4 border-[#6FD4E1]/50"
+                  className="absolute inset-0 w-full h-full rounded-2xl shadow-xl border-4 border-[#6FD4E1]/50 passport-flipper allow-motion"
                   style={{ 
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
@@ -292,7 +304,7 @@ export function LanyardCard() {
                 {/* BACK SIDE - PASSPORT BIOGRAPHICAL DATA PAGE (ARCTIC ICE) */}
                 {/* ======================================================== */}
                 <div 
-                  className="absolute inset-0 w-full h-full rounded-2xl shadow-2xl border-4 border-[#B9E7E6]"
+                  className="absolute inset-0 w-full h-full rounded-2xl shadow-2xl border-4 border-[#B9E7E6] passport-flipper allow-motion"
                   style={{ 
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',

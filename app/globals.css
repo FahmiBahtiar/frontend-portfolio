@@ -82,7 +82,7 @@
    Neutralizes CSS animations/transitions; framer-motion is handled globally via
    <MotionConfig reducedMotion="user">. */
 @media (prefers-reduced-motion: reduce) {
-  *,
+  *:not(.allow-motion):not(.allow-motion *),
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
