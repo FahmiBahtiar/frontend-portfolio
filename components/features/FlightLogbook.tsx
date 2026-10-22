@@ -517,7 +517,7 @@ export function FlightLogbook() {
 
                   return (
                     <Card 
-                      key={entry.id || entry.title || index}
+                      key={entry.id || index}
                       className="group cursor-pointer bg-white/95 border border-[#B9E7E6] hover:border-[#6FD4E1] hover:shadow-md transition-all overflow-hidden shadow-sm"
                       onClick={() => setSelectedEntry(entry)}
                     >
