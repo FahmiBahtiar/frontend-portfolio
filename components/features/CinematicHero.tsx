@@ -247,19 +247,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           )}
         </div>
 
-        {/* Layer 3: Grid lines */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(148, 163, 184, 0.3) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(148, 163, 184, 0.3) 1px, transparent 1px)
-            `,
-            backgroundSize: '60px 60px',
-          }}
-        />
-
-        {/* Layer 4: Noise grain overlay */}
+        {/* Noise grain overlay */}
         <div
           className="absolute inset-0 opacity-[0.035] mix-blend-overlay"
           style={{

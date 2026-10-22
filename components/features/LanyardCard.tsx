@@ -183,12 +183,6 @@ export function LanyardCard() {
                   opacity: isHovering ? 1 : 0,
                 }}
               />
-              {/* Leather/fabric texture overlay */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="w-full h-full" style={{
-                  backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)`
-                }} />
-              </div>
 
               {/* Main Content */}
               <div className="relative w-full h-full flex flex-col items-center justify-between p-5 sm:p-8 md:p-12">
@@ -241,8 +235,8 @@ export function LanyardCard() {
                   <div className="mt-4 sm:mt-5 md:mt-8 relative">
                     <div className="w-36 sm:w-44 md:w-64 lg:w-72 h-0.5 bg-gradient-to-r from-transparent via-amber-400/50 to-transparent mb-2 md:mb-3" />
                     <div className="text-center space-y-1">
-                      <p className="text-amber-300/80 tracking-[0.15em] md:tracking-[0.25em] text-xs sm:text-sm md:text-lg lg:text-xl">{lanyardData.passportLabel}</p>
-                      <p className="text-amber-400/60 tracking-[0.15em] md:tracking-[0.25em] text-[11px] sm:text-sm md:text-base lg:text-lg italic">{lanyardData.serviceType}</p>
+                      <p className="text-amber-300/90 text-xs sm:text-sm md:text-base font-medium tracking-wider">{lanyardData.passportLabel}</p>
+                      <p className="text-amber-400/70 text-[11px] sm:text-xs md:text-sm tracking-wide">{lanyardData.serviceType}</p>
                     </div>
                   </div>
                 </div>

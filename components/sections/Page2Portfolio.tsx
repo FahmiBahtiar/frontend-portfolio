@@ -140,12 +140,12 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
           transition={{ duration: 0.6 }}
           className="text-center mb-12 md:mb-16"
         >
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900/70 border border-purple-500/30 mb-8 rotate-2 hover:rotate-0 transition-transform duration-500 shadow-[0_12px_30px_-16px_rgba(168,85,247,0.6)]">
-            <Heart className="w-10 h-10 text-purple-400" />
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 mb-6 text-slate-300 shadow-sm">
+            <Heart className="w-6 h-6 text-slate-300" />
           </div>
 
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">About Me</h2>
-          <p className="text-slate-400 max-w-2xl mx-auto text-lg">
+          <p className="text-slate-400 max-w-2xl mx-auto text-base sm:text-lg">
             Pull the lanyard to reveal my identity card
           </p>
         </motion.div>
@@ -187,132 +187,116 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-8 lg:gap-12 items-start">
             {/* Left Side - Lanyard Card */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="flex justify-center lg:sticky lg:top-8"
+              className="flex justify-center lg:sticky lg:top-8 w-full"
             >
-              <div className="relative w-full">
-                <div className="absolute inset-6 rounded-[36px] bg-gradient-to-b from-cyan-500/10 via-transparent to-purple-500/10 blur-2xl" />
-                <div className="relative rounded-[32px] border border-slate-800/60 bg-slate-900/40 backdrop-blur-xl shadow-[0_30px_70px_-50px_rgba(15,23,42,0.9)]">
-                  <LanyardCard />
-                </div>
+              <div className="relative w-full max-w-md mx-auto">
+                <LanyardCard />
               </div>
             </motion.div>
 
             {/* Right Side - About Info */}
-            <div className="space-y-8">
+            <div className="space-y-10">
               {/* Highlights */}
               <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ delay: 0.3, duration: 0.6 }}
               >
-                <div className="rounded-3xl border border-slate-800/60 bg-slate-900/40 p-6 md:p-7 shadow-[0_24px_60px_-50px_rgba(15,23,42,0.9)]">
-                  <div className="flex items-center gap-4 mb-6">
-                    <h3 className="text-white font-mono font-bold tracking-wider">HIGHLIGHTS</h3>
-                    <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/50 to-transparent" />
-                  </div>
+                <div className="flex items-center gap-3 mb-5">
+                  <span className="text-xs font-mono font-semibold tracking-[0.2em] text-slate-400 uppercase">Highlights</span>
+                  <div className="flex-1 h-px bg-slate-800" />
+                </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3.5">
                   {highlights.map((item, index) => {
                     const Icon = getIcon(item.icon);
                     return (
                       <motion.div
                         key={item.label}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
-                        transition={{ delay: 0.1 * index, duration: 0.5 }}
+                        transition={{ delay: 0.08 * index, duration: 0.5 }}
+                        className="group relative rounded-xl border border-slate-800/80 bg-slate-900/60 p-4 transition-all duration-300 hover:border-slate-700 hover:-translate-y-0.5"
                       >
-                        <Card className="group relative h-full overflow-hidden border border-slate-800/60 bg-gradient-to-br from-slate-900/80 via-slate-900/50 to-slate-950/80 transition-all hover:-translate-y-0.5 hover:border-slate-700/80">
-                          <CardContent className="p-5 flex flex-col items-center text-center">
-                            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-slate-800/60 bg-slate-950/40">
-                              <Icon className={`w-6 h-6 ${getTextColor(item.color)} group-hover:scale-110 transition-transform`} strokeWidth={1.5} />
-                            </div>
-                            <p className="text-slate-400 text-xs font-mono mb-1 uppercase tracking-wider">{item.label}</p>
-                            <p className="text-white text-lg font-bold">{item.value}</p>
-                          </CardContent>
-                        </Card>
+                        <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800/80 text-slate-300">
+                          <Icon className="w-4 h-4 text-slate-300" strokeWidth={1.5} />
+                        </div>
+                        <p className="text-slate-400 text-[11px] font-mono uppercase tracking-[0.15em] mb-1">{item.label}</p>
+                        <p className="text-white text-base font-semibold tracking-tight">{item.value}</p>
                       </motion.div>
                     );
                   })}
-                  </div>
                 </div>
               </motion.div>
 
               {/* Three Passions */}
               <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
               >
-                <div className="rounded-3xl border border-slate-800/60 bg-slate-900/40 p-6 md:p-7 shadow-[0_24px_60px_-50px_rgba(15,23,42,0.9)]">
-                  <div className="flex items-center gap-4 mb-6">
-                    <h3 className="text-white font-mono font-bold tracking-wider">MY THREE PASSIONS</h3>
-                    <div className="flex-1 h-px bg-gradient-to-r from-purple-500/50 to-transparent" />
-                  </div>
+                <div className="flex items-center gap-3 mb-5">
+                  <span className="text-xs font-mono font-semibold tracking-[0.2em] text-slate-400 uppercase">Core Specialties</span>
+                  <div className="flex-1 h-px bg-slate-800" />
+                </div>
 
-                  <div className="space-y-4">
+                <div className="space-y-3.5">
                   {passions.map((passion, index) => {
                     const Icon = getIcon(passion.icon);
                     const statsData = getStatsData(passion);
-                    const colorClass = getColorClasses(passion.color);
-                    const textColor = getTextColor(passion.color);
+                    const cleanTitle = passion.title.replace(/Developerr/g, 'Developer');
                     
                     return (
                       <motion.div
                         key={passion.title}
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
-                        transition={{ delay: index * 0.1, duration: 0.6 }}
+                        transition={{ delay: index * 0.08, duration: 0.5 }}
+                        className="group relative rounded-xl border border-slate-800/80 bg-slate-900/60 p-5 transition-all duration-300 hover:border-slate-700 hover:-translate-y-0.5"
                       >
-                        <Card className="group relative overflow-hidden border border-slate-800/60 bg-gradient-to-br from-slate-900/80 via-slate-900/50 to-slate-950/80 transition-all hover:-translate-y-0.5 hover:border-slate-700/80">
-                          <CardContent className="p-5">
-                            <div className="flex items-start gap-5">
-                              {/* Icon */}
-                              <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${colorClass}`}>
-                                <Icon className="w-7 h-7" strokeWidth={1.5} />
-                              </div>
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-center shrink-0 text-slate-300">
+                            <Icon className="w-5 h-5 text-slate-300" strokeWidth={1.5} />
+                          </div>
 
-                              {/* Content */}
-                              <div className="flex-1 min-w-0 pt-1">
-                                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
-                                  <h4 className="text-white font-bold text-lg leading-tight">{passion.title}</h4>
-                                  <div className="text-left sm:text-right shrink-0">
-                                    <p className={`font-mono font-bold ${textColor}`}>
-                                      {statsData.value}
-                                    </p>
-                                    <p className="text-slate-400 text-xs font-mono uppercase tracking-wider">{statsData.label}</p>
-                                  </div>
-                                </div>
-                                <p className="text-slate-400 text-sm leading-relaxed">{passion.description}</p>
+                          <div className="flex-1 min-w-0 pt-0.5">
+                            <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-1.5">
+                              <h4 className="text-white font-semibold text-base leading-snug">{cleanTitle}</h4>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <span className="font-mono text-xs font-semibold text-slate-200">
+                                  {statsData.value}
+                                </span>
+                                <span className="text-slate-500 text-[10px] font-mono uppercase tracking-wider">{statsData.label}</span>
                               </div>
                             </div>
-                          </CardContent>
-                        </Card>
+                            <p className="text-slate-400 text-xs sm:text-sm leading-relaxed">{passion.description}</p>
+                          </div>
+                        </div>
                       </motion.div>
                     );
                   })}
-                  </div>
                 </div>
               </motion.div>
 
               {/* Call to Action */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6 }}
-                className="text-center lg:text-left pt-6"
+                className="text-center lg:text-left pt-2"
               >
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-full group"
+                  className="bg-white text-slate-950 hover:bg-slate-200 font-semibold rounded-xl px-6 group transition-colors shadow-sm"
                   onClick={() => onNavigate && onNavigate(4)}
                 >
                   Let&apos;s Collaborate
