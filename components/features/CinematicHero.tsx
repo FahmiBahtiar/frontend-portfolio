@@ -283,33 +283,30 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
 
         {/* Eyebrow badge */}
         <motion.div
-          initial={{ opacity: 0, y: 18, filter: 'blur(8px)' }}
-          animate={revealPhase >= 1 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+          initial={{ opacity: 0, y: 16 }}
+          animate={revealPhase >= 1 ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="mb-6 sm:mb-8"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm shadow-sm hover:border-cyan-500/30 transition-colors duration-300">
-            <Compass className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="text-[13px] text-slate-300 tracking-wide font-medium">{heroProfile?.badge || ''}</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-slate-300 text-xs font-medium tracking-wide shadow-sm hover:border-slate-700 transition-colors duration-300">
+            <Compass className="w-3.5 h-3.5 text-slate-400" />
+            <span>{(heroProfile?.badge || '').replace(/Ultramen/g, 'Ultraman')}</span>
           </div>
         </motion.div>
 
-        {/* Name — the hero with staggered mask reveal */}
+        {/* Name — the hero with solid, confident typography */}
         <motion.div
           ref={nameRef}
           style={calm ? undefined : { x: nameTranslateX, y: nameTranslateY }}
           className={calm ? 'mb-6 sm:mb-8' : 'mb-6 sm:mb-8 will-change-transform'}
         >
-          <h1
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.08] text-white"
-            style={{ textShadow: '0 0 70px rgba(56, 189, 248, 0.2), 0 0 120px rgba(99, 102, 241, 0.12)' }}
-          >
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-[-0.035em] leading-[1.05] text-white">
             {nameLines.map((line, i) => (
               <span key={i} className="block overflow-hidden py-0.5 sm:py-1">
                 <motion.span
-                  className="block bg-gradient-to-b from-white via-slate-100 to-slate-300 bg-clip-text text-transparent"
-                  initial={{ y: '105%', opacity: 0, filter: 'blur(12px)' }}
-                  animate={revealPhase >= 2 ? { y: '0%', opacity: 1, filter: 'blur(0px)' } : {}}
+                  className="block text-white"
+                  initial={{ y: '105%', opacity: 0 }}
+                  animate={revealPhase >= 2 ? { y: '0%', opacity: 1 } : {}}
                   transition={{
                     duration: 0.85,
                     delay: i * 0.15,
@@ -325,65 +322,61 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
 
         {/* Subtitle with typing effect */}
         <motion.div
-          initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-          animate={revealPhase >= 3 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+          initial={{ opacity: 0, y: 16 }}
+          animate={revealPhase >= 3 ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="mb-4 sm:mb-5 h-8 flex items-center justify-center"
         >
-          <span className="text-base sm:text-lg md:text-xl text-slate-400 font-mono tracking-wide">
+          <span className="text-base sm:text-lg md:text-xl text-slate-300 font-mono tracking-normal">
             {typedSubtitle}
             <motion.span
               animate={calm ? undefined : { opacity: [1, 0, 1] }}
               transition={calm ? undefined : { duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="inline-block w-[2px] h-[1.1em] bg-cyan-400 ml-0.5 align-middle"
+              className="inline-block w-[2px] h-[1.1em] bg-slate-400 ml-1 align-middle"
             />
           </span>
         </motion.div>
 
         {/* Description */}
         <motion.p
-          initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-          animate={revealPhase >= 3 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+          initial={{ opacity: 0, y: 16 }}
+          animate={revealPhase >= 3 ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="text-slate-400 text-sm sm:text-base max-w-xl leading-relaxed mb-10 sm:mb-14"
         >
           {heroProfile?.description || ''}
         </motion.p>
 
-        {/* ===== TECH STACK / PASSIONS (INLINE RAIL) ===== */}
+        {/* ===== TECH STACK / PASSIONS ===== */}
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="mb-8 sm:mb-10"
         >
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             {(heroProfile?.techStack || []).map((item, idx) => {
               const IconComponent = iconMap[item.icon] || Code2;
-              const colors = colorMap[item.icon] || colorMap.Code2;
+              const displayLabel = item.label.toLowerCase() === 'mountainner' ? 'Mountaineer' : item.label;
               return (
                 <motion.div
                   key={item.callsign}
-                  initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }}
-                  animate={revealPhase >= 4 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.6, delay: 0.15 + idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                  className="group relative flex items-center gap-3 cursor-default"
+                  className="group relative flex items-center gap-3 px-3.5 py-2 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 transition-colors duration-300"
                 >
-                  <div className="relative flex items-center gap-2">
-                    <div className={`h-8 w-8 rounded-full border ${colors.border} ${colors.bg} flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-0.5`}>
-                      <IconComponent className={`h-4 w-4 ${colors.accent}`} />
+                  <div className="h-7 w-7 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-300">
+                    <IconComponent className="h-3.5 w-3.5 text-slate-300" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-[9px] font-mono text-slate-500 tracking-[0.2em] uppercase">
+                      {item.callsign}
                     </div>
-                    <div className="text-left">
-                      <div className={`text-[9px] font-mono ${colors.accent} tracking-[0.22em] uppercase opacity-70`}>
-                        {item.callsign}
-                      </div>
-                      <div className="text-sm text-slate-200 font-semibold tracking-wide">
-                        {item.label}
-                      </div>
+                    <div className="text-xs text-slate-200 font-medium tracking-wide">
+                      {displayLabel}
                     </div>
                   </div>
-                  <div className="hidden sm:block h-8 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent" />
-                  <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </motion.div>
               );
             })}
@@ -397,73 +390,54 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="w-full max-w-3xl mb-10 sm:mb-14"
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
             {/* Status */}
             <motion.div
-              initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-              animate={revealPhase >= 4 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+              initial={{ opacity: 0, y: 16 }}
+              animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:-translate-y-1"
+              className="group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/60 px-5 py-4 transition-all duration-300 hover:border-slate-700 hover:-translate-y-0.5"
             >
-              <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(120px 80px at 20% 0%, rgba(56, 189, 248, 0.16), transparent 70%)' }} />
               <div className="relative flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <motion.div
-                      className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-emerald-400/40"
-                      animate={calm ? undefined : { scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
-                      transition={calm ? undefined : { duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                    />
-                    <div className="relative w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                  </div>
-                  <span className="text-[11px] text-slate-400 uppercase tracking-[0.22em] font-medium">Status</span>
+                  <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span className="text-[11px] text-slate-400 uppercase tracking-[0.18em] font-medium font-mono">Status</span>
                 </div>
-                <span className="text-[11px] text-slate-400 uppercase tracking-[0.2em]">Live</span>
+                <span className="text-[10px] text-slate-500 font-mono uppercase tracking-[0.15em]">Live</span>
               </div>
-              <p className="relative mt-2 text-base text-emerald-300 font-semibold tracking-wide">
+              <p className="relative mt-2 text-sm text-slate-200 font-semibold tracking-wide">
                 {heroProfile?.status || ''}
               </p>
             </motion.div>
 
             {/* Location */}
             <motion.div
-              initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-              animate={revealPhase >= 4 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+              initial={{ opacity: 0, y: 16 }}
+              animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.33, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:-translate-y-1"
+              className="group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/60 px-5 py-4 transition-all duration-300 hover:border-slate-700 hover:-translate-y-0.5"
             >
-              <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(120px 80px at 20% 0%, rgba(99, 102, 241, 0.16), transparent 70%)' }} />
               <div className="relative flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-[11px] text-slate-400 uppercase tracking-[0.22em] font-medium">Location</span>
+                <span className="text-[11px] text-slate-400 uppercase tracking-[0.18em] font-medium font-mono">Location</span>
               </div>
-              <p className="relative mt-2 text-base text-slate-200 font-semibold tracking-wide">
+              <p className="relative mt-2 text-sm text-slate-200 font-semibold tracking-wide">
                 {heroProfile?.location || ''}
               </p>
             </motion.div>
 
             {/* Spotify */}
             <motion.div
-              initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-              animate={revealPhase >= 4 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+              initial={{ opacity: 0, y: 16 }}
+              animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.41, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:-translate-y-1"
+              className="group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/60 px-5 py-4 transition-all duration-300 hover:border-slate-700 hover:-translate-y-0.5"
             >
-              <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(140px 90px at 20% 0%, rgba(29, 185, 84, 0.18), transparent 70%)' }} />
               <div className="relative flex items-center gap-2">
-                <div className="relative">
-                  {spotifyData?.isPlaying && (
-                    <motion.div
-                      className="absolute -inset-0.5 rounded-full bg-[#1DB954]/30"
-                      animate={calm ? undefined : { scale: [1, 1.4, 1], opacity: [0.4, 0, 0.4] }}
-                      transition={calm ? undefined : { duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                    />
-                  )}
-                  <svg className="w-3.5 h-3.5 text-[#1DB954] relative z-10" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-                  </svg>
-                </div>
-                <span className="text-[11px] text-slate-400 uppercase tracking-[0.22em] font-medium">Now Playing</span>
+                <svg className="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                </svg>
+                <span className="text-[11px] text-slate-400 uppercase tracking-[0.18em] font-medium font-mono">Now Playing</span>
               </div>
 
               {spotifyLoading ? (
@@ -476,19 +450,19 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
                       alt={spotifyData.song.title}
                       width={32}
                       height={32}
-                      className="rounded-md border border-white/10 shadow-sm"
+                      className="rounded-md border border-slate-700/60 shadow-sm"
                       loading="lazy"
                     />
                   )}
                   <div className="flex-1 min-w-0">
-                    <span className="text-sm text-[#1DB954] truncate block font-semibold">
+                    <span className="text-sm text-slate-200 truncate block font-semibold">
                       {spotifyData.song.title}
                     </span>
                     <p className="text-xs text-slate-400 truncate">{spotifyData.song.artist}</p>
                   </div>
                 </div>
               ) : (
-                <p className="relative mt-2 text-sm text-slate-400">Not listening</p>
+                <p className="relative mt-2 text-sm text-slate-500">Not listening</p>
               )}
             </motion.div>
           </div>

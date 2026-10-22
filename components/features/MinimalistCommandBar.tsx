@@ -25,18 +25,18 @@ const sections: SectionConfig[] = [
   { id: 4, name: 'Contact', icon: Mail },
 ];
 
-// Accent palette — cyan/teal matching the site's theme
+// Accent palette — refined, cohesive architectural palette
 const ACCENT = {
-  active: '#22d3ee',        // cyan-400
-  activeBg: 'rgba(34, 211, 238, 0.08)',
-  activeGlow: 'rgba(34, 211, 238, 0.15)',
-  gallery: '#f472b6',       // pink-400
-  galleryBg: 'rgba(244, 114, 182, 0.08)',
+  active: '#ffffff',        // crisp white
+  activeBg: 'rgba(255, 255, 255, 0.08)',
+  activeGlow: 'transparent',
+  gallery: '#cbd5e1',       // slate-300
+  galleryBg: 'rgba(255, 255, 255, 0.05)',
   text: '#94a3b8',          // slate-400
-  textHover: '#cbd5e1',     // slate-300
-  brand: '#e2e8f0',         // slate-200
-  barBg: 'rgba(8, 8, 24, 0.72)',
-  barBorder: 'rgba(255, 255, 255, 0.07)',
+  textHover: '#ffffff',     // white
+  brand: '#ffffff',         // white
+  barBg: 'rgba(10, 11, 16, 0.85)',
+  barBorder: 'rgba(255, 255, 255, 0.08)',
   progressTrack: 'rgba(255, 255, 255, 0.04)',
 };
 

@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
 import { headers } from 'next/headers';
-import { Inter, Dancing_Script } from 'next/font/google';
+import { Plus_Jakarta_Sans, Dancing_Script } from 'next/font/google';
 import "./globals.css";
 import { generateDynamicMetadata, generateStructuredData, serializeJsonLd } from '@/lib/metadata';
 import { WebVitals } from '@/components/features/WebVitals';
 import { MotionProvider } from '@/components/providers/MotionProvider';
 import { GraphicsModeProvider } from '@/components/providers/GraphicsModeProvider';
 
-const inter = Inter({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
   preload: true,
-  variable: '--font-inter',
-  fallback: ['system-ui', 'arial'],
+  variable: '--font-sans',
+  fallback: ['system-ui', 'sans-serif'],
   adjustFontFallback: true,
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700', '800'],
 });
 
 const dancingScript = Dancing_Script({
@@ -51,7 +51,7 @@ export default async function RootLayout({
   const nonce = (await headers()).get('x-nonce') ?? undefined;
 
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${dancingScript.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${plusJakartaSans.variable} ${dancingScript.variable}`}>
       <head>
         {/* No preconnect to Google Fonts: next/font self-hosts the fonts from
             our own origin, so a gstatic/googleapis hint would go unused. */}
@@ -102,7 +102,7 @@ export default async function RootLayout({
           </>
         )}
       </head>
-      <body suppressHydrationWarning className={`${inter.className}`} style={{ backgroundColor: '#060612' }}>
+      <body suppressHydrationWarning className={`${plusJakartaSans.className} font-sans`} style={{ backgroundColor: '#060612' }}>
         <WebVitals />
         <MotionProvider>
           <GraphicsModeProvider>{children}</GraphicsModeProvider>

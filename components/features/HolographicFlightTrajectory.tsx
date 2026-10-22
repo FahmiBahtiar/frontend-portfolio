@@ -934,8 +934,7 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
             TRAJECTORY ASCENT · {n} WAYPOINTS
           </div>
 
-          {/* Scanline + vignette */}
-          <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'repeating-linear-gradient(0deg, #22d3ee 0px, transparent 1px, transparent 3px, #22d3ee 4px)' }} />
+          {/* Vignette depth */}
           <div className="absolute inset-0" style={{ boxShadow: 'inset 0 0 120px 20px rgba(0,0,0,0.65)' }} />
 
           {/* ── Briefing panel ── */}
