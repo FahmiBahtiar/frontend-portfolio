@@ -420,16 +420,16 @@ export function LanyardCard() {
       >
         <div className="relative group">
           {/* Main Philosophy Card */}
-          <div className="relative p-8 md:p-12 rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl overflow-hidden">
-            {/* Animated gradient background */}
+          <div className="relative p-8 md:p-12 rounded-3xl bg-white/95 border border-[#B9E7E6] shadow-sm overflow-hidden">
+            {/* Animated subtle gradient background */}
             <motion.div
-              className="absolute inset-0 opacity-30"
+              className="absolute inset-0 opacity-20 pointer-events-none"
               animate={{
                 background: [
-                  'radial-gradient(circle at 20% 50%, rgba(6, 182, 212, 0.15) 0%, transparent 50%)',
-                  'radial-gradient(circle at 80% 50%, rgba(34, 197, 94, 0.15) 0%, transparent 50%)',
-                  'radial-gradient(circle at 50% 80%, rgba(249, 115, 22, 0.15) 0%, transparent 50%)',
-                  'radial-gradient(circle at 20% 50%, rgba(6, 182, 212, 0.15) 0%, transparent 50%)',
+                  'radial-gradient(circle at 20% 50%, rgba(111, 212, 225, 0.25) 0%, transparent 50%)',
+                  'radial-gradient(circle at 80% 50%, rgba(185, 231, 230, 0.3) 0%, transparent 50%)',
+                  'radial-gradient(circle at 50% 80%, rgba(111, 212, 225, 0.2) 0%, transparent 50%)',
+                  'radial-gradient(circle at 20% 50%, rgba(111, 212, 225, 0.25) 0%, transparent 50%)',
                 ],
               }}
               transition={{
@@ -440,8 +440,8 @@ export function LanyardCard() {
             />
 
             {/* Decorative corner accents */}
-            <div className="absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-cyan-400/30 rounded-tl-3xl" />
-            <div className="absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-orange-400/30 rounded-br-3xl" />
+            <div className="absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-[#6FD4E1]/40 rounded-tl-3xl pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-[#6FD4E1]/40 rounded-br-3xl pointer-events-none" />
 
             {/* Content */}
             <div className="relative z-10 flex flex-col items-center text-center space-y-6 sm:space-y-8">
@@ -453,14 +453,14 @@ export function LanyardCard() {
                 className="flex items-center gap-3"
               >
                 <motion.div
-                  className="h-px w-12 bg-gradient-to-r from-transparent via-white/40 to-white/40"
+                  className="h-px w-12 bg-[#B9E7E6]"
                   initial={{ width: 0 }}
                   animate={{ width: 48 }}
                   transition={{ delay: 0.9, duration: 0.6 }}
                 />
-                <h3 className="text-white/60 tracking-[0.3em] uppercase text-[11px] sm:text-xs md:text-sm">Philosophy</h3>
+                <h3 className="text-[#527d85] font-mono font-bold tracking-[0.3em] uppercase text-[11px] sm:text-xs md:text-sm">Philosophy</h3>
                 <motion.div
-                  className="h-px w-12 bg-gradient-to-l from-transparent via-white/40 to-white/40"
+                  className="h-px w-12 bg-[#B9E7E6]"
                   initial={{ width: 0 }}
                   animate={{ width: 48 }}
                   transition={{ delay: 0.9, duration: 0.6 }}
@@ -474,10 +474,10 @@ export function LanyardCard() {
                 transition={{ delay: 1 }}
                 className="space-y-4"
               >
-                <p className="text-white/90 text-base sm:text-lg md:text-2xl leading-relaxed max-w-3xl italic">
-                  &quot;Code like a <span className="text-cyan-400 not-italic">developer</span>,
-                  think like a <span className="text-orange-400 not-italic">pilot</span>,
-                  persevere like a <span className="text-green-400 not-italic">mountaineer</span>.
+                <p className="text-[#0c282d] text-base sm:text-lg md:text-2xl leading-relaxed max-w-3xl italic font-semibold">
+                  &quot;Code like a <span className="text-[#0891b2] not-italic font-bold">developer</span>,
+                  think like a <span className="text-[#0891b2] not-italic font-bold">pilot</span>,
+                  persevere like a <span className="text-[#0891b2] not-italic font-bold">mountaineer</span>.
                   Every challenge is just another peak to conquer.&quot;
                 </p>
               </motion.div>
@@ -487,7 +487,7 @@ export function LanyardCard() {
                 initial={{ opacity: 0, scaleX: 0 }}
                 animate={{ opacity: 1, scaleX: 1 }}
                 transition={{ delay: 1.3, duration: 0.8 }}
-                className="w-32 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mt-6"
+                className="w-32 h-px bg-[#B9E7E6] mt-6"
               />
             </div>
           </div>

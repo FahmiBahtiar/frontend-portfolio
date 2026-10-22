@@ -287,18 +287,16 @@ export function LoadingScreen({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       style={{
-        background:
-          'radial-gradient(ellipse 80% 60% at 50% 40%, #0c1929 0%, #060d19 50%, #020409 100%)',
+        background: '#E2F4F3',
       }}
     >
       {/* ---- Gradient mesh overlay ---- */}
       <div
-        className="absolute inset-0 opacity-40"
+        className="absolute inset-0 opacity-40 pointer-events-none"
         style={{
           background: `
-            radial-gradient(circle 600px at 30% 20%, rgba(14, 165, 233, 0.12) 0%, transparent 70%),
-            radial-gradient(circle 500px at 70% 70%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
-            radial-gradient(circle 400px at 50% 50%, rgba(125, 211, 252, 0.05) 0%, transparent 50%)
+            radial-gradient(circle 600px at 30% 20%, rgba(111, 212, 225, 0.25) 0%, transparent 70%),
+            radial-gradient(circle 500px at 70% 70%, rgba(185, 231, 230, 0.35) 0%, transparent 60%)
           `,
         }}
         aria-hidden="true"
@@ -359,18 +357,12 @@ export function LoadingScreen({
           transition={{ delay: 0.3, duration: 0.6 }}
         >
           <h1
-            className="text-lg md:text-xl tracking-[0.35em] uppercase font-light"
-            style={{
-              background: 'linear-gradient(135deg, #e2e8f0, #94a3b8)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
+            className="text-lg md:text-xl tracking-[0.35em] uppercase font-bold text-[#0c282d]"
           >
             Fahmi Bahtiar
           </h1>
           <span
-            className="text-[11px] tracking-[0.5em] uppercase font-normal"
-            style={{ color: 'rgba(148,163,184,0.45)' }}
+            className="text-[11px] tracking-[0.5em] uppercase font-bold text-[#527d85]"
           >
             Portfolio
           </span>
@@ -389,23 +381,14 @@ export function LoadingScreen({
               className="inline-block w-[6px] h-[6px] rounded-full"
               style={{
                 background: apiError
-                  ? '#f87171'
-                  : isWarmingUp
-                    ? 'linear-gradient(135deg, #fbbf24, #f59e0b)'
-                    : 'linear-gradient(135deg, #38bdf8, #7dd3fc)',
+                  ? '#ef4444'
+                  : '#6FD4E1',
               }}
               animate={{ opacity: [0.4, 1, 0.4] }}
               transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
             />
             <span
-              className="text-xs tracking-[0.2em] uppercase font-light"
-              style={{
-                color: apiError
-                  ? '#f87171'
-                  : isWarmingUp
-                    ? 'rgba(251,191,36,0.75)'
-                    : 'rgba(148,163,184,0.6)',
-              }}
+              className="text-xs tracking-[0.2em] uppercase font-semibold text-[#2d5f68]"
             >
               {loadingText}
             </span>
@@ -414,8 +397,7 @@ export function LoadingScreen({
           {/* Progress percentage */}
           {!apiError && (
             <span
-              className="text-[10px] font-light tabular-nums"
-              style={{ color: 'rgba(125,211,252,0.45)' }}
+              className="text-[10px] font-bold tabular-nums text-[#0891b2]"
             >
               {progress.toFixed(0)}%
             </span>

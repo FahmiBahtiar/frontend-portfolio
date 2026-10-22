@@ -172,14 +172,14 @@ export const CockpitCarousel = memo(function CockpitCarousel({ items, currentInd
                   {/* Cockpit Window Frame */}
                   <div className={`absolute inset-0 pointer-events-none z-10 ${
                     isCenter 
-                      ? 'border-2 border-slate-700/80 shadow-2xl shadow-black/80' 
-                      : 'border border-slate-800/80'
+                      ? 'border-2 border-[#6FD4E1] shadow-xl shadow-[#6FD4E1]/20' 
+                      : 'border border-[#B9E7E6]'
                   } rounded-lg`}>
                     {/* Corner reinforcements */}
-                    <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-slate-600" />
-                    <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-slate-600" />
-                    <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-slate-600" />
-                    <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-slate-600" />
+                    <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-[#6FD4E1]" />
+                    <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-[#6FD4E1]" />
+                    <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-[#6FD4E1]" />
+                    <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-[#6FD4E1]" />
                   </div>
 
                   {/* Image */}

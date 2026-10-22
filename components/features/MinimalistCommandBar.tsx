@@ -269,7 +269,7 @@ export function MinimalistCommandBar({
           <div
             className="w-px h-6 mx-1 flex-shrink-0"
             style={{
-              background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent)',
+              background: 'linear-gradient(to bottom, transparent, #B9E7E6, transparent)',
             }}
           />
 
@@ -421,10 +421,10 @@ export function MinimalistCommandBar({
 
             <motion.button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="flex items-center justify-center w-9 h-9 rounded-xl"
+              className="flex items-center justify-center w-9 h-9 rounded-xl shadow-sm"
               style={{
-                background: mobileOpen ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
-                border: `1px solid ${mobileOpen ? 'rgba(255,255,255,0.12)' : ACCENT.barBorder}`,
+                background: mobileOpen ? '#E2F4F3' : '#FFFFFF',
+                border: `1px solid ${ACCENT.barBorder}`,
               }}
               whileTap={{ scale: 0.9 }}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}

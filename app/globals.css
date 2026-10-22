@@ -101,5 +101,5 @@ html.lite-graphics * {
 /* glass-panel relies on backdrop-blur; once the blur is gone it would be too
    see-through, so give it a solid translucent fill instead. */
 html.lite-graphics .glass-panel {
-  background-color: rgba(15, 23, 42, 0.85) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
 }

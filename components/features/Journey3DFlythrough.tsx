@@ -23,7 +23,7 @@ import * as THREE from 'three';
 import type { Education } from '@/lib/types/admin';
 import { buildWaypoints, type Waypoint } from '@/lib/features/flight-trajectory-data';
 
-const BG = '#05060d';
+const BG = '#E2F4F3';
 const CAM_OFFSET = new THREE.Vector3(0, 1.7, 7.5); // up + back from the path
 const SIDE_X = 2.6; // how far milestones sit off the central flight line
 const DEPTH = 7; // z-distance between consecutive milestones
@@ -181,12 +181,12 @@ function MilestoneCard({ w, index }: { w: Waypoint; index: number }) {
         width: 248,
         padding: '14px 16px',
         borderRadius: 14,
-        background: 'rgba(8,12,22,0.82)',
-        backdropFilter: 'blur(6px)',
-        WebkitBackdropFilter: 'blur(6px)',
-        border: `1px solid ${w.color}55`,
-        boxShadow: `0 10px 34px rgba(0,0,0,0.55), 0 0 22px ${w.color}33`,
-        color: '#e2e8f0',
+        background: 'rgba(255, 255, 255, 0.96)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        border: '1px solid #B9E7E6',
+        boxShadow: '0 10px 30px rgba(111, 212, 225, 0.25), 0 2px 8px rgba(0,0,0,0.06)',
+        color: '#0c282d',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7 }}>
@@ -196,32 +196,33 @@ function MilestoneCard({ w, index }: { w: Waypoint; index: number }) {
             fontSize: 10,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: w.color,
-            background: `${w.color}1f`,
-            border: `1px solid ${w.color}44`,
+            color: '#0891b2',
+            background: '#E2F4F3',
+            border: '1px solid #B9E7E6',
             borderRadius: 6,
             padding: '2px 7px',
+            fontWeight: 700,
           }}
         >
           {w.badge}
         </span>
-        <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#64748b' }}>
+        <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#527d85', fontWeight: 600 }}>
           {w.period}
         </span>
       </div>
 
-      <div style={{ fontSize: 17, fontWeight: 700, color: '#ffffff', lineHeight: 1.2 }}>
-        <span style={{ color: w.color, opacity: 0.5, marginRight: 6 }}>
+      <div style={{ fontSize: 17, fontWeight: 700, color: '#0c282d', lineHeight: 1.2 }}>
+        <span style={{ color: '#0891b2', opacity: 0.6, marginRight: 6 }}>
           {String(index + 1).padStart(2, '0')}
         </span>
         {w.title}
       </div>
-      <div style={{ fontSize: 12.5, fontWeight: 500, color: w.color, marginTop: 3 }}>
+      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0891b2', marginTop: 3 }}>
         {w.institution}
       </div>
 
       {desc && (
-        <p style={{ fontSize: 11.5, lineHeight: 1.5, color: '#94a3b8', margin: '8px 0 0' }}>
+        <p style={{ fontSize: 11.5, lineHeight: 1.5, color: '#2d5f68', margin: '8px 0 0', fontWeight: 500 }}>
           {desc}
         </p>
       )}
@@ -235,15 +236,16 @@ function MilestoneCard({ w, index }: { w: Waypoint; index: number }) {
               gap: 6,
               fontFamily: 'monospace',
               fontSize: 11,
-              color: '#cbd5e1',
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              color: '#0c282d',
+              background: '#E2F4F3',
+              border: '1px solid #B9E7E6',
               borderRadius: 999,
               padding: '4px 10px',
+              fontWeight: 700,
             }}
           >
             <span
-              style={{ width: 6, height: 6, borderRadius: 999, background: w.color }}
+              style={{ width: 6, height: 6, borderRadius: 999, background: '#0891b2' }}
             />
             {w.gpa}
           </span>
@@ -258,19 +260,19 @@ export function Journey3DFlythrough({
 }: {
   educationRecords?: Education[];
 }) {
-  const waypoints = useMemo(() => buildWaypoints(educationRecords), [educationRecords]);
-  const { curve, count } = useJourney(waypoints);
-
-  // Pause rendering when off-screen to save the GPU/battery.
+  const waypoints = useMemo(
+    () => buildWaypoints(educationRecords),
+    [educationRecords],
+  );
   const wrapRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(wrapRef, { margin: '200px' });
-
-  const pages = Math.min(8, Math.max(3, count));
+  const inView = useInView(wrapRef, { margin: '-10% 0px -10% 0px' });
+  const { curve } = useJourney(waypoints);
+  const pages = Math.max(3, waypoints.length * 0.9);
 
   return (
     <div
       ref={wrapRef}
-      className="relative h-[68vh] min-h-[520px] w-full overflow-hidden rounded-2xl"
+      className="relative h-[68vh] min-h-[520px] w-full overflow-hidden rounded-2xl border border-[#B9E7E6]"
       style={{ background: BG }}
     >
       <Canvas
@@ -281,9 +283,8 @@ export function Journey3DFlythrough({
       >
         <color attach="background" args={[BG]} />
         <fog attach="fog" args={[BG, 10, 66]} />
-        <ambientLight intensity={0.7} />
-        <directionalLight position={[5, 8, 6]} intensity={0.8} />
-        <Stars radius={90} depth={55} count={2600} factor={4} saturation={0} fade speed={0.4} />
+        <ambientLight intensity={0.9} />
+        <directionalLight position={[5, 8, 6]} intensity={1.0} />
 
         <ScrollControls pages={pages} damping={0.3}>
           <CameraRig curve={curve} />
@@ -301,7 +302,7 @@ export function Journey3DFlythrough({
         className="pointer-events-none absolute inset-x-0 bottom-0 h-16"
         style={{ background: `linear-gradient(to top, ${BG}, transparent)` }}
       />
-      <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-white/10 bg-black/40 px-3 py-1.5 font-mono text-[11px] tracking-wider text-slate-300 backdrop-blur">
+      <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-[#B9E7E6] bg-white/95 px-4 py-1.5 font-mono text-[11px] tracking-wider text-[#0c282d] font-bold shadow-sm backdrop-blur">
         Scroll / drag to fly the journey ↕
       </div>
     </div>

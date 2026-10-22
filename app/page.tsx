@@ -17,7 +17,7 @@ const MinimalistCommandBar = dynamic(() => import('@/components/features/Minimal
 });
 
 const Page1Hero = dynamic(() => import('@/components/sections/Page1Hero').then(mod => ({ default: mod.Page1Hero })), {
-  loading: () => <div className="min-h-screen bg-slate-900" />
+  loading: () => <div className="min-h-screen bg-[#E2F4F3]" />
 });
 const Page2Portfolio = dynamic(() => import('@/components/sections/Page2Portfolio').then(mod => ({ default: mod.Page2Portfolio })));
 const Page3Education = dynamic(() => import('@/components/sections/Page3Education').then(mod => ({ default: mod.Page3Education })));
@@ -281,12 +281,12 @@ export default function HomePage() {
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0, opacity: 0 }}
-                  className="fixed top-6 right-6 z-[101] w-12 h-12 rounded-xl bg-slate-900/90 md:backdrop-blur-xl border border-slate-800 hover:bg-slate-800 hover:border-slate-700 transition-all duration-300 flex items-center justify-center shadow-xl group will-change-transform"
+                  className="fixed top-6 right-6 z-[101] w-12 h-12 rounded-xl bg-white/95 border border-[#B9E7E6] hover:border-[#6FD4E1] transition-all duration-300 flex items-center justify-center shadow-lg group will-change-transform"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
                 >
-                  <span className="text-slate-400 group-hover:text-white text-2xl font-light transition-colors duration-300" aria-hidden="true">✕</span>
+                  <span className="text-[#0c282d] group-hover:text-[#0891b2] text-2xl font-light transition-colors duration-300" aria-hidden="true">✕</span>
                 </motion.button>
               </motion.div>
             )}

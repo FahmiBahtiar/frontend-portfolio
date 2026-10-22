@@ -40,11 +40,11 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
   };
 
   const getColorClasses = (_color?: string) => {
-    return 'text-slate-200 border-slate-700/60 bg-slate-800/80 hover:border-slate-600';
+    return 'text-[#0c282d] border-[#B9E7E6] bg-white';
   };
 
   const getTextColor = (_color?: string) => {
-    return 'text-white';
+    return 'text-[#0c282d]';
   };
 
   const getStatsData = (passion: Passion) => {
@@ -67,36 +67,28 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
         <div
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(ellipse 75% 45% at 50% 35%, rgba(15, 23, 42, 0.6) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse 85% 55% at 50% 35%, rgba(255, 255, 255, 0.85) 0%, rgba(185, 231, 230, 0.3) 50%, transparent 80%)',
           }}
         />
 
         {/* Subtle ambient lighting */}
         <div className="absolute inset-0 overflow-hidden">
           <div
-            className="absolute w-[600px] h-[600px] rounded-full opacity-[0.05]"
+            className="absolute w-[600px] h-[600px] rounded-full opacity-[0.12]"
             style={{
-              background: 'radial-gradient(circle, rgba(56, 189, 248, 0.6) 0%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(111, 212, 225, 0.4) 0%, transparent 70%)',
               top: '20%',
               left: '15%',
-              filter: 'blur(100px)',
             }}
           />
         </div>
 
         <div
-          className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
+          className="absolute inset-0 opacity-[0.02] mix-blend-overlay"
           style={{
             backgroundImage: GRAIN_SVG,
             backgroundRepeat: 'repeat',
             backgroundSize: '256px 256px',
-          }}
-        />
-
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'radial-gradient(ellipse 70% 60% at 50% 40%, transparent 0%, rgba(6, 6, 18, 0.5) 100%)',
           }}
         />
       </div>

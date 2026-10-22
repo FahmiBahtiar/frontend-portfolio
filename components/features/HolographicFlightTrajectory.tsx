@@ -811,10 +811,9 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
   if (webglUnavailable || lite) {
     return (
       <div
-        className="relative w-full rounded-2xl p-6 md:p-8 border border-[#6FD4E1]/20"
-        style={{ background: 'radial-gradient(120% 120% at 50% 20%, #0a0a1c 0%, #060612 70%)' }}
+        className="relative w-full rounded-2xl p-6 md:p-8 border border-[#B9E7E6] bg-white/90 shadow-sm"
       >
-        <div className="flex items-center gap-2 text-[#6FD4E1] font-mono text-[10px] md:text-xs mb-5">
+        <div className="flex items-center gap-2 text-[#0891b2] font-mono text-[10px] md:text-xs mb-5 font-bold">
           <span className="w-1.5 h-1.5 rounded-full bg-[#6FD4E1]" />
           <span className="tracking-[0.2em]">TRAJECTORY ASCENT PLAN · STATIC MODE</span>
         </div>
@@ -822,20 +821,20 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
           {waypoints.map((w, i) => (
             <li
               key={w.id ?? i}
-              className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4"
+              className="flex items-start gap-3 rounded-xl border border-[#B9E7E6] bg-[#E2F4F3]/50 p-4"
             >
-              <span className="mt-0.5 font-mono text-xs text-[#6FD4E1]">
+              <span className="mt-0.5 font-mono text-xs text-[#0891b2] font-bold">
                 {String(i + 1).padStart(2, '0')}
               </span>
               <div className="min-w-0">
-                <div className="text-[#FFFFFF] font-semibold">{w.title}</div>
-                <div className="text-[#B9E7E6] text-sm">{w.institution}</div>
-                {w.period && <div className="text-[#B9E7E6]/70 text-xs mt-0.5">{w.period}</div>}
+                <div className="text-[#0c282d] font-bold">{w.title}</div>
+                <div className="text-[#0891b2] text-sm font-semibold">{w.institution}</div>
+                {w.period && <div className="text-[#527d85] text-xs mt-0.5 font-medium">{w.period}</div>}
               </div>
             </li>
           ))}
         </ol>
-        <p className="mt-5 text-[11px] text-[#B9E7E6]/50 font-mono">
+        <p className="mt-5 text-[11px] text-[#527d85] font-mono">
           Enable your browser&apos;s graphics acceleration to view the interactive 3D flight path.
         </p>
       </div>
@@ -847,24 +846,24 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
       {/* 3D container */}
       <div
         ref={containerRef}
-        className="relative w-full rounded-2xl overflow-hidden border border-[#6FD4E1]/20"
-        style={{ height: 'clamp(480px, 60vw, 620px)', background: 'radial-gradient(120% 120% at 50% 20%, #0a0a1c 0%, #060612 70%)' }}
+        className="relative w-full rounded-2xl overflow-hidden border border-[#B9E7E6]"
+        style={{ height: 'clamp(480px, 60vw, 620px)', background: 'radial-gradient(120% 120% at 50% 20%, #FFFFFF 0%, #E2F4F3 70%)' }}
       >
         {/* ── HUD overlay (pointer-events:none) ── */}
         <div className="absolute inset-0 pointer-events-none font-mono select-none">
           {/* Corner brackets */}
-          <span className="absolute top-3 left-3 w-7 h-7 border-t-2 border-l-2 border-[#6FD4E1]/50" />
-          <span className="absolute top-3 right-3 w-7 h-7 border-t-2 border-r-2 border-[#6FD4E1]/50" />
-          <span className="absolute bottom-3 left-3 w-7 h-7 border-b-2 border-l-2 border-[#6FD4E1]/50" />
-          <span className="absolute bottom-3 right-3 w-7 h-7 border-b-2 border-r-2 border-[#6FD4E1]/50" />
+          <span className="absolute top-3 left-3 w-7 h-7 border-t-2 border-l-2 border-[#6FD4E1]/60" />
+          <span className="absolute top-3 right-3 w-7 h-7 border-t-2 border-r-2 border-[#6FD4E1]/60" />
+          <span className="absolute bottom-3 left-3 w-7 h-7 border-b-2 border-l-2 border-[#6FD4E1]/60" />
+          <span className="absolute bottom-3 right-3 w-7 h-7 border-b-2 border-r-2 border-[#6FD4E1]/60" />
 
           {/* Top-left status */}
           <div className="absolute top-5 left-6 text-[10px] md:text-xs">
-            <div className="flex items-center gap-2 text-[#6FD4E1]">
+            <div className="flex items-center gap-2 text-[#0891b2] font-bold">
               <span className="w-1.5 h-1.5 rounded-full bg-[#6FD4E1]" />
               <span className="tracking-[0.2em]">NAV RADAR · ONLINE</span>
             </div>
-            <div className="text-[#B9E7E6]/60 mt-1 tracking-wider">TRAJECTORY ASCENT PLAN</div>
+            <div className="text-[#527d85] mt-1 tracking-wider font-semibold">TRAJECTORY ASCENT PLAN</div>
           </div>
 
           {/* Top-center heading tape */}
@@ -872,15 +871,15 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
             <div className="relative w-[180px] h-6 overflow-hidden">
               <div ref={tapeRef} className="absolute top-1 left-0 flex will-change-transform">
                 {tapeMarks.map((m) => (
-                  <div key={m.deg} className="w-6 text-center text-[9px] text-cyan-300/50 shrink-0">{m.label}</div>
+                  <div key={m.deg} className="w-6 text-center text-[9px] text-[#0891b2] font-semibold shrink-0">{m.label}</div>
                 ))}
               </div>
               {/* caret */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-cyan-300" />
-              <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#060612] to-transparent" />
-              <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#060612] to-transparent" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-[#0891b2]" />
+              <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#E2F4F3] to-transparent" />
+              <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#E2F4F3] to-transparent" />
             </div>
-            <div className="text-[10px] text-cyan-300/80 tracking-widest mt-0.5">HDG <span ref={hdgRef}>000</span></div>
+            <div className="text-[10px] text-[#0c282d] font-bold tracking-widest mt-0.5">HDG <span ref={hdgRef}>000</span></div>
           </div>
 
           {/* Top-right readouts */}
@@ -892,10 +891,10 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
               { label: 'ETA', ref: etaRef, unit: '' },
             ].map((r) => (
               <div key={r.label} className="flex items-center justify-end gap-2">
-                <span className="text-cyan-300/40 tracking-wider">{r.label}</span>
-                <span className="min-w-[52px] text-right text-cyan-200 tabular-nums">
+                <span className="text-[#527d85] font-semibold tracking-wider">{r.label}</span>
+                <span className="min-w-[52px] text-right text-[#0c282d] font-bold tabular-nums">
                   <span ref={r.ref}>—</span>
-                  {r.unit && <span className="text-cyan-300/40 ml-1">{r.unit}</span>}
+                  {r.unit && <span className="text-[#527d85] ml-1">{r.unit}</span>}
                 </span>
               </div>
             ))}
@@ -912,11 +911,11 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
                 transition={{ duration: 0.4 }}
                 className="absolute top-[4.75rem] md:top-24 left-1/2 -translate-x-1/2 text-center w-full px-4"
               >
-                <div className="text-base md:text-xl tracking-[0.25em] text-cyan-200" style={{ textShadow: '0 0 18px rgba(34,211,238,0.55)' }}>
+                <div className="text-base md:text-xl tracking-[0.25em] text-[#0c282d] font-bold">
                   {banner.title}
                 </div>
                 {banner.subtitle && (
-                  <div className="text-[10px] md:text-xs tracking-[0.3em] text-cyan-300/50 mt-2">{banner.subtitle}</div>
+                  <div className="text-[10px] md:text-xs tracking-[0.3em] text-[#2d5f68] font-semibold mt-2">{banner.subtitle}</div>
                 )}
               </motion.div>
             )}
@@ -925,17 +924,17 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
           {/* Small node WPT tag (positioned via JS) */}
           <div
             ref={nodeTagRef}
-            className="absolute top-0 left-0 px-2 py-0.5 text-[9px] tracking-wider rounded border bg-[#060612]/70 backdrop-blur-sm whitespace-nowrap"
-            style={{ opacity: 0, color: '#22d3ee', borderColor: '#22d3ee66', transition: 'opacity 0.25s' }}
+            className="absolute top-0 left-0 px-2 py-0.5 text-[9px] tracking-wider rounded border bg-white/95 border-[#B9E7E6] text-[#0c282d] font-bold shadow-sm whitespace-nowrap"
+            style={{ opacity: 0, transition: 'opacity 0.25s' }}
           />
 
           {/* Bottom caption */}
-          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[10px] md:text-xs text-cyan-300/40 tracking-[0.3em]">
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[10px] md:text-xs text-[#527d85] font-semibold tracking-[0.3em]">
             TRAJECTORY ASCENT · {n} WAYPOINTS
           </div>
 
           {/* Vignette depth */}
-          <div className="absolute inset-0" style={{ boxShadow: 'inset 0 0 120px 20px rgba(0,0,0,0.65)' }} />
+          <div className="absolute inset-0" style={{ boxShadow: 'inset 0 0 80px 10px rgba(111, 212, 225, 0.12)' }} />
 
           {/* ── Briefing panel ── */}
           <AnimatePresence>
@@ -946,56 +945,55 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="absolute inset-0 flex items-center justify-center p-4"
+                className="absolute inset-0 flex items-center justify-center p-4 z-30"
               >
                 {/* dimmed backdrop */}
-                <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px]" />
+                <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-[2px]" />
                 <motion.div
                   initial={{ scale: 0.93, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.93, opacity: 0 }}
                   transition={{ duration: 0.35, ease: 'easeOut' }}
-                  className="relative w-full max-w-md rounded-2xl border bg-[#080816]/90 backdrop-blur-xl p-5 md:p-6 overflow-hidden"
-                  style={{ borderColor: active.color, boxShadow: `0 0 50px ${active.color}33, 0 20px 60px rgba(0,0,0,0.6)` }}
+                  className="relative w-full max-w-md rounded-2xl border border-[#B9E7E6] bg-white/95 backdrop-blur-xl p-5 md:p-6 overflow-hidden shadow-2xl"
                 >
                   {/* top accent line */}
-                  <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: `linear-gradient(90deg, transparent, ${active.color}, transparent)` }} />
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#6FD4E1]" />
                   {/* HUD corner brackets */}
-                  <span className="absolute top-2 left-2 w-4 h-4 border-t border-l" style={{ borderColor: active.color }} />
-                  <span className="absolute top-2 right-2 w-4 h-4 border-t border-r" style={{ borderColor: active.color }} />
-                  <span className="absolute bottom-2 left-2 w-4 h-4 border-b border-l" style={{ borderColor: active.color }} />
-                  <span className="absolute bottom-2 right-2 w-4 h-4 border-b border-r" style={{ borderColor: active.color }} />
+                  <span className="absolute top-2 left-2 w-4 h-4 border-t border-l border-[#6FD4E1]" />
+                  <span className="absolute top-2 right-2 w-4 h-4 border-t border-r border-[#6FD4E1]" />
+                  <span className="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-[#6FD4E1]" />
+                  <span className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-[#6FD4E1]" />
 
                   {/* top row */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center border" style={{ borderColor: `${active.color}55`, background: `${active.color}15` }}>
-                        <Plane className="w-5 h-5" style={{ color: active.color }} />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center border border-[#B9E7E6] bg-[#E2F4F3]">
+                        <Plane className="w-5 h-5 text-[#0891b2]" />
                       </div>
-                      <span className="px-2.5 py-1 rounded-full text-[10px] tracking-widest border" style={{ color: active.color, borderColor: `${active.color}66`, background: `${active.color}12` }}>
+                      <span className="px-2.5 py-1 rounded-full text-[10px] tracking-widest border border-[#6FD4E1] bg-[#E2F4F3] text-[#0891b2] font-bold">
                         {active.badge}
                       </span>
                     </div>
-                    <span className="text-[10px] tracking-widest text-white/40">WPT {pad2((activePanel ?? 0) + 1)}/{pad2(n)}</span>
+                    <span className="text-[10px] tracking-widest text-[#527d85] font-bold">WPT {pad2((activePanel ?? 0) + 1)}/{pad2(n)}</span>
                   </div>
 
                   {/* title */}
-                  <h3 className="text-white text-xl md:text-2xl font-bold leading-tight mb-1">{active.title}</h3>
-                  <p className="text-[11px] md:text-xs text-white/50 mb-4">{active.institution} · {active.period}</p>
+                  <h3 className="text-[#0c282d] text-xl md:text-2xl font-bold leading-tight mb-1">{active.title}</h3>
+                  <p className="text-[11px] md:text-xs text-[#0891b2] font-semibold mb-4">{active.institution} · {active.period}</p>
 
                   {/* description */}
                   {active.description && (
-                    <p className="text-xs md:text-sm text-white/70 leading-relaxed mb-4">{active.description}</p>
+                    <p className="text-xs md:text-sm text-[#2d5f68] leading-relaxed mb-4 font-medium">{active.description}</p>
                   )}
 
                   {/* divider */}
-                  <div className="h-px w-full mb-4" style={{ background: `linear-gradient(90deg, ${active.color}40, transparent)` }} />
+                  <div className="h-px w-full mb-4 bg-[#B9E7E6]" />
 
                   {/* gpa */}
                   {active.gpa && (
                     <div className="flex items-center gap-2">
-                      <Trophy className="w-4 h-4" style={{ color: active.color }} />
-                      <span className="text-sm font-mono" style={{ color: active.color }}>{active.gpa}</span>
+                      <Trophy className="w-4 h-4 text-[#0891b2]" />
+                      <span className="text-sm font-mono text-[#0c282d] font-bold">{active.gpa}</span>
                     </div>
                   )}
                 </motion.div>
