@@ -32,21 +32,21 @@ export const AviationHUD = memo(function AviationHUD({
         <div className="flex items-center justify-between gap-4">
           {/* Left: Mission Status */}
           <div className="flex items-center gap-3 md:gap-4">
-            <div className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg bg-emerald-500/20 backdrop-blur-sm border border-emerald-500/30">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-emerald-400 text-xs md:text-sm font-mono">MISSION ACTIVE</span>
+            <div className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg bg-slate-900 border border-emerald-500/30">
+              <div className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="text-emerald-400 text-xs md:text-sm font-mono font-medium">MISSION ACTIVE</span>
             </div>
-            <div className="hidden md:flex items-center gap-2 text-white/70 text-sm font-mono">
-              <Crosshair className="w-4 h-4" />
+            <div className="hidden md:flex items-center gap-2 text-slate-300 text-sm font-mono">
+              <Crosshair className="w-4 h-4 text-slate-400" />
               <span>PHOTO {String(currentIndex + 1).padStart(3, '0')}/{String(totalImages).padStart(3, '0')}</span>
             </div>
           </div>
 
           {/* Center: Location */}
           <div className="hidden md:block">
-            <div className="px-4 py-2 rounded-lg bg-white/5 backdrop-blur-md border border-white/20">
+            <div className="px-4 py-2 rounded-lg bg-slate-900/80 border border-slate-800">
               <div className="flex items-center gap-2 text-white font-mono text-sm">
-                <Mountain className="w-4 h-4 text-cyan-400" />
+                <Mountain className="w-4 h-4 text-slate-300" />
                 <span>{location}</span>
               </div>
             </div>
@@ -54,13 +54,13 @@ export const AviationHUD = memo(function AviationHUD({
 
           {/* Right: Altitude & Coords */}
           <div className="flex items-center gap-2 md:gap-3">
-            <div className="hidden md:block px-3 py-2 rounded-lg bg-white/5 backdrop-blur-sm border border-white/20">
+            <div className="hidden md:block px-3 py-2 rounded-lg bg-slate-900/80 border border-slate-800">
               <div className="text-xs text-slate-400 font-mono">ALT</div>
-              <div className="text-cyan-400 font-mono text-sm">{altitude}</div>
+              <div className="text-slate-200 font-mono text-sm">{altitude}</div>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-white/5 backdrop-blur-sm border border-white/20">
+            <div className="px-3 py-2 rounded-lg bg-slate-900/80 border border-slate-800">
               <div className="text-xs text-slate-400 font-mono hidden md:block">GPS</div>
-              <div className="text-cyan-400 font-mono text-xs md:text-sm">{coordinates}</div>
+              <div className="text-slate-200 font-mono text-xs md:text-sm">{coordinates}</div>
             </div>
           </div>
         </div>

@@ -45,12 +45,7 @@ export default function Footer() {
       aria-label="Site footer"
     >
       {/* Top divider */}
-      <div
-        className="h-px w-full"
-        style={{
-          background: 'linear-gradient(90deg, transparent, rgba(34,211,238,0.15), rgba(148,163,184,0.1), rgba(34,211,238,0.15), transparent)',
-        }}
-      />
+      <div className="h-px w-full bg-slate-800/80" />
 
       <motion.div
         initial={{ opacity: 0 }}
@@ -60,29 +55,17 @@ export default function Footer() {
       >
         {/* Copyright + last modified */}
         <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-4">
-          <p
-            className="text-[12px] font-medium"
-            style={{ color: '#94a3b8' }}
-          >
+          <p className="text-[12px] font-medium text-slate-400">
             © {currentYear} Blimbing. All rights reserved.
           </p>
-          <span
-            className="hidden sm:block w-1 h-1 rounded-full"
-            style={{ background: '#1e293b' }}
-          />
-          <p
-            className="text-[11px]"
-            style={{ color: '#94a3b8' }}
-          >
+          <span className="hidden sm:block w-1 h-1 rounded-full bg-slate-700" />
+          <p className="text-[11px] text-slate-500 font-mono">
             Last modified {lastModified}
           </p>
         </div>
 
         {/* Credits */}
-        <div
-          className="flex items-center gap-1.5 text-[12px] font-medium"
-          style={{ color: '#94a3b8' }}
-        >
+        <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400">
           <span>Designed & built with</span>
           <motion.span
             className="inline-flex"
@@ -90,13 +73,11 @@ export default function Footer() {
             transition={calm ? undefined : { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           >
             <Heart
-              className="w-3 h-3"
-              fill="#f472b6"
-              style={{ color: '#f472b6' }}
+              className="w-3 h-3 text-red-400 fill-red-400/80"
             />
           </motion.span>
           <span>by</span>
-          <span style={{ color: '#22d3ee' }}>
+          <span className="text-white font-medium">
             Fahmi Bahtiar
           </span>
         </div>

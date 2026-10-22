@@ -101,10 +101,10 @@ export function AircraftHangar() {
 
   const getColorClasses = (color: string) => {
     const colors: { [key: string]: { main: string; glow: string; border: string } } = {
-      cyan: { main: '#22d3ee', glow: '#22d3ee40', border: 'border-cyan-400/40' },
-      green: { main: '#4ade80', glow: '#4ade8040', border: 'border-green-400/40' },
-      purple: { main: '#a855f7', glow: '#a855f740', border: 'border-purple-400/40' },
-      orange: { main: '#fb923c', glow: '#fb923c40', border: 'border-orange-400/40' }
+      cyan: { main: '#38bdf8', glow: 'transparent', border: 'border-slate-700/60' },
+      green: { main: '#34d399', glow: 'transparent', border: 'border-slate-700/60' },
+      purple: { main: '#94a3b8', glow: 'transparent', border: 'border-slate-700/60' },
+      orange: { main: '#f59e0b', glow: 'transparent', border: 'border-slate-700/60' }
     };
     return colors[color] || colors.cyan;
   };
@@ -201,10 +201,10 @@ export function AircraftHangar() {
               onClick={() => setShowFilters(!showFilters)}
               aria-label="Tampilkan filter"
               aria-pressed={showFilters}
-              className={`p-2 rounded-lg border transition-all flex-shrink-0 ${
+              className={`p-2 rounded-xl border transition-all flex-shrink-0 ${
                 showFilters
-                  ? 'bg-orange-500/20 border-orange-400/50 text-orange-400'
-                  : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20'
+                  ? 'bg-white border-white text-slate-950 font-semibold shadow-sm'
+                  : 'bg-slate-900/60 border-slate-800/80 text-slate-400 hover:text-white hover:border-slate-700'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -224,7 +224,7 @@ export function AircraftHangar() {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="text-white font-medium">Filters</h4>
                 <button
@@ -233,7 +233,7 @@ export function AircraftHangar() {
                     setShowFilters(false);
                   }}
                   aria-label="Tutup filter"
-                  className="text-white/60 hover:text-white p-1"
+                  className="text-slate-400 hover:text-white p-1"
                 >
                   <X className="w-4 h-4" aria-hidden="true" />
                 </button>
@@ -241,14 +241,14 @@ export function AircraftHangar() {
 
               {/* System Filter */}
               <div>
-                <label className="block text-white/80 text-sm mb-2">Technology</label>
+                <label className="block text-slate-300 text-sm mb-2">Technology</label>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setSelectedSystem('')}
                     className={`px-3 py-1 rounded-lg text-sm transition-all ${
                       selectedSystem === ''
-                        ? 'bg-cyan-500/20 border border-cyan-400/50 text-cyan-400'
-                        : 'bg-white/10 border border-white/20 text-white/60 hover:bg-white/20'
+                        ? 'bg-white border border-white text-slate-950 font-semibold'
+                        : 'bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
                     }`}
                   >
                     All
@@ -372,7 +372,7 @@ export function AircraftHangar() {
           <Button
             onClick={() => setShowMore(!showMore)}
             variant="outline"
-            className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 font-mono uppercase tracking-wider text-sm"
+            className="border-slate-800 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-white font-mono uppercase tracking-wider text-xs rounded-xl"
           >
             {showMore ? 'Show Less' : `Show ${filteredItems.length - (isMobile ? 3 : 6)} More Projects`}
           </Button>

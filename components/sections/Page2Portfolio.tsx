@@ -39,42 +39,12 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
     return iconMap[iconName] || Code;
   };
 
-  const getColorClasses = (color: string) => {
-    const colorMap: Record<string, string> = {
-      cyan: 'text-cyan-400 border-cyan-500/20 bg-cyan-500/10 hover:border-cyan-500/40',
-      blue: 'text-blue-400 border-blue-500/20 bg-blue-500/10 hover:border-blue-500/40',
-      green: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10 hover:border-emerald-500/40',
-      purple: 'text-purple-400 border-purple-500/20 bg-purple-500/10 hover:border-purple-500/40',
-      orange: 'text-orange-400 border-orange-500/20 bg-orange-500/10 hover:border-orange-500/40',
-      yellow: 'text-yellow-400 border-yellow-500/20 bg-yellow-500/10 hover:border-yellow-500/40',
-      pink: 'text-pink-400 border-pink-500/20 bg-pink-500/10 hover:border-pink-500/40',
-    };
-    return colorMap[color] || colorMap.cyan;
+  const getColorClasses = (_color?: string) => {
+    return 'text-slate-200 border-slate-700/60 bg-slate-800/80 hover:border-slate-600';
   };
 
-  const getTextColor = (color: string) => {
-    const colorMap: Record<string, string> = {
-      cyan: 'text-cyan-400',
-      blue: 'text-blue-400',
-      green: 'text-emerald-400',
-      purple: 'text-purple-400',
-      orange: 'text-orange-400',
-      yellow: 'text-yellow-400',
-      pink: 'text-pink-400',
-    };
-    if (color.startsWith('#')) {
-      const hexMap: Record<string, string> = {
-        '#00ffff': 'text-cyan-400',
-        '#0080ff': 'text-blue-400',
-        '#00ff00': 'text-emerald-400',
-        '#8458fd': 'text-purple-400',
-        '#ff8000': 'text-orange-400',
-        '#ffff00': 'text-yellow-400',
-        '#ff00ff': 'text-pink-400',
-      };
-      return hexMap[color.toLowerCase()] || 'text-cyan-400';
-    }
-    return colorMap[color] || 'text-cyan-400';
+  const getTextColor = (_color?: string) => {
+    return 'text-white';
   };
 
   const getStatsData = (passion: Passion) => {

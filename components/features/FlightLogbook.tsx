@@ -102,34 +102,34 @@ export function FlightLogbook() {
   const getColorClasses = (color: string) => {
     const colors: { [key: string]: { main: string; glow: string; border: string; bg: string } } = {
       purple: {
-        main: '#a855f7',
-        glow: '#a855f730',
-        border: 'border-purple-400/40',
-        bg: 'from-purple-500/15 to-purple-500/5'
+        main: '#94a3b8',
+        glow: 'transparent',
+        border: 'border-slate-700/60',
+        bg: 'bg-slate-900/60'
       },
       orange: {
-        main: '#fb923c',
-        glow: '#fb923c30',
-        border: 'border-orange-400/40',
-        bg: 'from-orange-500/15 to-orange-500/5'
+        main: '#f59e0b',
+        glow: 'transparent',
+        border: 'border-slate-700/60',
+        bg: 'bg-slate-900/60'
       },
       cyan: {
-        main: '#22d3ee',
-        glow: '#22d3ee30',
-        border: 'border-cyan-400/40',
-        bg: 'from-cyan-500/15 to-cyan-500/5'
+        main: '#38bdf8',
+        glow: 'transparent',
+        border: 'border-slate-700/60',
+        bg: 'bg-slate-900/60'
       },
       green: {
-        main: '#22c55e',
-        glow: '#22c55e30',
-        border: 'border-green-400/40',
-        bg: 'from-green-500/15 to-green-500/5'
+        main: '#34d399',
+        glow: 'transparent',
+        border: 'border-slate-700/60',
+        bg: 'bg-slate-900/60'
       },
       blue: {
-        main: '#3b82f6',
-        glow: '#3b82f630',
-        border: 'border-blue-400/40',
-        bg: 'from-blue-500/15 to-blue-500/5'
+        main: '#60a5fa',
+        glow: 'transparent',
+        border: 'border-slate-700/60',
+        bg: 'bg-slate-900/60'
       }
     };
     return colors[color] || colors.cyan;
@@ -235,24 +235,20 @@ export function FlightLogbook() {
                 <motion.button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg border transition-all ${
+                  className={`flex items-center gap-2 px-3.5 md:px-4 py-2 rounded-xl border transition-all ${
                     isActive
-                      ? tab.color === 'cyan'
-                        ? 'bg-cyan-500/20 border-cyan-400/50 text-cyan-400'
-                        : 'bg-green-500/20 border-green-400/50 text-green-400'
-                      : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20'
+                      ? 'bg-white border-white text-slate-950 font-semibold shadow-sm'
+                      : 'bg-slate-900/60 border-slate-800/80 text-slate-400 hover:text-white hover:border-slate-700'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-xs md:text-sm font-medium whitespace-nowrap">{tab.label}</span>
-                  <span className={`px-1.5 md:px-2 py-0.5 rounded-full text-xs ${
+                  <span className="text-xs md:text-sm whitespace-nowrap">{tab.label}</span>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-mono ${
                     isActive 
-                      ? tab.color === 'cyan'
-                        ? 'bg-cyan-400/20 text-cyan-400'
-                        : 'bg-green-400/20 text-green-400'
-                      : 'bg-white/10 text-white/40'
+                      ? 'bg-slate-200 text-slate-900 font-semibold'
+                      : 'bg-slate-800 text-slate-400'
                   }`}>
                     {tab.count}
                   </span>
@@ -264,8 +260,8 @@ export function FlightLogbook() {
           {/* Controls - In one row */}
           <div className="flex items-center gap-3 flex-shrink-0">
             {/* Search */}
-            <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-white/20 focus-within:border-cyan-400/50 focus-within:bg-white/10 transition-all w-full md:w-auto md:min-w-[200px]">
-            <Search className="w-4 h-4 text-white/40 flex-shrink-0" />
+            <div className="flex items-center gap-2 px-3 py-2 bg-slate-900/60 border border-slate-800 rounded-xl hover:border-slate-700 focus-within:border-slate-600 transition-all w-full md:w-auto md:min-w-[200px]">
+            <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
             <input
               type="text"
               placeholder="Search..."
@@ -289,10 +285,10 @@ export function FlightLogbook() {
             onClick={() => setShowFilters(!showFilters)}
             aria-label="Tampilkan filter"
             aria-pressed={showFilters}
-            className={`p-2 rounded-lg border transition-all flex-shrink-0 ${
+            className={`p-2 rounded-xl border transition-all flex-shrink-0 ${
               showFilters
-                ? 'bg-orange-500/20 border-orange-400/50 text-orange-400'
-                : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20'
+                ? 'bg-white border-white text-slate-950 font-semibold shadow-sm'
+                : 'bg-slate-900/60 border-slate-800/80 text-slate-400 hover:text-white hover:border-slate-700'
             }`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -301,15 +297,15 @@ export function FlightLogbook() {
           </motion.button>
 
           {/* View Mode Toggle */}
-          <div className="flex rounded-lg border border-white/10 bg-white/5 flex-shrink-0">
+          <div className="flex rounded-xl border border-slate-800 bg-slate-900/60 flex-shrink-0 p-0.5">
             <button
               onClick={() => setViewMode('grid')}
               aria-label="Tampilan grid"
               aria-pressed={viewMode === 'grid'}
-              className={`p-2 rounded-l-lg transition-all ${
+              className={`p-2 rounded-lg transition-all ${
                 viewMode === 'grid'
-                  ? 'bg-cyan-500/20 text-cyan-400 border-r border-white/10'
-                  : 'text-white/60 hover:bg-white/10'
+                  ? 'bg-white text-slate-950 font-semibold shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               <Grid3X3 className="w-4 h-4" aria-hidden="true" />
@@ -318,10 +314,10 @@ export function FlightLogbook() {
               onClick={() => setViewMode('list')}
               aria-label="Tampilan daftar"
               aria-pressed={viewMode === 'list'}
-              className={`p-2 rounded-r-lg transition-all ${
+              className={`p-2 rounded-lg transition-all ${
                 viewMode === 'list'
-                  ? 'bg-cyan-500/20 text-cyan-400'
-                  : 'text-white/60 hover:bg-white/10'
+                  ? 'bg-white text-slate-950 font-semibold shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               <List className="w-4 h-4" aria-hidden="true" />
@@ -357,14 +353,14 @@ export function FlightLogbook() {
 
               {/* Technology Filter */}
               <div>
-                <label className="block text-white/80 text-sm mb-2">Technology</label>
+                <label className="block text-slate-300 text-sm mb-2">Technology</label>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setSelectedTech('')}
                     className={`px-3 py-1 rounded-lg text-sm transition-all ${
                       selectedTech === ''
-                        ? 'bg-cyan-500/20 border border-cyan-400/50 text-cyan-400'
-                        : 'bg-white/10 border border-white/20 text-white/60 hover:bg-white/20'
+                        ? 'bg-white border border-white text-slate-950 font-semibold'
+                        : 'bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
                     }`}
                   >
                     All
@@ -375,8 +371,8 @@ export function FlightLogbook() {
                       onClick={() => setSelectedTech(tech)}
                       className={`px-3 py-1 rounded-lg text-sm font-mono transition-all ${
                         selectedTech === tech
-                          ? 'bg-cyan-500/20 border border-cyan-400/50 text-cyan-400'
-                          : 'bg-white/10 border border-white/20 text-white/60 hover:bg-white/20'
+                          ? 'bg-white border border-white text-slate-950 font-semibold'
+                          : 'bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
                       }`}
                     >
                       {tech}
@@ -510,7 +506,7 @@ export function FlightLogbook() {
                 <Button
                   onClick={() => setShowMore(!showMore)}
                   variant="outline"
-                  className="border-purple-500/50 text-purple-400 hover:bg-purple-500/10 font-mono uppercase tracking-wider text-sm"
+                  className="border-slate-800 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-white font-mono uppercase tracking-wider text-xs rounded-xl"
                 >
                   {showMore ? 'Show Less' : `Show ${filteredEntries.length - (isMobile ? 3 : 6)} More Experiences`}
                 </Button>
@@ -885,38 +881,38 @@ export function FlightLogbook() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/10"
+        className="mt-8 p-6 rounded-2xl bg-slate-950/60 border border-slate-800"
       >
         <div className="flex items-center gap-3 mb-4">
-          <TrendingUp className="w-5 h-5 text-orange-400" />
-          <h4 className="text-white">Career Summary</h4>
+          <TrendingUp className="w-5 h-5 text-slate-300" />
+          <h4 className="text-white font-semibold">Career Summary</h4>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-400/20">
-            <div className="text-3xl text-purple-400 mb-1 font-mono">
+          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+            <div className="text-3xl text-white mb-1 font-mono font-semibold">
               {flightEntries.reduce((sum, entry) => sum + parseInt(entry.duration), 0)}+
             </div>
-            <div className="text-sm text-white/50 uppercase tracking-wider">Total Months</div>
+            <div className="text-xs text-slate-400 uppercase tracking-wider font-mono">Total Months</div>
           </div>
 
-          <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-500/5 border border-orange-400/20">
-            <div className="text-3xl text-orange-400 mb-1 font-mono">{flightEntries.length}</div>
-            <div className="text-sm text-white/50 uppercase tracking-wider">Total Roles</div>
+          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+            <div className="text-3xl text-white mb-1 font-mono font-semibold">{flightEntries.length}</div>
+            <div className="text-xs text-slate-400 uppercase tracking-wider font-mono">Total Roles</div>
           </div>
 
-          <div className="p-4 rounded-xl bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-400/20">
-            <div className="text-3xl text-cyan-400 mb-1 font-mono">
+          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+            <div className="text-3xl text-white mb-1 font-mono font-semibold">
               {flightEntries.reduce((sum, entry) => sum + entry.crew.length, 0)}
             </div>
-            <div className="text-sm text-white/50 uppercase tracking-wider">Tech Mastered</div>
+            <div className="text-xs text-slate-400 uppercase tracking-wider font-mono">Tech Mastered</div>
           </div>
 
-          <div className="p-4 rounded-xl bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-400/20">
-            <div className="text-3xl text-green-400 mb-1 font-mono">
+          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+            <div className="text-3xl text-white mb-1 font-mono font-semibold">
               {flightEntries.filter(e => e.isActive).length}
             </div>
-            <div className="text-sm text-white/50 uppercase tracking-wider">Active Roles</div>
+            <div className="text-xs text-slate-400 uppercase tracking-wider font-mono">Active Roles</div>
           </div>
         </div>
       </motion.div>

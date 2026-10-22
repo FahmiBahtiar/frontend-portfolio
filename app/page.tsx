@@ -281,12 +281,12 @@ export default function HomePage() {
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0, opacity: 0 }}
-                  className="fixed top-6 right-6 z-[101] w-12 h-12 rounded-xl bg-slate-900/90 md:backdrop-blur-xl border border-white/10 hover:bg-slate-800/90 hover:border-pink-400/50 transition-all duration-300 flex items-center justify-center shadow-xl group will-change-transform"
+                  className="fixed top-6 right-6 z-[101] w-12 h-12 rounded-xl bg-slate-900/90 md:backdrop-blur-xl border border-slate-800 hover:bg-slate-800 hover:border-slate-700 transition-all duration-300 flex items-center justify-center shadow-xl group will-change-transform"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
                 >
-                  <span className="text-white/60 group-hover:text-pink-400 text-2xl font-light transition-colors duration-300" aria-hidden="true">✕</span>
+                  <span className="text-slate-400 group-hover:text-white text-2xl font-light transition-colors duration-300" aria-hidden="true">✕</span>
                 </motion.button>
               </motion.div>
             )}

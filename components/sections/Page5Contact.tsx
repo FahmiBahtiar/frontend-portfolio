@@ -152,16 +152,16 @@ function ContactForm() {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-cyan-500 text-slate-950 hover:bg-cyan-400 transition-colors font-semibold"
+                className="bg-white text-slate-950 hover:bg-slate-200 transition-colors font-semibold shadow-sm"
               >
                 {isPending ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin text-slate-950" />
                     <span className="font-mono">Sending...</span>
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4 mr-2" />
+                    <Send className="w-4 h-4 mr-2 text-slate-950" />
                     <span className="font-mono">Send Message</span>
                   </>
                 )}
@@ -272,22 +272,16 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
       <div className="max-w-7xl mx-auto">
         {/* Radar Header */}
         <div className="text-center mb-16 md:mb-24">
-          <div className="relative inline-block mb-8 group">
-            {/* Pulsing glow */}
-            <div className="absolute inset-0 rounded-full bg-cyan-500/20 blur-2xl group-hover:bg-cyan-500/40 transition-colors duration-700" />
-            
-            {/* Icon container */}
-            <div className="relative w-20 h-20 rounded-2xl bg-slate-900 border border-cyan-500/30 flex items-center justify-center rotate-3 group-hover:rotate-0 transition-transform duration-500">
-              <Radar className="w-10 h-10 text-cyan-400" />
-            </div>
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900 border border-slate-800 mb-8 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-sm text-slate-200">
+            <Radar className="w-10 h-10 text-slate-200" />
           </div>
 
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
             COMMUNICATION PANEL
           </h2>
           
-          <div className="flex items-center justify-center gap-2 text-cyan-400/80 mb-6">
-            <MapPin className="w-4 h-4" />
+          <div className="flex items-center justify-center gap-2 text-slate-400 mb-6">
+            <MapPin className="w-4 h-4 text-slate-400" />
             <span className="text-sm md:text-base font-mono tracking-widest">
               7°15&apos;S 112°45&apos;E • ALT 667M
             </span>
@@ -302,19 +296,16 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
         <div className="mb-16 md:mb-24">
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
-              <div className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-              </div>
-              <span className="text-red-400 font-mono font-semibold tracking-wider text-sm md:text-base">EMERGENCY FREQUENCIES</span>
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+              <span className="text-slate-200 font-mono font-semibold tracking-wider text-sm md:text-base">EMERGENCY FREQUENCIES</span>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-red-500/50 to-transparent" />
+            <div className="flex-1 h-px bg-slate-800" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {showLoading ? (
               <div className="col-span-full flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 text-cyan-500 animate-spin" />
+                <Loader2 className="w-8 h-8 text-slate-400 animate-spin" />
               </div>
             ) : error ? (
               <div className="col-span-full text-center py-12">
@@ -328,12 +319,12 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
               frequencies.filter(f => f.type === 'primary').map((freq) => {
                 const Icon = getIconComponent(freq.icon);
                 return (
-                  <Card key={freq.id} className="group overflow-hidden border-white/5 hover:border-cyan-500/30 transition-all duration-300">
+                  <Card key={freq.id} className="group overflow-hidden border border-slate-800/80 bg-slate-900/60 hover:border-slate-700 transition-all duration-300">
                     <CardContent className="p-0">
                       <div className="p-6 md:p-8 flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className={`w-14 h-14 rounded-xl bg-${freq.color}-500/10 border border-${freq.color}-500/20 flex items-center justify-center shrink-0`}>
-                            <Icon className={`w-7 h-7 text-${freq.color}-400`} />
+                          <div className="w-14 h-14 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center shrink-0 text-slate-200">
+                            <Icon className="w-7 h-7 text-slate-200" />
                           </div>
                           <div>
                             <div className="flex items-baseline gap-2 mb-1">
@@ -344,7 +335,7 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
                           </div>
                         </div>
                         <div className="w-full sm:w-auto flex flex-col gap-3">
-                          <div className="bg-black/40 border border-white/5 px-4 py-2 rounded-md truncate w-full sm:max-w-[200px] text-center sm:text-left">
+                          <div className="bg-slate-950/60 border border-slate-800 px-4 py-2 rounded-md truncate w-full sm:max-w-[200px] text-center sm:text-left">
                             <span className="text-slate-300 font-mono text-sm">{freq.value}</span>
                           </div>
                           <div className="flex gap-2">
@@ -352,14 +343,14 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
                               variant="glass"
                               size="sm"
                               onClick={() => handleCopy(freq.id, freq.value)}
-                              className="w-full"
+                              className="w-full border-slate-800 hover:border-slate-700"
                             >
                               {copiedId === freq.id ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-slate-300" />}
                             </Button>
                             <Button
                               size="sm"
                               onClick={() => handleContact(freq)}
-                              className="w-full bg-cyan-600 hover:bg-cyan-500 text-white"
+                              className="w-full bg-white text-slate-950 hover:bg-slate-200 font-semibold"
                             >
                               Connect
                             </Button>
@@ -378,26 +369,26 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
         <div className="mb-16 md:mb-24">
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-purple-500" />
-              <span className="text-purple-400 font-mono font-semibold tracking-wider text-sm md:text-base">LIVE STATUS</span>
+              <div className="w-2.5 h-2.5 rounded-full bg-slate-400" />
+              <span className="text-slate-200 font-mono font-semibold tracking-wider text-sm md:text-base">LIVE STATUS</span>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-purple-500/50 to-transparent" />
+            <div className="flex-1 h-px bg-slate-800" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Discord Status Card */}
-            <Card className="border-purple-500/20 hover:border-purple-500/40 transition-colors bg-slate-900/40">
+            <Card className="border border-slate-800/80 hover:border-slate-700 transition-colors bg-slate-900/60">
               <CardContent className="p-6 md:p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                    <Radio className="w-6 h-6 text-purple-400" />
+                  <div className="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-200">
+                    <Radio className="w-6 h-6 text-slate-200" />
                   </div>
                   <div>
-                    <div className="text-sm font-mono text-purple-400 tracking-wide font-bold">DISCORD NETWORK</div>
+                    <div className="text-sm font-mono text-slate-200 tracking-wide font-bold">DISCORD NETWORK</div>
                     <div className="text-sm text-slate-400">Real-time presence</div>
                   </div>
                 </div>
-                <div className="rounded-lg overflow-hidden border border-white/5 bg-black/40 p-2">
+                <div className="rounded-lg overflow-hidden border border-slate-800 bg-slate-950/60 p-2">
                   <Image
                     src="https://lanyard.cnrad.dev/api/467600406000697354?borderRadius=8px&theme=dark"
                     alt="Discord Status"
@@ -411,18 +402,18 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
             </Card>
 
             {/* IVAO Flight Status Card */}
-            <Card className="border-cyan-500/20 hover:border-cyan-500/40 transition-colors bg-slate-900/40">
+            <Card className="border border-slate-800/80 hover:border-slate-700 transition-colors bg-slate-900/60">
               <CardContent className="p-6 md:p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-                    <Radar className="w-6 h-6 text-cyan-400" />
+                  <div className="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-200">
+                    <Radar className="w-6 h-6 text-slate-200" />
                   </div>
                   <div>
-                    <div className="text-sm font-mono text-cyan-400 tracking-wide font-bold">IVAO NETWORK</div>
+                    <div className="text-sm font-mono text-slate-200 tracking-wide font-bold">IVAO NETWORK</div>
                     <div className="text-sm text-slate-400">Flight Telemetry</div>
                   </div>
                 </div>
-                <div className="rounded-lg overflow-hidden border border-white/5 bg-slate-950 flex items-center justify-center min-h-[160px] p-2">
+                <div className="rounded-lg overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center min-h-[160px] p-2">
                   <Image
                     src="https://status.ivao.aero/704291.png"
                     alt="IVAO Flight Status"
@@ -442,29 +433,29 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
         <div className="mb-16 md:mb-24">
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-cyan-500" />
-              <span className="text-cyan-400 font-mono font-semibold tracking-wider text-sm md:text-base">NAVIGATION FREQUENCIES</span>
+              <div className="w-2.5 h-2.5 rounded-full bg-slate-400" />
+              <span className="text-slate-200 font-mono font-semibold tracking-wider text-sm md:text-base">NAVIGATION FREQUENCIES</span>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/50 to-transparent" />
+            <div className="flex-1 h-px bg-slate-800" />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {showLoading ? (
               <div className="col-span-full flex items-center justify-center py-12">
-                <Loader2 className="w-6 h-6 animate-spin text-cyan-500" />
+                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
               </div>
             ) : frequencies.filter(f => f.type === 'social').map((freq) => {
               const Icon = getIconComponent(freq.icon);
               return (
                 <Card 
                   key={freq.id} 
-                  className="group cursor-pointer border-white/5 hover:border-cyan-500/30 transition-all duration-300 hover:-translate-y-1"
+                  className="group cursor-pointer border border-slate-800/80 bg-slate-900/60 hover:border-slate-700 transition-all duration-300 hover:-translate-y-1"
                   onClick={() => handleContact(freq)}
                 >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <div className={`w-12 h-12 rounded-full bg-${freq.color}-500/10 flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        <Icon className={`w-6 h-6 text-${freq.color}-400`} />
+                      <div className="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-200 group-hover:scale-105 transition-transform">
+                        <Icon className="w-6 h-6 text-slate-200" />
                       </div>
                       <div className="text-right">
                         <div className="flex items-baseline gap-1">

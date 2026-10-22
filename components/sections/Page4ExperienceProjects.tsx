@@ -28,45 +28,9 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
           className="text-center mb-12 md:mb-16"
         >
           {/* Control Tower Icon */}
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            whileInView={{ scale: 1, rotate: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 150 }}
-            className="relative inline-flex items-center justify-center w-20 h-20 mb-6"
-          >
-            {/* Radar Circle */}
-            <motion.div
-              className="absolute inset-0 rounded-full border-2 border-orange-400/30"
-              animate={calm ? undefined : {
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.1, 0.3]
-              }}
-              transition={calm ? undefined : {
-                duration: 3,
-                repeat: Infinity,
-                ease: 'easeInOut'
-              }}
-            />
-            <motion.div
-              className="absolute inset-2 rounded-full border-2 border-cyan-400/30"
-              animate={calm ? undefined : {
-                scale: [1, 1.15, 1],
-                opacity: [0.5, 0.2, 0.5]
-              }}
-              transition={calm ? undefined : {
-                duration: 2,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: 0.5
-              }}
-            />
-            
-            {/* Center Icon */}
-            <div className="relative z-10 w-16 h-16 rounded-full bg-gradient-to-br from-orange-500/30 to-cyan-500/30 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center">
-              <Plane className="w-8 h-8 text-orange-400" />
-            </div>
-          </motion.div>
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900 border border-slate-800 mb-6 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-sm text-slate-200">
+            <Plane className="w-10 h-10 text-slate-200" />
+          </div>
 
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">Experience and Projects</h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto mb-6">
@@ -79,16 +43,16 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-4 px-6 py-3 rounded-full bg-gradient-to-r from-orange-500/10 via-cyan-500/10 to-orange-500/10 border border-white/20 backdrop-blur-sm"
+            className="inline-flex items-center gap-4 px-5 py-2.5 rounded-full bg-slate-900/80 border border-slate-800 shadow-sm"
           >
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-xs text-green-400 font-mono uppercase tracking-wider">All Systems Go</span>
+              <div className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="text-xs text-slate-300 font-mono uppercase tracking-wider">All Systems Go</span>
             </div>
-            <div className="w-px h-4 bg-white/20" />
+            <div className="w-px h-3.5 bg-slate-700" />
             <div className="flex items-center gap-2">
-              <CloudSun className="w-4 h-4 text-cyan-400" />
-              <span className="text-xs text-white/60 font-mono">VFR Conditions</span>
+              <CloudSun className="w-4 h-4 text-slate-400" />
+              <span className="text-xs text-slate-400 font-mono">VFR Conditions</span>
             </div>
           </motion.div>
         </motion.div>
@@ -104,15 +68,15 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
           >
             <div className="mb-6 md:mb-8">
               <div className="flex items-center gap-3 mb-2">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
-                <div className="px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/20 to-orange-500/10 border border-orange-400/30">
-                  <h3 className="text-orange-400 uppercase tracking-widest text-sm font-mono">
+                <div className="h-px flex-1 bg-slate-800" />
+                <div className="px-4 py-1.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <h3 className="text-slate-300 uppercase tracking-widest text-xs font-mono font-semibold">
                     <span aria-hidden="true">📋 </span>Experience
                   </h3>
                 </div>
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
+                <div className="h-px flex-1 bg-slate-800" />
               </div>
-              <p className="text-center text-white/50 text-sm">
+              <p className="text-center text-slate-400 text-sm">
                 Professional work experience and career journey
               </p>
             </div>
@@ -129,15 +93,15 @@ export function Page4ExperienceProjects({ onNavigate }: Page4ExperienceProjectsP
           >
             <div className="mb-6 md:mb-8">
               <div className="flex items-center gap-3 mb-2">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
-                <div className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-cyan-500/10 border border-cyan-400/30">
-                  <h3 className="text-cyan-400 uppercase tracking-widest text-sm font-mono">
+                <div className="h-px flex-1 bg-slate-800" />
+                <div className="px-4 py-1.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <h3 className="text-slate-300 uppercase tracking-widest text-xs font-mono font-semibold">
                     <span aria-hidden="true">🛩️ </span>Projects
                   </h3>
                 </div>
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
+                <div className="h-px flex-1 bg-slate-800" />
               </div>
-              <p className="text-center text-white/50 text-sm">
+              <p className="text-center text-slate-400 text-sm">
                 GitHub projects, flight awards, and mountain expeditions
               </p>
             </div>

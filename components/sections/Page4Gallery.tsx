@@ -87,18 +87,15 @@ export function PageGallery() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-neutral-950 flex items-center justify-center relative overflow-hidden">
-        {/* Radar grid background */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:40px_40px] md:bg-[size:64px_64px]" />
-        
-        <div className="text-center z-10 p-8 border border-cyan-500/20 bg-black/40 backdrop-blur-md rounded-2xl relative">
-          <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-cyan-400" />
-          <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-cyan-400" />
-          <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-cyan-400" />
-          <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-cyan-400" />
+        <div className="text-center z-10 p-8 border border-slate-800 bg-slate-900/60 backdrop-blur-md rounded-2xl relative shadow-2xl">
+          <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-slate-700" />
+          <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-slate-700" />
+          <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-slate-700" />
+          <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-slate-700" />
           
-          <Loader2 className="w-10 h-10 md:w-12 md:h-12 text-cyan-400 animate-spin mx-auto mb-4" />
-          <div className="text-cyan-400 font-mono text-xs md:text-sm tracking-[0.25em] animate-pulse">ESTABLISHING LINK</div>
-          <div className="text-cyan-500/50 font-mono text-[10px] md:text-xs mt-2 tracking-widest">DOWNLOADING MISSION INTELLIGENCE</div>
+          <Loader2 className="w-10 h-10 md:w-12 md:h-12 text-slate-300 animate-spin mx-auto mb-4" />
+          <div className="text-slate-200 font-mono text-xs md:text-sm tracking-[0.25em]">ESTABLISHING LINK</div>
+          <div className="text-slate-500 font-mono text-[10px] md:text-xs mt-2 tracking-widest">DOWNLOADING MISSION INTELLIGENCE</div>
         </div>
       </div>
     );
@@ -108,15 +105,13 @@ export function PageGallery() {
   if (isError) {
     return (
       <div className="min-h-screen bg-neutral-950 flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(239,68,68,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(239,68,68,0.05)_1px,transparent_1px)] bg-[size:40px_40px] md:bg-[size:64px_64px]" />
-        
-        <div className="text-center z-10 p-8 border border-red-500/20 bg-black/40 backdrop-blur-md rounded-2xl relative">
-          <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-red-500" />
-          <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-red-500" />
-          <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-red-500" />
-          <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-red-500" />
+        <div className="text-center z-10 p-8 border border-red-500/30 bg-slate-900/60 backdrop-blur-md rounded-2xl relative shadow-2xl">
+          <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-red-500" />
+          <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-red-500" />
+          <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-red-500" />
+          <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-red-500" />
           
-          <AlertTriangle className="w-10 h-10 md:w-12 md:h-12 text-red-500 mx-auto mb-4 opacity-80" />
+          <AlertTriangle className="w-10 h-10 md:w-12 md:h-12 text-red-400 mx-auto mb-4 opacity-80" />
           <div className="text-red-400 font-mono text-xs md:text-sm tracking-[0.25em]">SIGNAL LOST</div>
           <div className="text-red-500/60 font-mono text-[10px] md:text-xs mt-2 tracking-widest">ERR: MISSION_DATA_UNAVAILABLE</div>
         </div>
@@ -128,9 +123,7 @@ export function PageGallery() {
   if (missionPhotos.length === 0) {
     return (
       <div className="min-h-screen bg-neutral-950 flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] md:bg-[size:64px_64px]" />
-        
-        <div className="text-center z-10 p-8 border border-white/10 bg-black/40 backdrop-blur-md rounded-2xl relative">
+        <div className="text-center z-10 p-8 border border-slate-800 bg-slate-900/60 backdrop-blur-md rounded-2xl relative shadow-2xl">
           <ShieldAlert className="w-10 h-10 md:w-12 md:h-12 text-slate-400 mx-auto mb-4 opacity-60" />
           <div className="text-slate-300 font-mono text-xs md:text-sm tracking-[0.2em]">NO TARGETS FOUND</div>
           <div className="text-slate-400 font-mono text-[10px] md:text-xs mt-2 tracking-widest">AWAITING NEW MISSION DATA</div>

@@ -172,35 +172,15 @@ export const CockpitCarousel = memo(function CockpitCarousel({ items, currentInd
                   {/* Cockpit Window Frame */}
                   <div className={`absolute inset-0 pointer-events-none z-10 ${
                     isCenter 
-                      ? 'border-[4px] md:border-[6px] lg:border-[8px] border-cyan-400/60' 
-                      : 'border-[3px] md:border-[4px] lg:border-[6px] border-cyan-400/30'
+                      ? 'border-2 border-slate-700/80 shadow-2xl shadow-black/80' 
+                      : 'border border-slate-800/80'
                   } rounded-lg`}>
                     {/* Corner reinforcements */}
-                    <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-cyan-400" />
-                    <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-cyan-400" />
-                    <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-cyan-400" />
-                    <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-cyan-400" />
+                    <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-slate-600" />
+                    <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-slate-600" />
+                    <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-slate-600" />
+                    <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-slate-600" />
                   </div>
-
-                  {/* Scanline overlay for center image */}
-                  {isCenter && (
-                    <motion.div
-                      className="absolute inset-0 pointer-events-none z-20 overflow-hidden rounded-lg"
-                      initial={false}
-                    >
-                      <motion.div
-                        className="absolute inset-x-0 h-1 bg-cyan-400/20 blur-sm"
-                        animate={{
-                          y: ['0%', '100%'],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: 'linear',
-                        }}
-                      />
-                    </motion.div>
-                  )}
 
                   {/* Image */}
                   <Image
@@ -208,17 +188,10 @@ export const CockpitCarousel = memo(function CockpitCarousel({ items, currentInd
                     alt={`Mission photo ${itemIndex + 1}`}
                     fill
                     sizes="(max-width: 768px) 240px, (max-width: 1024px) 400px, 580px"
-                    className={`object-cover ${
-                      isCenter ? 'rounded-lg shadow-2xl shadow-cyan-500/20' : 'rounded-lg shadow-xl'
-                    }`}
+                    className="object-cover rounded-lg shadow-xl"
                     priority={isCenter}
                     quality={isCenter ? 90 : 75}
                   />
-
-                  {/* Glow effect for center image */}
-                  {isCenter && (
-                    <div className="absolute inset-0 rounded-lg bg-gradient-to-tr from-cyan-500/10 via-transparent to-blue-500/10 pointer-events-none" />
-                  )}
                 </div>
               </motion.div>
             </motion.div>

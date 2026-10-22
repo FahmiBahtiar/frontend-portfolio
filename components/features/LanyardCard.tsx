@@ -216,15 +216,15 @@ export function LanyardCard() {
                       
                       {/* Three theme icons arranged vertically like Garuda */}
                       <div className="relative flex flex-col items-center gap-2 md:gap-4">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-blue-500/20 border-2 border-blue-400/40 flex items-center justify-center backdrop-blur-sm">
-                          <Plane className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-blue-300" />
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center backdrop-blur-sm">
+                          <Plane className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-amber-200" />
                         </div>
                         <div className="flex gap-3 md:gap-5">
-                          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-cyan-500/20 border-2 border-cyan-400/40 flex items-center justify-center backdrop-blur-sm">
-                            <Code2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-cyan-300" />
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center backdrop-blur-sm">
+                            <Code2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-amber-200" />
                           </div>
-                          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-green-500/20 border-2 border-green-400/40 flex items-center justify-center backdrop-blur-sm">
-                            <Mountain className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-green-300" />
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center backdrop-blur-sm">
+                            <Mountain className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-amber-200" />
                           </div>
                         </div>
                       </div>
