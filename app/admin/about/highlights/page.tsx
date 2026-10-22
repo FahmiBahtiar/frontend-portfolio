@@ -103,7 +103,7 @@ export default function HighlightsPage() {
     {
       key: 'value',
       label: 'Value',
-      render: (highlight: Highlight) => <span className="text-white font-bold">{highlight.value}</span>,
+      render: (highlight: Highlight) => <span className="text-[#0c282d] font-bold">{highlight.value}</span>,
     },
     {
       key: 'color',
@@ -139,7 +139,7 @@ export default function HighlightsPage() {
           </div>
         </div>
 
-        <Button onClick={() => setIsFormOpen(true)} className="bg-yellow-600 hover:bg-yellow-700 text-white">
+        <Button onClick={() => setIsFormOpen(true)} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
           <Plus className="w-4 h-4 mr-2" /> Add Highlight
         </Button>
       </div>
@@ -148,40 +148,40 @@ export default function HighlightsPage() {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
             <CardHeader className="border-b border-[#B9E7E6] pb-4">
-              <CardTitle className="text-lg">{editingId ? 'Edit Highlight' : 'Add New Highlight'}</CardTitle>
+              <CardTitle className="text-lg text-[#0c282d] font-bold">{editingId ? 'Edit Highlight' : 'Add New Highlight'}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Icon (Emoji)</Label>
-                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6] text-xl text-center" placeholder="🚀" />
+                    <Label className="text-[#0c282d] font-bold">Icon (Emoji)</Label>
+                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] text-xl text-center" placeholder="🚀" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Color (Hex)</Label>
+                    <Label className="text-[#0c282d] font-bold">Color (Hex)</Label>
                     <div className="flex items-center gap-3">
-                      <input type="color" value={formData.color.startsWith('#') ? formData.color : '#06b6d4'} onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })} className="w-12 h-10 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] cursor-pointer" required />
-                      <Input value={formData.color} onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })} className="flex-1 bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="#06b6d4 or cyan" />
+                      <input type="color" value={formData.color.startsWith('#') ? formData.color : '#06b6d4'} onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })} className="w-12 h-10 rounded-md bg-white border border-[#B9E7E6] cursor-pointer" required />
+                      <Input value={formData.color} onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })} className="flex-1 bg-white border border-[#B9E7E6] text-[#0c282d]" placeholder="#06b6d4 or cyan" />
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Label</Label>
-                    <Input value={formData.label} onChange={(e) => setFormData({ ...formData, label: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="Projects Completed" />
+                    <Label className="text-[#0c282d] font-bold">Label</Label>
+                    <Input value={formData.label} onChange={(e) => setFormData({ ...formData, label: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d]" placeholder="Projects Completed" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Value</Label>
-                    <Input value={formData.value} onChange={(e) => setFormData({ ...formData, value: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="50" />
+                    <Label className="text-[#0c282d] font-bold">Value</Label>
+                    <Input value={formData.value} onChange={(e) => setFormData({ ...formData, value: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d]" placeholder="50" />
                   </div>
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">
-                  <Button type="button" variant="ghost" onClick={resetForm} className="text-muted-foreground hover:text-white">
+                  <Button type="button" variant="ghost" onClick={resetForm} className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold">
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={saving} className="bg-yellow-600 hover:bg-yellow-700 text-white">
+                  <Button type="submit" disabled={saving} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                     {editingId ? 'Update' : 'Create'}
                   </Button>

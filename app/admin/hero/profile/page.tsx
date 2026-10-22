@@ -145,7 +145,7 @@ export default function HeroProfilePage() {
                   <p className="text-xs text-muted-foreground">Titles displayed in rotation on the hero section.</p>
                   <div className="space-y-2">
                     {formData.titles.map((title, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6]">
+                      <div key={index} className="flex items-center justify-between p-2 rounded-md bg-white border border-[#B9E7E6]">
                         <span className="text-sm text-[#0c282d]">{title}</span>
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-500/20" onClick={() => removeTitle(index)} type="button">
                           <X className="w-4 h-4" />
@@ -199,7 +199,7 @@ export default function HeroProfilePage() {
                   <p className="text-xs text-muted-foreground">Manage your technology stack references.</p>
                   <div className="space-y-2">
                     {formData.techStack.map((item, index) => (
-                      <div key={index} className="flex items-center gap-2 p-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6]">
+                      <div key={index} className="flex items-center gap-2 p-2 rounded-md bg-white border border-[#B9E7E6]">
                         <div className="flex-1 grid grid-cols-3 gap-2">
                           <span className="text-sm font-mono text-cyan-400">{item.callsign}</span>
                           <span className="text-sm text-[#0c282d]">{item.label}</span>
@@ -222,7 +222,7 @@ export default function HeroProfilePage() {
                 </div>
 
                 <div className="pt-4">
-                  <Button type="submit" disabled={isSaving} className="w-full bg-blue-600 hover:bg-blue-700 text-[#0c282d]">
+                  <Button type="submit" disabled={isSaving} className="w-full bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
                     {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                     {isSaving ? 'Saving...' : 'Save Changes'}
                   </Button>

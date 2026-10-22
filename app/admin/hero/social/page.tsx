@@ -125,7 +125,7 @@ export default function SocialLinksPage() {
       key: 'username',
       label: 'Username',
       sortable: true,
-      render: (item: SocialLink) => <span className="text-white font-medium">{item.username}</span>,
+      render: (item: SocialLink) => <span className="text-[#0c282d] font-medium">{item.username}</span>,
     },
     {
       key: 'url',
@@ -170,16 +170,16 @@ export default function SocialLinksPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center shadow-lg shadow-cyan-500/10">
-            <LinkIcon className="w-6 h-6 text-cyan-500" />
+          <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shadow-sm">
+            <LinkIcon className="w-6 h-6 text-[#0891b2]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Social Links</h1>
-            <p className="text-sm text-muted-foreground">Manage your social media links</p>
+            <p className="text-sm text-[#527d85] font-medium">Manage your social media links</p>
           </div>
         </div>
 
-        <Button onClick={handleCreate} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+        <Button onClick={handleCreate} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
           <Plus className="w-4 h-4 mr-2" /> Add Link
         </Button>
       </div>
@@ -199,7 +199,7 @@ export default function SocialLinksPage() {
                       <select
                         value={formData.platform}
                         onChange={(e) => setFormData({ ...formData, platform: e.target.value as SocialLink['platform'] })}
-                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                         required
                       >
                         {platforms.map((platform) => (
@@ -216,7 +216,7 @@ export default function SocialLinksPage() {
                         type="text"
                         value={formData.username}
                         onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="bg-white border border-[#B9E7E6]"
                         placeholder="@username"
                         required
                       />
@@ -229,17 +229,17 @@ export default function SocialLinksPage() {
                       type="url"
                       value={formData.url}
                       onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                      className="bg-white border border-[#B9E7E6]"
                       placeholder="https://..."
                       required
                     />
                   </div>
 
                   <div className="flex justify-end gap-3 pt-4">
-                    <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} className="text-muted-foreground hover:text-white">
+                    <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold">
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={saving} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+                    <Button type="submit" disabled={saving} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
                       {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                       {editingLink ? 'Update' : 'Create'}
                     </Button>

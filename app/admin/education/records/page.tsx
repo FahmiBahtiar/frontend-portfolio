@@ -148,16 +148,16 @@ export default function EducationRecordsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-            <GraduationCap className="w-6 h-6 text-purple-500" />
+          <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shadow-sm">
+            <GraduationCap className="w-6 h-6 text-[#0891b2]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Education Records</h1>
-            <p className="text-sm text-muted-foreground">Manage your educational background</p>
+            <p className="text-sm text-[#527d85] font-medium">Manage your educational background</p>
           </div>
         </div>
 
-        <Button onClick={handleCreate} className="bg-purple-600 hover:bg-purple-700 text-white">
+        <Button onClick={handleCreate} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
           <Plus className="w-4 h-4 mr-2" /> Add Education
         </Button>
       </div>
@@ -166,36 +166,36 @@ export default function EducationRecordsPage() {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
             <CardHeader className="border-b border-[#B9E7E6] pb-4">
-              <CardTitle className="text-lg">{editingRecord ? 'Edit Education' : 'Add New Education'}</CardTitle>
+              <CardTitle className="text-lg text-[#0c282d] font-bold">{editingRecord ? 'Edit Education' : 'Add New Education'}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Degree/Certification</Label>
-                    <Input value={formData.degree} onChange={(e) => setFormData({ ...formData, degree: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., Bachelor of Computer Science" />
+                    <Label className="text-[#0c282d] font-bold">Degree/Certification</Label>
+                    <Input value={formData.degree} onChange={(e) => setFormData({ ...formData, degree: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="e.g., Bachelor of Computer Science" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Institution</Label>
-                    <Input value={formData.institution} onChange={(e) => setFormData({ ...formData, institution: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., University of Technology" />
+                    <Label className="text-[#0c282d] font-bold">Institution</Label>
+                    <Input value={formData.institution} onChange={(e) => setFormData({ ...formData, institution: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="e.g., University of Technology" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label>Period</Label>
-                    <Input value={formData.period} onChange={(e) => setFormData({ ...formData, period: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., 2020 - 2024" />
+                    <Label className="text-[#0c282d] font-bold">Period</Label>
+                    <Input value={formData.period} onChange={(e) => setFormData({ ...formData, period: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="e.g., 2020 - 2024" />
                   </div>
                   <div className="space-y-2">
-                    <Label>GPA/Grade</Label>
-                    <Input value={formData.gpa} onChange={(e) => setFormData({ ...formData, gpa: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., 3.85" />
+                    <Label className="text-[#0c282d] font-bold">GPA/Grade</Label>
+                    <Input value={formData.gpa} onChange={(e) => setFormData({ ...formData, gpa: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="e.g., 3.85" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Theme Color</Label>
+                    <Label className="text-[#0c282d] font-bold">Theme Color</Label>
                     <select
                       value={formData.color}
                       onChange={(e) => setFormData({ ...formData, color: e.target.value as Education['color'] })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-xl bg-white border border-[#B9E7E6] text-sm text-[#0c282d] font-semibold focus:outline-none focus:border-[#6FD4E1] shadow-sm"
                       required
                     >
                       {colors.map((color) => (
@@ -206,15 +206,15 @@ export default function EducationRecordsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Description (Optional)</Label>
-                  <Textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white border border-[#B9E7E6] border-[#B9E7E6] resize-none" placeholder="Additional details..." />
+                  <Label className="text-[#0c282d] font-bold">Description (Optional)</Label>
+                  <Textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium resize-none" placeholder="Additional details..." />
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">
-                  <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} className="text-muted-foreground hover:text-white">
+                  <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold">
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={saving} className="bg-purple-600 hover:bg-purple-700 text-white">
+                  <Button type="submit" disabled={saving} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                     {editingRecord ? 'Update' : 'Create'}
                   </Button>

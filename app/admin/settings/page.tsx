@@ -152,7 +152,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <Button onClick={handleSave} disabled={isSaving} className="bg-slate-700 hover:bg-slate-600 text-white">
+        <Button onClick={handleSave} disabled={isSaving} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
           {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           {isSaving ? 'Saving...' : 'Save Changes'}
         </Button>
@@ -168,14 +168,14 @@ export default function SettingsPage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       activeTab === tab.id
-                        ? 'bg-white/10 text-white'
-                        : 'text-muted-foreground hover:bg-white border border-[#B9E7E6] hover:text-white'
+                        ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                        : 'text-[#527d85] hover:bg-[#E2F4F3] hover:text-[#0c282d] font-semibold border border-transparent hover:border-[#B9E7E6]'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
-                    <span className="font-medium text-sm">{tab.label}</span>
+                    <span className="font-semibold text-sm">{tab.label}</span>
                   </button>
                 );
               })}
@@ -203,7 +203,7 @@ export default function SettingsPage() {
                       type="text"
                       value={settings.siteName}
                       onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
-                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                      className="bg-white border border-[#B9E7E6]"
                     />
                   </div>
 
@@ -213,7 +213,7 @@ export default function SettingsPage() {
                       type="text"
                       value={settings.tagline}
                       onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
-                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                      className="bg-white border border-[#B9E7E6]"
                     />
                   </div>
 
@@ -223,7 +223,7 @@ export default function SettingsPage() {
                       value={settings.metaDescription}
                       onChange={(e) => setSettings({ ...settings, metaDescription: e.target.value })}
                       rows={3}
-                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6] resize-none"
+                      className="bg-white border border-[#B9E7E6] resize-none"
                     />
                     <p className="text-xs text-muted-foreground">This will be used for SEO.</p>
                   </div>
@@ -243,7 +243,7 @@ export default function SettingsPage() {
                     <select
                       value={settings.theme}
                       onChange={(e) => setSettings({ ...settings, theme: e.target.value })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-slate-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-slate-500/50"
                     >
                       <option value="dark" className="bg-white text-[#0c282d]">Dark</option>
                       <option value="light" className="bg-white text-[#0c282d]">Light</option>
@@ -258,13 +258,13 @@ export default function SettingsPage() {
                         type="color"
                         value={settings.accentColor}
                         onChange={(e) => setSettings({ ...settings, accentColor: e.target.value })}
-                        className="w-16 h-10 px-1 py-1 cursor-pointer bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="w-16 h-10 px-1 py-1 cursor-pointer bg-white border border-[#B9E7E6]"
                       />
                       <Input
                         type="text"
                         value={settings.accentColor}
                         onChange={(e) => setSettings({ ...settings, accentColor: e.target.value })}
-                        className="flex-1 bg-white border border-[#B9E7E6] border-[#B9E7E6] font-mono uppercase"
+                        className="flex-1 bg-white border border-[#B9E7E6] font-mono uppercase"
                       />
                     </div>
                   </div>
@@ -279,9 +279,9 @@ export default function SettingsPage() {
                   <CardDescription>Manage how you receive alerts.</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6 space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[#B9E7E6] border border-[#B9E7E6]">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[#B9E7E6]">
                     <div>
-                      <p className="font-medium text-sm text-white">Email Notifications</p>
+                      <p className="font-medium text-sm text-[#0c282d]">Email Notifications</p>
                       <p className="text-xs text-muted-foreground">Receive email updates</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -295,9 +295,9 @@ export default function SettingsPage() {
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[#B9E7E6] border border-[#B9E7E6]">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[#B9E7E6]">
                     <div>
-                      <p className="font-medium text-sm text-white">Comment Notifications</p>
+                      <p className="font-medium text-sm text-[#0c282d]">Comment Notifications</p>
                       <p className="text-xs text-muted-foreground">Get notified of new comments</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -311,9 +311,9 @@ export default function SettingsPage() {
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[#B9E7E6] border border-[#B9E7E6]">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[#B9E7E6]">
                     <div>
-                      <p className="font-medium text-sm text-white">Update Notifications</p>
+                      <p className="font-medium text-sm text-[#0c282d]">Update Notifications</p>
                       <p className="text-xs text-muted-foreground">System and feature updates</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -337,9 +337,9 @@ export default function SettingsPage() {
                   <CardDescription>Keep your account secure.</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6 space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[#B9E7E6] border border-[#B9E7E6]">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[#B9E7E6]">
                     <div>
-                      <p className="font-medium text-sm text-white">Two-Factor Authentication</p>
+                      <p className="font-medium text-sm text-[#0c282d]">Two-Factor Authentication</p>
                       <p className="text-xs text-muted-foreground">Add an extra layer of security</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -359,7 +359,7 @@ export default function SettingsPage() {
                       type="number"
                       value={settings.sessionTimeout}
                       onChange={(e) => setSettings({ ...settings, sessionTimeout: Number(e.target.value) })}
-                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                      className="bg-white border border-[#B9E7E6]"
                       min="5"
                       max="120"
                     />
@@ -411,7 +411,7 @@ export default function SettingsPage() {
                             type="text"
                             value={maintenanceForm.title}
                             onChange={(e) => setMaintenanceForm({ ...maintenanceForm, title: e.target.value })}
-                            className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                            className="bg-white border border-[#B9E7E6]"
                             placeholder="We are tuning the engines"
                           />
                         </div>
@@ -436,7 +436,7 @@ export default function SettingsPage() {
                             type="datetime-local"
                             value={maintenanceForm.startAt}
                             onChange={(e) => setMaintenanceForm({ ...maintenanceForm, startAt: e.target.value })}
-                            className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                            className="bg-white border border-[#B9E7E6]"
                           />
                         </div>
 
@@ -446,7 +446,7 @@ export default function SettingsPage() {
                             type="datetime-local"
                             value={maintenanceForm.endAt}
                             onChange={(e) => setMaintenanceForm({ ...maintenanceForm, endAt: e.target.value })}
-                            className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                            className="bg-white border border-[#B9E7E6]"
                           />
                         </div>
                       </div>
@@ -457,7 +457,7 @@ export default function SettingsPage() {
                           value={maintenanceForm.note}
                           onChange={(e) => setMaintenanceForm({ ...maintenanceForm, note: e.target.value })}
                           rows={4}
-                          className="bg-white border border-[#B9E7E6] border-[#B9E7E6] resize-none"
+                          className="bg-white border border-[#B9E7E6] resize-none"
                           placeholder="Tell visitors what is happening and when you will be back online."
                         />
                       </div>
@@ -494,7 +494,7 @@ export default function SettingsPage() {
                         <Button
                           onClick={handleMaintenanceSave}
                           disabled={maintenanceSaving}
-                          className="bg-cyan-600 hover:bg-cyan-700 text-white"
+                          className="bg-cyan-600 hover:bg-cyan-700 text-[#0c282d]"
                         >
                           {maintenanceSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                           {maintenanceSaving ? 'Saving...' : 'Update Maintenance'}

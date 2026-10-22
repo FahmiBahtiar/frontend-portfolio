@@ -208,16 +208,83 @@ export default function FlightLogbookPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.company.trim() || !formData.departure.highlightedRole.trim() || !formData.departure.code.trim() || !formData.departure.date || !formData.arrival.status.trim() || !formData.arrival.date || !formData.projectName.trim() || !formData.location.trim()) {
-      alert('Please fill in all required fields');
+
+    // Auto-commit role input if still has text
+    const currentRoles = [...formData.departure.roles];
+    let highlightedRole = formData.departure.highlightedRole;
+    const roleInput = document.getElementById('role-input') as HTMLInputElement | null;
+    if (roleInput && roleInput.value.trim()) {
+      const typedRole = roleInput.value.trim();
+      if (!currentRoles.includes(typedRole)) {
+        currentRoles.push(typedRole);
+      }
+      if (!highlightedRole) {
+        highlightedRole = typedRole;
+      }
+      roleInput.value = '';
+    }
+    if (!highlightedRole && currentRoles.length > 0) {
+      highlightedRole = currentRoles[0];
+    }
+
+    // Auto-commit responsibility input if still has text
+    const currentResponsibilities = [...(formData.responsibilities || [])];
+    const respInput = document.getElementById('responsibility-input') as HTMLInputElement | null;
+    if (respInput && respInput.value.trim()) {
+      const typedResp = respInput.value.trim();
+      if (!currentResponsibilities.includes(typedResp)) {
+        currentResponsibilities.push(typedResp);
+      }
+      respInput.value = '';
+    }
+
+    // Auto-generate departure code if blank
+    const departureCode =
+      formData.departure.code?.trim() ||
+      (formData.company.trim().replace(/[^a-zA-Z0-9]/g, '').slice(0, 4).toUpperCase() || 'DEV');
+
+    // Auto-handle location
+    const location = formData.location?.trim() || 'Remote';
+
+    // Auto-handle arrival date for active/in-progress projects
+    const isOngoing = formData.isActive || formData.arrival.status === 'In Progress';
+    let arrivalDate = formData.arrival.date;
+    if (isOngoing && !arrivalDate) {
+      arrivalDate = '0001-01-01'; // Matches database schema for active roles
+    }
+
+    // Validate with specific field names
+    const missing: string[] = [];
+    if (!formData.company?.trim()) missing.push('Company');
+    if (!formData.projectName?.trim()) missing.push('Project Name');
+    if (!highlightedRole?.trim() && currentRoles.length === 0) missing.push('Roles (Role / Posisi)');
+    if (!formData.departure?.date) missing.push('Departure Date (Tanggal Mulai)');
+    if (!isOngoing && !arrivalDate) missing.push('End Date (Tanggal Selesai)');
+
+    if (missing.length > 0) {
+      alert(`Mohon lengkapi field berikut: ${missing.join(', ')}`);
       return;
     }
-    
+
     setSaving(true);
     try {
       const flightData = {
         ...formData,
+        company: formData.company.trim(),
+        projectName: formData.projectName.trim(),
+        location,
+        responsibilities: currentResponsibilities,
+        departure: {
+          ...formData.departure,
+          roles: currentRoles,
+          highlightedRole,
+          code: departureCode,
+        },
+        arrival: {
+          ...formData.arrival,
+          date: arrivalDate,
+          status: isOngoing ? (formData.arrival.status || 'In Progress') : (formData.arrival.status || 'Landed'),
+        },
         callsign: formData.callsign || `FLIGHT${Date.now()}`,
         order: formData.order || flights.length + 1,
       };
@@ -340,33 +407,33 @@ export default function FlightLogbookPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-            <Plane className="w-6 h-6 text-cyan-500" />
+          <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shadow-sm">
+            <Plane className="w-6 h-6 text-[#0891b2]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Work Logbook</h1>
-            <p className="text-sm text-muted-foreground">Track your projects, experience & achievements</p>
+            <p className="text-sm text-[#527d85] font-medium">Track your projects, experience & achievements</p>
           </div>
         </div>
 
-        <Button onClick={() => setIsFormOpen(true)} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+        <Button onClick={() => setIsFormOpen(true)} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
           <Plus className="w-4 h-4 mr-2" /> Add Project
         </Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Projects', value: totalProjects, icon: Clock, color: 'text-cyan-400', border: 'border-cyan-500/20' },
-          { label: 'Development', value: developmentProjects, icon: Plane, color: 'text-purple-400', border: 'border-purple-500/20' },
-          { label: 'Freelance', value: freelanceProjects, icon: Plane, color: 'text-orange-400', border: 'border-orange-500/20' },
-          { label: 'Open Source', value: openSourceProjects, icon: MapPin, color: 'text-green-400', border: 'border-green-500/20' },
+          { label: 'Total Projects', value: totalProjects, icon: Clock, color: 'text-[#0891b2]' },
+          { label: 'Development', value: developmentProjects, icon: Plane, color: 'text-[#0891b2]' },
+          { label: 'Freelance', value: freelanceProjects, icon: Plane, color: 'text-amber-700' },
+          { label: 'Open Source', value: openSourceProjects, icon: MapPin, color: 'text-emerald-700' },
         ].map((stat, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-            <Card className={`bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d] ${stat.border}`}>
+            <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <stat.icon className={`w-5 h-5 ${stat.color}`} />
-                  <p className="text-muted-foreground text-sm">{stat.label}</p>
+                  <p className="text-[#527d85] font-medium text-sm">{stat.label}</p>
                 </div>
                 <p className="text-2xl font-bold text-[#0c282d]">{stat.value}</p>
               </CardContent>
@@ -380,10 +447,10 @@ export default function FlightLogbookPage() {
           <button
             key={type}
             onClick={() => setFilterType(type)}
-            className={`px-4 py-2 rounded-md font-medium transition-all text-sm ${
+            className={`px-4 py-2 rounded-xl font-bold transition-all text-sm ${
               filterType === type
-                ? 'bg-cyan-600 text-white'
-                : 'bg-white border border-[#B9E7E6] text-muted-foreground hover:bg-white/10 hover:text-white'
+                ? 'bg-[#6FD4E1] text-[#0c282d] shadow-sm'
+                : 'bg-white border border-[#B9E7E6] text-[#527d85] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
             }`}
           >
             {type}
@@ -395,25 +462,27 @@ export default function FlightLogbookPage() {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
             <CardHeader className="border-b border-[#B9E7E6] pb-4">
-              <CardTitle className="text-lg">{editingId ? 'Edit Project Entry' : 'Add New Project'}</CardTitle>
+              <CardTitle className="text-lg text-[#0c282d] font-bold">{editingId ? 'Edit Project Entry' : 'Add New Project'}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label>Departure Date</Label>
-                    <Input type="date" value={formData.departure.date} onChange={(e) => setFormData({ ...formData, departure: { ...formData.departure, date: e.target.value } })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" required />
+                    <Label className="text-[#0c282d] font-bold">Departure Date (Tanggal Mulai)</Label>
+                    <Input type="date" value={formData.departure.date} onChange={(e) => setFormData({ ...formData, departure: { ...formData.departure, date: e.target.value } })} className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" required />
                   </div>
                   <div className="space-y-2">
-                    <Label>End Date</Label>
-                    <Input type="date" value={formData.arrival.date} onChange={(e) => setFormData({ ...formData, arrival: { ...formData.arrival, date: e.target.value } })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" required />
+                    <Label className="text-[#0c282d] font-bold">
+                      End Date {formData.isActive || formData.arrival.status === 'In Progress' ? <span className="text-xs font-normal text-[#527d85]">(Opsional jika aktif)</span> : ''}
+                    </Label>
+                    <Input type="date" value={formData.arrival.date} onChange={(e) => setFormData({ ...formData, arrival: { ...formData.arrival, date: e.target.value } })} className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" required={!formData.isActive && formData.arrival.status !== 'In Progress'} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Status</Label>
+                    <Label className="text-[#0c282d] font-bold">Status</Label>
                     <select
                       value={formData.arrival.status}
                       onChange={(e) => setFormData({ ...formData, arrival: { ...formData.arrival, status: e.target.value } })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-xl bg-white border border-[#B9E7E6] text-sm text-[#0c282d] font-semibold focus:outline-none focus:border-[#6FD4E1] shadow-sm"
                       required
                     >
                       <option value="Landed" className="bg-white text-[#0c282d]">Complete</option>
@@ -425,18 +494,18 @@ export default function FlightLogbookPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Project Name</Label>
-                    <Input type="text" value={formData.projectName} onChange={(e) => setFormData({ ...formData, projectName: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="E-Commerce Platform" required />
+                    <Label className="text-[#0c282d] font-bold">Project Name</Label>
+                    <Input type="text" value={formData.projectName} onChange={(e) => setFormData({ ...formData, projectName: e.target.value })} className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="E-Commerce Platform" required />
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Roles</Label>
+                    <Label className="text-[#0c282d] font-bold">Roles (Role / Posisi)</Label>
                     <div className="space-y-3">
                       <div className="flex gap-2">
                         <Input
                           id="role-input"
-                          className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
-                          placeholder="Add a role..."
+                          className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium"
+                          placeholder="Add a role (e.g. Software Engineer)..."
                           onKeyPress={(e) => {
                             if (e.key === 'Enter') {
                               e.preventDefault();
@@ -450,32 +519,32 @@ export default function FlightLogbookPage() {
                           const input = document.getElementById('role-input') as HTMLInputElement;
                           addRole(input.value);
                           input.value = '';
-                        }} className="bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30">
+                        }} className="bg-[#E2F4F3] border border-[#B9E7E6] text-[#0891b2] hover:bg-[#6FD4E1] hover:text-[#0c282d] font-bold shadow-sm">
                           <Plus className="w-4 h-4" />
                         </Button>
                       </div>
 
                       <div className="space-y-2 max-h-32 overflow-y-auto pr-2">
                         {formData.departure.roles.map((role, index) => (
-                          <div key={index} className="flex items-center justify-between bg-white border border-[#B9E7E6] rounded-md p-2">
+                          <div key={index} className="flex items-center justify-between bg-[#E2F4F3]/40 border border-[#B9E7E6] rounded-xl p-2.5 shadow-sm">
                             <div className="flex items-center gap-2">
                               <input
                                 type="radio"
                                 name="highlightedRole"
                                 checked={formData.departure.highlightedRole === role}
                                 onChange={() => setFormData({ ...formData, departure: { ...formData.departure, highlightedRole: role } })}
-                                className="text-cyan-500 focus:ring-cyan-500 cursor-pointer"
+                                className="text-[#0891b2] focus:ring-[#6FD4E1] cursor-pointer"
                               />
-                              <span className="text-sm text-[#1e4a52]">{role}</span>
+                              <span className="text-sm text-[#0c282d] font-bold">{role}</span>
                             </div>
-                            <button type="button" onClick={() => removeRole(index)} className="text-red-400 hover:text-red-300">
+                            <button type="button" onClick={() => removeRole(index)} className="text-red-500 hover:text-red-700 p-1">
                               <X className="w-4 h-4" />
                             </button>
                           </div>
                         ))}
                       </div>
                       {formData.departure.roles.length === 0 && (
-                        <p className="text-xs text-muted-foreground text-center py-2">No roles added yet</p>
+                        <p className="text-xs text-[#527d85] font-medium text-center py-2">Ketik role di atas dan tekan Enter / tombol (+)</p>
                       )}
                     </div>
                   </div>
@@ -483,60 +552,60 @@ export default function FlightLogbookPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label>Company</Label>
-                    <Input type="text" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="Tech Solutions Inc." required />
+                    <Label className="text-[#0c282d] font-bold">Company</Label>
+                    <Input type="text" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="Tech Solutions Inc." required />
                   </div>
                   <div className="space-y-2">
-                    <Label>Departure Code</Label>
-                    <Input type="text" value={formData.departure.code} onChange={(e) => setFormData({ ...formData, departure: { ...formData.departure, code: e.target.value } })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="FSD" required />
+                    <Label className="text-[#0c282d] font-bold">Departure Code <span className="text-xs font-normal text-[#527d85]">(Opsional - otomatis dibuat)</span></Label>
+                    <Input type="text" value={formData.departure.code} onChange={(e) => setFormData({ ...formData, departure: { ...formData.departure, code: e.target.value } })} className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="e.g. FSD, DEV" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Location</Label>
-                    <Input type="text" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="Remote / Jakarta" required />
+                    <Label className="text-[#0c282d] font-bold">Location</Label>
+                    <Input type="text" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="Remote / Jakarta" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Duration (months)</Label>
-                    <Input type="number" step="1" value={formData.duration} onChange={(e) => setFormData({ ...formData, duration: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="6" required />
+                    <Label className="text-[#0c282d] font-bold">Duration (months)</Label>
+                    <Input type="number" step="1" value={formData.duration} onChange={(e) => setFormData({ ...formData, duration: e.target.value })} className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="6" required />
                   </div>
                   <div className="flex items-center space-x-2 pt-6">
                     <Checkbox 
                       id="isActive" 
                       checked={formData.isActive}
                       onCheckedChange={(c) => setFormData({ ...formData, isActive: !!c })}
-                      className="border-[#B9E7E6] data-[state=checked]:bg-yellow-500 data-[state=checked]:text-black"
+                      className="border-[#B9E7E6] data-[state=checked]:bg-[#6FD4E1] data-[state=checked]:text-[#0c282d]"
                     />
                     <label
                       htmlFor="isActive"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white flex items-center gap-2"
+                      className="text-sm font-bold text-[#0c282d] flex items-center gap-2 cursor-pointer"
                     >
-                      <Star className={`w-4 h-4 ${formData.isActive ? 'text-yellow-500 fill-yellow-500' : 'text-muted-foreground'}`} />
+                      <Star className={`w-4 h-4 ${formData.isActive ? 'text-amber-500 fill-amber-500' : 'text-[#527d85]'}`} />
                       Currently Active
                     </label>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Technologies (comma separated)</Label>
-                  <Input type="text" value={formData.crew?.join(', ') || ''} onChange={(e) => setFormData({ ...formData, crew: e.target.value.split(',').map(t => t.trim()) })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="Next.js, TypeScript, Tailwind CSS" />
+                  <Label className="text-[#0c282d] font-bold">Technologies (comma separated)</Label>
+                  <Input type="text" value={formData.crew?.join(', ') || ''} onChange={(e) => setFormData({ ...formData, crew: e.target.value.split(',').map(t => t.trim()) })} className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="Next.js, TypeScript, Tailwind CSS" />
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Key Responsibilities</Label>
+                  <Label className="text-[#0c282d] font-bold">Key Responsibilities</Label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {formData.responsibilities?.map((res, index) => (
-                      <span key={index} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs">
+                      <span key={index} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#E2F4F3] border border-[#B9E7E6] text-[#0c282d] font-semibold text-xs shadow-sm">
                         {res}
-                        <button type="button" onClick={() => removeResponsibility(index)} className="text-red-400 hover:text-red-300"><X className="w-3 h-3" /></button>
+                        <button type="button" onClick={() => removeResponsibility(index)} className="text-red-500 hover:text-red-700 ml-1"><X className="w-3 h-3" /></button>
                       </span>
                     ))}
                   </div>
                   <div className="flex gap-2">
                     <Input
                       id="responsibility-input"
-                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                      className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium"
                       placeholder="Add responsibility..."
                       onKeyPress={(e) => {
                         if (e.key === 'Enter') {
@@ -551,17 +620,17 @@ export default function FlightLogbookPage() {
                       const input = document.getElementById('responsibility-input') as HTMLInputElement;
                       addResponsibility(input.value);
                       input.value = '';
-                    }} className="bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30">
+                    }} className="bg-[#E2F4F3] border border-[#B9E7E6] text-[#0891b2] hover:bg-[#6FD4E1] hover:text-[#0c282d] font-bold shadow-sm">
                       <Plus className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">
-                  <Button type="button" variant="ghost" onClick={resetForm} className="text-muted-foreground hover:text-white">
+                  <Button type="button" variant="ghost" onClick={resetForm} className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold">
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={saving} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+                  <Button type="submit" disabled={saving} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                     {editingId ? 'Update' : 'Create'}
                   </Button>
@@ -575,11 +644,11 @@ export default function FlightLogbookPage() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d] rounded-2xl p-6">
           <div className="mb-4">
-            <p className="text-muted-foreground text-sm">Drag and drop to reorder • Click star to mark as currently active</p>
+            <p className="text-[#527d85] font-medium text-sm">Drag and drop to reorder • Click star to mark as currently active</p>
           </div>
 
           {filteredFlights.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
+            <div className="text-center py-12 text-[#527d85] font-medium">
               No flight entries found. Add your first project!
             </div>
           ) : (
@@ -624,14 +693,27 @@ function SortableFlightItem({ flight, onEdit, onDelete, onToggleActive }: Sortab
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const getCategoryBadge = (category: string) => {
+    switch (category) {
+      case 'Development':
+        return 'bg-[#E2F4F3] text-[#0891b2] border border-[#B9E7E6] font-semibold';
+      case 'Leadership':
+        return 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold';
+      case 'Freelance':
+        return 'bg-amber-50 text-amber-800 border border-amber-200 font-semibold';
+      default:
+        return 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold';
+    }
+  };
+
   return (
-    <div ref={setNodeRef} style={style} className="group relative bg-white border border-[#B9E7E6] border border-[#B9E7E6] rounded-xl p-4 hover:bg-white/10 transition-all">
+    <div ref={setNodeRef} style={style} className="group relative bg-white border border-[#B9E7E6] rounded-2xl p-4 hover:bg-[#E2F4F3]/30 shadow-sm transition-all">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-[#527d85] hover:text-[#527d85] p-1">
+          <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-[#527d85] hover:text-[#0c282d] p-1">
             <GripVertical className="w-5 h-5" />
           </button>
-          <button onClick={() => onToggleActive(flight)} className={`transition-all ${flight.isActive ? 'text-yellow-400 hover:text-yellow-300' : 'text-[#B9E7E6] hover:text-[#527d85]'}`} title={flight.isActive ? 'Currently active' : 'Mark as active'}>
+          <button onClick={() => onToggleActive(flight)} className={`transition-all ${flight.isActive ? 'text-amber-500 hover:text-amber-600' : 'text-[#B9E7E6] hover:text-[#527d85]'}`} title={flight.isActive ? 'Currently active' : 'Mark as active'}>
             <Star className="w-5 h-5" fill={flight.isActive ? 'currentColor' : 'none'} />
           </button>
         </div>
@@ -641,37 +723,37 @@ function SortableFlightItem({ flight, onEdit, onDelete, onToggleActive }: Sortab
             <div className="flex items-center gap-2 mb-1">
               <span className="font-bold text-[#0c282d] truncate">{flight.company}</span>
               {flight.isActive && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-yellow-400/10 border border-yellow-400/30 text-yellow-400">
+                <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-amber-100 border border-amber-300 text-amber-800">
                   Active
                 </span>
               )}
             </div>
-            <p className="text-sm text-muted-foreground truncate">{flight.projectName}</p>
+            <p className="text-sm text-[#527d85] font-medium truncate">{flight.projectName}</p>
           </div>
           
           <div className="min-w-0">
-            <div className="text-xs text-muted-foreground mb-1">Role</div>
-            <p className="text-sm text-[#1e4a52] truncate">{flight.departure.highlightedRole}</p>
+            <div className="text-xs text-[#527d85] font-semibold mb-1">Role</div>
+            <p className="text-sm text-[#0c282d] font-bold truncate">{flight.departure.highlightedRole}</p>
           </div>
           
           <div className="min-w-0">
-            <div className="text-xs text-muted-foreground mb-1">Duration</div>
-            <p className="text-sm text-[#1e4a52]">{flight.duration} mos</p>
+            <div className="text-xs text-[#527d85] font-semibold mb-1">Duration</div>
+            <p className="text-sm text-[#0c282d] font-bold">{flight.duration} mos</p>
           </div>
           
           <div className="min-w-0">
-            <div className="text-xs text-muted-foreground mb-1">Category</div>
-            <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${flight.category === 'Development' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : flight.category === 'Leadership' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : flight.category === 'Freelance' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20'}`}>
+            <div className="text-xs text-[#527d85] font-semibold mb-1">Category</div>
+            <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs ${getCategoryBadge(flight.category)}`}>
               {flight.category}
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end mt-4 sm:mt-0">
-          <Button variant="ghost" size="sm" onClick={() => onEdit(flight)} className="text-cyan-400 hover:bg-cyan-500/20 hover:text-cyan-300">
+          <Button variant="ghost" size="sm" onClick={() => onEdit(flight)} className="text-[#0891b2] hover:bg-[#E2F4F3] hover:text-[#0c282d] font-bold">
             Edit
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => onDelete(flight.id)} className="text-red-400 hover:bg-red-500/20 hover:text-red-300">
+          <Button variant="ghost" size="sm" onClick={() => onDelete(flight.id)} className="text-red-600 hover:bg-red-50 hover:text-red-700 font-bold">
             Delete
           </Button>
         </div>

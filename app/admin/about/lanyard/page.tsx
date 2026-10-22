@@ -229,7 +229,7 @@ export default function LanyardCardPage() {
               <Button
                 variant="ghost"
                 onClick={handleCancel}
-                className="text-muted-foreground hover:text-white"
+                className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold"
               >
                 Cancel
               </Button>
@@ -274,7 +274,7 @@ export default function LanyardCardPage() {
                   value={formData?.serviceName ?? ''}
                   onChange={(e) => handleChange('serviceName', e.target.value)}
                   disabled={!isEditing}
-                  className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                  className="bg-white border border-[#B9E7E6] disabled:opacity-50"
                 />
               </div>
               <div className="space-y-2">
@@ -284,7 +284,7 @@ export default function LanyardCardPage() {
                   value={formData?.serviceType ?? ''}
                   onChange={(e) => handleChange('serviceType', e.target.value)}
                   disabled={!isEditing}
-                  className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                  className="bg-white border border-[#B9E7E6] disabled:opacity-50"
                 />
               </div>
             </CardContent>
@@ -303,7 +303,7 @@ export default function LanyardCardPage() {
                     value={formData?.type ?? ''}
                     onChange={(e) => handleChange('type', e.target.value)}
                     disabled={!isEditing}
-                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                    className="bg-white border border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -314,7 +314,7 @@ export default function LanyardCardPage() {
                     onChange={(e) => handleChange('countryCode', e.target.value.toUpperCase())}
                     disabled={!isEditing}
                     maxLength={3}
-                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50 uppercase"
+                    className="bg-white border border-[#B9E7E6] disabled:opacity-50 uppercase"
                   />
                 </div>
               </div>
@@ -326,7 +326,7 @@ export default function LanyardCardPage() {
                   value={formData?.passportNo ?? ''}
                   onChange={(e) => handleChange('passportNo', e.target.value.toUpperCase())}
                   disabled={!isEditing}
-                  className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50 uppercase font-mono"
+                  className="bg-white border border-[#B9E7E6] disabled:opacity-50 uppercase font-mono"
                 />
               </div>
 
@@ -337,7 +337,7 @@ export default function LanyardCardPage() {
                   value={formData?.surname ?? ''}
                   onChange={(e) => handleChange('surname', e.target.value.toUpperCase())}
                   disabled={!isEditing}
-                  className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50 uppercase"
+                  className="bg-white border border-[#B9E7E6] disabled:opacity-50 uppercase"
                 />
               </div>
 
@@ -348,7 +348,7 @@ export default function LanyardCardPage() {
                   value={formData?.givenNames ?? ''}
                   onChange={(e) => handleChange('givenNames', e.target.value.toUpperCase())}
                   disabled={!isEditing}
-                  className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50 uppercase"
+                  className="bg-white border border-[#B9E7E6] disabled:opacity-50 uppercase"
                 />
               </div>
 
@@ -360,7 +360,7 @@ export default function LanyardCardPage() {
                     value={formData?.nationality ?? ''}
                     onChange={(e) => handleChange('nationality', e.target.value)}
                     disabled={!isEditing}
-                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                    className="bg-white border border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -369,7 +369,7 @@ export default function LanyardCardPage() {
                     value={formData?.sex ?? 'M'}
                     onChange={(e) => handleChange('sex', e.target.value)}
                     disabled={!isEditing}
-                    className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 disabled:opacity-50"
+                    className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-purple-500/50 disabled:opacity-50"
                   >
                     <option value="M" className="bg-white text-[#0c282d]">M / L (Male)</option>
                     <option value="F" className="bg-white text-[#0c282d]">F / P (Female)</option>
@@ -384,7 +384,7 @@ export default function LanyardCardPage() {
                   value={formData?.placeOfBirth ?? ''}
                   onChange={(e) => handleChange('placeOfBirth', e.target.value)}
                   disabled={!isEditing}
-                  className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                  className="bg-white border border-[#B9E7E6] disabled:opacity-50"
                 />
               </div>
 
@@ -397,7 +397,7 @@ export default function LanyardCardPage() {
                     onChange={(e) => handleChange('dateOfBirth', e.target.value)}
                     disabled={!isEditing}
                     placeholder="01 JAN 1990"
-                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                    className="bg-white border border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -408,7 +408,7 @@ export default function LanyardCardPage() {
                     onChange={(e) => handleChange('dateOfIssue', e.target.value)}
                     disabled={!isEditing}
                     placeholder="01 OCT 2023"
-                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                    className="bg-white border border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -419,7 +419,7 @@ export default function LanyardCardPage() {
                     onChange={(e) => handleChange('dateOfExpiry', e.target.value)}
                     disabled={!isEditing}
                     placeholder="01 OCT 2033"
-                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                    className="bg-white border border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -439,7 +439,7 @@ export default function LanyardCardPage() {
                     value={formData?.backgroundColor ?? '#f5e6d3'}
                     onChange={(e) => handleChange('backgroundColor', e.target.value)}
                     disabled={!isEditing}
-                    className="h-12 px-2 cursor-pointer bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                    className="h-12 px-2 cursor-pointer bg-white border border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -449,7 +449,7 @@ export default function LanyardCardPage() {
                     value={formData?.textColor ?? '#1e3a8a'}
                     onChange={(e) => handleChange('textColor', e.target.value)}
                     disabled={!isEditing}
-                    className="h-12 px-2 cursor-pointer bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                    className="h-12 px-2 cursor-pointer bg-white border border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -459,7 +459,7 @@ export default function LanyardCardPage() {
                     value={formData?.accentColor ?? '#3b82f6'}
                     onChange={(e) => handleChange('accentColor', e.target.value)}
                     disabled={!isEditing}
-                    className="h-12 px-2 cursor-pointer bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                    className="h-12 px-2 cursor-pointer bg-white border border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -482,7 +482,7 @@ export default function LanyardCardPage() {
                     onChange={(e) => handleChange('avatarUrl', e.target.value)}
                     disabled={!isEditing}
                     placeholder="https://example.com/avatar.jpg"
-                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                    className="bg-white border border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <ImageUpload

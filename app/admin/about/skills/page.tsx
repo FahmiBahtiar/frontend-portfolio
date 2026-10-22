@@ -146,13 +146,13 @@ export default function SkillsPage() {
     {
       key: 'name',
       label: 'Name',
-      render: (skill: Skill) => <span className="text-white font-medium">{skill.name}</span>,
+      render: (skill: Skill) => <span className="text-[#0c282d] font-medium">{skill.name}</span>,
     },
     {
       key: 'category',
       label: 'Category',
       render: (skill: Skill) => (
-        <span className="px-2.5 py-0.5 rounded-full bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-[#1e4a52] text-xs font-medium">
+        <span className="px-2.5 py-0.5 rounded-full bg-white border border-[#B9E7E6] text-[#1e4a52] text-xs font-medium">
           {skill.category}
         </span>
       ),
@@ -200,16 +200,16 @@ export default function SkillsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shadow-lg shadow-blue-500/10">
-            <Code2 className="w-6 h-6 text-blue-500" />
+          <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shadow-sm">
+            <Code2 className="w-6 h-6 text-[#0891b2]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Skills</h1>
-            <p className="text-sm text-muted-foreground">Manage your technical skills and proficiencies</p>
+            <p className="text-sm text-[#527d85] font-medium">Manage your technical skills and proficiencies</p>
           </div>
         </div>
 
-        <Button onClick={() => setIsFormOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white">
+        <Button onClick={() => setIsFormOpen(true)} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
           <Plus className="w-4 h-4 mr-2" /> Add Skill
         </Button>
       </div>
@@ -219,10 +219,10 @@ export default function SkillsPage() {
           <button
             key={cat}
             onClick={() => setFilterCategory(cat)}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
               filterCategory === cat
-                ? 'bg-blue-600 text-white'
-                : 'bg-white border border-[#B9E7E6] text-muted-foreground hover:bg-white/10 hover:text-white'
+                ? 'bg-[#6FD4E1] text-[#0c282d] shadow-sm'
+                : 'bg-white border border-[#B9E7E6] text-[#527d85] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
             }`}
           >
             {cat}
@@ -246,7 +246,7 @@ export default function SkillsPage() {
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="bg-white border border-[#B9E7E6]"
                         placeholder="React"
                         required
                       />
@@ -257,7 +257,7 @@ export default function SkillsPage() {
                       <select
                         value={formData.category}
                         onChange={(e) => setFormData({ ...formData, category: e.target.value as Skill['category'] })}
-                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                         required
                       >
                         <option value="Frontend" className="bg-white text-[#0c282d]">Frontend</option>
@@ -277,7 +277,7 @@ export default function SkillsPage() {
                         type="text"
                         value={formData.icon}
                         onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6] text-xl text-center"
+                        className="bg-white border border-[#B9E7E6] text-xl text-center"
                         placeholder="⚛️"
                       />
                     </div>
@@ -289,14 +289,14 @@ export default function SkillsPage() {
                           type="color"
                           value={formData.color}
                           onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                          className="w-12 h-10 px-1 py-1 bg-white border border-[#B9E7E6] border-[#B9E7E6] cursor-pointer"
+                          className="w-12 h-10 px-1 py-1 bg-white border border-[#B9E7E6] cursor-pointer"
                           required
                         />
                         <Input
                           type="text"
                           value={formData.color}
                           onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                          className="flex-1 bg-white border border-[#B9E7E6] border-[#B9E7E6] uppercase"
+                          className="flex-1 bg-white border border-[#B9E7E6] uppercase"
                           placeholder="#06b6d4"
                         />
                       </div>
@@ -319,10 +319,10 @@ export default function SkillsPage() {
                   </div>
 
                   <div className="flex justify-end gap-3 pt-4">
-                    <Button type="button" variant="ghost" onClick={resetForm} className="text-muted-foreground hover:text-white">
+                    <Button type="button" variant="ghost" onClick={resetForm} className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold">
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 text-white">
+                    <Button type="submit" disabled={saving} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
                       {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                       {editingId ? 'Update' : 'Create'}
                     </Button>

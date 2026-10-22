@@ -149,7 +149,7 @@ export default function PassionsPage() {
       label: 'Stats',
       render: (passion: Passion) => (
         <div className="text-sm">
-          <div className="text-white font-medium">{passion.statsValue || passion.stats?.value}</div>
+          <div className="text-[#0c282d] font-medium">{passion.statsValue || passion.stats?.value}</div>
           <div className="text-muted-foreground text-xs">{passion.statsLabel || passion.stats?.label}</div>
         </div>
       ),
@@ -169,16 +169,16 @@ export default function PassionsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg bg-pink-500/10 border border-pink-500/20 flex items-center justify-center">
-            <Heart className="w-6 h-6 text-pink-500" />
+          <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shadow-sm">
+            <Heart className="w-6 h-6 text-[#0891b2]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Passions</h1>
-            <p className="text-sm text-muted-foreground">Manage your interests and hobbies</p>
+            <p className="text-sm text-[#527d85] font-medium">Manage your interests and hobbies</p>
           </div>
         </div>
 
-        <Button onClick={() => setIsFormOpen(true)} className="bg-pink-600 hover:bg-pink-700 text-white">
+        <Button onClick={() => setIsFormOpen(true)} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
           <Plus className="w-4 h-4 mr-2" /> Add Passion
         </Button>
       </div>
@@ -187,21 +187,21 @@ export default function PassionsPage() {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
             <CardHeader className="border-b border-[#B9E7E6] pb-4">
-              <CardTitle className="text-lg">{editingId ? 'Edit Passion' : 'Add New Passion'}</CardTitle>
+              <CardTitle className="text-lg text-[#0c282d] font-bold">{editingId ? 'Edit Passion' : 'Add New Passion'}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Icon (Emoji)</Label>
-                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6] text-xl text-center" placeholder="💻" />
+                    <Label className="text-[#0c282d] font-bold">Icon (Emoji)</Label>
+                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] text-xl text-center" placeholder="💻" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Color</Label>
+                    <Label className="text-[#0c282d] font-bold">Color</Label>
                     <select
                       value={formData.color}
                       onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-xl bg-white border border-[#B9E7E6] text-sm text-[#0c282d] font-semibold focus:outline-none focus:border-[#6FD4E1] shadow-sm"
                       required
                     >
                       {availableColors.map((color) => (
@@ -212,35 +212,35 @@ export default function PassionsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Title</Label>
-                  <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="Full Stack Development" />
+                  <Label className="text-[#0c282d] font-bold">Title</Label>
+                  <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="Full Stack Development" />
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Description</Label>
-                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required rows={3} className="bg-white border border-[#B9E7E6] border-[#B9E7E6] resize-none" placeholder="Describe your passion..." />
+                  <Label className="text-[#0c282d] font-bold">Description</Label>
+                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required rows={3} className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium resize-none" placeholder="Describe your passion..." />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label>Stats Label</Label>
-                    <Input value={formData.statsLabel} onChange={(e) => setFormData({ ...formData, statsLabel: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="Projects" />
+                    <Label className="text-[#0c282d] font-bold">Stats Label</Label>
+                    <Input value={formData.statsLabel} onChange={(e) => setFormData({ ...formData, statsLabel: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="Projects" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Stats Value</Label>
-                    <Input value={formData.statsValue} onChange={(e) => setFormData({ ...formData, statsValue: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="50+" />
+                    <Label className="text-[#0c282d] font-bold">Stats Value</Label>
+                    <Input value={formData.statsValue} onChange={(e) => setFormData({ ...formData, statsValue: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="50+" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Gradient</Label>
-                    <Input value={formData.gradient} onChange={(e) => setFormData({ ...formData, gradient: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="from-cyan-500 to-blue-500" />
+                    <Label className="text-[#0c282d] font-bold">Gradient</Label>
+                    <Input value={formData.gradient} onChange={(e) => setFormData({ ...formData, gradient: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="from-cyan-500 to-blue-500" />
                   </div>
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">
-                  <Button type="button" variant="ghost" onClick={resetForm} className="text-muted-foreground hover:text-white">
+                  <Button type="button" variant="ghost" onClick={resetForm} className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold">
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={saving} className="bg-pink-600 hover:bg-pink-700 text-white">
+                  <Button type="submit" disabled={saving} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                     {editingId ? 'Update' : 'Create'}
                   </Button>

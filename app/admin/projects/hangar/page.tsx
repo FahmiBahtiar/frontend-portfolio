@@ -184,8 +184,19 @@ export default function AircraftHangarPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Auto-commit technology system input if still has text
+    const currentSystems = [...(formData.systems || [])];
+    const systemInput = document.getElementById('system-input') as HTMLInputElement | null;
+    if (systemInput && systemInput.value.trim()) {
+      const typed = systemInput.value.trim();
+      if (!currentSystems.includes(typed)) {
+        currentSystems.push(typed);
+      }
+      systemInput.value = '';
+    }
+
     if (!formData.name?.trim() || !formData.model?.trim() || !formData.classification?.trim() || !formData.description?.trim()) {
-      alert('Please fill in all required fields: Name, Model, Classification, and Description');
+      alert('Mohon lengkapi field wajib: Project Name, Model/Aircraft, Classification, dan Description');
       return;
     }
 
@@ -193,6 +204,7 @@ export default function AircraftHangarPage() {
     try {
       const projectData = {
         ...formData,
+        systems: currentSystems,
         order: formData.order || hangarItems.length + 1,
       };
 
@@ -275,16 +287,16 @@ export default function AircraftHangarPage() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-              <Plane className="w-6 h-6 text-cyan-500" />
+            <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shadow-sm">
+              <Plane className="w-6 h-6 text-[#0891b2]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Aircraft Hangar</h1>
-              <p className="text-sm text-muted-foreground">Manage your projects and achievements</p>
+              <p className="text-sm text-[#527d85] font-medium">Manage your projects and achievements</p>
             </div>
           </div>
 
-          <Button onClick={handleCreate} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+          <Button onClick={handleCreate} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
             <Plus className="w-4 h-4 mr-2" /> Add Project
           </Button>
         </div>
@@ -294,7 +306,7 @@ export default function AircraftHangarPage() {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
             <CardHeader className="border-b border-[#B9E7E6] pb-4">
-              <CardTitle className="text-lg">{editingItem ? 'Edit Project' : 'Add New Project'}</CardTitle>
+              <CardTitle className="text-lg text-[#0c282d] font-bold">{editingItem ? 'Edit Project' : 'Add New Project'}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -307,7 +319,7 @@ export default function AircraftHangarPage() {
                         const newCategory = e.target.value;
                         setFormData({ ...formData, category: newCategory, icon: getIconForCategory(newCategory) });
                       }}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                       required
                     >
                       {categories.map((cat) => (
@@ -320,7 +332,7 @@ export default function AircraftHangarPage() {
                     <select
                       value={formData.color}
                       onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                       required
                     >
                       {colors.map((color) => (
@@ -332,46 +344,46 @@ export default function AircraftHangarPage() {
 
                 <div className="space-y-2">
                   <Label>Project Name</Label>
-                  <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., react-dashboard-pro" />
+                  <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="bg-white border border-[#B9E7E6]" placeholder="e.g., react-dashboard-pro" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Model/Aircraft</Label>
-                    <Input value={formData.model} onChange={(e) => setFormData({ ...formData, model: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., Boeing 787" />
+                    <Input value={formData.model} onChange={(e) => setFormData({ ...formData, model: e.target.value })} required className="bg-white border border-[#B9E7E6]" placeholder="e.g., Boeing 787" />
                   </div>
                   <div className="space-y-2">
                     <Label>Classification</Label>
-                    <Input value={formData.classification} onChange={(e) => setFormData({ ...formData, classification: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., Heavy Jet" />
+                    <Input value={formData.classification} onChange={(e) => setFormData({ ...formData, classification: e.target.value })} required className="bg-white border border-[#B9E7E6]" placeholder="e.g., Heavy Jet" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label>Description</Label>
-                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white border border-[#B9E7E6] border-[#B9E7E6] resize-none" placeholder="Project description..." required />
+                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white border border-[#B9E7E6] resize-none" placeholder="Project description..." required />
                 </div>
 
                 {formData.category === 'github' && (
                   <div className="space-y-2">
                     <Label>GitHub URL</Label>
-                    <Input type="url" value={formData.url || ''} onChange={(e) => setFormData({ ...formData, url: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="https://github.com/..." />
+                    <Input type="url" value={formData.url || ''} onChange={(e) => setFormData({ ...formData, url: e.target.value })} className="bg-white border border-[#B9E7E6]" placeholder="https://github.com/..." />
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <Label>Technologies/Systems</Label>
+                  <Label className="text-[#0c282d] font-bold">Technologies/Systems</Label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {formData.systems?.map((system, index) => (
-                      <span key={index} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs">
+                      <span key={index} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E2F4F3] border border-[#B9E7E6] text-[#0c282d] font-semibold text-xs shadow-sm">
                         {system}
-                        <button type="button" onClick={() => removeSystem(index)} className="text-red-400 hover:text-red-300"><X className="w-3 h-3" /></button>
+                        <button type="button" onClick={() => removeSystem(index)} className="text-red-500 hover:text-red-700 ml-1"><X className="w-3 h-3" /></button>
                       </span>
                     ))}
                   </div>
                   <div className="flex gap-2">
                     <Input
                       id="system-input"
-                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                      className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium"
                       placeholder="Add technology..."
                       onKeyPress={(e) => {
                         if (e.key === 'Enter') {
@@ -386,17 +398,17 @@ export default function AircraftHangarPage() {
                       const input = document.getElementById('system-input') as HTMLInputElement;
                       addSystem(input.value);
                       input.value = '';
-                    }} className="bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30">
+                    }} className="bg-[#E2F4F3] border border-[#B9E7E6] text-[#0891b2] hover:bg-[#6FD4E1] hover:text-[#0c282d] font-bold shadow-sm">
                       <Plus className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">
-                  <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} className="text-muted-foreground hover:text-white">
+                  <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold">
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={saving} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+                  <Button type="submit" disabled={saving} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                     {editingItem ? 'Update' : 'Create'}
                   </Button>
@@ -466,10 +478,23 @@ function SortableHangarItem({ item, onEdit, onDelete }: SortableHangarItemProps)
     }
   };
 
+  const getCategoryBadge = (category: string) => {
+    switch (category) {
+      case 'github':
+        return 'bg-[#E2F4F3] text-[#0891b2] border border-[#B9E7E6] font-semibold';
+      case 'flight':
+        return 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold';
+      case 'mountain':
+        return 'bg-amber-50 text-amber-800 border border-amber-200 font-semibold';
+      default:
+        return 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold';
+    }
+  };
+
   return (
-    <div ref={setNodeRef} style={style} className={`bg-white border border-[#B9E7E6] border border-[#B9E7E6] rounded-xl p-4 hover:bg-white/10 transition-all ${isDragging ? 'opacity-50' : ''}`}>
+    <div ref={setNodeRef} style={style} className={`bg-white border border-[#B9E7E6] rounded-2xl p-4 hover:bg-[#E2F4F3]/30 shadow-sm transition-all ${isDragging ? 'opacity-50' : ''}`}>
       <div className="flex items-center gap-4">
-        <button {...attributes} {...listeners} className="text-[#527d85] hover:text-[#527d85] transition-colors p-1 cursor-grab active:cursor-grabbing">
+        <button {...attributes} {...listeners} className="text-[#527d85] hover:text-[#0c282d] transition-colors p-1 cursor-grab active:cursor-grabbing">
           <GripVertical className="w-5 h-5" />
         </button>
 
@@ -478,27 +503,27 @@ function SortableHangarItem({ item, onEdit, onDelete }: SortableHangarItemProps)
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-bold text-[#0c282d] truncate">{item.name}</h3>
-            <span className={`px-2 py-0.5 rounded-full text-xs ${item.category === 'github' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : item.category === 'flight' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20'}`}>
+            <span className={`px-2.5 py-0.5 rounded-full text-xs ${getCategoryBadge(item.category)}`}>
               {item.category}
             </span>
           </div>
-          <p className="text-sm text-muted-foreground truncate">{item.description}</p>
-          <div className="flex items-center gap-4 mt-2 text-xs text-[#527d85]">
-            <span>{item.model}</span>
+          <p className="text-sm text-[#527d85] font-medium truncate">{item.description}</p>
+          <div className="flex items-center gap-4 mt-2 text-xs text-[#527d85] font-medium">
+            <span className="font-semibold text-[#0c282d]">{item.model}</span>
             {item.stats?.stars !== undefined && (
-              <span className="flex items-center gap-1"><Star className="w-3 h-3 text-yellow-400" />{item.stats.stars}</span>
+              <span className="flex items-center gap-1"><Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />{item.stats.stars}</span>
             )}
             {item.stats?.forks !== undefined && (
-              <span className="flex items-center gap-1"><GitFork className="w-3 h-3 text-cyan-400" />{item.stats.forks}</span>
+              <span className="flex items-center gap-1"><GitFork className="w-3.5 h-3.5 text-[#0891b2]" />{item.stats.forks}</span>
             )}
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={() => onEdit(item)} className="text-cyan-400 hover:bg-cyan-500/20 hover:text-cyan-300">
+          <Button variant="ghost" size="sm" onClick={() => onEdit(item)} className="text-[#0891b2] hover:bg-[#E2F4F3] hover:text-[#0c282d] font-bold">
             Edit
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => onDelete(item)} className="text-red-400 hover:bg-red-500/20 hover:text-red-300">
+          <Button variant="ghost" size="sm" onClick={() => onDelete(item)} className="text-red-600 hover:bg-red-50 hover:text-red-700 font-bold">
             Delete
           </Button>
         </div>

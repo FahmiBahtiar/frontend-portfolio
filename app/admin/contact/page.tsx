@@ -153,7 +153,7 @@ export default function ContactPage() {
       label: 'Label',
       sortable: true,
       render: (item: ContactFrequency) => (
-        <span className="font-bold text-white">{item.label}</span>
+        <span className="font-bold text-[#0c282d]">{item.label}</span>
       ),
     },
     {
@@ -199,19 +199,19 @@ export default function ContactPage() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-              <Radio className="w-6 h-6 text-orange-500" />
+            <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shadow-sm">
+              <Radio className="w-6 h-6 text-[#0891b2]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Contact Information</h1>
-              <p className="text-sm text-muted-foreground">Manage contact frequencies and social links</p>
+              <p className="text-sm text-[#527d85] font-medium">Manage contact frequencies and social links</p>
             </div>
           </div>
 
-          <Button onClick={handleCreate} className="bg-orange-600 hover:bg-orange-700 text-white">
+          <Button onClick={handleCreate} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
             <Plus className="w-4 h-4 mr-2" /> Add Contact
           </Button>
-        </div>
+          </div>
       </motion.div>
 
       <AnimatePresence>
@@ -230,7 +230,7 @@ export default function ContactPage() {
                         type="text"
                         value={formData.frequency}
                         onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="bg-white border border-[#B9E7E6]"
                         placeholder="e.g., 121.5"
                         required
                       />
@@ -241,7 +241,7 @@ export default function ContactPage() {
                       <select
                         value={formData.type}
                         onChange={(e) => setFormData({ ...formData, type: e.target.value as ContactFrequency['type'] })}
-                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                         required
                       >
                         {types.map((type) => (
@@ -258,7 +258,7 @@ export default function ContactPage() {
                         type="text"
                         value={formData.label}
                         onChange={(e) => setFormData({ ...formData, label: e.target.value.toUpperCase() })}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="bg-white border border-[#B9E7E6]"
                         placeholder="e.g., EMAIL"
                         required
                       />
@@ -270,7 +270,7 @@ export default function ContactPage() {
                         type="text"
                         value={formData.value}
                         onChange={(e) => setFormData({ ...formData, value: e.target.value })}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="bg-white border border-[#B9E7E6]"
                         placeholder="e.g., email@example.com"
                         required
                       />
@@ -281,7 +281,7 @@ export default function ContactPage() {
                       <select
                         value={formData.icon}
                         onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                         required
                       >
                         {icons.map((icon) => (
@@ -297,7 +297,7 @@ export default function ContactPage() {
                       <select
                         value={formData.color}
                         onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                         required
                       >
                         {colors.map((color) => (
@@ -314,17 +314,17 @@ export default function ContactPage() {
                         type="url"
                         value={formData.link || ''}
                         onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="bg-white border border-[#B9E7E6]"
                         placeholder="https://..."
                       />
                     </div>
                   </div>
 
                   <div className="flex justify-end gap-3 pt-4">
-                    <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} disabled={submitting} className="text-muted-foreground hover:text-white">
+                    <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} disabled={submitting} className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold">
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={submitting} className="bg-orange-600 hover:bg-orange-700 text-white">
+                    <Button type="submit" disabled={submitting} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
                       {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                       {editingContact ? 'Update' : 'Create'}
                     </Button>

@@ -68,7 +68,7 @@ function SortableAchievementItem({ achievement, onEdit, onDelete }: SortableAchi
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-white border border-[#B9E7E6] border border-[#B9E7E6] rounded-xl p-4 hover:bg-white/10 hover:border-[#B9E7E6] transition-all ${
+      className={`bg-white border border-[#B9E7E6] rounded-xl p-4 hover:bg-[#E2F4F3]/40 hover:border-[#B9E7E6] transition-all ${
         isDragging ? 'opacity-50 shadow-lg' : ''
       }`}
     >
@@ -76,7 +76,7 @@ function SortableAchievementItem({ achievement, onEdit, onDelete }: SortableAchi
         <div
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing p-1 hover:bg-white/10 rounded"
+          className="cursor-grab active:cursor-grabbing p-1 hover:bg-[#E2F4F3]/40 rounded"
         >
           <GripVertical className="w-4 h-4 text-[#527d85]" />
         </div>
@@ -95,7 +95,7 @@ function SortableAchievementItem({ achievement, onEdit, onDelete }: SortableAchi
         <div className="flex items-center gap-2">
           <button
             onClick={() => onEdit(achievement)}
-            className="p-2 rounded-lg bg-white border border-[#B9E7E6] hover:bg-white/10 text-[#527d85] hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-white border border-[#B9E7E6] hover:bg-[#E2F4F3] text-[#527d85] hover:text-[#0c282d] transition-colors"
           >
             <Award className="w-4 h-4" />
           </button>
@@ -362,7 +362,7 @@ export default function AchievementsPage() {
                     <select
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value as Achievement['category'] })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-orange-500/50"
                       required
                     >
                       {categories.filter(c => c.value !== 'all').map((cat) => (
@@ -376,7 +376,7 @@ export default function AchievementsPage() {
                     <select
                       value={formData.icon}
                       onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-orange-500/50"
                       required
                     >
                       {icons.map((icon) => (
@@ -388,39 +388,39 @@ export default function AchievementsPage() {
 
                 <div className="space-y-2">
                   <Label>Title</Label>
-                  <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., Full Stack Development Certification" />
+                  <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required className="bg-white border border-[#B9E7E6]" placeholder="e.g., Full Stack Development Certification" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Issuer</Label>
-                    <Input value={formData.issuer} onChange={(e) => setFormData({ ...formData, issuer: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., Tech Academy" />
+                    <Input value={formData.issuer} onChange={(e) => setFormData({ ...formData, issuer: e.target.value })} required className="bg-white border border-[#B9E7E6]" placeholder="e.g., Tech Academy" />
                   </div>
 
                   <div className="space-y-2">
                     <Label>Date</Label>
-                    <Input value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., 2023" />
+                    <Input value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required className="bg-white border border-[#B9E7E6]" placeholder="e.g., 2023" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label>Description (Optional)</Label>
-                  <Textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white border border-[#B9E7E6] border-[#B9E7E6] resize-none" placeholder="Additional details..." />
+                  <Textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white border border-[#B9E7E6] resize-none" placeholder="Additional details..." />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Certificate (Optional)</Label>
                   <div className="flex gap-2 mb-2">
-                    <Button type="button" variant="outline" size="sm" onClick={() => setCertificateUploadMode('url')} className={certificateUploadMode === 'url' ? 'bg-orange-500/20 text-orange-500 border-orange-500/50 hover:bg-orange-500/30' : 'bg-transparent border-[#B9E7E6] text-muted-foreground hover:bg-white border border-[#B9E7E6] hover:text-white'}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => setCertificateUploadMode('url')} className={certificateUploadMode === 'url' ? 'bg-[#6FD4E1] text-[#0c282d] border border-[#B9E7E6] font-bold shadow-sm' : 'bg-white border border-[#B9E7E6] text-[#527d85] hover:bg-[#E2F4F3] hover:text-[#0c282d] font-semibold'}>
                       <LinkIcon className="w-4 h-4 mr-2" /> URL
                     </Button>
-                    <Button type="button" variant="outline" size="sm" onClick={() => setCertificateUploadMode('upload')} className={certificateUploadMode === 'upload' ? 'bg-orange-500/20 text-orange-500 border-orange-500/50 hover:bg-orange-500/30' : 'bg-transparent border-[#B9E7E6] text-muted-foreground hover:bg-white border border-[#B9E7E6] hover:text-white'}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => setCertificateUploadMode('upload')} className={certificateUploadMode === 'upload' ? 'bg-[#6FD4E1] text-[#0c282d] border border-[#B9E7E6] font-bold shadow-sm' : 'bg-white border border-[#B9E7E6] text-[#527d85] hover:bg-[#E2F4F3] hover:text-[#0c282d] font-semibold'}>
                       <Upload className="w-4 h-4 mr-2" /> Upload
                     </Button>
                   </div>
 
                   {certificateUploadMode === 'url' && (
-                    <Input type="url" value={formData.certificateUrl || ''} onChange={(e) => setFormData({ ...formData, certificateUrl: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="https://..." />
+                    <Input type="url" value={formData.certificateUrl || ''} onChange={(e) => setFormData({ ...formData, certificateUrl: e.target.value })} className="bg-white border border-[#B9E7E6]" placeholder="https://..." />
                   )}
 
                   {certificateUploadMode === 'upload' && (
@@ -430,11 +430,11 @@ export default function AchievementsPage() {
 
                 <div className="space-y-2">
                   <Label>Credential URL (Optional)</Label>
-                  <Input type="url" value={formData.credentialUrl || ''} onChange={(e) => setFormData({ ...formData, credentialUrl: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="https://..." />
+                  <Input type="url" value={formData.credentialUrl || ''} onChange={(e) => setFormData({ ...formData, credentialUrl: e.target.value })} className="bg-white border border-[#B9E7E6]" placeholder="https://..." />
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">
-                  <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} className="text-muted-foreground hover:text-white">
+                  <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold">
                     Cancel
                   </Button>
                   <Button type="submit" disabled={saving || isUploading} className="bg-orange-600 hover:bg-orange-700 text-white">
@@ -464,13 +464,13 @@ export default function AchievementsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm rounded-lg font-medium transition-all ${
-                  isActive ? `bg-${tab.color}-500/20 text-${tab.color}-400 border border-${tab.color}-500/30` : 'text-muted-foreground hover:text-white hover:bg-white border border-[#B9E7E6]'
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm rounded-xl font-bold transition-all ${
+                  isActive ? 'bg-[#6FD4E1] text-[#0c282d] border border-[#B9E7E6] shadow-sm' : 'text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] bg-white border border-[#B9E7E6]'
                 }`}
               >
                 <Icon className="w-4 h-4" />
                 <span className="hidden sm:inline">{tab.label}</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full ${isActive ? `bg-${tab.color}-500/30 text-${tab.color}-300` : 'bg-white/10 text-[#527d85]'}`}>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${isActive ? 'bg-white/60 text-[#0c282d]' : 'bg-[#E2F4F3] text-[#527d85]'}`}>
                   {count}
                 </span>
               </button>

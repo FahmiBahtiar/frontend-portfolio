@@ -81,7 +81,7 @@ export default function AuthorizedUsersPage() {
     e.preventDefault();
 
     if (!formData.email.trim() || !formData.name.trim()) {
-      alert('Please fill in all required fields');
+      alert('Mohon lengkapi Email dan Name pengguna');
       return;
     }
 
@@ -249,16 +249,16 @@ export default function AuthorizedUsersPage() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-              <Users className="w-6 h-6 text-cyan-500" />
+            <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shadow-sm">
+              <Users className="w-6 h-6 text-[#0891b2]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Authorized Users</h1>
-              <p className="text-sm text-muted-foreground">Manage admin panel access</p>
+              <p className="text-sm text-[#527d85] font-medium">Manage admin panel access</p>
             </div>
           </div>
 
-          <Button onClick={handleCreate} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+          <Button onClick={handleCreate} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
             <Plus className="w-4 h-4 mr-2" /> Add User
           </Button>
         </div>
@@ -282,7 +282,7 @@ export default function AuthorizedUsersPage() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         disabled={!!editingUser}
-                        className="pl-9 bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
+                        className="pl-9 bg-white border border-[#B9E7E6] disabled:opacity-50"
                         placeholder="user@gmail.com"
                         required
                       />
@@ -298,7 +298,7 @@ export default function AuthorizedUsersPage() {
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="pl-9 bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="pl-9 bg-white border border-[#B9E7E6]"
                         placeholder="John Doe"
                         required
                       />
@@ -310,7 +310,7 @@ export default function AuthorizedUsersPage() {
                     <select
                       value={formData.role}
                       onChange={(e) => setFormData({ ...formData, role: e.target.value as 'admin' | 'editor' })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                     >
                       <option value="editor" className="bg-white text-[#0c282d]">Editor</option>
                       <option value="admin" className="bg-white text-[#0c282d]">Admin</option>
@@ -326,17 +326,17 @@ export default function AuthorizedUsersPage() {
                     />
                     <label
                       htmlFor="isActive"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#0c282d]"
                     >
                       Active (can sign in)
                     </label>
                   </div>
 
                   <div className="flex justify-end gap-3 pt-4">
-                    <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} className="text-muted-foreground hover:text-white">
+                    <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold">
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={saving} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+                    <Button type="submit" disabled={saving} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
                       {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                       {editingUser ? 'Update' : 'Add User'}
                     </Button>

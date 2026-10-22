@@ -216,14 +216,14 @@ export default function CommunicationPage() {
               placeholder="Search messages..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 bg-white border border-[#B9E7E6] border-[#B9E7E6] w-full"
+              className="pl-9 bg-white border border-[#B9E7E6] w-full"
             />
           </div>
 
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value as typeof filter)}
-            className="h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+            className="h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
           >
             <option value="all" className="bg-white text-[#0c282d]">All Messages</option>
             <option value="unread" className="bg-white text-[#0c282d]">Unread</option>
@@ -313,7 +313,7 @@ export default function CommunicationPage() {
                 </div>
 
                 <div className="mb-2">
-                  <h4 className="text-white font-medium mb-1">{message.subject}</h4>
+                  <h4 className="text-[#0c282d] font-medium mb-1">{message.subject}</h4>
                   <p className="text-muted-foreground line-clamp-2 text-sm">{message.message}</p>
                 </div>
 
@@ -349,7 +349,7 @@ export default function CommunicationPage() {
                           <div className="flex gap-2">
                             <Button
                               onClick={(e) => { e.stopPropagation(); setIsReplying(!isReplying); }}
-                              className="bg-cyan-600 hover:bg-cyan-700 text-white"
+                              className="bg-cyan-600 hover:bg-cyan-700 text-[#0c282d]"
                             >
                               <Reply className="w-4 h-4 mr-2" />
                               {isReplying ? 'Cancel Reply' : 'Reply'}
@@ -370,13 +370,13 @@ export default function CommunicationPage() {
                                 value={replyMessage}
                                 onChange={(e) => setReplyMessage(e.target.value)}
                                 placeholder="Type your reply..."
-                                className="w-full h-32 bg-white border border-[#B9E7E6] border-[#B9E7E6] text-white"
+                                className="w-full h-32 bg-white border border-[#B9E7E6] text-[#0c282d]"
                               />
                               <div className="flex gap-2">
                                 <Button
                                   onClick={() => handleReply(message)}
                                   disabled={!replyMessage.trim() || replyingId === message.id}
-                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                  className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm"
                                 >
                                   {replyingId === message.id ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
                                   Send Reply
@@ -384,7 +384,7 @@ export default function CommunicationPage() {
                                 <Button
                                   variant="ghost"
                                   onClick={() => { setIsReplying(false); setReplyMessage(''); }}
-                                  className="text-muted-foreground hover:text-white"
+                                  className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold"
                                 >
                                   Cancel
                                 </Button>

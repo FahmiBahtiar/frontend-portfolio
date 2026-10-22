@@ -37,6 +37,15 @@
   --color-destructive: #ef4444;
   --color-destructive-foreground: #FFFFFF;
   
+  --color-card: #FFFFFF;
+  --color-card-foreground: #0c282d;
+
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #0c282d;
+
+  --color-input: #B9E7E6;
+  --color-input-background: #FFFFFF;
+
   --color-muted: rgba(185, 231, 230, 0.4);
   --color-muted-foreground: #33636c;
   

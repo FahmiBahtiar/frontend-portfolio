@@ -38,17 +38,30 @@ export default function GalleryPage() {
     e.preventDefault();
     if (submitting || isUploading) return;
 
-    if (!formData.image || !formData.location || !formData.coordinates || !formData.altitude || !formData.date || !formData.camera || !formData.heading) {
-      alert('Please fill in all required fields');
+    const missing: string[] = [];
+    if (!formData.image) missing.push('Foto (Image)');
+    if (!formData.location?.trim()) missing.push('Location (Nama Tempat)');
+    if (!formData.date) missing.push('Date (Tanggal)');
+
+    if (missing.length > 0) {
+      alert(`Mohon lengkapi field berikut: ${missing.join(', ')}`);
       return;
     }
+
+    const payload = {
+      ...formData,
+      coordinates: formData.coordinates?.trim() || '7°15\'S 112°45\'E',
+      altitude: formData.altitude?.trim() || '2329 MDPL',
+      camera: formData.camera?.trim() || 'iPhone',
+      heading: formData.heading?.trim() || '000°',
+    };
 
     try {
       setSubmitting(true);
       if (editingPhoto?.id) {
-        await galleryApi.update(editingPhoto.id, formData);
+        await galleryApi.update(editingPhoto.id, payload);
       } else {
-        await galleryApi.create(formData);
+        await galleryApi.create(payload);
       }
       await mutate();
       closeForm();
@@ -198,16 +211,16 @@ export default function GalleryPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-            <ImageIcon className="w-6 h-6 text-cyan-500" />
+          <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shadow-sm">
+            <ImageIcon className="w-6 h-6 text-[#0891b2]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Gallery Management</h1>
-            <p className="text-sm text-muted-foreground">Manage mission photos and metadata</p>
+            <p className="text-sm text-[#527d85] font-medium">Manage mission photos and metadata</p>
           </div>
         </div>
 
-        <Button onClick={() => openForm()} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+        <Button onClick={() => openForm()} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
           <Plus className="w-4 h-4 mr-2" /> Add Photo
         </Button>
       </div>
@@ -230,7 +243,7 @@ export default function GalleryPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setImageUploadMode('url')}
-                          className={`flex-1 ${imageUploadMode === 'url' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50' : 'bg-white border border-[#B9E7E6] text-[#527d85] border-[#B9E7E6] hover:bg-white/10'}`}
+                          className={`flex-1 ${imageUploadMode === 'url' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50' : 'bg-white border border-[#B9E7E6] text-[#527d85] border-[#B9E7E6] hover:bg-[#E2F4F3]/40'}`}
                         >
                           <Link className="w-4 h-4 mr-2" /> URL
                         </Button>
@@ -239,7 +252,7 @@ export default function GalleryPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setImageUploadMode('upload')}
-                          className={`flex-1 ${imageUploadMode === 'upload' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50' : 'bg-white border border-[#B9E7E6] text-[#527d85] border-[#B9E7E6] hover:bg-white/10'}`}
+                          className={`flex-1 ${imageUploadMode === 'upload' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50' : 'bg-white border border-[#B9E7E6] text-[#527d85] border-[#B9E7E6] hover:bg-[#E2F4F3]/40'}`}
                         >
                           <Upload className="w-4 h-4 mr-2" /> Upload
                         </Button>
@@ -251,7 +264,7 @@ export default function GalleryPage() {
                           required
                           value={formData.image}
                           onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                          className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                          className="bg-white border border-[#B9E7E6]"
                           placeholder="https://example.com/image.jpg"
                         />
                       ) : (
@@ -274,7 +287,7 @@ export default function GalleryPage() {
                         required
                         value={formData.location}
                         onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="bg-white border border-[#B9E7E6]"
                         placeholder="Mt. Everest Summit"
                       />
                     </div>
@@ -286,7 +299,7 @@ export default function GalleryPage() {
                         required
                         value={formData.coordinates}
                         onChange={(e) => setFormData(prev => ({ ...prev, coordinates: e.target.value }))}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="bg-white border border-[#B9E7E6]"
                         placeholder="27°59'N 86°55'E"
                       />
                     </div>
@@ -298,7 +311,7 @@ export default function GalleryPage() {
                         required
                         value={formData.altitude}
                         onChange={(e) => setFormData(prev => ({ ...prev, altitude: e.target.value }))}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="bg-white border border-[#B9E7E6]"
                         placeholder="8848M MSL"
                       />
                     </div>
@@ -310,7 +323,7 @@ export default function GalleryPage() {
                         required
                         value={formData.date}
                         onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="bg-white border border-[#B9E7E6]"
                       />
                     </div>
 
@@ -321,7 +334,7 @@ export default function GalleryPage() {
                         required
                         value={formData.camera}
                         onChange={(e) => setFormData(prev => ({ ...prev, camera: e.target.value }))}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="bg-white border border-[#B9E7E6]"
                         placeholder="Sony A7III"
                       />
                     </div>
@@ -333,17 +346,17 @@ export default function GalleryPage() {
                         required
                         value={formData.heading}
                         onChange={(e) => setFormData(prev => ({ ...prev, heading: e.target.value }))}
-                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
+                        className="bg-white border border-[#B9E7E6]"
                         placeholder="045°"
                       />
                     </div>
                   </div>
 
                   <div className="flex justify-end gap-3 pt-4">
-                    <Button type="button" variant="ghost" onClick={closeForm} className="text-muted-foreground hover:text-white">
+                    <Button type="button" variant="ghost" onClick={closeForm} className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-bold">
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={submitting || isUploading} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+                    <Button type="submit" disabled={submitting || isUploading} className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm">
                       {(submitting || isUploading) ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                       {editingPhoto ? 'Update' : 'Create'}
                     </Button>
