@@ -437,29 +437,29 @@ function CameraFollower({
     const currentPoint = curve.getPointAt(clampedProgress);
     const tangent = curve.getTangentAt(clampedProgress).normalize();
 
-    if (controlsRef.current) {
-      controlsRef.current.target.lerp(currentPoint, delta * 3.2);
-      controlsRef.current.update();
-    }
-
     if (cameraMode === 'chase') {
       const desiredPos = currentPoint.clone()
-        .sub(tangent.clone().multiplyScalar(4.2))
-        .add(new THREE.Vector3(1.2, 1.8, 0));
+        .sub(tangent.clone().multiplyScalar(4.0))
+        .add(new THREE.Vector3(0.8, 1.8, 0));
 
-      state.camera.position.lerp(desiredPos, delta * 3.0);
+      state.camera.position.lerp(desiredPos, delta * 3.5);
+      state.camera.lookAt(currentPoint.clone().add(tangent.clone().multiplyScalar(2.0)));
     }
   });
 
-  return (
-    <OrbitControls
-      ref={controlsRef}
-      enablePan={false}
-      minDistance={2.5}
-      maxDistance={14}
-      maxPolarAngle={Math.PI / 2 - 0.05}
-    />
-  );
+  if (cameraMode === 'orbit') {
+    return (
+      <OrbitControls
+        ref={controlsRef}
+        enablePan={false}
+        minDistance={2.5}
+        maxDistance={16}
+        maxPolarAngle={Math.PI / 2 - 0.05}
+      />
+    );
+  }
+
+  return null;
 }
 
 // ── 2.5D SVG Synthetic Vision Fallback ───────────────────────────────────────
@@ -705,15 +705,14 @@ export function TacticalAirwayTimeline({
               >
                 <Canvas
                   shadows
-                  camera={{ position: [5.5, 3.8, 7.5], fov: 46, near: 0.1, far: 50 }}
+                  camera={{ position: [5.5, 4.2, 8.5], fov: 46, near: 0.1, far: 100 }}
                   dpr={[1, 2]}
                   gl={{ antialias: true, powerPreference: 'high-performance' }}
                 >
                   <color attach="background" args={['#dff2f5']} />
-                  <fog attach="fog" args={['#dff2f5', 9, 26]} />
-                  <ambientLight intensity={0.65} />
-                  <directionalLight position={[12, 16, 9]} intensity={1.2} castShadow />
-                  <directionalLight position={[-9, 6, -6]} intensity={0.4} />
+                  <ambientLight intensity={0.75} />
+                  <directionalLight position={[12, 16, 9]} intensity={1.3} castShadow />
+                  <directionalLight position={[-9, 6, -6]} intensity={0.5} />
 
                   {/* 3D Realistic Mountain Valley Terrain */}
                   <ForeFlightTerrain />
