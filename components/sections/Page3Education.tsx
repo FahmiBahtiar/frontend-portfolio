@@ -21,15 +21,22 @@ import { JourneyScrollStory } from '@/components/features/JourneyScrollStory';
 import { useIsLiteGraphics } from '@/components/providers/GraphicsModeProvider';
 import { useIsMobile } from '@/components/ui/use-mobile';
 
-// WebGL (three.js / R3F) is heavy and GPU-only — load the 3D flythrough as its
-// own client-only chunk, on demand, so it never bloats the section's initial JS.
-// Lite-graphics devices fall back to the lightweight 2D scroll story instead.
-const Journey3DFlythrough = dynamic(
+// WebGL (three.js / R3F) is heavy and GPU-only — load the 3D topographic
+// expedition timeline as its own client-only chunk, on demand, so it never bloats
+// the section's initial JS. Lite-graphics devices fall back to the 2D scroll story.
+const TopographicExpeditionTimeline = dynamic(
   () =>
-    import('@/components/features/Journey3DFlythrough').then((m) => ({
-      default: m.Journey3DFlythrough,
+    import('@/components/features/TopographicExpeditionTimeline').then((m) => ({
+      default: m.TopographicExpeditionTimeline,
     })),
-  { ssr: false, loading: () => <div className="min-h-[520px]" /> },
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-[580px] rounded-3xl border border-[#B9E7E6] bg-white/60 animate-pulse flex items-center justify-center font-mono text-xs text-[#527d85]">
+        Loading 3D Expedition Terrain...
+      </div>
+    ),
+  },
 );
 
 interface Page3EducationProps {
@@ -183,46 +190,26 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
           </p>
         </div>
 
-        {/* Altitude Chart Timeline */}
+        {/* Topographic Expedition Timeline */}
         <div className="mb-20">
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
               <Mountain className="w-6 h-6 text-[#0891b2]" />
-              <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">JOURNEY TIMELINE</h3>
+              <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">EXPEDITION TIMELINE</h3>
             </div>
             <div className="flex-1 h-px bg-[#B9E7E6]" />
             <span className="text-[#527d85] font-mono text-sm hidden sm:block">2010 → Now</span>
           </div>
 
-          <Card className="bg-white/80 border border-[#B9E7E6] mb-8 overflow-hidden shadow-sm">
-            <CardContent className="p-4 bg-[#E2F4F3]/50">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white border border-[#B9E7E6] flex items-center justify-center shrink-0 text-[#0891b2] shadow-sm">
-                  <MapPin className="w-5 h-5 text-[#0891b2]" />
-                </div>
-                <div>
-                  <p className="text-[#0c282d] text-sm font-bold mb-1">
-                    {use2D ? 'Scroll to explore' : 'Fly the journey'}
-                  </p>
-                  <p className="text-[#2d5f68] text-xs font-mono">
-                    {use2D
-                      ? 'The path draws itself as you scroll • Each milestone reveals as you reach it'
-                      : 'Scroll or drag to glide through the 3D journey • Each milestone floats into view'}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-[#B9E7E6] bg-white/90 overflow-hidden shadow-md">
-            <CardContent className={use2D ? 'p-6 md:p-10' : 'p-2 md:p-3'}>
-              {use2D ? (
+          {use2D ? (
+            <Card className="border border-[#B9E7E6] bg-white/90 overflow-hidden shadow-md">
+              <CardContent className="p-6 md:p-10">
                 <JourneyScrollStory educationRecords={educationRecords} />
-              ) : (
-                <Journey3DFlythrough educationRecords={educationRecords} />
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          ) : (
+            <TopographicExpeditionTimeline educationRecords={educationRecords} />
+          )}
         </div>
 
         {/* Achievements Section */}
