@@ -1,20 +1,20 @@
 'use client';
 
-import React, { useState, useRef, useMemo, Suspense } from 'react';
+import React, { useState, useRef, useMemo, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useGLTF, Html } from '@react-three/drei';
+import { OrbitControls, useGLTF, useTexture, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import {
-  Compass,
-  Plane,
-  RotateCcw,
+  Play,
+  Pause,
+  Camera,
   CheckCircle2,
   Calendar,
-  ChevronLeft,
-  ChevronRight,
   Radio,
-  Gauge,
   ArrowUpRight,
+  ChevronRight,
+  ChevronLeft,
+  Navigation,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,18 +30,18 @@ export interface WaypointLeg {
   waypointName: string;
   flightLevel: string;
   altitudeFeet: number;
-  airspeedKnots: number;
+  legDistanceNm: number;
   courseHeading: number;
   flightPhase: string;
+  fixType: 'IAF' | 'IF' | 'FAF' | 'CRZ' | 'DEST';
   degree: string;
   institution: string;
   period: string;
   status: string;
   description: string;
-  // 3D coordinates along the airway flight corridor
+  // Normalized 0.0 to 1.0 position along flight spline
+  tProgress: number;
   coord: [number, number, number];
-  pitchDeg: number;
-  rollDeg: number;
 }
 
 const DEFAULT_WAYPOINTS: WaypointLeg[] = [
@@ -52,18 +52,18 @@ const DEFAULT_WAYPOINTS: WaypointLeg[] = [
     waypointName: 'DEMAK VOR',
     flightLevel: 'FL040',
     altitudeFeet: 4000,
-    airspeedKnots: 180,
-    courseHeading: 45,
+    legDistanceNm: 28.5,
+    courseHeading: 48,
     flightPhase: 'DEPARTURE & INITIAL CLIMB',
+    fixType: 'IAF',
     degree: 'Elementary School',
     institution: 'MI Negeri 1 Demak',
     period: '2010 - 2018',
     status: 'Cleared & Complete',
     description:
       'Building strong academic foundation and character development. Active in journey, survival, and exploration clubs.',
-    coord: [-4.2, -1.8, 2.5],
-    pitchDeg: 14,
-    rollDeg: 5,
+    tProgress: 0.04,
+    coord: [-4.6, 1.25, 3.2],
   },
   {
     id: 'wpt-02-smpn2',
@@ -72,38 +72,38 @@ const DEFAULT_WAYPOINTS: WaypointLeg[] = [
     waypointName: 'SMPN2 FIX',
     flightLevel: 'FL120',
     altitudeFeet: 12000,
-    airspeedKnots: 240,
-    courseHeading: 58,
-    flightPhase: 'EN-ROUTE CLIMB',
+    legDistanceNm: 18.2,
+    courseHeading: 56,
+    flightPhase: 'EN-ROUTE MOUNTAIN CLIMB',
+    fixType: 'IF',
     degree: 'Junior High School',
     institution: 'SMP Negeri 2 Demak',
     period: '2016 - 2019',
     status: 'Cleared & Complete',
     description:
       'Initiated programming journey and algorithmic foundations. First explorations into logic, web development, and digital problem solving.',
-    coord: [-2.1, -0.7, 1.2],
-    pitchDeg: 12,
-    rollDeg: -4,
+    tProgress: 0.26,
+    coord: [-2.1, 1.85, 1.6],
   },
   {
     id: 'wpt-03-kudus',
     order: 3,
     fixCode: 'RUS 03',
-    waypointName: 'KUDUS AIRWAY',
+    waypointName: 'KUDUS PASS',
     flightLevel: 'FL240',
     altitudeFeet: 24000,
-    airspeedKnots: 310,
-    courseHeading: 72,
-    flightPhase: 'TRANSITION LEVEL',
+    legDistanceNm: 22.4,
+    courseHeading: 68,
+    flightPhase: 'TRANSITION RIDGELINE',
+    fixType: 'FAF',
     degree: 'Senior High School',
     institution: 'SMK Raden Umar Said Kudus',
     period: '2019 - 2022',
     status: 'Cleared & Complete',
     description:
       'Deep dive into modern software engineering, 3D graphics pipeline, animation, and responsive web applications at Raden Umar Said.',
-    coord: [0.0, 0.4, 0.0],
-    pitchDeg: 8,
-    rollDeg: 8,
+    tProgress: 0.50,
+    coord: [0.3, 2.45, 0.1],
   },
   {
     id: 'wpt-04-binar',
@@ -112,18 +112,18 @@ const DEFAULT_WAYPOINTS: WaypointLeg[] = [
     waypointName: 'BINAR TRANSIT',
     flightLevel: 'FL320',
     altitudeFeet: 32000,
-    airspeedKnots: 390,
-    courseHeading: 84,
-    flightPhase: 'CRUISE LEVEL',
+    legDistanceNm: 15.8,
+    courseHeading: 82,
+    flightPhase: 'HIGH ALTITUDE CRUISE',
+    fixType: 'CRZ',
     degree: 'Djarum Foundation Scholarship',
     institution: 'Binar Academy',
     period: '2021 - 2021',
     status: 'Cleared & Complete',
     description:
       'Specialized intensive computer science scholarship. Mastery in full-stack architecture, clean code principles, and collaborative agile engineering.',
-    coord: [2.2, 1.3, -1.2],
-    pitchDeg: 4,
-    rollDeg: -6,
+    tProgress: 0.74,
+    coord: [2.5, 3.05, -1.5],
   },
   {
     id: 'wpt-05-udinus',
@@ -132,181 +132,143 @@ const DEFAULT_WAYPOINTS: WaypointLeg[] = [
     waypointName: 'SEMARANG ILS',
     flightLevel: 'FL380',
     altitudeFeet: 38000,
-    airspeedKnots: 450,
+    legDistanceNm: 34.0,
     courseHeading: 90,
-    flightPhase: 'CRUISE & ADVANCED OPS',
+    flightPhase: 'TERMINAL CRUISE & ADVANCED OPS',
+    fixType: 'DEST',
     degree: 'Bachelor Degree (Informatics)',
     institution: 'Dian Nuswantoro University',
     period: '2022 - 2026',
     status: 'Active En-Route',
     description:
       'Pursuing Bachelor of Computer Science. Researching distributed systems, cloud infrastructure, AI agents, and high-performance interactive 3D web technologies.',
-    coord: [4.4, 2.1, -2.4],
-    pitchDeg: 2,
-    rollDeg: 2,
+    tProgress: 0.96,
+    coord: [4.6, 3.65, -2.8],
   },
 ];
 
-// Preload 3D jet asset
+// Preload 3D assets
 if (typeof window !== 'undefined') {
   useGLTF.preload('/models/aircraft/jet.glb');
+  useGLTF.preload('/models/terrain/puncak_jaya.glb');
 }
 
-// ── 3D Aircraft Model with Aerodynamic Banking ──────────────────────────────
-function TacticalJetAircraft({
-  targetCoord,
-  pitchDeg,
-  rollDeg,
-  courseHeading,
-}: {
-  targetCoord: [number, number, number];
-  pitchDeg: number;
-  rollDeg: number;
-  courseHeading: number;
-}) {
-  const gltf = useGLTF('/models/aircraft/jet.glb');
-  const groupRef = useRef<THREE.Group>(null);
+// ── Realistic 3D Mountain Terrain ───────────────────────────────────────────
+function ForeFlightTerrain() {
+  const gltf = useGLTF('/models/terrain/puncak_jaya.glb');
+  const texture = useTexture('/models/terrain/puncak_jaya.jpg');
 
-  // Clone scene so materials/instances don't collide
-  const sceneClone = useMemo(() => {
-    const clone = gltf.scene.clone(true);
-    // Orient jet: nose points towards flight direction (+X or +Z based on source)
-    clone.traverse((child) => {
+  useMemo(() => {
+    texture.wrapS = THREE.ClampToEdgeWrapping;
+    texture.wrapT = THREE.ClampToEdgeWrapping;
+
+    gltf.scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
-        mesh.castShadow = true;
+        mesh.material = new THREE.MeshStandardMaterial({
+          map: texture,
+          roughness: 0.9,
+          metalness: 0.08,
+          flatShading: false,
+        });
         mesh.receiveShadow = true;
       }
     });
-    return clone;
-  }, [gltf.scene]);
-
-  useFrame((state, delta) => {
-    if (!groupRef.current) return;
-    const t = state.clock.getElapsedTime();
-
-    // Smooth position interpolation towards target waypoint
-    groupRef.current.position.x = THREE.MathUtils.damp(
-      groupRef.current.position.x,
-      targetCoord[0],
-      3.2,
-      delta
-    );
-    groupRef.current.position.y = THREE.MathUtils.damp(
-      groupRef.current.position.y,
-      targetCoord[1],
-      3.2,
-      delta
-    );
-    groupRef.current.position.z = THREE.MathUtils.damp(
-      groupRef.current.position.z,
-      targetCoord[2],
-      3.2,
-      delta
-    );
-
-    // Subtle atmospheric turbulence roll/pitch oscillation
-    const turbRoll = Math.sin(t * 1.8) * 0.035;
-    const turbPitch = Math.cos(t * 1.4) * 0.02;
-    const turbYaw = Math.sin(t * 0.9) * 0.015;
-
-    // Convert target angles to radians
-    const targetPitchRad = THREE.MathUtils.degToRad(pitchDeg) + turbPitch;
-    const targetRollRad = THREE.MathUtils.degToRad(rollDeg) + turbRoll;
-    const targetYawRad = THREE.MathUtils.degToRad(-courseHeading + 90) + turbYaw;
-
-    // Interpolate rotations
-    groupRef.current.rotation.x = THREE.MathUtils.damp(
-      groupRef.current.rotation.x,
-      targetPitchRad,
-      3.5,
-      delta
-    );
-    groupRef.current.rotation.y = THREE.MathUtils.damp(
-      groupRef.current.rotation.y,
-      targetYawRad,
-      3.5,
-      delta
-    );
-    groupRef.current.rotation.z = THREE.MathUtils.damp(
-      groupRef.current.rotation.z,
-      targetRollRad,
-      3.5,
-      delta
-    );
-  });
+  }, [gltf, texture]);
 
   return (
-    <group ref={groupRef} position={[targetCoord[0], targetCoord[1], targetCoord[2]]}>
-      {/* Scaled & oriented jet mesh: jet.glb is ~42m, scale 0.045 fits unit world */}
-      <primitive
-        object={sceneClone}
-        scale={[0.045, 0.045, 0.045]}
-        rotation={[0, -Math.PI / 2, 0]}
-      />
-
-      {/* Engine Afterburner / Contrail Vapor Trails */}
-      <group position={[-0.45, -0.05, 0.85]}>
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.02, 0.06, 1.2, 8]} />
-          <meshBasicMaterial color="#6FD4E1" transparent opacity={0.45} />
-        </mesh>
-      </group>
-      <group position={[0.45, -0.05, 0.85]}>
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.02, 0.06, 1.2, 8]} />
-          <meshBasicMaterial color="#6FD4E1" transparent opacity={0.45} />
-        </mesh>
-      </group>
-    </group>
+    <primitive
+      object={gltf.scene}
+      scale={[0.00034, 0.00034, 0.00042]}
+      rotation={[-Math.PI / 2, 0, -0.22]}
+      position={[0, -0.15, 0]}
+    />
   );
 }
 
-// ── Highway In The Sky (HITS) Pathway Gate Rectangles ─────────────────────────
-function PathwayGates({
+// ── 3D Flight Corridor Curtain (ForeFlight Vertical Terrain Projection) ─────
+function ForeFlightTerrainCurtain({
+  curve,
   waypoints,
   selectedIdx,
   onSelectWaypoint,
 }: {
+  curve: THREE.CatmullRomCurve3;
   waypoints: WaypointLeg[];
   selectedIdx: number;
   onSelectWaypoint: (idx: number) => void;
 }) {
-  // Generate curve through all waypoints
-  const points = useMemo(
-    () => waypoints.map((w) => new THREE.Vector3(...w.coord)),
-    [waypoints]
-  );
-  const curve = useMemo(
-    () => new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.2),
-    [points]
-  );
+  // Generate curtain ribbon geometry connecting flight path down to terrain floor
+  const curtainGeometry = useMemo(() => {
+    const segments = 90;
+    const points = curve.getPoints(segments);
+    const vertices: number[] = [];
+    const colors: number[] = [];
+    const indices: number[] = [];
 
-  // Generate intermediate points along flight corridor
-  const corridorPoints = useMemo(() => curve.getPoints(80), [curve]);
-  const corridorLineGeometry = useMemo(() => {
-    return new THREE.BufferGeometry().setFromPoints(corridorPoints);
-  }, [corridorPoints]);
+    const topColor = new THREE.Color('#6FD4E1'); // Arctic cyan
+    const bottomColor = new THREE.Color('#a855f7'); // Purple/magenta like ForeFlight
+
+    const groundBaseY = 0.25;
+
+    for (let i = 0; i <= segments; i++) {
+      const pt = points[i];
+      // Top vertex (flight trajectory)
+      vertices.push(pt.x, pt.y, pt.z);
+      colors.push(topColor.r, topColor.g, topColor.b);
+
+      // Bottom vertex (terrain baseline)
+      vertices.push(pt.x, groundBaseY, pt.z);
+      colors.push(bottomColor.r, bottomColor.g, bottomColor.b);
+    }
+
+    for (let i = 0; i < segments; i++) {
+      const i2 = i * 2;
+      indices.push(i2, i2 + 1, i2 + 2);
+      indices.push(i2 + 2, i2 + 1, i2 + 3);
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    geo.setIndex(indices);
+    geo.computeVertexNormals();
+    return geo;
+  }, [curve]);
+
+  // Corridor spline line
+  const splineLineGeometry = useMemo(() => {
+    const pts = curve.getPoints(120);
+    return new THREE.BufferGeometry().setFromPoints(pts);
+  }, [curve]);
 
   return (
     <group>
-      {/* Core Airway Flight Corridor Line */}
-      <primitive object={new THREE.Line(corridorLineGeometry, new THREE.LineBasicMaterial({
-        color: '#0891b2',
-        linewidth: 3,
-        transparent: true,
-        opacity: 0.85,
-      }))} />
+      {/* Vertical Projection Curtain (ForeFlight Signature) */}
+      <mesh geometry={curtainGeometry}>
+        <meshBasicMaterial
+          vertexColors
+          side={THREE.DoubleSide}
+          transparent
+          opacity={0.38}
+          depthWrite={false}
+        />
+      </mesh>
 
-      {/* Outer Cyan Flight Glow Line */}
-      <primitive object={new THREE.Line(corridorLineGeometry, new THREE.LineBasicMaterial({
-        color: '#6FD4E1',
-        linewidth: 6,
-        transparent: true,
-        opacity: 0.35,
-      }))} />
+      {/* Luminous Top Trajectory Spline Line */}
+      <primitive
+        object={
+          new THREE.Line(
+            splineLineGeometry,
+            new THREE.LineBasicMaterial({
+              color: '#0891b2',
+              linewidth: 3,
+            })
+          )
+        }
+      />
 
-      {/* Waypoint Stations & Highway In The Sky Gates */}
+      {/* 3D Floating Waypoint Badges */}
       {waypoints.map((wpt, idx) => {
         const isSelected = idx === selectedIdx;
         const [x, y, z] = wpt.coord;
@@ -320,51 +282,41 @@ function PathwayGates({
               onSelectWaypoint(idx);
             }}
           >
-            {/* Outer HITS Gate Ring */}
-            <mesh rotation={[0, -THREE.MathUtils.degToRad(wpt.courseHeading - 90), 0]}>
-              <ringGeometry args={[isSelected ? 0.75 : 0.55, isSelected ? 0.82 : 0.6, 32]} />
-              <meshBasicMaterial
-                color={isSelected ? '#0891b2' : '#6FD4E1'}
-                side={THREE.DoubleSide}
-                transparent
-                opacity={isSelected ? 0.95 : 0.55}
-              />
-            </mesh>
-
-            {/* Inner Reticle Gate Box */}
-            <mesh rotation={[0, -THREE.MathUtils.degToRad(wpt.courseHeading - 90), 0]}>
-              <ringGeometry args={[isSelected ? 0.45 : 0.35, isSelected ? 0.48 : 0.38, 4]} />
-              <meshBasicMaterial
-                color={isSelected ? '#FFFFFF' : '#B9E7E6'}
-                side={THREE.DoubleSide}
-                transparent
-                opacity={isSelected ? 0.9 : 0.4}
-              />
-            </mesh>
-
-            {/* Waypoint Beacon Pulse */}
+            {/* Waypoint Beacon Sphere */}
             <mesh>
               <sphereGeometry args={[isSelected ? 0.16 : 0.1, 16, 16]} />
               <meshStandardMaterial
                 color={isSelected ? '#0891b2' : '#6FD4E1'}
                 emissive={isSelected ? '#0891b2' : '#6FD4E1'}
-                emissiveIntensity={isSelected ? 0.8 : 0.3}
+                emissiveIntensity={isSelected ? 1.0 : 0.4}
               />
             </mesh>
 
-            {/* 3D Nav Label Pin */}
-            <Html position={[0, isSelected ? 1.05 : 0.85, 0]} center distanceFactor={14}>
+            {/* Vertical Marker Drop Line */}
+            <line>
+              <bufferGeometry
+                attach="geometry"
+                {...new THREE.BufferGeometry().setFromPoints([
+                  new THREE.Vector3(0, 0, 0),
+                  new THREE.Vector3(0, -y + 0.25, 0),
+                ])}
+              />
+              <lineBasicMaterial attach="material" color="#0891b2" transparent opacity={0.5} />
+            </line>
+
+            {/* Floating ForeFlight Billboard Badge */}
+            <Html position={[0, isSelected ? 0.95 : 0.75, 0]} center distanceFactor={13}>
               <div
                 onClick={() => onSelectWaypoint(idx)}
-                className={`transition-all duration-300 pointer-events-auto cursor-pointer select-none px-2.5 py-1 rounded-md border text-[11px] font-mono tracking-wider shadow-sm flex items-center gap-1.5 whitespace-nowrap ${
+                className={`transition-all duration-300 pointer-events-auto cursor-pointer select-none px-2.5 py-1.5 rounded-lg border text-[11px] font-mono tracking-wider shadow-md flex items-center gap-1.5 whitespace-nowrap ${
                   isSelected
-                    ? 'bg-[#0891b2] text-white border-white ring-2 ring-[#6FD4E1]/60 font-bold scale-110'
-                    : 'bg-white/90 text-[#0c282d] border-[#B9E7E6] hover:bg-[#E2F4F3]'
+                    ? 'bg-[#0891b2] text-white border-white ring-2 ring-[#6FD4E1]/80 font-bold scale-110 shadow-cyan-500/20'
+                    : 'bg-white/95 text-[#0c282d] border-[#B9E7E6] hover:bg-[#E2F4F3]'
                 }`}
               >
                 <Radio className={`w-3 h-3 ${isSelected ? 'animate-pulse text-white' : 'text-[#0891b2]'}`} />
                 <span>{wpt.fixCode}</span>
-                <span className="opacity-75 text-[10px]">{wpt.flightLevel}</span>
+                <span className="opacity-80 text-[10px]">({wpt.altitudeFeet.toLocaleString()}&apos;)</span>
               </div>
             </Html>
           </group>
@@ -374,75 +326,164 @@ function PathwayGates({
   );
 }
 
-// ── Smooth Camera Following ──────────────────────────────────────────────────
-function TacticalCameraController({ targetCoord }: { targetCoord: [number, number, number] }) {
+// ── 3D Aircraft with Dynamic Aerodynamic Banking ────────────────────────────
+function TrackingAircraft({
+  curve,
+  progress,
+}: {
+  curve: THREE.CatmullRomCurve3;
+  progress: number;
+}) {
+  const gltf = useGLTF('/models/aircraft/jet.glb');
+  const groupRef = useRef<THREE.Group>(null);
+
+  const sceneClone = useMemo(() => {
+    const clone = gltf.scene.clone(true);
+    clone.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        mesh.castShadow = true;
+      }
+    });
+    return clone;
+  }, [gltf.scene]);
+
+  useFrame(() => {
+    if (!groupRef.current) return;
+
+    // Get position and tangent along the flight path
+    const clampedProgress = Math.max(0.001, Math.min(0.999, progress));
+    const currentPoint = curve.getPointAt(clampedProgress);
+    const tangent = curve.getTangentAt(clampedProgress).normalize();
+
+    groupRef.current.position.copy(currentPoint);
+
+    // Look ahead along tangent
+    const lookTarget = currentPoint.clone().add(tangent);
+    groupRef.current.lookAt(lookTarget);
+
+    // Compute dynamic banking (roll) from turn rate
+    const nextProgress = Math.min(0.999, clampedProgress + 0.02);
+    const nextTangent = curve.getTangentAt(nextProgress).normalize();
+    const crossY = tangent.x * nextTangent.z - tangent.z * nextTangent.x;
+    const targetBankRad = THREE.MathUtils.clamp(crossY * 75, -0.65, 0.65);
+
+    // Apply roll around local Z axis
+    groupRef.current.rotateZ(targetBankRad);
+  });
+
+  return (
+    <group ref={groupRef}>
+      {/* Scaled jet mesh */}
+      <primitive
+        object={sceneClone}
+        scale={[0.042, 0.042, 0.042]}
+        rotation={[0, -Math.PI / 2, 0]}
+      />
+
+      {/* Twin Engine Contrail Trails */}
+      <group position={[-0.42, -0.04, 0.9]}>
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.02, 0.08, 1.4, 8]} />
+          <meshBasicMaterial color="#6FD4E1" transparent opacity={0.5} />
+        </mesh>
+      </group>
+      <group position={[0.42, -0.04, 0.9]}>
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.02, 0.08, 1.4, 8]} />
+          <meshBasicMaterial color="#6FD4E1" transparent opacity={0.5} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+// ── Camera Controller (Chase vs Free Orbit) ─────────────────────────────────
+function FlightCameraController({
+  curve,
+  progress,
+  cameraMode,
+}: {
+  curve: THREE.CatmullRomCurve3;
+  progress: number;
+  cameraMode: 'chase' | 'orbit';
+}) {
   useFrame((state, delta) => {
-    // Offset camera slightly behind and above the aircraft
-    const desiredPos = new THREE.Vector3(
-      targetCoord[0] + 3.8,
-      targetCoord[1] + 2.2,
-      targetCoord[2] + 4.8
-    );
-    state.camera.position.lerp(desiredPos, delta * 2.5);
-    state.camera.lookAt(targetCoord[0], targetCoord[1] + 0.3, targetCoord[2]);
+    if (cameraMode !== 'chase') return;
+
+    const clampedProgress = Math.max(0.001, Math.min(0.999, progress));
+    const currentPoint = curve.getPointAt(clampedProgress);
+    const tangent = curve.getTangentAt(clampedProgress).normalize();
+
+    // ForeFlight elevated rear 3/4 chase camera
+    const desiredPos = currentPoint.clone()
+      .sub(tangent.clone().multiplyScalar(3.8))
+      .add(new THREE.Vector3(0.8, 1.6, 0));
+
+    state.camera.position.lerp(desiredPos, delta * 3.5);
+    state.camera.lookAt(currentPoint.clone().add(tangent.clone().multiplyScalar(2.2)));
   });
 
   return null;
 }
 
-// ── Resilient 2.5D SVG Synthetic Vision Fallback ─────────────────────────────
-function SyntheticVisionFallback({
+// ── 2.5D SVG Synthetic Vision Fallback ───────────────────────────────────────
+function ForeFlightSvgFallback({
   waypoints,
   selectedIdx,
+  progress,
   onSelectWaypoint,
 }: {
   waypoints: WaypointLeg[];
   selectedIdx: number;
+  progress: number;
   onSelectWaypoint: (idx: number) => void;
 }) {
+  const currentWpt = waypoints[selectedIdx];
+  const aircraftX = 100 + progress * 600;
+  const aircraftY = 380 - progress * 250;
 
   return (
-    <div className="w-full h-full relative flex items-center justify-center p-4 sm:p-6 select-none bg-gradient-to-b from-[#E2F4F3]/60 via-white to-[#F2FBFB] overflow-hidden">
+    <div className="w-full h-full relative flex items-center justify-center p-4 sm:p-6 select-none bg-gradient-to-b from-[#E2F4F3]/70 via-white to-[#F2FBFB] overflow-hidden">
       <svg viewBox="0 0 800 480" className="w-full h-full max-h-[460px]" fill="none">
         <defs>
-          <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#E2F4F3" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.4" />
+          <linearGradient id="curtainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#6FD4E1" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#a855f7" stopOpacity="0.15" />
           </linearGradient>
-          <linearGradient id="pathLineGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#6FD4E1" />
-            <stop offset="100%" stopColor="#0891b2" />
+          <linearGradient id="mountainBase" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor="#E2F4F3" />
+            <stop offset="100%" stopColor="#B9E7E6" />
           </linearGradient>
         </defs>
 
-        {/* Artificial Horizon Pitch Ladder */}
-        <line x1="160" y1="240" x2="640" y2="240" stroke="#B9E7E6" strokeWidth="1.5" strokeDasharray="6 4" />
-        <line x1="320" y1="180" x2="480" y2="180" stroke="#0891b2" strokeWidth="1" opacity="0.3" />
-        <line x1="320" y1="300" x2="480" y2="300" stroke="#0891b2" strokeWidth="1" opacity="0.3" />
-        <text x="500" y="184" fill="#527d85" fontFamily="monospace" fontSize="10">+10°</text>
-        <text x="500" y="304" fill="#527d85" fontFamily="monospace" fontSize="10">-10°</text>
+        {/* Mountain Valley Silhouettes */}
+        <path d="M 40 440 Q 220 300 400 390 Q 580 260 760 440 Z" fill="url(#mountainBase)" opacity="0.6" />
+        <path d="M 0 440 Q 280 340 500 420 Q 650 320 800 440 Z" fill="url(#mountainBase)" opacity="0.4" />
 
-        {/* 3D Perspective Flight Corridor Lines */}
-        <line x1="80" y1="440" x2="400" y2="180" stroke="#6FD4E1" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.5" />
-        <line x1="720" y1="440" x2="400" y2="180" stroke="#6FD4E1" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.5" />
-
-        {/* Flight Path Spline */}
+        {/* Vertical Projection Curtain */}
         <path
-          d="M 120 400 Q 280 320 400 240 T 680 120"
-          stroke="url(#pathLineGrad)"
+          d="M 100 380 Q 250 320 400 240 T 700 130 L 700 420 L 100 420 Z"
+          fill="url(#curtainGrad)"
+        />
+
+        {/* Flight Trajectory Spline Line */}
+        <path
+          d="M 100 380 Q 250 320 400 240 T 700 130"
+          stroke="#0891b2"
           strokeWidth="4"
           fill="none"
           strokeLinecap="round"
         />
 
-        {/* Waypoint Rectangles (Highway in the Sky) */}
+        {/* Waypoints */}
         {waypoints.map((wpt, idx) => {
           const coords = [
-            [120, 400],
-            [240, 330],
+            [100, 380],
+            [230, 325],
             [370, 260],
-            [510, 190],
-            [660, 130],
+            [520, 195],
+            [680, 135],
           ];
           const [cx, cy] = coords[idx];
           const isSelected = idx === selectedIdx;
@@ -453,21 +494,6 @@ function SyntheticVisionFallback({
               onClick={() => onSelectWaypoint(idx)}
               className="cursor-pointer group"
             >
-              {/* Pathway Box Gate */}
-              <rect
-                x={cx - (isSelected ? 34 : 26)}
-                y={cy - (isSelected ? 34 : 26)}
-                width={isSelected ? 68 : 52}
-                height={isSelected ? 68 : 52}
-                rx="6"
-                fill={isSelected ? '#6FD4E1' : '#E2F4F3'}
-                fillOpacity={isSelected ? 0.3 : 0.15}
-                stroke={isSelected ? '#0891b2' : '#6FD4E1'}
-                strokeWidth={isSelected ? 2.5 : 1.5}
-                className="transition-all duration-300"
-              />
-
-              {/* Waypoint Center Node */}
               <circle
                 cx={cx}
                 cy={cy}
@@ -476,26 +502,29 @@ function SyntheticVisionFallback({
                 stroke={isSelected ? '#FFFFFF' : '#0891b2'}
                 strokeWidth={2}
               />
-
-              {/* Waypoint Tag */}
+              <line x1={cx} y1={cy} x2={cx} y2={420} stroke="#0891b2" strokeWidth="1" strokeDasharray="3 3" opacity="0.4" />
               <text
-                x={cx + 38}
+                x={cx + 12}
                 y={cy + 4}
                 fill="#0c282d"
                 fontFamily="monospace"
                 fontSize={isSelected ? '12' : '10'}
                 fontWeight={isSelected ? 'bold' : 'normal'}
               >
-                {wpt.fixCode} • {wpt.flightLevel}
+                {wpt.fixCode} ({wpt.altitudeFeet.toLocaleString()}&apos;)
               </text>
             </g>
           );
         })}
 
-        {/* Aircraft Symbol Crosshair */}
-        <g transform={`translate(${[120, 240, 370, 510, 660][selectedIdx]}, ${[400, 330, 260, 190, 130][selectedIdx]})`}>
-          <circle cx="0" cy="0" r="16" fill="none" stroke="#0891b2" strokeWidth="1.5" strokeDasharray="3 3" />
-          <path d="M -18 0 L -6 0 M 6 0 L 18 0 M 0 -18 L 0 -6 M 0 6 L 0 18" stroke="#0891b2" strokeWidth="2" />
+        {/* Live Aircraft Symbol */}
+        <g transform={`translate(${aircraftX}, ${aircraftY})`}>
+          <circle cx="0" cy="0" r="14" fill="#0891b2" fillOpacity="0.2" className="animate-ping" />
+          <circle cx="0" cy="0" r="8" fill="#0891b2" stroke="#FFFFFF" strokeWidth="2" />
+          <path d="M -12 0 L 12 0 M 0 -12 L 0 12" stroke="#0891b2" strokeWidth="1.5" />
+          <text x="14" y="4" fill="#0891b2" fontFamily="monospace" fontSize="11" fontWeight="bold">
+            {currentWpt.fixCode} • {Math.round(4000 + progress * 34000).toLocaleString()}&apos; MSL
+          </text>
         </g>
       </svg>
     </div>
@@ -509,7 +538,11 @@ export function TacticalAirwayTimeline({
   educationRecords?: Education[];
 }) {
   const [selectedIdx, setSelectedIdx] = useState(0);
-  const [autoRotate, setAutoRotate] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
+  const [progress, setProgress] = useState(0.04);
+  const [cameraMode, setCameraMode] = useState<'chase' | 'orbit'>('chase');
+
   const [webGLSupported] = useState<boolean>(() => {
     if (typeof window === 'undefined') return true;
     try {
@@ -520,11 +553,12 @@ export function TacticalAirwayTimeline({
     }
   });
 
-  // Merge dynamic education records with aviation telemetry
+  // Merge dynamic education records
   const waypoints = useMemo(() => {
-    const raw = educationRecords && educationRecords.length > 0
-      ? educationRecords
-      : FALLBACK_EDUCATION_RECORDS;
+    const raw =
+      educationRecords && educationRecords.length > 0
+        ? educationRecords
+        : FALLBACK_EDUCATION_RECORDS;
 
     return DEFAULT_WAYPOINTS.map((wpt, idx) => {
       const matched = raw[idx];
@@ -539,128 +573,233 @@ export function TacticalAirwayTimeline({
     });
   }, [educationRecords]);
 
+  // Construct 3D flight trajectory curve
+  const curve = useMemo(() => {
+    const points = waypoints.map((w) => new THREE.Vector3(...w.coord));
+    return new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.25);
+  }, [waypoints]);
+
+  // Active tracking playback loop
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    let animId: number;
+    let lastTime = performance.now();
+
+    const tick = (now: number) => {
+      const delta = (now - lastTime) / 1000;
+      lastTime = now;
+
+      setProgress((prev) => {
+        const next = prev + delta * 0.05 * playbackSpeed;
+        if (next >= 0.999) return 0.001; // Loop back smoothly
+        return next;
+      });
+
+      animId = requestAnimationFrame(tick);
+    };
+
+    animId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animId);
+  }, [isPlaying, playbackSpeed]);
+
+  // Auto-sync selected milestone based on flight progress
+  useEffect(() => {
+    for (let i = waypoints.length - 1; i >= 0; i--) {
+      if (progress >= waypoints[i].tProgress - 0.08) {
+        setSelectedIdx(i);
+        break;
+      }
+    }
+  }, [progress, waypoints]);
+
   const currentWpt = waypoints[selectedIdx];
+  const liveAltitude = Math.round(4000 + progress * 34000);
+  const liveSpeedKnots = Math.round(180 + progress * 270);
+
+  const handleSelectWaypoint = (idx: number) => {
+    setSelectedIdx(idx);
+    setProgress(waypoints[idx].tProgress);
+  };
 
   const handlePrev = () => {
-    setSelectedIdx((prev) => (prev > 0 ? prev - 1 : waypoints.length - 1));
+    const nextIdx = selectedIdx > 0 ? selectedIdx - 1 : waypoints.length - 1;
+    handleSelectWaypoint(nextIdx);
   };
 
   const handleNext = () => {
-    setSelectedIdx((prev) => (prev < waypoints.length - 1 ? prev + 1 : 0));
+    const nextIdx = selectedIdx < waypoints.length - 1 ? selectedIdx + 1 : 0;
+    handleSelectWaypoint(nextIdx);
   };
 
   return (
     <div className="w-full flex flex-col gap-6">
-      {/* Flight Plan HUD & 3D Glass Cockpit Main Grid */}
+      {/* Main 3D ForeFlight Stage & EFB Drawer */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* 3D Glass Cockpit / Tactical Airway Viewport (Left 7 Cols) */}
-        <div className="lg:col-span-7 rounded-3xl border border-[#B9E7E6] bg-gradient-to-b from-[#F2FBFB] via-white to-[#E2F4F3]/40 overflow-hidden shadow-lg relative min-h-[440px] md:min-h-[520px] flex flex-col">
-          {/* Top HUD Telemetry Banner */}
+        {/* Left 3D Synthetic Vision Viewport (7 Cols) */}
+        <div className="lg:col-span-7 rounded-3xl border border-[#B9E7E6] bg-gradient-to-b from-[#F2FBFB] via-white to-[#E2F4F3]/40 overflow-hidden shadow-xl relative min-h-[480px] md:min-h-[560px] flex flex-col">
+          {/* Top ForeFlight Header Bar */}
           <div className="absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
-            {/* Navigation Mode Annunciator */}
+            {/* Live Altitude MSL Pill (ForeFlight Signature) */}
             <div className="pointer-events-auto flex items-center gap-2 bg-white/95 backdrop-blur-md border border-[#B9E7E6] px-3.5 py-1.5 rounded-full shadow-sm text-xs font-mono text-[#0c282d]">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-bold text-[#0891b2]">IFR AIRWAY</span>
-              <span className="text-[#527d85]">•</span>
-              <span>LNAV / VNAV</span>
+              <span className="font-bold text-[#0891b2] text-sm">
+                {liveAltitude.toLocaleString()}&apos; ALT MSL
+              </span>
               <span className="text-[#527d85] hidden sm:inline">•</span>
-              <span className="hidden sm:inline font-bold">{currentWpt.fixCode}</span>
+              <span className="text-[#527d85] hidden sm:inline">{liveSpeedKnots} KT GS</span>
             </div>
 
-            {/* Flight Level & Heading Bug */}
-            <div className="pointer-events-auto flex items-center gap-1.5 bg-white/95 backdrop-blur-md border border-[#B9E7E6] px-3 py-1.5 rounded-full shadow-sm text-xs font-mono text-[#2d5f68]">
-              <Compass className="w-3.5 h-3.5 text-[#0891b2]" />
-              <span>HDG {String(currentWpt.courseHeading).padStart(3, '0')}°</span>
-              <span className="text-[#B9E7E6]">|</span>
-              <Gauge className="w-3.5 h-3.5 text-[#0891b2]" />
-              <span>{currentWpt.airspeedKnots} KT</span>
+            {/* Route Header Badge */}
+            <div className="pointer-events-auto flex items-center gap-2 bg-white/95 backdrop-blur-md border border-[#B9E7E6] px-3.5 py-1.5 rounded-full shadow-sm text-xs font-mono text-[#2d5f68]">
+              <Navigation className="w-3.5 h-3.5 text-[#0891b2]" />
+              <span className="font-bold text-[#0c282d]">DMK ➔ UDN</span>
+              <span className="text-[#527d85] hidden md:inline">• 3D ROUTE PREVIEW</span>
             </div>
           </div>
 
-          {/* 3D Canvas / Synthetic Vision Fallback */}
-          <div className="flex-1 w-full h-full relative cursor-grab active:cursor-grabbing min-h-[380px]">
+          {/* 3D Canvas / Synthetic Vision */}
+          <div className="flex-1 w-full h-full relative cursor-grab active:cursor-grabbing min-h-[400px]">
             {webGLSupported ? (
               <Suspense
                 fallback={
                   <div className="w-full h-full flex items-center justify-center font-mono text-sm text-[#527d85]">
-                    Loading 3D Flight Corridor...
+                    Loading ForeFlight 3D Valley Terrain...
                   </div>
                 }
               >
                 <Canvas
                   shadows
-                  camera={{ position: [5.5, 3.2, 7.5], fov: 46, near: 0.1, far: 50 }}
+                  camera={{ position: [5.5, 3.8, 7.5], fov: 46, near: 0.1, far: 50 }}
                   dpr={[1, 2]}
                   gl={{ antialias: true, powerPreference: 'high-performance' }}
                 >
                   <color attach="background" args={['#F4FAFA']} />
                   <ambientLight intensity={1.1} />
-                  <directionalLight position={[10, 15, 8]} intensity={1.5} castShadow />
-                  <directionalLight position={[-8, 6, -5]} intensity={0.6} />
+                  <directionalLight position={[12, 16, 9]} intensity={1.5} castShadow />
+                  <directionalLight position={[-9, 6, -6]} intensity={0.6} />
 
-                  {/* Smooth Tactical Camera Controller */}
-                  <TacticalCameraController targetCoord={currentWpt.coord} />
+                  {/* 3D Realistic Mountain Valley Terrain */}
+                  <ForeFlightTerrain />
 
-                  {/* Highway In The Sky Pathway Gates */}
-                  <PathwayGates
+                  {/* Vertical Projection Curtain (ForeFlight Signature) */}
+                  <ForeFlightTerrainCurtain
+                    curve={curve}
                     waypoints={waypoints}
                     selectedIdx={selectedIdx}
-                    onSelectWaypoint={setSelectedIdx}
+                    onSelectWaypoint={handleSelectWaypoint}
                   />
 
-                  {/* 3D Jet Aircraft Model */}
-                  <TacticalJetAircraft
-                    targetCoord={currentWpt.coord}
-                    pitchDeg={currentWpt.pitchDeg}
-                    rollDeg={currentWpt.rollDeg}
-                    courseHeading={currentWpt.courseHeading}
+                  {/* Moving 3D Aircraft with Dynamic Banking */}
+                  <TrackingAircraft curve={curve} progress={progress} />
+
+                  {/* Camera Controller */}
+                  <FlightCameraController
+                    curve={curve}
+                    progress={progress}
+                    cameraMode={cameraMode}
                   />
 
-                  <OrbitControls
-                    autoRotate={autoRotate}
-                    autoRotateSpeed={0.8}
-                    enablePan={false}
-                    minDistance={3.5}
-                    maxDistance={12}
-                    maxPolarAngle={Math.PI / 2 - 0.05}
-                  />
+                  {cameraMode === 'orbit' && (
+                    <OrbitControls
+                      enablePan={false}
+                      minDistance={3.2}
+                      maxDistance={14}
+                      maxPolarAngle={Math.PI / 2 - 0.05}
+                    />
+                  )}
                 </Canvas>
               </Suspense>
             ) : (
-              <SyntheticVisionFallback
+              <ForeFlightSvgFallback
                 waypoints={waypoints}
                 selectedIdx={selectedIdx}
-                onSelectWaypoint={setSelectedIdx}
+                progress={progress}
+                onSelectWaypoint={handleSelectWaypoint}
               />
             )}
           </div>
 
-          {/* Bottom HUD Altimeter & Controls */}
-          <div className="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
-            {/* Altimeter Telemetry Pill */}
-            <div className="pointer-events-auto flex items-center gap-2 bg-white/95 backdrop-blur-md border border-[#B9E7E6] px-3.5 py-1.5 rounded-full shadow-sm font-mono text-xs text-[#0c282d]">
-              <Plane className="w-4 h-4 text-[#0891b2]" />
-              <span className="font-bold text-[#0891b2]">{currentWpt.flightLevel}</span>
-              <span className="text-[#527d85]">({currentWpt.altitudeFeet.toLocaleString()} FT ASL)</span>
+          {/* Bottom Flight Tracking Playback Scrubber (ForeFlight Controller) */}
+          <div className="absolute bottom-4 left-4 right-4 z-20 bg-white/95 backdrop-blur-md border border-[#B9E7E6] p-3 sm:p-3.5 rounded-2xl shadow-lg flex flex-col gap-2.5">
+            <div className="flex items-center justify-between gap-3">
+              {/* Play / Pause Button */}
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setIsPlaying(!isPlaying)}
+                  className="border-[#B9E7E6] text-[#0891b2] hover:bg-[#E2F4F3] font-mono text-xs rounded-xl h-8 px-3"
+                >
+                  {isPlaying ? (
+                    <>
+                      <Pause className="w-3.5 h-3.5 mr-1 fill-current" />
+                      PAUSE
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-3.5 h-3.5 mr-1 fill-current" />
+                      TRACK
+                    </>
+                  )}
+                </Button>
+
+                {/* Speed Multiplier */}
+                <div className="flex items-center gap-1 bg-[#E2F4F3]/60 p-0.5 rounded-lg border border-[#B9E7E6]/60">
+                  {[1, 2, 4].map((spd) => (
+                    <button
+                      key={spd}
+                      onClick={() => setPlaybackSpeed(spd)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-all ${
+                        playbackSpeed === spd
+                          ? 'bg-[#0891b2] text-white'
+                          : 'text-[#2d5f68] hover:bg-white/80'
+                      }`}
+                    >
+                      {spd}x
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Camera Mode Toggle */}
+              <button
+                onClick={() => setCameraMode(cameraMode === 'chase' ? 'orbit' : 'chase')}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-xl border border-[#B9E7E6] bg-white text-[#2d5f68] hover:bg-[#E2F4F3] font-mono text-xs font-semibold shadow-sm transition-all"
+              >
+                <Camera className="w-3.5 h-3.5 text-[#0891b2]" />
+                <span className="hidden sm:inline">VIEW:</span>
+                <span className="font-bold text-[#0891b2]">
+                  {cameraMode === 'chase' ? 'CHASE CAM' : 'FREE ORBIT'}
+                </span>
+              </button>
             </div>
 
-            {/* View / Auto-Pilot Toggle */}
-            <button
-              onClick={() => setAutoRotate(!autoRotate)}
-              className="pointer-events-auto flex items-center gap-1.5 bg-white/95 backdrop-blur-md border border-[#B9E7E6] px-3 py-1.5 rounded-full shadow-sm font-mono text-xs text-[#2d5f68] hover:bg-[#E2F4F3] transition-colors"
-            >
-              <RotateCcw className={`w-3.5 h-3.5 text-[#0891b2] ${autoRotate ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">AP ORBIT:</span>
-              <span className="font-bold">{autoRotate ? 'ON' : 'MANUAL'}</span>
-            </button>
+            {/* Draggable Progress Scrubber */}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-[10px] text-[#527d85] font-semibold">0%</span>
+              <input
+                type="range"
+                min="0.001"
+                max="0.999"
+                step="0.001"
+                value={progress}
+                onChange={(e) => {
+                  setProgress(parseFloat(e.target.value));
+                  setIsPlaying(false);
+                }}
+                className="flex-1 accent-[#0891b2] cursor-pointer h-1.5 bg-[#B9E7E6] rounded-lg"
+              />
+              <span className="font-mono text-[10px] text-[#527d85] font-semibold">100%</span>
+            </div>
           </div>
         </div>
 
-        {/* Master Detail Card: Pilot EFB (Electronic Flight Bag) Tablet (Right 5 Cols) */}
+        {/* Right ForeFlight Route Drawer & Master Detail EFB (5 Cols) */}
         <Card className="lg:col-span-5 rounded-3xl border border-[#B9E7E6] bg-white shadow-xl flex flex-col justify-between overflow-hidden">
           <CardContent className="p-6 md:p-8 flex flex-col justify-between h-full gap-6">
             <div className="flex flex-col gap-4">
-              {/* EFB Header Row */}
+              {/* Header Fix & Route Progress */}
               <div className="flex items-center justify-between border-b border-[#B9E7E6]/60 pb-4">
                 <div className="flex items-center gap-2">
                   <Badge className="bg-[#E2F4F3] hover:bg-[#B9E7E6] text-[#0891b2] border border-[#B9E7E6] font-mono text-xs px-2.5 py-1">
@@ -677,7 +816,7 @@ export function TacticalAirwayTimeline({
                 </Badge>
               </div>
 
-              {/* Waypoint Identity & Flight Phase */}
+              {/* Waypoint Phase & Altitude */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#0891b2] tracking-wider uppercase">
                   <span>{currentWpt.flightPhase}</span>
@@ -692,35 +831,41 @@ export function TacticalAirwayTimeline({
                 </h4>
               </div>
 
-              {/* Flight Period Pill */}
+              {/* Flight Period */}
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#E2F4F3]/70 border border-[#B9E7E6] text-[#0c282d] font-mono text-xs w-fit">
                 <Calendar className="w-3.5 h-3.5 text-[#0891b2]" />
                 <span>FLIGHT PERIOD: {currentWpt.period}</span>
               </div>
 
-              {/* Full Description with Zero Truncation */}
+              {/* Narrative Description (Zero Truncation) */}
               <div className="bg-[#F8FCFC] border border-[#B9E7E6]/80 rounded-2xl p-4 text-[#2d5f68] text-sm leading-relaxed">
                 {currentWpt.description}
               </div>
 
-              {/* Tactical Avionics Telemetry Grid */}
+              {/* ForeFlight Leg Telemetry Grid */}
               <div className="grid grid-cols-3 gap-2.5 pt-2">
                 <div className="rounded-xl border border-[#B9E7E6] bg-white p-2.5 flex flex-col">
-                  <span className="text-[10px] font-mono text-[#527d85]">TRUE AIRSPEED</span>
-                  <span className="text-sm font-mono font-bold text-[#0c282d]">{currentWpt.airspeedKnots} KT</span>
+                  <span className="text-[10px] font-mono text-[#527d85]">LEG DISTANCE</span>
+                  <span className="text-sm font-mono font-bold text-[#0c282d]">
+                    {currentWpt.legDistanceNm} NM
+                  </span>
                 </div>
                 <div className="rounded-xl border border-[#B9E7E6] bg-white p-2.5 flex flex-col">
-                  <span className="text-[10px] font-mono text-[#527d85]">MAGNETIC TRACK</span>
-                  <span className="text-sm font-mono font-bold text-[#0c282d]">{String(currentWpt.courseHeading).padStart(3, '0')}°</span>
+                  <span className="text-[10px] font-mono text-[#527d85]">FIX TYPE</span>
+                  <span className="text-sm font-mono font-bold text-[#0891b2]">
+                    {currentWpt.fixType}
+                  </span>
                 </div>
                 <div className="rounded-xl border border-[#B9E7E6] bg-white p-2.5 flex flex-col">
-                  <span className="text-[10px] font-mono text-[#527d85]">CORRIDOR</span>
-                  <span className="text-sm font-mono font-bold text-[#0891b2]">IFR EN-RT</span>
+                  <span className="text-[10px] font-mono text-[#527d85]">BEARING</span>
+                  <span className="text-sm font-mono font-bold text-[#0c282d]">
+                    {String(currentWpt.courseHeading).padStart(3, '0')}°
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Stepper Controls */}
+            {/* Stepper Buttons */}
             <div className="pt-4 border-t border-[#B9E7E6]/60 flex items-center justify-between gap-3">
               <Button
                 variant="outline"
@@ -729,7 +874,7 @@ export function TacticalAirwayTimeline({
                 className="border-[#B9E7E6] text-[#0c282d] hover:bg-[#E2F4F3] font-mono text-xs rounded-xl"
               >
                 <ChevronLeft className="w-4 h-4 mr-1 text-[#0891b2]" />
-                Prev Waypoint
+                Prev Fix
               </Button>
 
               {/* 5-Step Waypoint Indicator */}
@@ -737,9 +882,11 @@ export function TacticalAirwayTimeline({
                 {waypoints.map((_, i) => (
                   <button
                     key={i}
-                    onClick={() => setSelectedIdx(i)}
+                    onClick={() => handleSelectWaypoint(i)}
                     className={`h-2 rounded-full transition-all duration-300 ${
-                      i === selectedIdx ? 'w-6 bg-[#0891b2]' : 'w-2 bg-[#B9E7E6] hover:bg-[#6FD4E1]'
+                      i === selectedIdx
+                        ? 'w-6 bg-[#0891b2]'
+                        : 'w-2 bg-[#B9E7E6] hover:bg-[#6FD4E1]'
                     }`}
                     aria-label={`Jump to waypoint ${i + 1}`}
                   />
@@ -752,7 +899,7 @@ export function TacticalAirwayTimeline({
                 onClick={handleNext}
                 className="border-[#B9E7E6] text-[#0c282d] hover:bg-[#E2F4F3] font-mono text-xs rounded-xl"
               >
-                Next Waypoint
+                Next Fix
                 <ChevronRight className="w-4 h-4 ml-1 text-[#0891b2]" />
               </Button>
             </div>
@@ -768,7 +915,7 @@ export function TacticalAirwayTimeline({
           return (
             <button
               key={wpt.id}
-              onClick={() => setSelectedIdx(idx)}
+              onClick={() => handleSelectWaypoint(idx)}
               className={`rounded-2xl p-3.5 sm:p-4 text-left transition-all duration-300 border flex flex-col justify-between gap-2 shadow-sm ${
                 isSelected
                   ? 'bg-gradient-to-br from-[#6FD4E1]/30 via-[#B9E7E6]/40 to-white border-[#0891b2] ring-2 ring-[#0891b2]/30 scale-[1.02]'
@@ -776,12 +923,16 @@ export function TacticalAirwayTimeline({
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className={`text-[10px] font-mono font-bold tracking-wider px-2 py-0.5 rounded-full ${
-                  isSelected ? 'bg-[#0891b2] text-white' : 'bg-[#E2F4F3] text-[#0891b2]'
-                }`}>
+                <span
+                  className={`text-[10px] font-mono font-bold tracking-wider px-2 py-0.5 rounded-full ${
+                    isSelected ? 'bg-[#0891b2] text-white' : 'bg-[#E2F4F3] text-[#0891b2]'
+                  }`}
+                >
                   {wpt.fixCode}
                 </span>
-                <span className="text-xs font-mono font-bold text-[#0891b2]">{wpt.flightLevel}</span>
+                <span className="text-xs font-mono font-bold text-[#0891b2]">
+                  {wpt.flightLevel}
+                </span>
               </div>
 
               <div>
