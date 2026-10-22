@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useMemo, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useGLTF, Billboard, Text } from '@react-three/drei';
+import { OrbitControls, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import {
   Play,
@@ -222,6 +222,68 @@ function ForeFlightTerrain() {
   );
 }
 
+// ── Sleek Compact Waypoint Canvas Sprite (Never Balloons, Zero Network) ─────
+function WaypointSprite({
+  text,
+  isSelected,
+}: {
+  text: string;
+  isSelected: boolean;
+}) {
+  const texture = useMemo(() => {
+    if (typeof document === 'undefined') return null;
+    const canvas = document.createElement('canvas');
+    canvas.width = 140;
+    canvas.height = 48;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    ctx.clearRect(0, 0, 140, 48);
+
+    // Rounded pill background
+    ctx.fillStyle = isSelected ? '#0891b2' : 'rgba(255, 255, 255, 0.94)';
+    ctx.strokeStyle = isSelected ? '#ffffff' : '#B9E7E6';
+    ctx.lineWidth = 3;
+
+    const r = 14;
+    ctx.beginPath();
+    ctx.moveTo(r, 3);
+    ctx.lineTo(140 - r, 3);
+    ctx.quadraticCurveTo(140 - 3, 3, 140 - 3, r);
+    ctx.lineTo(140 - 3, 48 - r);
+    ctx.quadraticCurveTo(140 - 3, 48 - 3, 140 - r, 48 - 3);
+    ctx.lineTo(r, 48 - 3);
+    ctx.quadraticCurveTo(3, 48 - 3, 3, 48 - r);
+    ctx.lineTo(3, r);
+    ctx.quadraticCurveTo(3, 3, r, 3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Text in bold monospace
+    ctx.fillStyle = isSelected ? '#ffffff' : '#0c282d';
+    ctx.font = 'bold 20px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 70, 25);
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.needsUpdate = true;
+    return tex;
+  }, [text, isSelected]);
+
+  if (!texture) return null;
+
+  return (
+    <sprite
+      position={[0, isSelected ? 0.44 : 0.34, 0]}
+      scale={isSelected ? [0.62, 0.22, 1] : [0.46, 0.16, 1]}
+    >
+      <spriteMaterial map={texture} depthTest={false} transparent />
+    </sprite>
+  );
+}
+
 // ── 3D Flight Corridor Curtain (ForeFlight Vertical Terrain Projection) ─────
 function ForeFlightTerrainCurtain({
   curve,
@@ -234,16 +296,16 @@ function ForeFlightTerrainCurtain({
   selectedIdx: number;
   onSelectWaypoint: (idx: number) => void;
 }) {
-  // Generate curtain ribbon geometry connecting flight path down to terrain floor
+  // Generate curtain ribbon geometry connecting winding flight path down to terrain
   const curtainGeometry = useMemo(() => {
-    const segments = 90;
+    const segments = 120;
     const points = curve.getPoints(segments);
     const vertices: number[] = [];
     const colors: number[] = [];
     const indices: number[] = [];
 
-    const topColor = new THREE.Color('#6FD4E1'); // Arctic cyan
-    const bottomColor = new THREE.Color('#a855f7'); // Purple/magenta like ForeFlight
+    const topColor = new THREE.Color('#06b6d4'); // Vibrant cyan
+    const bottomColor = new THREE.Color('#d946ef'); // ForeFlight magenta/purple
 
     const groundBaseY = 0.25;
 
@@ -274,19 +336,19 @@ function ForeFlightTerrainCurtain({
 
   // Corridor spline line
   const splineLineGeometry = useMemo(() => {
-    const pts = curve.getPoints(120);
+    const pts = curve.getPoints(160);
     return new THREE.BufferGeometry().setFromPoints(pts);
   }, [curve]);
 
   return (
     <group>
-      {/* Vertical Projection Curtain (ForeFlight Signature) */}
+      {/* ForeFlight Signature Vertical Projection Curtain */}
       <mesh geometry={curtainGeometry}>
         <meshBasicMaterial
           vertexColors
           side={THREE.DoubleSide}
           transparent
-          opacity={0.38}
+          opacity={0.45}
           depthWrite={false}
         />
       </mesh>
@@ -298,13 +360,13 @@ function ForeFlightTerrainCurtain({
             splineLineGeometry,
             new THREE.LineBasicMaterial({
               color: '#0891b2',
-              linewidth: 3,
+              linewidth: 4,
             })
           )
         }
       />
 
-      {/* Sleek Checkpoints (Nav Ring Gates + Compact 3D Billboard Micro-Badges) */}
+      {/* Sleek Checkpoints (Nav Ring Gates + Compact Micro-Badges) */}
       {waypoints.map((wpt, idx) => {
         const isSelected = idx === selectedIdx;
         const [x, y, z] = wpt.coord;
@@ -351,25 +413,8 @@ function ForeFlightTerrainCurtain({
               <lineBasicMaterial attach="material" color="#0891b2" transparent opacity={0.35} />
             </line>
 
-            {/* Sleek Compact 3D Billboard Label (Physical 3D Size, Never Balloons) */}
-            <Billboard position={[0, isSelected ? 0.46 : 0.36, 0]}>
-              <mesh position={[0, 0, -0.01]}>
-                <planeGeometry args={[isSelected ? 0.68 : 0.48, isSelected ? 0.22 : 0.16]} />
-                <meshBasicMaterial
-                  color={isSelected ? '#0891b2' : '#ffffff'}
-                  transparent
-                  opacity={isSelected ? 0.95 : 0.88}
-                />
-              </mesh>
-              <Text
-                fontSize={isSelected ? 0.11 : 0.085}
-                color={isSelected ? '#ffffff' : '#0c282d'}
-                anchorX="center"
-                anchorY="middle"
-              >
-                {wpt.fixCode}
-              </Text>
-            </Billboard>
+            {/* Sleek Compact Micro-Badge Sprite (Physical Size, Never Balloons) */}
+            <WaypointSprite text={wpt.fixCode} isSelected={isSelected} />
           </group>
         );
       })}
@@ -748,24 +793,18 @@ export function TacticalAirwayTimeline({
           {/* 3D Canvas / Synthetic Vision */}
           <div className="flex-1 w-full h-full relative cursor-grab active:cursor-grabbing min-h-[400px]">
             {webGLSupported ? (
-              <Suspense
-                fallback={
-                  <div className="w-full h-full flex items-center justify-center font-mono text-sm text-[#527d85]">
-                    Loading ForeFlight 3D Valley Terrain...
-                  </div>
-                }
+              <Canvas
+                shadows
+                camera={{ position: [5.5, 4.2, 8.5], fov: 46, near: 0.1, far: 100 }}
+                dpr={[1, 2]}
+                gl={{ antialias: true, powerPreference: 'high-performance' }}
               >
-                <Canvas
-                  shadows
-                  camera={{ position: [5.5, 4.2, 8.5], fov: 46, near: 0.1, far: 100 }}
-                  dpr={[1, 2]}
-                  gl={{ antialias: true, powerPreference: 'high-performance' }}
-                >
-                  <color attach="background" args={['#dff2f5']} />
-                  <ambientLight intensity={0.75} />
-                  <directionalLight position={[12, 16, 9]} intensity={1.3} castShadow />
-                  <directionalLight position={[-9, 6, -6]} intensity={0.5} />
+                <color attach="background" args={['#dff2f5']} />
+                <ambientLight intensity={0.75} />
+                <directionalLight position={[12, 16, 9]} intensity={1.3} castShadow />
+                <directionalLight position={[-9, 6, -6]} intensity={0.5} />
 
+                <Suspense fallback={null}>
                   {/* 3D Realistic Mountain Valley Terrain */}
                   <ForeFlightTerrain />
 
@@ -779,15 +818,15 @@ export function TacticalAirwayTimeline({
 
                   {/* Moving 3D Aircraft with Dynamic Banking */}
                   <TrackingAircraft curve={curve} progress={progress} />
+                </Suspense>
 
-                  {/* Camera Follower & Orbit Controls */}
-                  <CameraFollower
-                    curve={curve}
-                    progress={progress}
-                    cameraMode={cameraMode}
-                  />
-                </Canvas>
-              </Suspense>
+                {/* Camera Follower & Orbit Controls */}
+                <CameraFollower
+                  curve={curve}
+                  progress={progress}
+                  cameraMode={cameraMode}
+                />
+              </Canvas>
             ) : (
               <ForeFlightSvgFallback
                 waypoints={waypoints}
