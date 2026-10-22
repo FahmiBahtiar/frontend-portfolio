@@ -276,10 +276,10 @@ export function LoadingScreen({
     };
   }, [isApiLoaded, isWarmingUp, apiError, onComplete]);
 
-  // Fallback auto-complete
+  // Fallback auto-complete: gracefully reveal page if backend takes > 3.0s
   useEffect(() => {
     if (apiError || isApiLoaded) return;
-    const timer = setTimeout(() => onComplete(), 15000);
+    const timer = setTimeout(() => onComplete(), 3000);
     return () => clearTimeout(timer);
   }, [onComplete, isApiLoaded, apiError]);
 

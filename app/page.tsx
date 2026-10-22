@@ -153,11 +153,10 @@ export default function HomePage() {
 
   const handleLoadingComplete = () => {
     setIsLoading(false);
-    // Preload sections after loading screen
     if (sectionsLoadTimeoutRef.current) {
       clearTimeout(sectionsLoadTimeoutRef.current);
     }
-    sectionsLoadTimeoutRef.current = setTimeout(() => setSectionsLoaded(true), 100);
+    setSectionsLoaded(true);
   };
 
   const handleNavigate = (sectionIndex: number) => {
