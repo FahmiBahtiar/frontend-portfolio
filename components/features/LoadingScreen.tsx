@@ -68,12 +68,13 @@ function AmbientParticles({ count = 30 }: { count?: number }) {
     () =>
       Array.from({ length: count }, (_, i) => ({
         id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * 3 + 1,
-        duration: Math.random() * 6 + 8,
-        delay: Math.random() * 4,
-        opacity: Math.random() * 0.4 + 0.1,
+        x: (i * 31.7 + 13) % 100,
+        y: (i * 47.3 + 29) % 100,
+        size: ((i * 7) % 3) + 1.5,
+        duration: 8 + ((i * 3) % 6),
+        delay: (i * 0.3) % 4,
+        opacity: 0.15 + ((i * 5) % 25) / 100,
+        driftX: i % 2 === 0 ? 15 : -15,
       })),
     [count],
   );
@@ -93,7 +94,7 @@ function AmbientParticles({ count = 30 }: { count?: number }) {
           }}
           animate={{
             y: [0, -30, 0],
-            x: [0, Math.random() > 0.5 ? 15 : -15, 0],
+            x: [0, p.driftX, 0],
             opacity: [p.opacity, p.opacity * 2.5, p.opacity],
           }}
           transition={{
@@ -197,11 +198,13 @@ export function LoadingScreen({
 }: LoadingScreenProps) {
   const [loadingText, setLoadingText] = useState('Initializing');
   const [progress, setProgress] = useState(0);
-  // Fewer animated particles on small screens (weak CPU) — keeps the loading
-  // phase from eating the main thread. Lazy init runs once (component is ssr:false).
-  const [isSmallScreen] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
-  );
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsSmallScreen(window.innerWidth < 768);
+    }
+  }, []);
 
   // Loading text sequence
   useEffect(() => {
@@ -262,7 +265,7 @@ export function LoadingScreen({
         const next = Math.min(100, prev + delta);
         if (next === 100 && intervalId) {
           clearInterval(intervalId);
-          setTimeout(() => onComplete(), 150);
+          setTimeout(() => onComplete(), 200);
         }
         return next;
       });

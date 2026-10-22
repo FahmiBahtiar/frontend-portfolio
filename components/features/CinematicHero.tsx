@@ -12,11 +12,12 @@ import Image from 'next/image';
 
 interface CinematicHeroProps {
   onNavigate: (page: number) => void;
+  isReady?: boolean;
 }
 
 const GRAIN_SVG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`;
 
-export function CinematicHero({ onNavigate }: CinematicHeroProps) {
+export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
@@ -86,17 +87,24 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
   // ---- Orchestrated reveal sequence ----
   useEffect(() => {
     if (!heroProfile || loading) return;
+    if (!isReady) {
+      setRevealPhase(0);
+      setTypedSubtitle('');
+      setSubtitleCharIndex(0);
+      setIsDeleting(false);
+      return;
+    }
 
     const timers = [
-      setTimeout(() => setRevealPhase(1), 60),    // badge
-      setTimeout(() => setRevealPhase(2), 200),   // name
-      setTimeout(() => setRevealPhase(3), 650),   // subtitle + desc
-      setTimeout(() => setRevealPhase(4), 1050),  // info grid
-      setTimeout(() => setRevealPhase(5), 1450),  // scroll hint
+      setTimeout(() => setRevealPhase(1), 100),   // badge
+      setTimeout(() => setRevealPhase(2), 250),   // name
+      setTimeout(() => setRevealPhase(3), 600),   // subtitle + desc
+      setTimeout(() => setRevealPhase(4), 950),   // info grid
+      setTimeout(() => setRevealPhase(5), 1300),  // scroll hint
     ];
 
     return () => timers.forEach(clearTimeout);
-  }, [heroProfile, loading]);
+  }, [heroProfile, loading, isReady]);
 
   // ---- Subtitle typing with delete effect ----
   useEffect(() => {

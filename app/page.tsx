@@ -10,11 +10,9 @@ import { preloadAllSections } from '@/lib/services/prefetch';
 // Eager load hero & command bar so they are pre-rendered underneath loading screen
 import { Page1Hero } from '@/components/sections/Page1Hero';
 import { MinimalistCommandBar } from '@/components/features/MinimalistCommandBar';
+import { LoadingScreen } from '@/components/features/LoadingScreen';
 
 // Lazy load below-the-fold components to preserve low TBT on mobile
-const LoadingScreen = dynamic(() => import('@/components/features/LoadingScreen').then(mod => ({ default: mod.LoadingScreen })), {
-  ssr: false,
-});
 const Page2Portfolio = dynamic(() => import('@/components/sections/Page2Portfolio').then(mod => ({ default: mod.Page2Portfolio })));
 const Page3Education = dynamic(() => import('@/components/sections/Page3Education').then(mod => ({ default: mod.Page3Education })));
 const Page4ExperienceProjects = dynamic(() => import('@/components/sections/Page4ExperienceProjects').then(mod => ({ default: mod.Page4ExperienceProjects })));
@@ -245,9 +243,13 @@ export default function HomePage() {
 
       {/* Main App - Pre-rendered underneath loading screen for seamless zero-flicker reveal */}
       <div 
-        className={`relative w-full overflow-x-hidden bg-[#E2F4F3] text-[#0c282d] transition-opacity duration-300 ${
+        className={`relative w-full overflow-x-hidden bg-[#E2F4F3] text-[#0c282d] transition-opacity duration-500 ${
           isLoading ? 'pointer-events-none select-none max-h-screen overflow-hidden' : ''
         }`}
+        style={{
+          visibility: isLoading ? 'hidden' : 'visible',
+          opacity: isLoading ? 0 : 1,
+        }}
       >
         {/* Main Content - All sections stacked vertically */}
         <main id="main-content" tabIndex={-1} className="relative z-[2] focus:outline-none">
@@ -263,7 +265,10 @@ export default function HomePage() {
                   sectionRefs.current[index] = el;
                 }}
               >
-                <SectionComponent onNavigate={handleNavigate} />
+                <SectionComponent 
+                  onNavigate={handleNavigate} 
+                  isReady={section.id === 'hero' ? !isLoading : true}
+                />
               </LazySection>
             );
           })}
