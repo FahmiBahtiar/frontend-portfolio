@@ -24,6 +24,9 @@ import {
   Mountain,
   Users,
   Shield,
+  PanelLeftClose,
+  PanelLeft,
+  ExternalLink,
   type LucideIcon
 } from 'lucide-react';
 
@@ -384,37 +387,48 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       >
         {/* Header */}
         <header className="flex-shrink-0 bg-white/95 backdrop-blur-xl border-b border-[#B9E7E6] shadow-sm">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between px-6 py-3.5">
+            <div className="flex items-center gap-3">
               <motion.button
                 onClick={toggleSidebar}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-xl text-[#0c282d] hover:bg-[#E2F4F3] transition-all"
-                aria-label={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
-                title={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
+                className="p-2 rounded-xl text-[#0c282d] hover:bg-[#E2F4F3] border border-transparent hover:border-[#B9E7E6] transition-all"
+                aria-label={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+                title={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
               >
-                <motion.div
-                  initial={false}
-                  animate={{ rotate: isSidebarOpen ? 0 : 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {isSidebarOpen ? (
-                    <X className="w-5 h-5" />
-                  ) : (
-                    <Menu className="w-5 h-5" />
-                  )}
-                </motion.div>
+                {isSidebarOpen ? (
+                  <PanelLeftClose className="w-5 h-5 text-[#0891b2]" />
+                ) : (
+                  <PanelLeft className="w-5 h-5 text-[#0c282d]" />
+                )}
               </motion.button>
+
+              {/* Breadcrumbs */}
+              <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-[#527d85]">
+                <span className="hover:text-[#0c282d] transition-colors">Admin</span>
+                <ChevronRight className="w-3.5 h-3.5 text-[#B9E7E6]" />
+                <span className="text-[#0c282d] font-bold capitalize">
+                  {pathname === '/admin' ? 'Dashboard Overview' : pathname?.replace('/admin/', '').replace(/\//g, ' > ')}
+                </span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              {/* Quick Stats */}
-              <div className="hidden md:flex items-center gap-4">
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E2F4F3] border border-[#B9E7E6] shadow-sm">
-                  <div className="w-2 h-2 rounded-full bg-[#6FD4E1]" />
-                  <span className="text-xs text-[#0891b2] font-bold font-mono">Live</span>
-                </div>
+            <div className="flex items-center gap-3">
+              {/* Live Link */}
+              <Link
+                href="/"
+                target="_blank"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-[#E2F4F3] border border-[#B9E7E6] text-xs font-bold text-[#0c282d] transition-all shadow-sm"
+              >
+                <span>blimbing.me</span>
+                <ExternalLink className="w-3.5 h-3.5 text-[#0891b2]" />
+              </Link>
+
+              {/* Live API Status */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E2F4F3] border border-[#B9E7E6] shadow-sm">
+                <div className="w-2 h-2 rounded-full bg-[#6FD4E1] animate-pulse" />
+                <span className="text-xs text-[#0891b2] font-bold font-mono uppercase tracking-wider">Live API</span>
               </div>
             </div>
           </div>
