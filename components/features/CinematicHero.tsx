@@ -276,8 +276,8 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="mb-6 sm:mb-8"
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-slate-300 text-xs font-medium tracking-wide shadow-sm hover:border-slate-700 transition-colors duration-300">
-            <Compass className="w-3.5 h-3.5 text-slate-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/80 border border-[#6FD4E1]/30 text-[#6FD4E1] text-xs font-medium tracking-wide shadow-sm hover:border-[#6FD4E1]/50 transition-colors duration-300">
+            <Compass className="w-3.5 h-3.5 text-[#6FD4E1]" />
             <span>{(heroProfile?.badge || '').replace(/Ultramen/g, 'Ultraman')}</span>
           </div>
         </motion.div>
@@ -288,11 +288,11 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           style={calm ? undefined : { x: nameTranslateX, y: nameTranslateY }}
           className={calm ? 'mb-6 sm:mb-8' : 'mb-6 sm:mb-8 will-change-transform'}
         >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-[-0.035em] leading-[1.05] text-white">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-[-0.035em] leading-[1.05] text-[#FFFFFF]">
             {nameLines.map((line, i) => (
               <span key={i} className="block overflow-hidden py-0.5 sm:py-1">
                 <motion.span
-                  className="block text-white"
+                  className="block text-[#FFFFFF]"
                   initial={{ y: '105%', opacity: 0 }}
                   animate={revealPhase >= 2 ? { y: '0%', opacity: 1 } : {}}
                   transition={{
@@ -315,12 +315,12 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="mb-4 sm:mb-5 h-8 flex items-center justify-center"
         >
-          <span className="text-base sm:text-lg md:text-xl text-slate-300 font-mono tracking-normal">
+          <span className="text-base sm:text-lg md:text-xl text-[#B9E7E6] font-mono tracking-normal">
             {typedSubtitle}
             <motion.span
               animate={calm ? undefined : { opacity: [1, 0, 1] }}
               transition={calm ? undefined : { duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="inline-block w-[2px] h-[1.1em] bg-slate-400 ml-1 align-middle"
+              className="inline-block w-[2px] h-[1.1em] bg-[#6FD4E1] ml-1 align-middle"
             />
           </span>
         </motion.div>
@@ -330,7 +330,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           initial={{ opacity: 0, y: 16 }}
           animate={revealPhase >= 3 ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-slate-400 text-sm sm:text-base max-w-xl leading-relaxed mb-10 sm:mb-14"
+          className="text-[#E2F4F3]/80 text-sm sm:text-base max-w-xl leading-relaxed mb-10 sm:mb-14"
         >
           {heroProfile?.description || ''}
         </motion.p>
@@ -352,16 +352,16 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
                   initial={{ opacity: 0, y: 14 }}
                   animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.6, delay: 0.15 + idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                  className="group relative flex items-center gap-3 px-3.5 py-2 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 transition-colors duration-300"
+                  className="group relative flex items-center gap-3 px-3.5 py-2 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-[#6FD4E1]/40 transition-colors duration-300"
                 >
-                  <div className="h-7 w-7 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-300">
-                    <IconComponent className="h-3.5 w-3.5 text-slate-300" />
+                  <div className="h-7 w-7 rounded-lg bg-slate-800/80 border border-[#6FD4E1]/20 flex items-center justify-center text-[#6FD4E1]">
+                    <IconComponent className="h-3.5 w-3.5 text-[#6FD4E1]" />
                   </div>
                   <div className="text-left">
-                    <div className="text-[9px] font-mono text-slate-500 tracking-[0.2em] uppercase">
+                    <div className="text-[9px] font-mono text-[#6FD4E1] tracking-[0.2em] uppercase font-semibold">
                       {item.callsign}
                     </div>
-                    <div className="text-xs text-slate-200 font-medium tracking-wide">
+                    <div className="text-xs text-[#E2F4F3] font-medium tracking-wide">
                       {displayLabel}
                     </div>
                   </div>
@@ -384,16 +384,16 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
               initial={{ opacity: 0, y: 16 }}
               animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/60 px-5 py-4 transition-all duration-300 hover:border-slate-700 hover:-translate-y-0.5"
+              className="group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/60 px-5 py-4 transition-all duration-300 hover:border-[#6FD4E1]/40 hover:-translate-y-0.5"
             >
               <div className="relative flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span className="text-[11px] text-slate-400 uppercase tracking-[0.18em] font-medium font-mono">Status</span>
+                  <div className="w-2 h-2 rounded-full bg-[#6FD4E1]" />
+                  <span className="text-[11px] text-[#B9E7E6] uppercase tracking-[0.18em] font-medium font-mono">Status</span>
                 </div>
-                <span className="text-[10px] text-slate-500 font-mono uppercase tracking-[0.15em]">Live</span>
+                <span className="text-[10px] text-[#6FD4E1] font-mono uppercase tracking-[0.15em] font-semibold">Live</span>
               </div>
-              <p className="relative mt-2 text-sm text-slate-200 font-semibold tracking-wide">
+              <p className="relative mt-2 text-sm text-[#FFFFFF] font-semibold tracking-wide">
                 {heroProfile?.status || ''}
               </p>
             </motion.div>
@@ -403,13 +403,13 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
               initial={{ opacity: 0, y: 16 }}
               animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.33, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/60 px-5 py-4 transition-all duration-300 hover:border-slate-700 hover:-translate-y-0.5"
+              className="group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/60 px-5 py-4 transition-all duration-300 hover:border-[#6FD4E1]/40 hover:-translate-y-0.5"
             >
               <div className="relative flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-[11px] text-slate-400 uppercase tracking-[0.18em] font-medium font-mono">Location</span>
+                <MapPin className="w-3.5 h-3.5 text-[#6FD4E1]" />
+                <span className="text-[11px] text-[#B9E7E6] uppercase tracking-[0.18em] font-medium font-mono">Location</span>
               </div>
-              <p className="relative mt-2 text-sm text-slate-200 font-semibold tracking-wide">
+              <p className="relative mt-2 text-sm text-[#FFFFFF] font-semibold tracking-wide">
                 {heroProfile?.location || ''}
               </p>
             </motion.div>
@@ -419,13 +419,13 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
               initial={{ opacity: 0, y: 16 }}
               animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.41, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/60 px-5 py-4 transition-all duration-300 hover:border-slate-700 hover:-translate-y-0.5"
+              className="group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/60 px-5 py-4 transition-all duration-300 hover:border-[#6FD4E1]/40 hover:-translate-y-0.5"
             >
               <div className="relative flex items-center gap-2">
-                <svg className="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="w-3.5 h-3.5 text-[#6FD4E1]" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
                 </svg>
-                <span className="text-[11px] text-slate-400 uppercase tracking-[0.18em] font-medium font-mono">Now Playing</span>
+                <span className="text-[11px] text-[#B9E7E6] uppercase tracking-[0.18em] font-medium font-mono">Now Playing</span>
               </div>
 
               {spotifyLoading ? (

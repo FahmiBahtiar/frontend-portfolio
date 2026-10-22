@@ -102,33 +102,33 @@ export function FlightLogbook() {
   const getColorClasses = (color: string) => {
     const colors: { [key: string]: { main: string; glow: string; border: string; bg: string } } = {
       purple: {
-        main: '#94a3b8',
+        main: '#B9E7E6',
         glow: 'transparent',
-        border: 'border-slate-700/60',
+        border: 'border-[#6FD4E1]/30',
         bg: 'bg-slate-900/60'
       },
       orange: {
-        main: '#f59e0b',
+        main: '#E2F4F3',
         glow: 'transparent',
-        border: 'border-slate-700/60',
+        border: 'border-[#6FD4E1]/30',
         bg: 'bg-slate-900/60'
       },
       cyan: {
-        main: '#38bdf8',
+        main: '#6FD4E1',
         glow: 'transparent',
-        border: 'border-slate-700/60',
+        border: 'border-[#6FD4E1]/30',
         bg: 'bg-slate-900/60'
       },
       green: {
-        main: '#34d399',
+        main: '#6FD4E1',
         glow: 'transparent',
-        border: 'border-slate-700/60',
+        border: 'border-[#6FD4E1]/30',
         bg: 'bg-slate-900/60'
       },
       blue: {
-        main: '#60a5fa',
+        main: '#B9E7E6',
         glow: 'transparent',
-        border: 'border-slate-700/60',
+        border: 'border-[#6FD4E1]/30',
         bg: 'bg-slate-900/60'
       }
     };
@@ -237,8 +237,8 @@ export function FlightLogbook() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-3.5 md:px-4 py-2 rounded-xl border transition-all ${
                     isActive
-                      ? 'bg-white border-white text-slate-950 font-semibold shadow-sm'
-                      : 'bg-slate-900/60 border-slate-800/80 text-slate-400 hover:text-white hover:border-slate-700'
+                      ? 'bg-[#6FD4E1] border-[#6FD4E1] text-slate-950 font-semibold shadow-sm'
+                      : 'bg-slate-900/60 border-slate-800/80 text-[#B9E7E6] hover:text-[#FFFFFF] hover:border-[#6FD4E1]/40'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -247,8 +247,8 @@ export function FlightLogbook() {
                   <span className="text-xs md:text-sm whitespace-nowrap">{tab.label}</span>
                   <span className={`px-2 py-0.5 rounded-full text-xs font-mono ${
                     isActive 
-                      ? 'bg-slate-200 text-slate-900 font-semibold'
-                      : 'bg-slate-800 text-slate-400'
+                      ? 'bg-slate-950 text-[#6FD4E1] font-semibold'
+                      : 'bg-slate-800 text-[#B9E7E6]'
                   }`}>
                     {tab.count}
                   </span>
@@ -884,35 +884,35 @@ export function FlightLogbook() {
         className="mt-8 p-6 rounded-2xl bg-slate-950/60 border border-slate-800"
       >
         <div className="flex items-center gap-3 mb-4">
-          <TrendingUp className="w-5 h-5 text-slate-300" />
-          <h4 className="text-white font-semibold">Career Summary</h4>
+          <TrendingUp className="w-5 h-5 text-[#6FD4E1]" />
+          <h4 className="text-[#FFFFFF] font-semibold">Career Summary</h4>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="text-3xl text-white mb-1 font-mono font-semibold">
+            <div className="text-3xl text-[#6FD4E1] mb-1 font-mono font-semibold">
               {flightEntries.reduce((sum, entry) => sum + parseInt(entry.duration), 0)}+
             </div>
-            <div className="text-xs text-slate-400 uppercase tracking-wider font-mono">Total Months</div>
+            <div className="text-xs text-[#B9E7E6] uppercase tracking-wider font-mono">Total Months</div>
           </div>
 
           <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="text-3xl text-white mb-1 font-mono font-semibold">{flightEntries.length}</div>
-            <div className="text-xs text-slate-400 uppercase tracking-wider font-mono">Total Roles</div>
+            <div className="text-3xl text-[#6FD4E1] mb-1 font-mono font-semibold">{flightEntries.length}</div>
+            <div className="text-xs text-[#B9E7E6] uppercase tracking-wider font-mono">Total Roles</div>
           </div>
 
           <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="text-3xl text-white mb-1 font-mono font-semibold">
+            <div className="text-3xl text-[#6FD4E1] mb-1 font-mono font-semibold">
               {flightEntries.reduce((sum, entry) => sum + entry.crew.length, 0)}
             </div>
-            <div className="text-xs text-slate-400 uppercase tracking-wider font-mono">Tech Mastered</div>
+            <div className="text-xs text-[#B9E7E6] uppercase tracking-wider font-mono">Tech Mastered</div>
           </div>
 
           <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="text-3xl text-white mb-1 font-mono font-semibold">
+            <div className="text-3xl text-[#6FD4E1] mb-1 font-mono font-semibold">
               {flightEntries.filter(e => e.isActive).length}
             </div>
-            <div className="text-xs text-slate-400 uppercase tracking-wider font-mono">Active Roles</div>
+            <div className="text-xs text-[#B9E7E6] uppercase tracking-wider font-mono">Active Roles</div>
           </div>
         </div>
       </motion.div>

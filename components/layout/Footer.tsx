@@ -45,7 +45,7 @@ export default function Footer() {
       aria-label="Site footer"
     >
       {/* Top divider */}
-      <div className="h-px w-full bg-slate-800/80" />
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-[#6FD4E1]/30 to-transparent" />
 
       <motion.div
         initial={{ opacity: 0 }}
@@ -55,17 +55,17 @@ export default function Footer() {
       >
         {/* Copyright + last modified */}
         <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-4">
-          <p className="text-[12px] font-medium text-slate-400">
+          <p className="text-[12px] font-medium text-[#B9E7E6]">
             © {currentYear} Blimbing. All rights reserved.
           </p>
-          <span className="hidden sm:block w-1 h-1 rounded-full bg-slate-700" />
-          <p className="text-[11px] text-slate-500 font-mono">
+          <span className="hidden sm:block w-1 h-1 rounded-full bg-[#6FD4E1]/40" />
+          <p className="text-[11px] text-[#B9E7E6]/70 font-mono">
             Last modified {lastModified}
           </p>
         </div>
 
         {/* Credits */}
-        <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400">
+        <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#B9E7E6]">
           <span>Designed & built with</span>
           <motion.span
             className="inline-flex"
@@ -73,11 +73,11 @@ export default function Footer() {
             transition={calm ? undefined : { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           >
             <Heart
-              className="w-3 h-3 text-red-400 fill-red-400/80"
+              className="w-3 h-3 text-[#6FD4E1] fill-[#6FD4E1]/80"
             />
           </motion.span>
           <span>by</span>
-          <span className="text-white font-medium">
+          <span className="text-[#FFFFFF] font-semibold">
             Fahmi Bahtiar
           </span>
         </div>

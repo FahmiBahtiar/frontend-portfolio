@@ -32,12 +32,12 @@ export const AviationHUD = memo(function AviationHUD({
         <div className="flex items-center justify-between gap-4">
           {/* Left: Mission Status */}
           <div className="flex items-center gap-3 md:gap-4">
-            <div className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg bg-slate-900 border border-emerald-500/30">
-              <div className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span className="text-emerald-400 text-xs md:text-sm font-mono font-medium">MISSION ACTIVE</span>
+            <div className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg bg-slate-900 border border-[#6FD4E1]/30">
+              <div className="w-2 h-2 rounded-full bg-[#6FD4E1]" />
+              <span className="text-[#6FD4E1] text-xs md:text-sm font-mono font-medium">MISSION ACTIVE</span>
             </div>
-            <div className="hidden md:flex items-center gap-2 text-slate-300 text-sm font-mono">
-              <Crosshair className="w-4 h-4 text-slate-400" />
+            <div className="hidden md:flex items-center gap-2 text-[#B9E7E6] text-sm font-mono">
+              <Crosshair className="w-4 h-4 text-[#6FD4E1]" />
               <span>PHOTO {String(currentIndex + 1).padStart(3, '0')}/{String(totalImages).padStart(3, '0')}</span>
             </div>
           </div>
@@ -45,8 +45,8 @@ export const AviationHUD = memo(function AviationHUD({
           {/* Center: Location */}
           <div className="hidden md:block">
             <div className="px-4 py-2 rounded-lg bg-slate-900/80 border border-slate-800">
-              <div className="flex items-center gap-2 text-white font-mono text-sm">
-                <Mountain className="w-4 h-4 text-slate-300" />
+              <div className="flex items-center gap-2 text-[#FFFFFF] font-mono text-sm">
+                <Mountain className="w-4 h-4 text-[#6FD4E1]" />
                 <span>{location}</span>
               </div>
             </div>
@@ -55,27 +55,27 @@ export const AviationHUD = memo(function AviationHUD({
           {/* Right: Altitude & Coords */}
           <div className="flex items-center gap-2 md:gap-3">
             <div className="hidden md:block px-3 py-2 rounded-lg bg-slate-900/80 border border-slate-800">
-              <div className="text-xs text-slate-400 font-mono">ALT</div>
-              <div className="text-slate-200 font-mono text-sm">{altitude}</div>
+              <div className="text-xs text-[#B9E7E6] font-mono">ALT</div>
+              <div className="text-[#6FD4E1] font-mono text-sm font-semibold">{altitude}</div>
             </div>
             <div className="px-3 py-2 rounded-lg bg-slate-900/80 border border-slate-800">
-              <div className="text-xs text-slate-400 font-mono hidden md:block">GPS</div>
-              <div className="text-slate-200 font-mono text-xs md:text-sm">{coordinates}</div>
+              <div className="text-xs text-[#B9E7E6] font-mono hidden md:block">GPS</div>
+              <div className="text-[#6FD4E1] font-mono text-xs md:text-sm font-semibold">{coordinates}</div>
             </div>
           </div>
         </div>
 
         {/* Mobile Mission Counter */}
         <div className="md:hidden mt-2 flex items-center justify-center">
-          <div className="flex items-center gap-2 text-white/70 text-xs font-mono">
-            <Crosshair className="w-3 h-3" />
+          <div className="flex items-center gap-2 text-[#B9E7E6] text-xs font-mono">
+            <Crosshair className="w-3 h-3 text-[#6FD4E1]" />
             <span>PHOTO {String(currentIndex + 1).padStart(3, '0')}/{String(totalImages).padStart(3, '0')}</span>
           </div>
         </div>
 
         {/* Corner Reticles */}
-        <div className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 border-cyan-400/40" />
-        <div className="absolute top-0 right-0 w-8 h-8 border-r-2 border-t-2 border-cyan-400/40" />
+        <div className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 border-[#6FD4E1]/50" />
+        <div className="absolute top-0 right-0 w-8 h-8 border-r-2 border-t-2 border-[#6FD4E1]/50" />
       </div>
     </motion.div>
   );

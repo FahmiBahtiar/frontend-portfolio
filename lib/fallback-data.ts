@@ -266,7 +266,7 @@ export const FALLBACK_HIGHLIGHTS: Highlight[] = [
     icon: 'GraduationCap',
     label: 'Education',
     value: 'Dian Nuswantoro University',
-    color: '#94a3b8',
+    color: '#6FD4E1',
     order: 0,
   },
   {
@@ -274,7 +274,7 @@ export const FALLBACK_HIGHLIGHTS: Highlight[] = [
     icon: 'Briefcase',
     label: 'Experience',
     value: '20+ Projects',
-    color: '#cbd5e1',
+    color: '#B9E7E6',
     order: 0,
   },
   {
@@ -282,7 +282,7 @@ export const FALLBACK_HIGHLIGHTS: Highlight[] = [
     icon: 'Trophy',
     label: 'Achievements',
     value: '30+ Awards',
-    color: '#e2e8f0',
+    color: '#E2F4F3',
     order: 0,
   },
   {
@@ -290,7 +290,7 @@ export const FALLBACK_HIGHLIGHTS: Highlight[] = [
     icon: 'Target',
     label: 'Focus',
     value: 'Backend Developer',
-    color: '#38bdf8',
+    color: '#FFFFFF',
     order: 0,
   },
 ];

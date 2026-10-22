@@ -25,19 +25,19 @@ const sections: SectionConfig[] = [
   { id: 4, name: 'Contact', icon: Mail },
 ];
 
-// Accent palette — refined, cohesive architectural palette
+// Accent palette — Arctic Ice Cyan palette (6FD4E1, B9E7E6, E2F4F3, FFFFFF)
 const ACCENT = {
-  active: '#ffffff',        // crisp white
-  activeBg: 'rgba(255, 255, 255, 0.08)',
-  activeGlow: 'transparent',
-  gallery: '#cbd5e1',       // slate-300
-  galleryBg: 'rgba(255, 255, 255, 0.05)',
-  text: '#94a3b8',          // slate-400
-  textHover: '#ffffff',     // white
-  brand: '#ffffff',         // white
-  barBg: 'rgba(10, 11, 16, 0.85)',
-  barBorder: 'rgba(255, 255, 255, 0.08)',
-  progressTrack: 'rgba(255, 255, 255, 0.04)',
+  active: '#6FD4E1',        // Arctic Cyan
+  activeBg: 'rgba(111, 212, 225, 0.12)',
+  activeGlow: 'rgba(111, 212, 225, 0.25)',
+  gallery: '#B9E7E6',       // Soft Aqua
+  galleryBg: 'rgba(185, 231, 230, 0.08)',
+  text: '#B9E7E6',          // Soft Aqua
+  textHover: '#FFFFFF',     // Pure White
+  brand: '#FFFFFF',         // Pure White
+  barBg: 'rgba(6, 6, 18, 0.88)',
+  barBorder: 'rgba(185, 231, 230, 0.15)',
+  progressTrack: 'rgba(185, 231, 230, 0.08)',
 };
 
 export function MinimalistCommandBar({

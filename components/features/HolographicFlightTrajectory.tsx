@@ -144,7 +144,7 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
     applySize();
 
     const glowTex = makeGlowTexture();
-    const cyan = new THREE.Color('#22d3ee');
+    const cyan = new THREE.Color('#6FD4E1');
 
     // helper: circle points in a plane
     const circlePts = (radius: number, segs: number, plane: 'xz' | 'xy') => {
@@ -257,7 +257,7 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
 
     // ── Trajectory: dotted "planned route" + flowing direction chevrons ─
     // Reads like an active flight-plan corridor on radar rather than a plain line.
-    const cyanC = new THREE.Color('#22d3ee');
+    const cyanC = new THREE.Color('#6FD4E1');
     const purpleC = new THREE.Color('#a78bfa');
     const chevrons: { line: THREE.Line; mat: THREE.LineBasicMaterial }[] = [];
     {
@@ -811,11 +811,11 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
   if (webglUnavailable || lite) {
     return (
       <div
-        className="relative w-full rounded-2xl overflow-hidden border border-cyan-500/15 p-6 md:p-8"
+        className="relative w-full rounded-2xl p-6 md:p-8 border border-[#6FD4E1]/20"
         style={{ background: 'radial-gradient(120% 120% at 50% 20%, #0a0a1c 0%, #060612 70%)' }}
       >
-        <div className="flex items-center gap-2 text-cyan-300/90 font-mono text-[10px] md:text-xs mb-5">
-          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+        <div className="flex items-center gap-2 text-[#6FD4E1] font-mono text-[10px] md:text-xs mb-5">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#6FD4E1]" />
           <span className="tracking-[0.2em]">TRAJECTORY ASCENT PLAN · STATIC MODE</span>
         </div>
         <ol className="space-y-3">
@@ -824,18 +824,18 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
               key={w.id ?? i}
               className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4"
             >
-              <span className="mt-0.5 font-mono text-xs text-cyan-300/70">
+              <span className="mt-0.5 font-mono text-xs text-[#6FD4E1]">
                 {String(i + 1).padStart(2, '0')}
               </span>
               <div className="min-w-0">
-                <div className="text-white font-semibold">{w.title}</div>
-                <div className="text-white/60 text-sm">{w.institution}</div>
-                {w.period && <div className="text-cyan-300/50 text-xs mt-0.5">{w.period}</div>}
+                <div className="text-[#FFFFFF] font-semibold">{w.title}</div>
+                <div className="text-[#B9E7E6] text-sm">{w.institution}</div>
+                {w.period && <div className="text-[#B9E7E6]/70 text-xs mt-0.5">{w.period}</div>}
               </div>
             </li>
           ))}
         </ol>
-        <p className="mt-5 text-[11px] text-white/40 font-mono">
+        <p className="mt-5 text-[11px] text-[#B9E7E6]/50 font-mono">
           Enable your browser&apos;s graphics acceleration to view the interactive 3D flight path.
         </p>
       </div>
@@ -847,24 +847,24 @@ export function HolographicFlightTrajectory({ educationRecords }: HolographicFli
       {/* 3D container */}
       <div
         ref={containerRef}
-        className="relative w-full rounded-2xl overflow-hidden border border-cyan-500/15"
+        className="relative w-full rounded-2xl overflow-hidden border border-[#6FD4E1]/20"
         style={{ height: 'clamp(480px, 60vw, 620px)', background: 'radial-gradient(120% 120% at 50% 20%, #0a0a1c 0%, #060612 70%)' }}
       >
         {/* ── HUD overlay (pointer-events:none) ── */}
         <div className="absolute inset-0 pointer-events-none font-mono select-none">
           {/* Corner brackets */}
-          <span className="absolute top-3 left-3 w-7 h-7 border-t-2 border-l-2 border-cyan-400/50" />
-          <span className="absolute top-3 right-3 w-7 h-7 border-t-2 border-r-2 border-cyan-400/50" />
-          <span className="absolute bottom-3 left-3 w-7 h-7 border-b-2 border-l-2 border-cyan-400/50" />
-          <span className="absolute bottom-3 right-3 w-7 h-7 border-b-2 border-r-2 border-cyan-400/50" />
+          <span className="absolute top-3 left-3 w-7 h-7 border-t-2 border-l-2 border-[#6FD4E1]/50" />
+          <span className="absolute top-3 right-3 w-7 h-7 border-t-2 border-r-2 border-[#6FD4E1]/50" />
+          <span className="absolute bottom-3 left-3 w-7 h-7 border-b-2 border-l-2 border-[#6FD4E1]/50" />
+          <span className="absolute bottom-3 right-3 w-7 h-7 border-b-2 border-r-2 border-[#6FD4E1]/50" />
 
           {/* Top-left status */}
           <div className="absolute top-5 left-6 text-[10px] md:text-xs">
-            <div className="flex items-center gap-2 text-cyan-300/90">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <div className="flex items-center gap-2 text-[#6FD4E1]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#6FD4E1]" />
               <span className="tracking-[0.2em]">NAV RADAR · ONLINE</span>
             </div>
-            <div className="text-cyan-300/40 mt-1 tracking-wider">TRAJECTORY ASCENT PLAN</div>
+            <div className="text-[#B9E7E6]/60 mt-1 tracking-wider">TRAJECTORY ASCENT PLAN</div>
           </div>
 
           {/* Top-center heading tape */}

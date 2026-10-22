@@ -174,11 +174,11 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16 md:mb-24">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900 border border-slate-800 mb-8 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-sm text-slate-200">
-            <GraduationCap className="w-10 h-10 text-slate-200" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900 border border-[#6FD4E1]/30 mb-8 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-sm text-[#6FD4E1]">
+            <GraduationCap className="w-10 h-10 text-[#6FD4E1]" />
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">Education & Achievement</h2>
-          <p className="text-slate-400 max-w-2xl mx-auto text-lg">
+          <h2 className="text-4xl md:text-5xl font-bold text-[#FFFFFF] mb-4 tracking-tight">Education & Achievement</h2>
+          <p className="text-[#E2F4F3]/80 max-w-2xl mx-auto text-lg">
             Academic journey and certifications across development, aviation, and mountaineering
           </p>
         </div>
@@ -187,24 +187,24 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
         <div className="mb-20">
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
-              <Mountain className="w-6 h-6 text-slate-300" />
-              <h3 className="text-white font-mono font-bold tracking-wider">JOURNEY TIMELINE</h3>
+              <Mountain className="w-6 h-6 text-[#6FD4E1]" />
+              <h3 className="text-[#FFFFFF] font-mono font-bold tracking-wider">JOURNEY TIMELINE</h3>
             </div>
             <div className="flex-1 h-px bg-slate-800" />
-            <span className="text-slate-400 font-mono text-sm hidden sm:block">2010 → Now</span>
+            <span className="text-[#B9E7E6] font-mono text-sm hidden sm:block">2010 → Now</span>
           </div>
 
           <Card className="bg-slate-900/60 border border-slate-800/80 mb-8 overflow-hidden">
             <CardContent className="p-4 bg-slate-900/40">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center shrink-0 text-slate-300">
-                  <MapPin className="w-5 h-5 text-slate-300" />
+                <div className="w-10 h-10 rounded-xl bg-slate-800/80 border border-[#6FD4E1]/25 flex items-center justify-center shrink-0 text-[#6FD4E1]">
+                  <MapPin className="w-5 h-5 text-[#6FD4E1]" />
                 </div>
                 <div>
-                  <p className="text-slate-200 text-sm font-semibold mb-1">
+                  <p className="text-[#FFFFFF] text-sm font-semibold mb-1">
                     {use2D ? 'Scroll to explore' : 'Fly the journey'}
                   </p>
-                  <p className="text-slate-400 text-xs font-mono">
+                  <p className="text-[#B9E7E6] text-xs font-mono">
                     {use2D
                       ? 'The path draws itself as you scroll • Each milestone reveals as you reach it'
                       : 'Scroll or drag to glide through the 3D journey • Each milestone floats into view'}
@@ -229,8 +229,8 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
         <div>
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
-              <Award className="w-6 h-6 text-slate-300" />
-              <h3 className="text-white font-mono font-bold tracking-wider">CERTIFICATIONS</h3>
+              <Award className="w-6 h-6 text-[#6FD4E1]" />
+              <h3 className="text-[#FFFFFF] font-mono font-bold tracking-wider">CERTIFICATIONS</h3>
             </div>
             <div className="flex-1 h-px bg-slate-800" />
           </div>
@@ -240,22 +240,22 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
               const CategoryIcon = category.icon;
 
               return (
-                <Card key={category.id} className="overflow-hidden border border-slate-800/80 bg-slate-900/60 hover:border-slate-700 transition-colors">
+                <Card key={category.id} className="overflow-hidden border border-slate-800/80 bg-slate-900/60 hover:border-[#6FD4E1]/40 transition-colors">
                   <AccordionItem value={category.id} className="border-0">
                     <AccordionTrigger className="px-6 py-5 hover:no-underline group">
                       <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-4">
-                          <div className="w-14 h-14 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-200 group-hover:scale-105 transition-transform">
-                            <CategoryIcon className="w-7 h-7 text-slate-200" />
+                          <div className="w-14 h-14 rounded-xl bg-slate-800/80 border border-[#6FD4E1]/25 flex items-center justify-center text-[#6FD4E1] group-hover:scale-105 transition-transform">
+                            <CategoryIcon className="w-7 h-7 text-[#6FD4E1]" />
                           </div>
                           <div className="text-left">
-                            <h4 className="text-white font-bold text-lg mb-1">{category.label}</h4>
-                            <p className="text-slate-400 text-sm font-mono">
+                            <h4 className="text-[#FFFFFF] font-bold text-lg mb-1">{category.label}</h4>
+                            <p className="text-[#B9E7E6] text-sm font-mono">
                               {category.achievements.length} records found
                             </p>
                           </div>
                         </div>
-                        <div className="px-3.5 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-slate-200 font-mono text-sm font-semibold">
+                        <div className="px-3.5 py-1.5 rounded-full bg-[#6FD4E1]/10 border border-[#6FD4E1]/30 text-[#6FD4E1] font-mono text-sm font-semibold">
                           {category.achievements.length}
                         </div>
                       </div>
@@ -275,22 +275,22 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                   key={achievement.id}
                                   onClick={() => setSelectedAchievement({ category: category.id, achievementId: achievement.id })}
                                   className={`w-full p-4 rounded-xl border text-left group transition-all duration-300 ${isSelected
-                                      ? 'bg-slate-800/90 border-slate-600 shadow-md'
+                                      ? 'bg-slate-800/90 border-[#6FD4E1]/60 shadow-md'
                                       : 'bg-slate-900/50 border-slate-800/80 hover:border-slate-700'
                                     }`}
                                 >
                                   <div className="flex items-start gap-4">
-                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isSelected ? 'bg-slate-700 text-white' : 'bg-slate-800 text-slate-300'}`}>
+                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isSelected ? 'bg-[#6FD4E1]/20 text-[#6FD4E1]' : 'bg-slate-800 text-[#6FD4E1]'}`}>
                                       {(() => {
                                         const AchievementIcon = getIcon(achievement.icon);
-                                        return <AchievementIcon className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-slate-400'}`} />;
+                                        return <AchievementIcon className="w-5 h-5 text-[#6FD4E1]" />;
                                       })()}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <p className={`font-semibold text-sm mb-1 line-clamp-2 ${isSelected ? 'text-white' : 'text-slate-300'}`}>
+                                      <p className={`font-semibold text-sm mb-1 line-clamp-2 ${isSelected ? 'text-[#FFFFFF]' : 'text-[#E2F4F3]'}`}>
                                         {achievement.title}
                                       </p>
-                                      <p className="text-slate-400 text-xs font-mono truncate">{achievement.issuer}</p>
+                                      <p className="text-[#B9E7E6] text-xs font-mono truncate">{achievement.issuer}</p>
                                     </div>
                                   </div>
                                 </button>

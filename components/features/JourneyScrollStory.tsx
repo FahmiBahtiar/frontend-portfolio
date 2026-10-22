@@ -152,7 +152,7 @@ function Milestone({
           <span className="font-mono text-xs text-slate-400">{w.period}</span>
         </div>
 
-        <h4 className="mt-3 text-xl font-bold text-white md:text-2xl">
+        <h4 className="mt-3 text-xl font-bold text-[#FFFFFF] md:text-2xl">
           {w.title}
         </h4>
         <p className="mt-1 text-sm font-medium" style={{ color: w.color }}>
@@ -160,14 +160,14 @@ function Milestone({
         </p>
 
         {w.description && (
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-slate-400">
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-[#E2F4F3]/80">
             {w.description}
           </p>
         )}
 
         {w.gpa && (
           <div className="mt-4">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-mono text-xs text-slate-300">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#6FD4E1]/20 bg-slate-900/60 px-3 py-1.5 font-mono text-xs text-[#B9E7E6]">
               <span
                 className="h-1.5 w-1.5 rounded-full"
                 style={{ background: w.color }}

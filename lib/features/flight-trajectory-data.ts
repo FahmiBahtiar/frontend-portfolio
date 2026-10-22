@@ -26,8 +26,8 @@ export const DEFAULT_EDUCATION: Education[] = [
   { id: '5', degree: 'Bachelor Degree', institution: 'University of Technology', period: '2020-2024', gpa: '3.85 / 4.00', color: 'purple', order: 5, description: 'Specialized in Network Security, Cloud Computing, and Full-Stack Development. Final project: Smart Network Monitoring System using AI/ML.', createdAt: '', updatedAt: '' },
 ];
 
-export const LEVEL_COLORS = ['#64748b', '#94a3b8', '#38bdf8', '#7dd3fc', '#f8fafc'];
-export const SUMMIT_COLOR = '#38bdf8';
+export const LEVEL_COLORS = ['#6FD4E1', '#8fe0e7', '#B9E7E6', '#E2F4F3', '#FFFFFF'];
+export const SUMMIT_COLOR = '#FFFFFF';
 
 export function colorForIndex(i: number, n: number): string {
   if (i === n - 1) return SUMMIT_COLOR;

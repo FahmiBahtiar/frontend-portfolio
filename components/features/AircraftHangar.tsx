@@ -101,10 +101,10 @@ export function AircraftHangar() {
 
   const getColorClasses = (color: string) => {
     const colors: { [key: string]: { main: string; glow: string; border: string } } = {
-      cyan: { main: '#38bdf8', glow: 'transparent', border: 'border-slate-700/60' },
-      green: { main: '#34d399', glow: 'transparent', border: 'border-slate-700/60' },
-      purple: { main: '#94a3b8', glow: 'transparent', border: 'border-slate-700/60' },
-      orange: { main: '#f59e0b', glow: 'transparent', border: 'border-slate-700/60' }
+      cyan: { main: '#6FD4E1', glow: 'transparent', border: 'border-[#6FD4E1]/30' },
+      green: { main: '#B9E7E6', glow: 'transparent', border: 'border-[#6FD4E1]/30' },
+      purple: { main: '#E2F4F3', glow: 'transparent', border: 'border-[#6FD4E1]/30' },
+      orange: { main: '#FFFFFF', glow: 'transparent', border: 'border-[#6FD4E1]/30' }
     };
     return colors[color] || colors.cyan;
   };
@@ -203,8 +203,8 @@ export function AircraftHangar() {
               aria-pressed={showFilters}
               className={`p-2 rounded-xl border transition-all flex-shrink-0 ${
                 showFilters
-                  ? 'bg-white border-white text-slate-950 font-semibold shadow-sm'
-                  : 'bg-slate-900/60 border-slate-800/80 text-slate-400 hover:text-white hover:border-slate-700'
+                  ? 'bg-[#6FD4E1] border-[#6FD4E1] text-slate-950 font-semibold shadow-sm'
+                  : 'bg-slate-900/60 border-slate-800/80 text-[#B9E7E6] hover:text-[#FFFFFF] hover:border-[#6FD4E1]/40'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -247,8 +247,8 @@ export function AircraftHangar() {
                     onClick={() => setSelectedSystem('')}
                     className={`px-3 py-1 rounded-lg text-sm transition-all ${
                       selectedSystem === ''
-                        ? 'bg-white border border-white text-slate-950 font-semibold'
-                        : 'bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
+                        ? 'bg-[#6FD4E1] border border-[#6FD4E1] text-slate-950 font-semibold'
+                        : 'bg-slate-900/60 border border-slate-800 text-[#B9E7E6] hover:text-[#FFFFFF] hover:border-[#6FD4E1]/40'
                     }`}
                   >
                     All
@@ -372,7 +372,7 @@ export function AircraftHangar() {
           <Button
             onClick={() => setShowMore(!showMore)}
             variant="outline"
-            className="border-slate-800 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-white font-mono uppercase tracking-wider text-xs rounded-xl"
+            className="border-[#6FD4E1]/40 bg-slate-900 text-[#6FD4E1] hover:bg-[#6FD4E1]/10 hover:text-[#FFFFFF] font-mono uppercase tracking-wider text-xs rounded-xl"
           >
             {showMore ? 'Show Less' : `Show ${filteredItems.length - (isMobile ? 3 : 6)} More Projects`}
           </Button>
