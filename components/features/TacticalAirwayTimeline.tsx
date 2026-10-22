@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useMemo, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useGLTF, Html } from '@react-three/drei';
+import { OrbitControls, useGLTF, Billboard, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import {
   Play,
@@ -304,7 +304,7 @@ function ForeFlightTerrainCurtain({
         }
       />
 
-      {/* Sleek Checkpoints (Nav Ring Gates + Compact Micro-Badges) */}
+      {/* Sleek Checkpoints (Nav Ring Gates + Compact 3D Billboard Micro-Badges) */}
       {waypoints.map((wpt, idx) => {
         const isSelected = idx === selectedIdx;
         const [x, y, z] = wpt.coord;
@@ -320,7 +320,7 @@ function ForeFlightTerrainCurtain({
           >
             {/* 3D Glowing Nav Ring Gate (Plane flies through) */}
             <mesh rotation={[0, -THREE.MathUtils.degToRad(wpt.courseHeading - 90), 0]}>
-              <ringGeometry args={[isSelected ? 0.38 : 0.28, isSelected ? 0.44 : 0.32, 28]} />
+              <torusGeometry args={[isSelected ? 0.32 : 0.24, 0.016, 16, 32]} />
               <meshBasicMaterial
                 color={isSelected ? '#0891b2' : '#6FD4E1'}
                 side={THREE.DoubleSide}
@@ -329,20 +329,9 @@ function ForeFlightTerrainCurtain({
               />
             </mesh>
 
-            {/* Inner Diamond Reticle */}
-            <mesh rotation={[0, -THREE.MathUtils.degToRad(wpt.courseHeading - 90), 0]}>
-              <ringGeometry args={[0.16, 0.19, 4]} />
-              <meshBasicMaterial
-                color={isSelected ? '#ffffff' : '#B9E7E6'}
-                side={THREE.DoubleSide}
-                transparent
-                opacity={isSelected ? 0.9 : 0.4}
-              />
-            </mesh>
-
             {/* Center Beacon Node */}
             <mesh>
-              <sphereGeometry args={[isSelected ? 0.1 : 0.07, 16, 16]} />
+              <sphereGeometry args={[isSelected ? 0.08 : 0.05, 16, 16]} />
               <meshStandardMaterial
                 color={isSelected ? '#0891b2' : '#6FD4E1'}
                 emissive={isSelected ? '#0891b2' : '#6FD4E1'}
@@ -362,23 +351,25 @@ function ForeFlightTerrainCurtain({
               <lineBasicMaterial attach="material" color="#0891b2" transparent opacity={0.35} />
             </line>
 
-            {/* Sleek, Compact Tactical Micro-Badge (Never Blocks Screen) */}
-            <Html position={[0, isSelected ? 0.58 : 0.45, 0]} center distanceFactor={28}>
-              <div
-                onClick={() => onSelectWaypoint(idx)}
-                className={`transition-all duration-200 pointer-events-auto cursor-pointer select-none rounded font-mono shadow-sm flex items-center gap-1 whitespace-nowrap ${
-                  isSelected
-                    ? 'bg-[#0891b2] text-white px-2 py-0.5 text-[10px] font-bold border border-white ring-1 ring-[#6FD4E1]/80 scale-105'
-                    : 'bg-white/90 text-[#0c282d] px-1.5 py-0.5 text-[9px] border border-[#B9E7E6] opacity-80 hover:opacity-100 hover:bg-[#E2F4F3]'
-                }`}
+            {/* Sleek Compact 3D Billboard Label (Physical 3D Size, Never Balloons) */}
+            <Billboard position={[0, isSelected ? 0.46 : 0.36, 0]}>
+              <mesh position={[0, 0, -0.01]}>
+                <planeGeometry args={[isSelected ? 0.68 : 0.48, isSelected ? 0.22 : 0.16]} />
+                <meshBasicMaterial
+                  color={isSelected ? '#0891b2' : '#ffffff'}
+                  transparent
+                  opacity={isSelected ? 0.95 : 0.88}
+                />
+              </mesh>
+              <Text
+                fontSize={isSelected ? 0.11 : 0.085}
+                color={isSelected ? '#ffffff' : '#0c282d'}
+                anchorX="center"
+                anchorY="middle"
               >
-                <Radio className={`w-2.5 h-2.5 ${isSelected ? 'animate-pulse text-white' : 'text-[#0891b2]'}`} />
-                <span>{wpt.fixCode}</span>
-                {isSelected && (
-                  <span className="opacity-90 text-[9px]">({wpt.altitudeFeet.toLocaleString()}&apos;)</span>
-                )}
-              </div>
-            </Html>
+                {wpt.fixCode}
+              </Text>
+            </Billboard>
           </group>
         );
       })}
@@ -397,6 +388,7 @@ function TrackingAircraft({
   const gltf = useGLTF('/models/aircraft/jet.glb');
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Group>(null);
+  const bankRef = useRef(0);
 
   const sceneClone = useMemo(() => {
     const clone = gltf.scene.clone(true);
@@ -417,29 +409,31 @@ function TrackingAircraft({
     return clone;
   }, [gltf.scene]);
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (!groupRef.current) return;
 
-    // Get position and tangent along the flight path
+    // Get position and tangent along the winding flight path
     const clampedProgress = Math.max(0.001, Math.min(0.999, progress));
     const currentPoint = curve.getPointAt(clampedProgress);
     const tangent = curve.getTangentAt(clampedProgress).normalize();
 
     groupRef.current.position.copy(currentPoint);
 
-    // Look ahead along flight tangent
+    // Look ahead along flight tangent (points local +Z forward)
     const lookTarget = currentPoint.clone().add(tangent);
     groupRef.current.lookAt(lookTarget);
 
-    // Dynamic banking calculation (banks into turns)
+    // Dynamic banking calculation (smoothly banks into turns)
     const nextProgress = Math.min(0.999, clampedProgress + 0.02);
     const nextTangent = curve.getTangentAt(nextProgress).normalize();
     const crossY = tangent.x * nextTangent.z - tangent.z * nextTangent.x;
     const targetBankRad = THREE.MathUtils.clamp(crossY * 65, -0.65, 0.65);
 
-    // Negative rolls left wing into left turns
+    // Smoothly interpolate banking roll around forward axis into the turn
+    bankRef.current = THREE.MathUtils.damp(bankRef.current, targetBankRad, 4.5, delta);
+
     if (meshRef.current) {
-      meshRef.current.rotation.z = -targetBankRad;
+      meshRef.current.rotation.z = bankRef.current;
     }
   });
 
@@ -497,10 +491,10 @@ function CameraFollower({
       // ForeFlight elevated chase camera gliding smoothly behind the jet
       const desiredPos = currentPoint.clone()
         .sub(tangent.clone().multiplyScalar(3.6))
-        .add(new THREE.Vector3(0.4, 1.3, 0));
+        .add(new THREE.Vector3(0, 1.4, 0));
 
       state.camera.position.lerp(desiredPos, delta * 3.5);
-      state.camera.lookAt(currentPoint.clone().add(tangent.clone().multiplyScalar(1.8)));
+      state.camera.lookAt(currentPoint.clone().add(tangent.clone().multiplyScalar(1.6)));
     }
   });
 
