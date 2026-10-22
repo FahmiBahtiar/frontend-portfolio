@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { API_BASE_URL } from '@/lib/config';
 import { FALLBACK_CONTACT_FREQUENCIES } from '@/lib/fallback-data';
+import { LiveStatusCards } from '@/components/features/LiveStatusCards';
 
 interface ContactFrequency {
   id: string;
@@ -375,57 +376,7 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
             <div className="flex-1 h-px bg-[#B9E7E6]" />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Discord Status Card */}
-            <Card className="border border-[#B9E7E6] hover:border-[#6FD4E1] hover:shadow-md transition-all bg-white/90 shadow-sm">
-              <CardContent className="p-6 md:p-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center text-[#0891b2] shadow-sm">
-                    <Radio className="w-6 h-6 text-[#0891b2]" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-mono text-[#0c282d] tracking-wide font-bold">DISCORD NETWORK</div>
-                    <div className="text-sm text-[#527d85]">Real-time presence</div>
-                  </div>
-                </div>
-                <div className="rounded-xl overflow-hidden border border-[#B9E7E6] bg-[#E2F4F3]/30 p-2">
-                  <Image
-                    src="https://lanyard.cnrad.dev/api/467600406000697354?borderRadius=8px&theme=dark"
-                    alt="Discord Status"
-                    width={400}
-                    height={150}
-                    className="w-full aspect-[8/3] object-contain opacity-95 hover:opacity-100 transition-opacity"
-                    unoptimized
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* IVAO Flight Status Card */}
-            <Card className="border border-[#B9E7E6] hover:border-[#6FD4E1] hover:shadow-md transition-all bg-white/90 shadow-sm">
-              <CardContent className="p-6 md:p-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center text-[#0891b2] shadow-sm">
-                    <Radar className="w-6 h-6 text-[#0891b2]" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-mono text-[#0c282d] tracking-wide font-bold">IVAO NETWORK</div>
-                    <div className="text-sm text-[#527d85]">Flight Telemetry</div>
-                  </div>
-                </div>
-                <div className="rounded-xl overflow-hidden border border-[#B9E7E6] bg-[#E2F4F3]/30 flex items-center justify-center min-h-[160px] p-2">
-                  <Image
-                    src="https://status.ivao.aero/704291.png"
-                    alt="IVAO Flight Status"
-                    width={400}
-                    height={200}
-                    className="w-full aspect-[2/1] object-contain mix-blend-multiply opacity-90 hover:opacity-100 transition-opacity"
-                    unoptimized
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <LiveStatusCards />
         </div>
 
         {/* Social Media - Navigation Frequencies */}
