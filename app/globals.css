@@ -116,3 +116,42 @@ html.lite-graphics * {
 html.lite-graphics .glass-panel {
   background-color: rgba(255, 255, 255, 0.95) !important;
 }
+
+/* 3D Passport Flip Animation Keyframes */
+@keyframes passportFlipToBack {
+  0% {
+    transform: perspective(1000px) rotateY(0deg) scale(1);
+    box-shadow: 0 10px 30px rgba(12, 40, 45, 0.06);
+  }
+  50% {
+    transform: perspective(1000px) rotateY(90deg) scale(1.05);
+    box-shadow: 0 35px 70px rgba(111, 212, 225, 0.35), 0 15px 30px rgba(12, 40, 45, 0.15);
+  }
+  100% {
+    transform: perspective(1000px) rotateY(180deg) scale(1);
+    box-shadow: 0 10px 30px rgba(12, 40, 45, 0.06);
+  }
+}
+
+@keyframes passportFlipToFront {
+  0% {
+    transform: perspective(1000px) rotateY(180deg) scale(1);
+    box-shadow: 0 10px 30px rgba(12, 40, 45, 0.06);
+  }
+  50% {
+    transform: perspective(1000px) rotateY(90deg) scale(1.05);
+    box-shadow: 0 35px 70px rgba(111, 212, 225, 0.35), 0 15px 30px rgba(12, 40, 45, 0.15);
+  }
+  100% {
+    transform: perspective(1000px) rotateY(0deg) scale(1);
+    box-shadow: 0 10px 30px rgba(12, 40, 45, 0.06);
+  }
+}
+
+.passport-flip-to-back {
+  animation: passportFlipToBack 0.9s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards !important;
+}
+
+.passport-flip-to-front {
+  animation: passportFlipToFront 0.9s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards !important;
+}

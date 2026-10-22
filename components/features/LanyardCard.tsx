@@ -39,8 +39,9 @@ interface LanyardData {
 }
 
 export function LanyardCard() {
+  const [flipState, setFlipState] = useState<'initial' | 'to-back' | 'to-front'>('initial');
   const [isFlipped, setIsFlipped] = useState(false);
-  const [isFlipping, setIsFlipping] = useState(false);
+  const isFlipping = flipState === 'to-back' || flipState === 'to-front';
   const [lanyardData, setLanyardData] = useState<LanyardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -75,12 +76,14 @@ export function LanyardCard() {
     if (e) {
       e.stopPropagation();
     }
-    setIsFlipping(true);
-    setIsFlipped((prev) => !prev);
-    setTimeout(() => {
-      setIsFlipping(false);
-    }, 850);
-  }, []);
+    if (!isFlipped) {
+      setFlipState('to-back');
+      setIsFlipped(true);
+    } else {
+      setFlipState('to-front');
+      setIsFlipped(false);
+    }
+  }, [isFlipped]);
 
   useEffect(() => {
     const API_BASE = API_BASE_URL;
@@ -201,12 +204,17 @@ export function LanyardCard() {
             >
               {/* Hardware-Accelerated 3D Flip Card */}
               <div 
-                className="absolute inset-0 w-full h-full passport-flipper allow-motion"
+                className={`absolute inset-0 w-full h-full passport-flipper allow-motion ${
+                  flipState === 'to-back'
+                    ? 'passport-flip-to-back'
+                    : flipState === 'to-front'
+                    ? 'passport-flip-to-front'
+                    : ''
+                }`}
                 style={{
                   transform: isFlipped 
-                    ? 'perspective(1100px) rotateY(180deg)' 
-                    : 'perspective(1100px) rotateY(0deg)',
-                  transition: 'transform 0.85s cubic-bezier(0.34, 1.25, 0.64, 1)',
+                    ? 'perspective(1000px) rotateY(180deg)' 
+                    : 'perspective(1000px) rotateY(0deg)',
                   transformStyle: 'preserve-3d',
                   WebkitTransformStyle: 'preserve-3d',
                 }}
