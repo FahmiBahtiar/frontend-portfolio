@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { motion, AnimatePresence, useInView } from 'motion/react';
 import { SpotifyService } from '@/lib/services/spotify';
 import { apiRequestWithRetry, API_CONFIG, ApiResponse } from '@/lib/api';
+import { preloadAllSections } from '@/lib/services/prefetch';
 
 // Lazy load components untuk mengurangi initial bundle
 const LoadingScreen = dynamic(() => import('@/components/features/LoadingScreen').then(mod => ({ default: mod.LoadingScreen })), {
@@ -111,6 +112,9 @@ export default function HomePage() {
 
       // Non-critical: warm Spotify in the background — do NOT block content.
       SpotifyService.getNowPlaying().catch(() => null);
+
+      // Preload all sections into SWR cache to eliminate spinners on scroll
+      preloadAllSections();
 
       try {
         // Only the hero data gates the loading->content transition.
