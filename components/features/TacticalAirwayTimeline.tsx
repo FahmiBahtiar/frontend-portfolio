@@ -39,7 +39,6 @@ export interface WaypointLeg {
   period: string;
   status: string;
   description: string;
-  // Normalized 0.0 to 1.0 position along flight spline
   tProgress: number;
   coord: [number, number, number];
 }
@@ -158,27 +157,26 @@ function ForeFlightTerrain() {
   const gltf = useGLTF('/models/terrain/puncak_jaya.glb');
   const texture = useTexture('/models/terrain/puncak_jaya.jpg');
 
-  useMemo(() => {
-    texture.wrapS = THREE.ClampToEdgeWrapping;
-    texture.wrapT = THREE.ClampToEdgeWrapping;
-
-    gltf.scene.traverse((child) => {
+  const sceneClone = useMemo(() => {
+    const clone = gltf.scene.clone(true);
+    clone.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         mesh.material = new THREE.MeshStandardMaterial({
           map: texture,
-          roughness: 0.9,
+          roughness: 0.85,
           metalness: 0.08,
-          flatShading: false,
+          color: '#ffffff',
         });
         mesh.receiveShadow = true;
       }
     });
-  }, [gltf, texture]);
+    return clone;
+  }, [gltf.scene, texture]);
 
   return (
     <primitive
-      object={gltf.scene}
+      object={sceneClone}
       scale={[0.00034, 0.00034, 0.00042]}
       rotation={[-Math.PI / 2, 0, -0.22]}
       position={[0, -0.15, 0]}
@@ -292,18 +290,6 @@ function ForeFlightTerrainCurtain({
               />
             </mesh>
 
-            {/* Vertical Marker Drop Line */}
-            <line>
-              <bufferGeometry
-                attach="geometry"
-                {...new THREE.BufferGeometry().setFromPoints([
-                  new THREE.Vector3(0, 0, 0),
-                  new THREE.Vector3(0, -y + 0.25, 0),
-                ])}
-              />
-              <lineBasicMaterial attach="material" color="#0891b2" transparent opacity={0.5} />
-            </line>
-
             {/* Floating ForeFlight Billboard Badge */}
             <Html position={[0, isSelected ? 0.95 : 0.75, 0]} center distanceFactor={13}>
               <div
@@ -336,6 +322,7 @@ function TrackingAircraft({
 }) {
   const gltf = useGLTF('/models/aircraft/jet.glb');
   const groupRef = useRef<THREE.Group>(null);
+  const meshRef = useRef<THREE.Group>(null);
 
   const sceneClone = useMemo(() => {
     const clone = gltf.scene.clone(true);
@@ -358,48 +345,52 @@ function TrackingAircraft({
 
     groupRef.current.position.copy(currentPoint);
 
-    // Look ahead along tangent
+    // Look ahead along flight tangent
     const lookTarget = currentPoint.clone().add(tangent);
     groupRef.current.lookAt(lookTarget);
 
-    // Compute dynamic banking (roll) from turn rate
+    // Dynamic banking calculation
     const nextProgress = Math.min(0.999, clampedProgress + 0.02);
     const nextTangent = curve.getTangentAt(nextProgress).normalize();
     const crossY = tangent.x * nextTangent.z - tangent.z * nextTangent.x;
-    const targetBankRad = THREE.MathUtils.clamp(crossY * 75, -0.65, 0.65);
+    const targetBankRad = THREE.MathUtils.clamp(crossY * 70, -0.65, 0.65);
 
-    // Apply roll around local Z axis
-    groupRef.current.rotateZ(targetBankRad);
+    // Set absolute bank angle on inner mesh (avoids infinite compounding)
+    if (meshRef.current) {
+      meshRef.current.rotation.z = targetBankRad;
+    }
   });
 
   return (
     <group ref={groupRef}>
-      {/* Scaled jet mesh */}
-      <primitive
-        object={sceneClone}
-        scale={[0.042, 0.042, 0.042]}
-        rotation={[0, -Math.PI / 2, 0]}
-      />
+      <group ref={meshRef}>
+        {/* Scaled jet mesh */}
+        <primitive
+          object={sceneClone}
+          scale={[0.042, 0.042, 0.042]}
+          rotation={[0, -Math.PI / 2, 0]}
+        />
 
-      {/* Twin Engine Contrail Trails */}
-      <group position={[-0.42, -0.04, 0.9]}>
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.02, 0.08, 1.4, 8]} />
-          <meshBasicMaterial color="#6FD4E1" transparent opacity={0.5} />
-        </mesh>
-      </group>
-      <group position={[0.42, -0.04, 0.9]}>
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.02, 0.08, 1.4, 8]} />
-          <meshBasicMaterial color="#6FD4E1" transparent opacity={0.5} />
-        </mesh>
+        {/* Twin Engine Contrail Trails */}
+        <group position={[-0.42, -0.04, 0.9]}>
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.02, 0.08, 1.4, 8]} />
+            <meshBasicMaterial color="#6FD4E1" transparent opacity={0.5} />
+          </mesh>
+        </group>
+        <group position={[0.42, -0.04, 0.9]}>
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.02, 0.08, 1.4, 8]} />
+            <meshBasicMaterial color="#6FD4E1" transparent opacity={0.5} />
+          </mesh>
+        </group>
       </group>
     </group>
   );
 }
 
 // ── Camera Controller (Chase vs Free Orbit) ─────────────────────────────────
-function FlightCameraController({
+function CameraFollower({
   curve,
   progress,
   cameraMode,
@@ -408,23 +399,36 @@ function FlightCameraController({
   progress: number;
   cameraMode: 'chase' | 'orbit';
 }) {
-  useFrame((state, delta) => {
-    if (cameraMode !== 'chase') return;
+  const controlsRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 
+  useFrame((state, delta) => {
     const clampedProgress = Math.max(0.001, Math.min(0.999, progress));
     const currentPoint = curve.getPointAt(clampedProgress);
     const tangent = curve.getTangentAt(clampedProgress).normalize();
 
-    // ForeFlight elevated rear 3/4 chase camera
-    const desiredPos = currentPoint.clone()
-      .sub(tangent.clone().multiplyScalar(3.8))
-      .add(new THREE.Vector3(0.8, 1.6, 0));
+    if (controlsRef.current) {
+      controlsRef.current.target.lerp(currentPoint, delta * 3.2);
+      controlsRef.current.update();
+    }
 
-    state.camera.position.lerp(desiredPos, delta * 3.5);
-    state.camera.lookAt(currentPoint.clone().add(tangent.clone().multiplyScalar(2.2)));
+    if (cameraMode === 'chase') {
+      const desiredPos = currentPoint.clone()
+        .sub(tangent.clone().multiplyScalar(4.2))
+        .add(new THREE.Vector3(1.2, 1.8, 0));
+
+      state.camera.position.lerp(desiredPos, delta * 3.0);
+    }
   });
 
-  return null;
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      enablePan={false}
+      minDistance={2.5}
+      maxDistance={14}
+      maxPolarAngle={Math.PI / 2 - 0.05}
+    />
+  );
 }
 
 // ── 2.5D SVG Synthetic Vision Fallback ───────────────────────────────────────
@@ -693,21 +697,12 @@ export function TacticalAirwayTimeline({
                   {/* Moving 3D Aircraft with Dynamic Banking */}
                   <TrackingAircraft curve={curve} progress={progress} />
 
-                  {/* Camera Controller */}
-                  <FlightCameraController
+                  {/* Camera Follower & Orbit Controls */}
+                  <CameraFollower
                     curve={curve}
                     progress={progress}
                     cameraMode={cameraMode}
                   />
-
-                  {cameraMode === 'orbit' && (
-                    <OrbitControls
-                      enablePan={false}
-                      minDistance={3.2}
-                      maxDistance={14}
-                      maxPolarAngle={Math.PI / 2 - 0.05}
-                    />
-                  )}
                 </Canvas>
               </Suspense>
             ) : (
