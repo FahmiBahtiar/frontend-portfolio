@@ -44,7 +44,7 @@ function LazySection({
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '300px' });
+  const inView = useInView(ref, { once: true, margin: '400px' });
   const setRefs = useCallback(
     (el: HTMLDivElement | null) => {
       ref.current = el;
@@ -58,8 +58,8 @@ function LazySection({
       ref={setRefs}
       className="min-h-screen"
       style={{
-        contentVisibility: index > 1 ? 'auto' : 'visible',
-        containIntrinsicSize: index > 1 ? 'auto 1000px' : 'none',
+        contentVisibility: index > 1 && !eager ? 'auto' : 'visible',
+        containIntrinsicSize: index > 1 && !eager ? 'auto 1000px' : 'none',
       }}
     >
       {(eager || inView) && children}
@@ -161,14 +161,59 @@ export default function HomePage() {
   };
 
   const handleNavigate = (sectionIndex: number) => {
+    // 1. Ensure all sections are fully loaded in DOM to lock layout dimensions
+    setSectionsLoaded(true);
+
     const targetSection = sectionRefs.current[sectionIndex];
-    if (targetSection) {
-      targetSection.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start',
-        inline: 'nearest'
-      });
-    }
+    if (!targetSection) return;
+
+    // Use requestAnimationFrame to ensure smooth coordinate calculation
+    requestAnimationFrame(() => {
+      const navOffset = sectionIndex === 0 ? 0 : 50; // Offset for floating command bar
+      const targetRect = targetSection.getBoundingClientRect();
+      const targetY = Math.max(0, targetRect.top + window.scrollY - navOffset);
+      const startY = window.scrollY;
+      const distance = targetY - startY;
+
+      if (Math.abs(distance) < 5) return;
+
+      // Dynamic duration based on travel distance (between 450ms and 950ms)
+      const duration = Math.min(950, Math.max(450, Math.abs(distance) * 0.35));
+      let startTime: number | null = null;
+
+      // Silky-smooth cubic bezier easing
+      const easeInOutCubic = (t: number) =>
+        t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+      let isCancelled = false;
+
+      const onUserInterrupt = () => {
+        isCancelled = true;
+        window.removeEventListener('wheel', onUserInterrupt);
+        window.removeEventListener('touchstart', onUserInterrupt);
+      };
+
+      window.addEventListener('wheel', onUserInterrupt, { passive: true });
+      window.addEventListener('touchstart', onUserInterrupt, { passive: true });
+
+      const step = (currentTime: number) => {
+        if (isCancelled) return;
+        if (startTime === null) startTime = currentTime;
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+        const ease = easeInOutCubic(progress);
+
+        window.scrollTo(0, startY + distance * ease);
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          window.removeEventListener('wheel', onUserInterrupt);
+          window.removeEventListener('touchstart', onUserInterrupt);
+        }
+      };
+
+      requestAnimationFrame(step);
+    });
   };
 
   const handleGalleryToggle = () => {
@@ -260,7 +305,7 @@ export default function HomePage() {
                 key={section.id}
                 id={section.id}
                 index={index}
-                eager={index === 0}
+                eager={index === 0 || sectionsLoaded}
                 registerRef={(el) => {
                   sectionRefs.current[index] = el;
                 }}
