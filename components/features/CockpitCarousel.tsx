@@ -101,22 +101,22 @@ export const CockpitCarousel = memo(function CockpitCarousel({ items, currentInd
             rotateY = wrappedPosition * 6;
             xOffset = isMobile ? wrappedPosition * mobileOffset : wrappedPosition * adjacentOffset;
             blur = isMobile ? 4 : 2;
-            brightness = isMobile ? 0.8 : 0.9;
-            opacity = isMobile ? 0.7 : 1;
+            brightness = 1;
+            opacity = isMobile ? 0.7 : 0.85;
           } else if (isFar) {
             scale = 0.78;
             zIndex = 10;
-            opacity = 0.85;
+            opacity = 0.65;
             rotateY = wrappedPosition * 8;
             xOffset = wrappedPosition * farOffset;
             blur = 4;
-            brightness = 0.8;
+            brightness = 1;
           } else {
             scale = 0.4;
             opacity = 0;
             zIndex = 0;
             blur = 8;
-            brightness = 0.5;
+            brightness = 1;
           }
 
           if (!isVisible) {

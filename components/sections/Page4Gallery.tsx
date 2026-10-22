@@ -134,7 +134,7 @@ export function PageGallery() {
 
   return (
     <section 
-      className="relative min-h-screen w-full bg-neutral-950 overflow-x-hidden overflow-y-auto select-none outline-none"
+      className="relative min-h-screen w-full bg-[#E2F4F3] overflow-x-hidden overflow-y-auto select-none outline-none"
       aria-label="Mission Intelligence Gallery"
       tabIndex={0}
     >
@@ -143,9 +143,9 @@ export function PageGallery() {
         <motion.div
           key={currentIndex}
           className="fixed inset-0 origin-center"
-          initial={{ opacity: 0, scale: 1.05, filter: 'brightness(0.5) blur(10px)' }}
-          animate={{ opacity: 1, scale: 1, filter: 'brightness(1) blur(0px)' }}
-          exit={{ opacity: 0, scale: 0.98, filter: 'brightness(0.5) blur(10px)' }}
+          initial={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
+          animate={{ opacity: 0.35, scale: 1, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           style={{
             backgroundImage: `url('${currentBackground}')`,
@@ -157,17 +157,17 @@ export function PageGallery() {
         />
       </AnimatePresence>
 
-      {/* Atmospheric Overlays */}
-      <div className="fixed inset-0 backdrop-blur-[12px] bg-black/60 z-[1] mix-blend-multiply pointer-events-none" />
-      <div className="fixed inset-0 bg-gradient-to-b from-black/80 via-black/20 to-black/90 z-[1] pointer-events-none" />
+      {/* Frosted Ice Light Overlays */}
+      <div className="fixed inset-0 backdrop-blur-2xl bg-[#E2F4F3]/85 z-[1] pointer-events-none" />
+      <div className="fixed inset-0 bg-gradient-to-b from-[#E2F4F3]/95 via-transparent to-[#E2F4F3]/95 z-[1] pointer-events-none" />
       
-      {/* CRT Scanline Overlay */}
-      <div className="fixed inset-0 pointer-events-none z-[1] opacity-20 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.5)_50%)] bg-[size:100%_4px]" />
+      {/* Light Scanline / Grid Overlay */}
+      <div className="fixed inset-0 pointer-events-none z-[1] opacity-10 bg-[linear-gradient(transparent_50%,rgba(111,212,225,0.4)_50%)] bg-[size:100%_4px]" />
 
-      {/* Background Scanning Sweep — full viewport, top to bottom */}
+      {/* Background Scanning Sweep — subtle ice cyan shimmer */}
       <div className="fixed inset-0 pointer-events-none z-[2] overflow-hidden">
         <motion.div
-          className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-transparent via-cyan-400/10 to-transparent"
+          className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-transparent via-[#6FD4E1]/15 to-transparent"
           initial={false}
           animate={{ y: ['-20vh', '120vh'] }}
           transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
@@ -175,8 +175,8 @@ export function PageGallery() {
         />
       </div>
 
-      {/* Vignette */}
-      <div className="fixed inset-0 pointer-events-none z-[2] shadow-[inset_0_0_150px_rgba(0,0,0,0.9)]" />
+      {/* Soft Ice Ambient Vignette */}
+      <div className="fixed inset-0 pointer-events-none z-[2] shadow-[inset_0_0_120px_rgba(111,212,225,0.15)]" />
 
       {/* Content */}
       <main className="relative z-[10] min-h-[100dvh] flex flex-col pt-[max(env(safe-area-inset-top),1rem)] pb-[max(env(safe-area-inset-bottom),1rem)]">
@@ -208,17 +208,17 @@ export function PageGallery() {
         </div>
 
         {/* UI Decorative Elements - HUD Borders & Safe Zones */}
-        <div className="pointer-events-none absolute inset-x-4 top-4 bottom-4 border border-cyan-500/10 rounded-3xl hidden lg:block" />
+        <div className="pointer-events-none absolute inset-x-4 top-4 bottom-4 border border-[#B9E7E6] rounded-3xl hidden lg:block" />
         
         {/* Bottom Left: Mission Classification */}
         <div className="hidden lg:flex absolute bottom-8 left-8 items-end gap-4 pointer-events-none z-20">
           <div className="flex flex-col gap-1 font-mono">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-sm bg-cyan-500 animate-pulse" />
-              <span className="text-xs text-cyan-400/80 tracking-widest font-semibold border-b border-cyan-500/30 pb-0.5">TACTICAL LOG</span>
+              <span className="w-2 h-2 rounded-sm bg-[#6FD4E1] animate-pulse" />
+              <span className="text-xs text-[#0891b2] tracking-widest font-bold border-b border-[#B9E7E6] pb-0.5">TACTICAL LOG</span>
             </div>
-            <div className="text-sm text-white/90 tracking-wide mt-1">AERIAL RECONNAISSANCE</div>
-            <div className="text-xs text-slate-400 capitalize tracking-widest">
+            <div className="text-sm text-[#0c282d] font-bold tracking-wide mt-1">AERIAL RECONNAISSANCE</div>
+            <div className="text-xs text-[#527d85] font-semibold capitalize tracking-widest">
               CLASS: TOP SECRET // COMPARTMENTED
             </div>
           </div>
@@ -226,9 +226,9 @@ export function PageGallery() {
 
         {/* Bottom Right: Timestamp & Sync */}
         <div className="hidden lg:flex absolute bottom-8 right-8 flex-col items-end gap-1 font-mono pointer-events-none z-20">
-          <div className="text-xs text-cyan-400/80 tracking-widest border-b border-cyan-500/30 pb-0.5">SYS_SYNC_OK</div>
-          <div className="text-sm text-white/90">{new Date(currentPhotoData?.date || Date.now()).toISOString().split('T')[0]}</div>
-          <div className="text-xs text-slate-400 flex items-center gap-2">
+          <div className="text-xs text-[#0891b2] tracking-widest font-bold border-b border-[#B9E7E6] pb-0.5">SYS_SYNC_OK</div>
+          <div className="text-sm text-[#0c282d] font-bold">{new Date(currentPhotoData?.date || Date.now()).toISOString().split('T')[0]}</div>
+          <div className="text-xs text-[#527d85] font-semibold flex items-center gap-2">
             <span>UPLINK: ENCRYPTED</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           </div>
