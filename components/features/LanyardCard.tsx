@@ -100,8 +100,8 @@ export function LanyardCard() {
     return (
       <div className="relative w-full max-w-3xl mx-auto flex flex-col items-center justify-center py-8 md:py-12 px-4 md:px-8">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex items-center gap-3 text-white">
-            <Loader2 className="w-6 h-6 animate-spin" />
+          <div className="flex items-center gap-3 text-[#0c282d] font-bold font-mono">
+            <Loader2 className="w-6 h-6 animate-spin text-[#0891b2]" />
             <span>Loading passport...</span>
           </div>
         </div>
@@ -114,8 +114,8 @@ export function LanyardCard() {
       <div className="relative w-full max-w-3xl mx-auto flex flex-col items-center justify-center py-8 md:py-12 px-4 md:px-8">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <p className="text-white/60 mb-4">Unable to load passport data</p>
-            <p className="text-white/40 text-sm">{error}</p>
+            <p className="text-[#0c282d] font-bold mb-4">Unable to load passport data</p>
+            <p className="text-[#527d85] text-sm font-medium">{error}</p>
           </div>
         </div>
       </div>

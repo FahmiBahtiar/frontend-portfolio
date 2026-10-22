@@ -272,22 +272,22 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
       <div className="max-w-7xl mx-auto">
         {/* Radar Header */}
         <div className="text-center mb-16 md:mb-24">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900 border border-[#6FD4E1]/30 mb-8 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-sm text-[#6FD4E1]">
-            <Radar className="w-10 h-10 text-[#6FD4E1]" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white border border-[#B9E7E6] mb-8 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-sm text-[#0891b2]">
+            <Radar className="w-10 h-10 text-[#0891b2]" />
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-bold text-[#FFFFFF] mb-4 tracking-tight">
+          <h2 className="text-4xl md:text-5xl font-bold text-[#0c282d] mb-4 tracking-tight">
             COMMUNICATION PANEL
           </h2>
           
-          <div className="flex items-center justify-center gap-2 text-[#6FD4E1] mb-6 font-mono">
-            <MapPin className="w-4 h-4 text-[#6FD4E1]" />
-            <span className="text-sm md:text-base tracking-widest">
+          <div className="flex items-center justify-center gap-2 text-[#0891b2] mb-6 font-mono font-bold">
+            <MapPin className="w-4 h-4 text-[#0891b2]" />
+            <span className="text-sm md:text-base tracking-widest text-[#0891b2] font-semibold">
               7°15&apos;S 112°45&apos;E • ALT 667M
             </span>
           </div>
 
-          <p className="text-[#E2F4F3]/80 max-w-2xl mx-auto text-lg">
+          <p className="text-[#2d5f68] max-w-2xl mx-auto text-lg font-medium">
             Establish a direct connection. Choose your preferred frequency to initiate communication.
           </p>
         </div>

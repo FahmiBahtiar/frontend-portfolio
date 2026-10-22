@@ -198,7 +198,7 @@ export function FlightLogbook() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-white/60">Loading flight log...</div>
+        <div className="text-[#527d85] font-mono font-medium">Loading flight log...</div>
       </div>
     );
   }
@@ -206,7 +206,7 @@ export function FlightLogbook() {
   if (error) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-red-400">{error}</div>
+        <div className="text-red-500 font-mono">{error}</div>
       </div>
     );
   }
@@ -214,7 +214,7 @@ export function FlightLogbook() {
   if (flightEntries.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-white/60">No flight entries found</div>
+        <div className="text-[#527d85] font-mono font-medium">No flight entries found</div>
       </div>
     );
   }
@@ -336,16 +336,16 @@ export function FlightLogbook() {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+            <div className="p-4 rounded-xl bg-white border border-[#B9E7E6] shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="text-white font-medium">Filters</h4>
+                <h4 className="text-[#0c282d] font-bold">Filters</h4>
                 <button
                   onClick={() => {
                     setSelectedTech('');
                     setShowFilters(false);
                   }}
                   aria-label="Tutup filter"
-                  className="text-white/60 hover:text-white p-1"
+                  className="text-[#527d85] hover:text-[#0c282d] p-1"
                 >
                   <X className="w-4 h-4" aria-hidden="true" />
                 </button>
@@ -353,14 +353,14 @@ export function FlightLogbook() {
 
               {/* Technology Filter */}
               <div>
-                <label className="block text-slate-300 text-sm mb-2">Technology</label>
+                <label className="block text-[#527d85] font-bold text-sm mb-2">Technology</label>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setSelectedTech('')}
                     className={`px-3 py-1 rounded-lg text-sm transition-all ${
                       selectedTech === ''
-                        ? 'bg-white border border-white text-slate-950 font-semibold'
-                        : 'bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
+                        ? 'bg-[#6FD4E1] border border-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                        : 'bg-[#E2F4F3]/50 border border-[#B9E7E6] text-[#0c282d] hover:border-[#6FD4E1]'
                     }`}
                   >
                     All
@@ -371,8 +371,8 @@ export function FlightLogbook() {
                       onClick={() => setSelectedTech(tech)}
                       className={`px-3 py-1 rounded-lg text-sm font-mono transition-all ${
                         selectedTech === tech
-                          ? 'bg-white border border-white text-slate-950 font-semibold'
-                          : 'bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
+                          ? 'bg-[#6FD4E1] border border-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                          : 'bg-[#E2F4F3]/50 border border-[#B9E7E6] text-[#0c282d] hover:border-[#6FD4E1]'
                       }`}
                     >
                       {tech}
@@ -386,10 +386,10 @@ export function FlightLogbook() {
       </AnimatePresence>
 
       {/* Results Count */}
-      <div className="text-white/60 text-sm">
+      <div className="text-[#2d5f68] font-medium text-sm">
         Showing {filteredEntries.length} of {flightEntries.length} experiences
         {(searchQuery || selectedTech) && (
-          <span className="ml-2">
+          <span className="ml-2 font-semibold text-[#0c282d]">
             {searchQuery && `• Search: "${searchQuery}"`}
             {selectedTech && `• Tech: ${selectedTech}`}
           </span>
@@ -715,7 +715,7 @@ export function FlightLogbook() {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-2xl pointer-events-auto"
+                className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-white/98 backdrop-blur-xl border border-[#B9E7E6] rounded-2xl pointer-events-auto shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
               >
                 {selectedEntry && (
@@ -730,26 +730,26 @@ export function FlightLogbook() {
                           <div className="flex items-start justify-between mb-6">
                             <div className="flex items-start gap-4">
                               <div
-                                className="w-12 h-12 rounded-xl flex items-center justify-center border-2"
+                                className="w-12 h-12 rounded-xl flex items-center justify-center border"
                                 style={{
-                                  background: `radial-gradient(circle, ${colors.main}40, ${colors.main}10)`,
-                                  borderColor: colors.main
+                                  background: '#E2F4F3',
+                                  borderColor: '#B9E7E6'
                                 }}
                               >
-                                <Plane className="w-6 h-6" style={{ color: colors.main }} />
+                                <Plane className="w-6 h-6 text-[#0891b2]" />
                               </div>
                               <div>
-                                <h3 className="text-white text-xl font-bold">{entry.company}</h3>
-                                <p className="text-white/60">{entry.departure.highlightedRole}</p>
-                                <p className="text-white/40 text-sm">{entry.projectName}</p>
+                                <h3 className="text-[#0c282d] text-xl font-bold">{entry.company}</h3>
+                                <p className="text-[#0891b2] font-semibold">{entry.departure.highlightedRole}</p>
+                                <p className="text-[#2d5f68] text-sm">{entry.projectName}</p>
                               </div>
                             </div>
                             <button
                               onClick={() => setSelectedEntry(null)}
                               aria-label="Tutup detail"
-                              className="text-white/60 hover:text-white p-2"
+                              className="text-[#527d85] hover:text-[#0c282d] p-2"
                             >
-                              <span aria-hidden="true">✕</span>
+                              <span aria-hidden="true" className="text-xl">✕</span>
                             </button>
                           </div>
 
@@ -757,21 +757,21 @@ export function FlightLogbook() {
                           <div className="space-y-6">
                             {/* Quick Info */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-                                <div className="text-white/40 text-xs uppercase tracking-wider mb-1">Duration</div>
-                                <div className="text-white font-mono">{entry.duration} months</div>
+                              <div className="p-3 rounded-lg bg-[#E2F4F3]/50 border border-[#B9E7E6]">
+                                <div className="text-[#527d85] text-xs uppercase tracking-wider mb-1 font-bold">Duration</div>
+                                <div className="text-[#0c282d] font-mono font-bold">{entry.duration} months</div>
                               </div>
-                              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-                                <div className="text-white/40 text-xs uppercase tracking-wider mb-1">Status</div>
-                                <div className="text-white">{entry.arrival.status}</div>
+                              <div className="p-3 rounded-lg bg-[#E2F4F3]/50 border border-[#B9E7E6]">
+                                <div className="text-[#527d85] text-xs uppercase tracking-wider mb-1 font-bold">Status</div>
+                                <div className="text-[#0c282d] font-bold">{entry.arrival.status}</div>
                               </div>
-                              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-                                <div className="text-white/40 text-xs uppercase tracking-wider mb-1">Location</div>
-                                <div className="text-white">{entry.location}</div>
+                              <div className="p-3 rounded-lg bg-[#E2F4F3]/50 border border-[#B9E7E6]">
+                                <div className="text-[#527d85] text-xs uppercase tracking-wider mb-1 font-bold">Location</div>
+                                <div className="text-[#0c282d] font-bold">{entry.location}</div>
                               </div>
-                              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-                                <div className="text-white/40 text-xs uppercase tracking-wider mb-1">Start Date</div>
-                                <div className="text-white font-mono">
+                              <div className="p-3 rounded-lg bg-[#E2F4F3]/50 border border-[#B9E7E6]">
+                                <div className="text-[#527d85] text-xs uppercase tracking-wider mb-1 font-bold">Start Date</div>
+                                <div className="text-[#0c282d] font-mono font-bold">
                                   {entry.departure.date ? new Date(entry.departure.date).toLocaleDateString('en-US', {
                                     month: 'short',
                                     year: 'numeric'
@@ -782,20 +782,15 @@ export function FlightLogbook() {
 
                             {/* Technologies */}
                             <div>
-                              <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
-                                <div className="w-1 h-4 rounded-full" style={{ backgroundColor: colors.main }} />
+                              <h4 className="text-[#0c282d] font-bold mb-3 flex items-center gap-2">
+                                <div className="w-1 h-4 rounded-full bg-[#6FD4E1]" />
                                 Technologies Used
                               </h4>
                               <div className="flex flex-wrap gap-2">
                                 {entry.crew.map((tech, idx) => (
                                   <span
                                     key={idx}
-                                    className="px-3 py-1.5 rounded-lg border text-sm font-mono"
-                                    style={{
-                                      backgroundColor: `${colors.main}15`,
-                                      borderColor: `${colors.main}30`,
-                                      color: colors.main
-                                    }}
+                                    className="px-3 py-1.5 rounded-lg border text-sm font-mono bg-[#E2F4F3] border-[#B9E7E6] text-[#0c282d] font-bold"
                                   >
                                     {tech}
                                   </span>
@@ -806,23 +801,18 @@ export function FlightLogbook() {
                             {/* Roles */}
                             {entry.departure.roles && entry.departure.roles.length > 0 && (
                               <div>
-                                <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
-                                  <div className="w-1 h-4 rounded-full" style={{ backgroundColor: colors.main }} />
+                                <h4 className="text-[#0c282d] font-bold mb-3 flex items-center gap-2">
+                                  <div className="w-1 h-4 rounded-full bg-[#6FD4E1]" />
                                   Roles & Responsibilities
                                 </h4>
                                 <div className="space-y-3">
                                   {entry.departure.roles.map((role, idx) => (
                                     <div key={idx} className="flex items-start gap-3">
                                       <div
-                                        className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                                          role === entry.departure.highlightedRole ? 'ring-2 ring-offset-1 ring-offset-gray-900' : ''
-                                        }`}
-                                        style={{
-                                          backgroundColor: role === entry.departure.highlightedRole ? colors.main : colors.main + '80'
-                                        }}
+                                        className="w-2 h-2 rounded-full mt-2 flex-shrink-0 bg-[#0891b2]"
                                       />
                                       <div className="flex-1">
-                                        <span className={`font-medium ${role === entry.departure.highlightedRole ? 'text-white' : 'text-white/80'}`}>
+                                        <span className={`font-semibold ${role === entry.departure.highlightedRole ? 'text-[#0c282d]' : 'text-[#2d5f68]'}`}>
                                           {role === entry.departure.highlightedRole && '★ '}
                                           {role}
                                         </span>
@@ -836,8 +826,8 @@ export function FlightLogbook() {
                             {/* Responsibilities */}
                             {entry.responsibilities && entry.responsibilities.length > 0 && (
                               <div>
-                                <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
-                                  <div className="w-1 h-4 rounded-full" style={{ backgroundColor: colors.main }} />
+                                <h4 className="text-[#0c282d] font-bold mb-3 flex items-center gap-2">
+                                  <div className="w-1 h-4 rounded-full bg-[#6FD4E1]" />
                                   Key Achievements
                                 </h4>
                                 <ul className="space-y-2">
@@ -867,38 +857,38 @@ export function FlightLogbook() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="mt-8 p-6 rounded-2xl bg-slate-950/60 border border-slate-800"
+        className="mt-8 p-6 rounded-2xl bg-white/95 border border-[#B9E7E6] shadow-sm"
       >
         <div className="flex items-center gap-3 mb-4">
-          <TrendingUp className="w-5 h-5 text-[#6FD4E1]" />
-          <h4 className="text-[#FFFFFF] font-semibold">Career Summary</h4>
+          <TrendingUp className="w-5 h-5 text-[#0891b2]" />
+          <h4 className="text-[#0c282d] font-bold text-lg">Career Summary</h4>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="text-3xl text-[#6FD4E1] mb-1 font-mono font-semibold">
+          <div className="p-4 rounded-xl bg-[#E2F4F3]/50 border border-[#B9E7E6]">
+            <div className="text-3xl text-[#0c282d] mb-1 font-mono font-bold">
               {flightEntries.reduce((sum, entry) => sum + parseInt(entry.duration), 0)}+
             </div>
-            <div className="text-xs text-[#B9E7E6] uppercase tracking-wider font-mono">Total Months</div>
+            <div className="text-xs text-[#527d85] uppercase tracking-wider font-mono font-bold">Total Months</div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="text-3xl text-[#6FD4E1] mb-1 font-mono font-semibold">{flightEntries.length}</div>
-            <div className="text-xs text-[#B9E7E6] uppercase tracking-wider font-mono">Total Roles</div>
+          <div className="p-4 rounded-xl bg-[#E2F4F3]/50 border border-[#B9E7E6]">
+            <div className="text-3xl text-[#0c282d] mb-1 font-mono font-bold">{flightEntries.length}</div>
+            <div className="text-xs text-[#527d85] uppercase tracking-wider font-mono font-bold">Total Roles</div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="text-3xl text-[#6FD4E1] mb-1 font-mono font-semibold">
+          <div className="p-4 rounded-xl bg-[#E2F4F3]/50 border border-[#B9E7E6]">
+            <div className="text-3xl text-[#0c282d] mb-1 font-mono font-bold">
               {flightEntries.reduce((sum, entry) => sum + entry.crew.length, 0)}
             </div>
-            <div className="text-xs text-[#B9E7E6] uppercase tracking-wider font-mono">Tech Mastered</div>
+            <div className="text-xs text-[#527d85] uppercase tracking-wider font-mono font-bold">Tech Mastered</div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="text-3xl text-[#6FD4E1] mb-1 font-mono font-semibold">
+          <div className="p-4 rounded-xl bg-[#E2F4F3]/50 border border-[#B9E7E6]">
+            <div className="text-3xl text-[#0c282d] mb-1 font-mono font-bold">
               {flightEntries.filter(e => e.isActive).length}
             </div>
-            <div className="text-xs text-[#B9E7E6] uppercase tracking-wider font-mono">Active Roles</div>
+            <div className="text-xs text-[#527d85] uppercase tracking-wider font-mono font-bold">Active Roles</div>
           </div>
         </div>
       </motion.div>

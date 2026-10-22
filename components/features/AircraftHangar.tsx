@@ -146,7 +146,7 @@ export function AircraftHangar() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-white/60">Loading aircraft hangar...</div>
+        <div className="text-[#527d85] font-mono font-medium">Loading aircraft hangar...</div>
       </div>
     );
   }
@@ -154,7 +154,7 @@ export function AircraftHangar() {
   if (error) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-red-400">{error}</div>
+        <div className="text-red-500 font-mono">{error}</div>
       </div>
     );
   }
@@ -162,7 +162,7 @@ export function AircraftHangar() {
   if (hangarItems.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-white/60">No aircraft in hangar</div>
+        <div className="text-[#527d85] font-mono font-medium">No aircraft in hangar</div>
       </div>
     );
   }
@@ -176,20 +176,20 @@ export function AircraftHangar() {
           {/* Search and Filter in same row */}
           <div className="flex items-center gap-3 w-full md:w-auto">
             {/* Search */}
-            <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-white/20 focus-within:border-cyan-400/50 focus-within:bg-white/10 transition-all flex-1 md:min-w-[200px]">
-              <Search className="w-4 h-4 text-white/40 flex-shrink-0" />
+            <div className="flex items-center gap-2 px-3.5 py-2 bg-white border border-[#B9E7E6] rounded-xl hover:border-[#6FD4E1] focus-within:border-[#6FD4E1] shadow-sm transition-all flex-1 md:min-w-[200px]">
+              <Search className="w-4 h-4 text-[#527d85] flex-shrink-0" />
               <input
                 type="text"
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent border-none outline-none text-white text-sm placeholder-white/40 w-full"
+                className="bg-transparent border-none outline-none text-[#0c282d] text-sm placeholder-[#527d85] w-full font-medium"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
                   aria-label="Hapus pencarian"
-                  className="text-white/40 hover:text-white transition-colors flex-shrink-0"
+                  className="text-[#527d85] hover:text-[#0c282d] transition-colors flex-shrink-0"
                 >
                   <X className="w-4 h-4" aria-hidden="true" />
                 </button>
@@ -203,8 +203,8 @@ export function AircraftHangar() {
               aria-pressed={showFilters}
               className={`p-2 rounded-xl border transition-all flex-shrink-0 ${
                 showFilters
-                  ? 'bg-[#6FD4E1] border-[#6FD4E1] text-slate-950 font-semibold shadow-sm'
-                  : 'bg-slate-900/60 border-slate-800/80 text-[#B9E7E6] hover:text-[#FFFFFF] hover:border-[#6FD4E1]/40'
+                  ? 'bg-[#6FD4E1] border-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                  : 'bg-white border-[#B9E7E6] text-[#0c282d] hover:border-[#6FD4E1] shadow-sm'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -224,16 +224,16 @@ export function AircraftHangar() {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+            <div className="p-4 rounded-xl bg-white border border-[#B9E7E6] shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="text-white font-medium">Filters</h4>
+                <h4 className="text-[#0c282d] font-bold">Filters</h4>
                 <button
                   onClick={() => {
                     setSelectedSystem('');
                     setShowFilters(false);
                   }}
                   aria-label="Tutup filter"
-                  className="text-slate-400 hover:text-white p-1"
+                  className="text-[#527d85] hover:text-[#0c282d] p-1"
                 >
                   <X className="w-4 h-4" aria-hidden="true" />
                 </button>
@@ -241,14 +241,14 @@ export function AircraftHangar() {
 
               {/* System Filter */}
               <div>
-                <label className="block text-slate-300 text-sm mb-2">Technology</label>
+                <label className="block text-[#527d85] font-bold text-sm mb-2">Technology</label>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setSelectedSystem('')}
                     className={`px-3 py-1 rounded-lg text-sm transition-all ${
                       selectedSystem === ''
-                        ? 'bg-[#6FD4E1] border border-[#6FD4E1] text-slate-950 font-semibold'
-                        : 'bg-slate-900/60 border border-slate-800 text-[#B9E7E6] hover:text-[#FFFFFF] hover:border-[#6FD4E1]/40'
+                        ? 'bg-[#6FD4E1] border border-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                        : 'bg-[#E2F4F3]/50 border border-[#B9E7E6] text-[#0c282d] hover:border-[#6FD4E1]'
                     }`}
                   >
                     All
@@ -259,8 +259,8 @@ export function AircraftHangar() {
                       onClick={() => setSelectedSystem(system)}
                       className={`px-3 py-1 rounded-lg text-sm font-mono transition-all ${
                         selectedSystem === system
-                          ? 'bg-cyan-500/20 border border-cyan-400/50 text-cyan-400'
-                          : 'bg-white/10 border border-white/20 text-white/60 hover:bg-white/20'
+                          ? 'bg-[#6FD4E1] border border-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                          : 'bg-[#E2F4F3]/50 border border-[#B9E7E6] text-[#0c282d] hover:border-[#6FD4E1]'
                       }`}
                     >
                       {system}
@@ -274,10 +274,10 @@ export function AircraftHangar() {
       </AnimatePresence>
 
       {/* Results Count */}
-      <div className="text-white/60 text-sm">
+      <div className="text-[#2d5f68] font-medium text-sm">
         Showing {filteredItems.length} of {hangarItems.length} projects
         {(searchQuery || selectedSystem) && (
-          <span className="ml-2">
+          <span className="ml-2 font-semibold text-[#0c282d]">
             {searchQuery && `• Search: "${searchQuery}"`}
             {selectedSystem && `• Tech: ${selectedSystem}`}
           </span>
@@ -401,39 +401,30 @@ export function AircraftHangar() {
                 const colors = getColorClasses(selectedItem.color);
 
                 return (
-                  <div className="relative w-full max-h-[90vh] flex flex-col rounded-2xl bg-gradient-to-br from-slate-900/98 to-slate-800/98 backdrop-blur-2xl border border-white/20 shadow-2xl overflow-hidden">
+                  <div className="relative w-full max-h-[90vh] flex flex-col rounded-2xl bg-white/98 backdrop-blur-2xl border border-[#B9E7E6] shadow-2xl overflow-hidden">
                     {/* Header */}
                     <div
-                      className="sticky top-0 px-4 md:px-6 py-4 border-b z-10 backdrop-blur-xl"
-                      style={{
-                        background: `linear-gradient(135deg, ${colors.main}25, ${colors.main}10)`,
-                        borderBottomColor: `${colors.main}30`
-                      }}
+                      className="sticky top-0 px-4 md:px-6 py-4 border-b border-[#B9E7E6] z-10 backdrop-blur-xl bg-[#E2F4F3]/80"
                     >
                       <div className="flex items-start justify-between gap-3 md:gap-4">
                         <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
                           <div
-                            className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center border-2 text-lg md:text-2xl flex-shrink-0"
-                            style={{
-                              background: `radial-gradient(circle, ${colors.main}50, ${colors.main}15)`,
-                              borderColor: colors.main,
-                              boxShadow: `0 0 20px ${colors.glow}`
-                            }}
+                            className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center border border-[#B9E7E6] bg-white text-[#0891b2] text-lg md:text-2xl flex-shrink-0 shadow-sm"
                           >
                             <Github className="w-6 h-6" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h3 className="text-white text-sm md:text-base mb-1 truncate">{selectedItem.name}</h3>
-                            <p className="text-white/60 text-xs md:text-sm truncate">{selectedItem.model}</p>
+                            <h3 className="text-[#0c282d] font-bold text-sm md:text-base mb-1 truncate">{selectedItem.name}</h3>
+                            <p className="text-[#0891b2] font-semibold text-xs md:text-sm truncate">{selectedItem.model}</p>
                           </div>
                         </div>
 
                         <button
                           onClick={() => setSelectedItem(null)}
                           aria-label="Tutup detail"
-                          className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-colors flex-shrink-0"
+                          className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-white hover:bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center transition-colors flex-shrink-0 text-[#0c282d]"
                         >
-                          <X className="w-4 h-4 md:w-5 md:h-5 text-white" aria-hidden="true" />
+                          <X className="w-4 h-4 md:w-5 md:h-5 text-[#0c282d]" aria-hidden="true" />
                         </button>
                       </div>
                     </div>
@@ -443,12 +434,7 @@ export function AircraftHangar() {
                       {/* Category Badge */}
                       <div className="flex flex-wrap gap-3">
                         <div
-                          className="px-4 py-2 rounded-xl border"
-                          style={{
-                            background: `${colors.main}15`,
-                            borderColor: `${colors.main}30`,
-                            color: colors.main
-                          }}
+                          className="px-4 py-2 rounded-xl border border-[#B9E7E6] bg-[#E2F4F3] text-[#0c282d] font-bold"
                         >
                           <div className="text-xs uppercase tracking-wider">
                             {selectedItem.category === 'github' ? '💻 GitHub Project' : 
@@ -461,12 +447,12 @@ export function AircraftHangar() {
                       {/* Description */}
                       <div>
                         <div className="flex items-center gap-2 mb-3">
-                          <Shield className="w-4 h-4" style={{ color: colors.main }} />
-                          <span className="text-sm uppercase tracking-wider" style={{ color: colors.main }}>
+                          <Shield className="w-4 h-4 text-[#0891b2]" />
+                          <span className="text-sm uppercase tracking-wider font-bold text-[#0c282d]">
                             Overview
                           </span>
                         </div>
-                        <p className="text-white/70 leading-relaxed">
+                        <p className="text-[#2d5f68] leading-relaxed font-medium">
                           {selectedItem.description}
                         </p>
                       </div>
@@ -474,8 +460,8 @@ export function AircraftHangar() {
                       {/* Systems/Skills */}
                       <div>
                         <div className="flex items-center gap-2 mb-3">
-                          <Zap className="w-4 h-4" style={{ color: colors.main }} />
-                          <span className="text-sm uppercase tracking-wider" style={{ color: colors.main }}>
+                          <Zap className="w-4 h-4 text-[#0891b2]" />
+                          <span className="text-sm uppercase tracking-wider font-bold text-[#0c282d]">
                             {selectedItem.category === 'github' ? 'Onboard Systems' : 'Skills & Techniques'}
                           </span>
                         </div>
@@ -483,12 +469,7 @@ export function AircraftHangar() {
                           {selectedItem.systems.map((system, idx) => (
                             <span
                               key={idx}
-                              className="px-3 py-2 rounded-lg border text-sm font-mono"
-                              style={{
-                                backgroundColor: `${colors.main}10`,
-                                borderColor: `${colors.main}30`,
-                                color: colors.main
-                              }}
+                              className="px-3 py-2 rounded-lg border border-[#B9E7E6] bg-[#E2F4F3]/60 text-[#0c282d] font-mono text-sm font-bold"
                             >
                               {system}
                             </span>
@@ -500,15 +481,15 @@ export function AircraftHangar() {
                       {selectedItem.achievements && selectedItem.achievements.length > 0 && (
                         <div>
                           <div className="flex items-center gap-2 mb-3">
-                            <Award className="w-4 h-4" style={{ color: colors.main }} />
-                            <span className="text-sm uppercase tracking-wider" style={{ color: colors.main }}>
+                            <Award className="w-4 h-4 text-[#0891b2]" />
+                            <span className="text-sm uppercase tracking-wider font-bold text-[#0c282d]">
                               Key Achievements
                             </span>
                           </div>
                           <ul className="space-y-2">
                             {selectedItem.achievements.map((achievement, idx) => (
-                              <li key={idx} className="flex items-start gap-2 text-white/70">
-                                <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: colors.main }} />
+                              <li key={idx} className="flex items-start gap-2 text-[#2d5f68] font-medium">
+                                <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0 bg-[#0891b2]" />
                                 <span>{achievement}</span>
                               </li>
                             ))}
@@ -522,12 +503,7 @@ export function AircraftHangar() {
                           href={selectedItem.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="block w-full py-3 rounded-xl border transition-all text-center font-mono uppercase tracking-wider text-sm"
-                          style={{
-                            background: `linear-gradient(135deg, ${colors.main}20, ${colors.main}10)`,
-                            borderColor: `${colors.main}40`,
-                            color: colors.main
-                          }}
+                          className="block w-full py-3 rounded-xl border border-[#6FD4E1] bg-[#6FD4E1] text-[#0c282d] hover:bg-[#B9E7E6] transition-all text-center font-mono uppercase tracking-wider text-sm font-bold shadow-sm"
                         >
                           <div className="flex items-center justify-center gap-2">
                             <ExternalLink className="w-4 h-4" />

@@ -314,10 +314,10 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                   {/* Mobile Back Button */}
                                   <button
                                     onClick={() => setSelectedAchievement(null)}
-                                    className="lg:hidden flex items-center gap-2 text-sm text-slate-300 hover:text-white mb-6 w-fit transition-colors"
+                                    className="lg:hidden flex items-center gap-2 text-sm text-[#0c282d] hover:text-[#0891b2] mb-6 w-fit transition-colors font-bold"
                                   >
-                                    <div className="w-8 h-8 rounded-full bg-slate-800/80 flex items-center justify-center border border-slate-700">
-                                      <ChevronLeft className="w-4 h-4" />
+                                    <div className="w-8 h-8 rounded-full bg-[#E2F4F3] flex items-center justify-center border border-[#B9E7E6]">
+                                      <ChevronLeft className="w-4 h-4 text-[#0891b2]" />
                                     </div>
                                     Back to list
                                   </button>
@@ -336,10 +336,10 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                         <div className="text-center mt-auto">
                                           <Button
                                             variant="outline"
-                                            className={`border-${category.color}-500/30 text-${category.color}-400 hover:bg-${category.color}-500/10`}
+                                            className="border-[#6FD4E1] text-[#0c282d] hover:bg-[#6FD4E1]/20 font-bold"
                                             onClick={() => window.open(getSelectedAchievementDetail()?.achievement.credentialUrl, '_blank')}
                                           >
-                                            <ExternalLink className="w-4 h-4 mr-2" />
+                                            <ExternalLink className="w-4 h-4 mr-2 text-[#0891b2]" />
                                             Verify Credential
                                           </Button>
                                         </div>
@@ -347,22 +347,22 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                     </>
                                   ) : (
                                     <div className="flex-1 flex flex-col items-center justify-center text-center">
-                                      <div className={`w-24 h-24 rounded-2xl bg-${category.color}-500/10 border border-${category.color}-500/20 flex items-center justify-center mb-8 rotate-3`}>
-                                        <Award className={`w-12 h-12 text-${category.color}-400`} />
+                                      <div className="w-24 h-24 rounded-2xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center mb-8 rotate-3 shadow-sm">
+                                        <Award className="w-12 h-12 text-[#0891b2]" />
                                       </div>
-                                      <h3 className="text-2xl font-bold text-white mb-4">
+                                      <h3 className="text-2xl font-bold text-[#0c282d] mb-4">
                                         {getSelectedAchievementDetail()?.achievement.title}
                                       </h3>
-                                      <p className="text-slate-400 text-lg mb-8">
+                                      <p className="text-[#0891b2] text-lg mb-8 font-semibold">
                                         {getSelectedAchievementDetail()?.achievement.issuer}
                                       </p>
-                                      <div className="flex items-center gap-6 text-sm font-mono text-slate-400">
+                                      <div className="flex items-center gap-6 text-sm font-mono text-[#527d85] font-bold">
                                         <div className="flex items-center gap-2">
-                                          <Calendar className="w-4 h-4" />
+                                          <Calendar className="w-4 h-4 text-[#0891b2]" />
                                           {getSelectedAchievementDetail()?.achievement.date}
                                         </div>
                                         <div className="flex items-center gap-2">
-                                          <Trophy className="w-4 h-4" />
+                                          <Trophy className="w-4 h-4 text-[#0891b2]" />
                                           Certified
                                         </div>
                                       </div>
@@ -371,9 +371,9 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                 </div>
                               </motion.div>
                             ) : (
-                              <div className="w-full h-full rounded-2xl border-2 border-dashed border-white/5 flex flex-col items-center justify-center text-slate-400">
-                                <Award className="w-12 h-12 mb-4 opacity-50" />
-                                <p className="font-mono text-sm">SELECT RECORD TO VIEW</p>
+                              <div className="w-full h-full rounded-2xl border-2 border-dashed border-[#B9E7E6] flex flex-col items-center justify-center text-[#527d85] bg-white/50">
+                                <Award className="w-12 h-12 mb-4 text-[#0891b2] opacity-70" />
+                                <p className="font-mono text-sm font-bold text-[#0c282d]">SELECT RECORD TO VIEW</p>
                               </div>
                             )}
                           </AnimatePresence>

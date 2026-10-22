@@ -86,16 +86,16 @@ export function PageGallery() {
   // Loading state with HUD theme
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-neutral-950 flex items-center justify-center relative overflow-hidden">
-        <div className="text-center z-10 p-8 border border-slate-800 bg-slate-900/60 backdrop-blur-md rounded-2xl relative shadow-2xl">
-          <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-slate-700" />
-          <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-slate-700" />
-          <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-slate-700" />
-          <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-slate-700" />
+      <div className="min-h-screen bg-[#E2F4F3] flex items-center justify-center relative overflow-hidden">
+        <div className="text-center z-10 p-8 border border-[#B9E7E6] bg-white/95 backdrop-blur-md rounded-2xl relative shadow-xl">
+          <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-[#6FD4E1]" />
+          <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-[#6FD4E1]" />
+          <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-[#6FD4E1]" />
+          <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-[#6FD4E1]" />
           
-          <Loader2 className="w-10 h-10 md:w-12 md:h-12 text-slate-300 animate-spin mx-auto mb-4" />
-          <div className="text-slate-200 font-mono text-xs md:text-sm tracking-[0.25em]">ESTABLISHING LINK</div>
-          <div className="text-slate-500 font-mono text-[10px] md:text-xs mt-2 tracking-widest">DOWNLOADING MISSION INTELLIGENCE</div>
+          <Loader2 className="w-10 h-10 md:w-12 md:h-12 text-[#0891b2] animate-spin mx-auto mb-4" />
+          <div className="text-[#0c282d] font-mono text-xs md:text-sm tracking-[0.25em] font-bold">ESTABLISHING LINK</div>
+          <div className="text-[#527d85] font-mono text-[10px] md:text-xs mt-2 tracking-widest font-semibold">DOWNLOADING MISSION INTELLIGENCE</div>
         </div>
       </div>
     );
@@ -104,16 +104,16 @@ export function PageGallery() {
   // Error state with HUD theme
   if (isError) {
     return (
-      <div className="min-h-screen bg-neutral-950 flex items-center justify-center relative overflow-hidden">
-        <div className="text-center z-10 p-8 border border-red-500/30 bg-slate-900/60 backdrop-blur-md rounded-2xl relative shadow-2xl">
+      <div className="min-h-screen bg-[#E2F4F3] flex items-center justify-center relative overflow-hidden">
+        <div className="text-center z-10 p-8 border border-red-500/30 bg-white/95 backdrop-blur-md rounded-2xl relative shadow-xl">
           <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-red-500" />
           <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-red-500" />
           <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-red-500" />
           <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-red-500" />
           
-          <AlertTriangle className="w-10 h-10 md:w-12 md:h-12 text-red-400 mx-auto mb-4 opacity-80" />
-          <div className="text-red-400 font-mono text-xs md:text-sm tracking-[0.25em]">SIGNAL LOST</div>
-          <div className="text-red-500/60 font-mono text-[10px] md:text-xs mt-2 tracking-widest">ERR: MISSION_DATA_UNAVAILABLE</div>
+          <AlertTriangle className="w-10 h-10 md:w-12 md:h-12 text-red-500 mx-auto mb-4 opacity-80" />
+          <div className="text-red-500 font-mono text-xs md:text-sm tracking-[0.25em] font-bold">SIGNAL LOST</div>
+          <div className="text-[#527d85] font-mono text-[10px] md:text-xs mt-2 tracking-widest font-semibold">ERR: MISSION_DATA_UNAVAILABLE</div>
         </div>
       </div>
     );
@@ -122,11 +122,11 @@ export function PageGallery() {
   // Empty state with HUD theme
   if (missionPhotos.length === 0) {
     return (
-      <div className="min-h-screen bg-neutral-950 flex items-center justify-center relative overflow-hidden">
-        <div className="text-center z-10 p-8 border border-slate-800 bg-slate-900/60 backdrop-blur-md rounded-2xl relative shadow-2xl">
-          <ShieldAlert className="w-10 h-10 md:w-12 md:h-12 text-slate-400 mx-auto mb-4 opacity-60" />
-          <div className="text-slate-300 font-mono text-xs md:text-sm tracking-[0.2em]">NO TARGETS FOUND</div>
-          <div className="text-slate-400 font-mono text-[10px] md:text-xs mt-2 tracking-widest">AWAITING NEW MISSION DATA</div>
+      <div className="min-h-screen bg-[#E2F4F3] flex items-center justify-center relative overflow-hidden">
+        <div className="text-center z-10 p-8 border border-[#B9E7E6] bg-white/95 backdrop-blur-md rounded-2xl relative shadow-xl">
+          <ShieldAlert className="w-10 h-10 md:w-12 md:h-12 text-[#0891b2] mx-auto mb-4 opacity-80" />
+          <div className="text-[#0c282d] font-mono text-xs md:text-sm tracking-[0.2em] font-bold">NO TARGETS FOUND</div>
+          <div className="text-[#527d85] font-mono text-[10px] md:text-xs mt-2 tracking-widest font-semibold">AWAITING NEW MISSION DATA</div>
         </div>
       </div>
     );
