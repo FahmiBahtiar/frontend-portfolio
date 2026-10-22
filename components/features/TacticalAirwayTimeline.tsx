@@ -451,6 +451,7 @@ function CameraFollower({
     return (
       <OrbitControls
         ref={controlsRef}
+        target={[0, 1.2, 0]}
         enablePan={false}
         minDistance={2.5}
         maxDistance={16}
@@ -576,7 +577,7 @@ export function TacticalAirwayTimeline({
   const [isPlaying, setIsPlaying] = useState(true);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
   const [progress, setProgress] = useState(0.04);
-  const [cameraMode, setCameraMode] = useState<'chase' | 'orbit'>('chase');
+  const [cameraMode, setCameraMode] = useState<'chase' | 'orbit'>('orbit');
 
   const [webGLSupported] = useState<boolean>(() => {
     if (typeof window === 'undefined') return true;
