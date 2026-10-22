@@ -274,16 +274,14 @@ export default function HomePage() {
       </a>
 
       {/* Loading Screen Overlay */}
-      <AnimatePresence>
-        {isLoading && (
-          <LoadingScreen
-            onComplete={handleLoadingComplete}
-            isApiLoaded={isApiLoaded}
-            isWarmingUp={isWarmingUp}
-            apiError={apiError}
-          />
-        )}
-      </AnimatePresence>
+      {isLoading && (
+        <LoadingScreen
+          onComplete={handleLoadingComplete}
+          isApiLoaded={isApiLoaded}
+          isWarmingUp={isWarmingUp}
+          apiError={apiError}
+        />
+      )}
 
       {/* Main App - Pre-rendered underneath loading screen for seamless zero-flicker reveal */}
       <div 
