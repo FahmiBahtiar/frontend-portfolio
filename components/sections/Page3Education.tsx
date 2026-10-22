@@ -181,7 +181,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
         </div>
 
         {/* Tactical Airway 3D Flight Plan Timeline */}
-        <div className="mb-20">
+        <div className="mb-20 scroll-mt-28">
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
               <Plane className="w-6 h-6 text-[#0891b2]" />

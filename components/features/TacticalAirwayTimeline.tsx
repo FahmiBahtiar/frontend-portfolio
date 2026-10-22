@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useMemo, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useGLTF, useTexture, Html } from '@react-three/drei';
+import { OrbitControls, useGLTF, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import {
   Play,
@@ -155,32 +155,55 @@ if (typeof window !== 'undefined') {
 // ── Realistic 3D Mountain Terrain ───────────────────────────────────────────
 function ForeFlightTerrain() {
   const gltf = useGLTF('/models/terrain/puncak_jaya.glb');
-  const texture = useTexture('/models/terrain/puncak_jaya.jpg');
 
   const sceneClone = useMemo(() => {
     const clone = gltf.scene.clone(true);
     clone.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
+        const geom = mesh.geometry.clone();
+        const pos = geom.attributes.position;
+        const colors: number[] = [];
+
+        // Dynamic elevation shading: valley deep teal to rocky ridge to snow peak
+        const valleyColor = new THREE.Color('#2d636f');
+        const ridgeColor = new THREE.Color('#789da6');
+        const snowColor = new THREE.Color('#ffffff');
+
+        for (let i = 0; i < pos.count; i++) {
+          const zNorm = THREE.MathUtils.clamp(pos.getZ(i) / 3805.3, 0, 1);
+          let c: THREE.Color;
+          if (zNorm < 0.45) {
+            c = new THREE.Color().lerpColors(valleyColor, ridgeColor, zNorm / 0.45);
+          } else {
+            c = new THREE.Color().lerpColors(ridgeColor, snowColor, (zNorm - 0.45) / 0.55);
+          }
+          colors.push(c.r, c.g, c.b);
+        }
+
+        geom.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        mesh.geometry = geom;
         mesh.material = new THREE.MeshStandardMaterial({
-          map: texture,
-          roughness: 0.85,
-          metalness: 0.08,
-          color: '#ffffff',
+          vertexColors: true,
+          roughness: 0.75,
+          metalness: 0.1,
+          flatShading: false,
         });
         mesh.receiveShadow = true;
       }
     });
     return clone;
-  }, [gltf.scene, texture]);
+  }, [gltf.scene]);
 
   return (
-    <primitive
-      object={sceneClone}
-      scale={[0.00034, 0.00034, 0.00042]}
-      rotation={[-Math.PI / 2, 0, -0.22]}
-      position={[0, -0.15, 0]}
-    />
+    <group position={[0, -0.15, 0]}>
+      {/* High-Definition Relief Shaded Mountain Mesh */}
+      <primitive
+        object={sceneClone}
+        scale={[0.00034, 0.00034, 0.00042]}
+        rotation={[-Math.PI / 2, 0, -0.22]}
+      />
+    </group>
   );
 }
 
@@ -330,6 +353,14 @@ function TrackingAircraft({
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         mesh.castShadow = true;
+        // ForeFlight Signature Blue Jet Livery
+        if (mesh.name === 'Object_4' || mesh.name === 'Object_24' || mesh.name === 'Object_39') {
+          mesh.material = new THREE.MeshStandardMaterial({
+            color: '#0284c7', // ForeFlight Aviation Blue
+            roughness: 0.25,
+            metalness: 0.35,
+          });
+        }
       }
     });
     return clone;
@@ -678,10 +709,11 @@ export function TacticalAirwayTimeline({
                   dpr={[1, 2]}
                   gl={{ antialias: true, powerPreference: 'high-performance' }}
                 >
-                  <color attach="background" args={['#F4FAFA']} />
-                  <ambientLight intensity={1.1} />
-                  <directionalLight position={[12, 16, 9]} intensity={1.5} castShadow />
-                  <directionalLight position={[-9, 6, -6]} intensity={0.6} />
+                  <color attach="background" args={['#dff2f5']} />
+                  <fog attach="fog" args={['#dff2f5', 9, 26]} />
+                  <ambientLight intensity={0.65} />
+                  <directionalLight position={[12, 16, 9]} intensity={1.2} castShadow />
+                  <directionalLight position={[-9, 6, -6]} intensity={0.4} />
 
                   {/* 3D Realistic Mountain Valley Terrain */}
                   <ForeFlightTerrain />
