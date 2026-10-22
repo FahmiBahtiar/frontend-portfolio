@@ -199,7 +199,7 @@ export function LanyardCard() {
                 paddingTop: '140%', 
                 transformStyle: 'preserve-3d', 
                 WebkitTransformStyle: 'preserve-3d',
-                perspective: '1100px',
+                perspective: '2200px',
               }}
             >
               {/* Hardware-Accelerated 3D Flip Card */}
@@ -213,8 +213,8 @@ export function LanyardCard() {
                 }`}
                 style={{
                   transform: isFlipped 
-                    ? 'perspective(1000px) rotateY(180deg)' 
-                    : 'perspective(1000px) rotateY(0deg)',
+                    ? 'perspective(2200px) rotateY(180deg)' 
+                    : 'perspective(2200px) rotateY(0deg)',
                   transformStyle: 'preserve-3d',
                   WebkitTransformStyle: 'preserve-3d',
                 }}
