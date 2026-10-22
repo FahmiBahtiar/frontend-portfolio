@@ -120,7 +120,7 @@ export function ImageUpload({
   return (
     <div className="space-y-2">
       {label && (
-        <label className="block text-sm font-medium text-white">
+        <label className="block text-sm font-bold text-[#0c282d]">
           {label}
         </label>
       )}
@@ -128,7 +128,7 @@ export function ImageUpload({
       {preview ? (
         <div className="relative group">
           <div
-            className="relative overflow-hidden rounded-xl border-2 border-white/10"
+            className="relative overflow-hidden rounded-xl border-2 border-[#B9E7E6]"
             style={{ aspectRatio }}
           >
             <Image
@@ -140,7 +140,7 @@ export function ImageUpload({
           </div>
           <button
             onClick={handleRemove}
-            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 shadow-md"
           >
             <X className="w-4 h-4" />
           </button>
@@ -153,40 +153,40 @@ export function ImageUpload({
           onClick={disabled ? undefined : () => fileInputRef.current?.click()}
           className={`relative rounded-xl border-2 border-dashed transition-all ${
             disabled
-              ? 'border-white/10 bg-white/5 cursor-not-allowed opacity-50'
+              ? 'border-[#B9E7E6] bg-[#E2F4F3]/20 cursor-not-allowed opacity-50'
               : isDragging
-              ? 'border-cyan-400 bg-cyan-500/10 cursor-pointer'
-              : 'border-white/20 hover:border-cyan-400/50 bg-white/5 hover:bg-white/10 cursor-pointer'
+              ? 'border-[#6FD4E1] bg-[#E2F4F3] cursor-pointer'
+              : 'border-[#B9E7E6] hover:border-[#6FD4E1] bg-white hover:bg-[#E2F4F3]/30 cursor-pointer shadow-sm'
           }`}
           style={{ aspectRatio }}
         >
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6">
             {isUploading ? (
               <>
-                <Loader2 className="w-12 h-12 text-cyan-400 animate-spin" />
-                <p className="text-sm text-white/70">Uploading...</p>
+                <Loader2 className="w-12 h-12 text-[#0891b2] animate-spin" />
+                <p className="text-sm text-[#527d85] font-semibold">Uploading...</p>
               </>
             ) : (
               <>
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
-                  <ImageIcon className="w-8 h-8 text-cyan-400" />
+                <div className="w-16 h-16 rounded-full bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shadow-sm">
+                  <ImageIcon className="w-8 h-8 text-[#0891b2]" />
                 </div>
                 <div className="text-center">
-                  <p className="text-white font-medium mb-1">
+                  <p className="text-[#0c282d] font-bold mb-1">
                     {disabled ? 'Click "Edit Card" to upload photo' : description}
                   </p>
-                  <p className="text-xs text-white/50">
+                  <p className="text-xs text-[#527d85] font-medium">
                     {disabled ? 'Upload disabled' : 'PNG, JPG, GIF up to 5MB'}
                   </p>
                 </div>
-                <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-xl shadow-sm ${
                   disabled 
-                    ? 'bg-white/5 border border-white/10' 
-                    : 'bg-cyan-500/10 border border-cyan-500/20'
+                    ? 'bg-slate-100 border border-slate-200' 
+                    : 'bg-[#E2F4F3] border border-[#B9E7E6]'
                 }`}>
-                  <Upload className={`w-4 h-4 ${disabled ? 'text-white/40' : 'text-cyan-400'}`} />
-                  <span className={`text-sm font-medium ${
-                    disabled ? 'text-white/40' : 'text-cyan-400'
+                  <Upload className={`w-4 h-4 ${disabled ? 'text-[#527d85]' : 'text-[#0891b2]'}`} />
+                  <span className={`text-sm font-bold ${
+                    disabled ? 'text-[#527d85]' : 'text-[#0891b2]'
                   }`}>
                     {disabled ? 'Disabled' : 'Choose File'}
                   </span>

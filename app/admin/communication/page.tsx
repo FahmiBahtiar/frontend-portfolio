@@ -152,7 +152,7 @@ export default function CommunicationPage() {
       case 'unread': return 'bg-orange-500/10 text-orange-400 border-orange-500/20';
       case 'read': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
       case 'replied': return 'bg-green-500/10 text-green-400 border-green-500/20';
-      default: return 'bg-white/5 text-muted-foreground border-white/10';
+      default: return 'bg-white border border-[#B9E7E6] text-muted-foreground border-[#B9E7E6]';
     }
   };
 
@@ -174,7 +174,7 @@ export default function CommunicationPage() {
               <Mail className="w-6 h-6 text-cyan-500" />
             </div>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-white">Communication Panel</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Communication Panel</h1>
               <p className="text-sm text-muted-foreground">Manage contact messages and communications</p>
             </div>
           </div>
@@ -194,13 +194,13 @@ export default function CommunicationPage() {
           { icon: Archive, label: 'Archived', value: stats.archived, color: 'text-purple-400', border: 'border-purple-500/20' },
         ].map((stat, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-            <Card className={`bg-black/20 border-white/5 ${stat.border}`}>
+            <Card className={`bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d] ${stat.border}`}>
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <stat.icon className={`w-5 h-5 ${stat.color}`} />
                   <p className="text-muted-foreground text-sm">{stat.label}</p>
                 </div>
-                <p className="text-2xl font-bold text-white">{stat.value}</p>
+                <p className="text-2xl font-bold text-[#0c282d]">{stat.value}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -216,29 +216,29 @@ export default function CommunicationPage() {
               placeholder="Search messages..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 bg-white/5 border-white/10 w-full"
+              className="pl-9 bg-white border border-[#B9E7E6] border-[#B9E7E6] w-full"
             />
           </div>
 
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value as typeof filter)}
-            className="h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+            className="h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
           >
-            <option value="all" className="bg-slate-900">All Messages</option>
-            <option value="unread" className="bg-slate-900">Unread</option>
-            <option value="read" className="bg-slate-900">Read</option>
-            <option value="replied" className="bg-slate-900">Replied</option>
-            <option value="archived" className="bg-slate-900">Archived</option>
+            <option value="all" className="bg-white text-[#0c282d]">All Messages</option>
+            <option value="unread" className="bg-white text-[#0c282d]">Unread</option>
+            <option value="read" className="bg-white text-[#0c282d]">Read</option>
+            <option value="replied" className="bg-white text-[#0c282d]">Replied</option>
+            <option value="archived" className="bg-white text-[#0c282d]">Archived</option>
           </select>
         </div>
       </div>
 
       <div className="space-y-4">
         {filteredMessages.length === 0 ? (
-          <div className="text-center py-12 bg-black/20 border border-white/5 rounded-2xl">
+          <div className="text-center py-12 bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d] rounded-2xl">
             <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-medium text-white mb-2">No messages found</h3>
+            <h3 className="text-lg font-bold text-[#0c282d] mb-2">No messages found</h3>
             <p className="text-muted-foreground">Messages will appear here when visitors contact you.</p>
           </div>
         ) : (
@@ -247,10 +247,10 @@ export default function CommunicationPage() {
               key={message.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`bg-black/20 rounded-xl border transition-all cursor-pointer ${
+              className={`bg-white border border-[#B9E7E6] shadow-sm rounded-xl border transition-all cursor-pointer ${
                 selectedMessage?.id === message.id
-                  ? 'border-cyan-500/50 bg-white/5'
-                  : 'border-white/5 hover:border-white/10'
+                  ? 'border-cyan-500/50 bg-white border border-[#B9E7E6]'
+                  : 'border-[#B9E7E6] hover:border-[#B9E7E6]'
               } ${message.status === 'unread' ? 'ring-1 ring-orange-500/30' : ''}`}
               onClick={() => setSelectedMessage(selectedMessage?.id === message.id ? null : message)}
             >
@@ -261,7 +261,7 @@ export default function CommunicationPage() {
                       <User className="w-5 h-5 text-cyan-500" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-white">{message.name}</h3>
+                      <h3 className="text-lg font-bold text-[#0c282d]">{message.name}</h3>
                       <p className="text-sm text-muted-foreground">{message.email}</p>
                       <div className="flex flex-wrap items-center gap-2 mt-2">
                         {getStatusIcon(message.status)}
@@ -323,19 +323,19 @@ export default function CommunicationPage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="border-t border-white/5 pt-4 mt-4"
+                      className="border-t border-[#B9E7E6] pt-4 mt-4"
                     >
                       <div className="space-y-4">
                         <div>
-                          <h5 className="text-sm font-medium text-white mb-2">Full Message</h5>
-                          <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                            <p className="text-white/80 whitespace-pre-wrap text-sm">{message.message}</p>
+                          <h5 className="text-sm font-bold text-[#0c282d] mb-2">Full Message</h5>
+                          <div className="bg-white border border-[#B9E7E6] rounded-lg p-4 border border-[#B9E7E6]">
+                            <p className="text-[#1e4a52] whitespace-pre-wrap text-sm">{message.message}</p>
                           </div>
                         </div>
 
                         {message.reply ? (
                           <div>
-                            <h5 className="text-sm font-medium text-white mb-2">Your Reply</h5>
+                            <h5 className="text-sm font-bold text-[#0c282d] mb-2">Your Reply</h5>
                             <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
                               <p className="text-green-400 whitespace-pre-wrap text-sm">{message.reply}</p>
                               {message.repliedAt && (
@@ -370,7 +370,7 @@ export default function CommunicationPage() {
                                 value={replyMessage}
                                 onChange={(e) => setReplyMessage(e.target.value)}
                                 placeholder="Type your reply..."
-                                className="w-full h-32 bg-white/5 border-white/10 text-white"
+                                className="w-full h-32 bg-white border border-[#B9E7E6] border-[#B9E7E6] text-white"
                               />
                               <div className="flex gap-2">
                                 <Button

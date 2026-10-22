@@ -68,7 +68,7 @@ function SortableAchievementItem({ achievement, onEdit, onDelete }: SortableAchi
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 hover:border-white/20 transition-all ${
+      className={`bg-white border border-[#B9E7E6] border border-[#B9E7E6] rounded-xl p-4 hover:bg-white/10 hover:border-[#B9E7E6] transition-all ${
         isDragging ? 'opacity-50 shadow-lg' : ''
       }`}
     >
@@ -78,24 +78,24 @@ function SortableAchievementItem({ achievement, onEdit, onDelete }: SortableAchi
           {...listeners}
           className="cursor-grab active:cursor-grabbing p-1 hover:bg-white/10 rounded"
         >
-          <GripVertical className="w-4 h-4 text-white/40" />
+          <GripVertical className="w-4 h-4 text-[#527d85]" />
         </div>
 
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-medium text-white">{achievement.title}</h3>
+            <h3 className="font-bold text-[#0c282d]">{achievement.title}</h3>
             <span className={`inline-flex items-center px-2 py-0.5 rounded-full bg-${color}-500/10 border border-${color}-500/20 text-${color}-400 text-xs font-medium capitalize`}>
               {achievement.category}
             </span>
           </div>
-          <p className="text-white/60 text-sm">{achievement.issuer}</p>
-          <p className="text-white/40 text-xs">{achievement.date}</p>
+          <p className="text-[#527d85] text-sm">{achievement.issuer}</p>
+          <p className="text-[#527d85] text-xs">{achievement.date}</p>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => onEdit(achievement)}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-white border border-[#B9E7E6] hover:bg-white/10 text-[#527d85] hover:text-white transition-colors"
           >
             <Award className="w-4 h-4" />
           </button>
@@ -317,7 +317,7 @@ export default function AchievementsPage() {
               <Award className="w-6 h-6 text-orange-500" />
             </div>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-white">Achievements</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Achievements</h1>
               <p className="text-sm text-muted-foreground">Manage your certifications and awards</p>
             </div>
           </div>
@@ -334,11 +334,11 @@ export default function AchievementsPage() {
           { label: 'Aviation', count: achievements.filter(a => a.category === 'aviation').length, color: 'orange' },
           { label: 'Mountaineering', count: achievements.filter(a => a.category === 'mountaineering').length, color: 'green' },
         ].map((stat) => (
-          <div key={stat.label} className="bg-black/20 border border-white/5 rounded-xl p-4">
+          <div key={stat.label} className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d] rounded-xl p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground text-sm">{stat.label}</p>
-                <p className="text-2xl font-bold text-white mt-1">{stat.count}</p>
+                <p className="text-2xl font-bold text-[#0c282d] mt-1">{stat.count}</p>
               </div>
               <div className={`w-12 h-12 rounded-lg bg-${stat.color}-500/10 border border-${stat.color}-500/20 flex items-center justify-center`}>
                 <Award className={`w-6 h-6 text-${stat.color}-500`} />
@@ -350,8 +350,8 @@ export default function AchievementsPage() {
 
       {isFormOpen && (
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="bg-black/20 border-white/5">
-            <CardHeader className="border-b border-white/5 pb-4">
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+            <CardHeader className="border-b border-[#B9E7E6] pb-4">
               <CardTitle className="text-lg">{editingAchievement ? 'Edit Achievement' : 'Add New Achievement'}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
@@ -362,11 +362,11 @@ export default function AchievementsPage() {
                     <select
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value as Achievement['category'] })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50"
                       required
                     >
                       {categories.filter(c => c.value !== 'all').map((cat) => (
-                        <option key={cat.value} value={cat.value} className="bg-slate-900">{cat.label}</option>
+                        <option key={cat.value} value={cat.value} className="bg-white text-[#0c282d]">{cat.label}</option>
                       ))}
                     </select>
                   </div>
@@ -376,11 +376,11 @@ export default function AchievementsPage() {
                     <select
                       value={formData.icon}
                       onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50"
                       required
                     >
                       {icons.map((icon) => (
-                        <option key={icon.value} value={icon.value} className="bg-slate-900">{icon.label}</option>
+                        <option key={icon.value} value={icon.value} className="bg-white text-[#0c282d]">{icon.label}</option>
                       ))}
                     </select>
                   </div>
@@ -388,39 +388,39 @@ export default function AchievementsPage() {
 
                 <div className="space-y-2">
                   <Label>Title</Label>
-                  <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., Full Stack Development Certification" />
+                  <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., Full Stack Development Certification" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Issuer</Label>
-                    <Input value={formData.issuer} onChange={(e) => setFormData({ ...formData, issuer: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., Tech Academy" />
+                    <Input value={formData.issuer} onChange={(e) => setFormData({ ...formData, issuer: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., Tech Academy" />
                   </div>
 
                   <div className="space-y-2">
                     <Label>Date</Label>
-                    <Input value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., 2023" />
+                    <Input value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., 2023" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label>Description (Optional)</Label>
-                  <Textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white/5 border-white/10 resize-none" placeholder="Additional details..." />
+                  <Textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white border border-[#B9E7E6] border-[#B9E7E6] resize-none" placeholder="Additional details..." />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Certificate (Optional)</Label>
                   <div className="flex gap-2 mb-2">
-                    <Button type="button" variant="outline" size="sm" onClick={() => setCertificateUploadMode('url')} className={certificateUploadMode === 'url' ? 'bg-orange-500/20 text-orange-500 border-orange-500/50 hover:bg-orange-500/30' : 'bg-transparent border-white/10 text-muted-foreground hover:bg-white/5 hover:text-white'}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => setCertificateUploadMode('url')} className={certificateUploadMode === 'url' ? 'bg-orange-500/20 text-orange-500 border-orange-500/50 hover:bg-orange-500/30' : 'bg-transparent border-[#B9E7E6] text-muted-foreground hover:bg-white border border-[#B9E7E6] hover:text-white'}>
                       <LinkIcon className="w-4 h-4 mr-2" /> URL
                     </Button>
-                    <Button type="button" variant="outline" size="sm" onClick={() => setCertificateUploadMode('upload')} className={certificateUploadMode === 'upload' ? 'bg-orange-500/20 text-orange-500 border-orange-500/50 hover:bg-orange-500/30' : 'bg-transparent border-white/10 text-muted-foreground hover:bg-white/5 hover:text-white'}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => setCertificateUploadMode('upload')} className={certificateUploadMode === 'upload' ? 'bg-orange-500/20 text-orange-500 border-orange-500/50 hover:bg-orange-500/30' : 'bg-transparent border-[#B9E7E6] text-muted-foreground hover:bg-white border border-[#B9E7E6] hover:text-white'}>
                       <Upload className="w-4 h-4 mr-2" /> Upload
                     </Button>
                   </div>
 
                   {certificateUploadMode === 'url' && (
-                    <Input type="url" value={formData.certificateUrl || ''} onChange={(e) => setFormData({ ...formData, certificateUrl: e.target.value })} className="bg-white/5 border-white/10" placeholder="https://..." />
+                    <Input type="url" value={formData.certificateUrl || ''} onChange={(e) => setFormData({ ...formData, certificateUrl: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="https://..." />
                   )}
 
                   {certificateUploadMode === 'upload' && (
@@ -430,7 +430,7 @@ export default function AchievementsPage() {
 
                 <div className="space-y-2">
                   <Label>Credential URL (Optional)</Label>
-                  <Input type="url" value={formData.credentialUrl || ''} onChange={(e) => setFormData({ ...formData, credentialUrl: e.target.value })} className="bg-white/5 border-white/10" placeholder="https://..." />
+                  <Input type="url" value={formData.credentialUrl || ''} onChange={(e) => setFormData({ ...formData, credentialUrl: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="https://..." />
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">
@@ -449,7 +449,7 @@ export default function AchievementsPage() {
       )}
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-        <div className="flex flex-wrap gap-2 mb-6 p-1 bg-white/5 rounded-xl border border-white/10">
+        <div className="flex flex-wrap gap-2 mb-6 p-1 bg-white border border-[#B9E7E6] rounded-xl border border-[#B9E7E6]">
           {[
             { id: 'developer', label: 'Developer', icon: Code, color: 'cyan' },
             { id: 'aviation', label: 'Aviation', icon: Plane, color: 'orange' },
@@ -465,12 +465,12 @@ export default function AchievementsPage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm rounded-lg font-medium transition-all ${
-                  isActive ? `bg-${tab.color}-500/20 text-${tab.color}-400 border border-${tab.color}-500/30` : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                  isActive ? `bg-${tab.color}-500/20 text-${tab.color}-400 border border-${tab.color}-500/30` : 'text-muted-foreground hover:text-white hover:bg-white border border-[#B9E7E6]'
                 }`}
               >
                 <Icon className="w-4 h-4" />
                 <span className="hidden sm:inline">{tab.label}</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full ${isActive ? `bg-${tab.color}-500/30 text-${tab.color}-300` : 'bg-white/10 text-white/50'}`}>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${isActive ? `bg-${tab.color}-500/30 text-${tab.color}-300` : 'bg-white/10 text-[#527d85]'}`}>
                   {count}
                 </span>
               </button>
@@ -495,7 +495,7 @@ export default function AchievementsPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <h3 className="text-sm font-medium text-white capitalize">{activeTab} Achievements</h3>
+                    <h3 className="text-sm font-bold text-[#0c282d] capitalize">{activeTab} Achievements</h3>
                     <span className={`inline-flex items-center px-2 py-0.5 text-xs rounded-full bg-${color}-500/10 border border-${color}-500/20 text-${color}-400 font-medium`}>
                       {categoryAchievements.length} items
                     </span>
@@ -504,10 +504,10 @@ export default function AchievementsPage() {
                 </div>
 
                 {categoryAchievements.length === 0 ? (
-                  <div className="text-center py-12 px-6 rounded-xl border-2 border-dashed border-white/10 bg-black/20">
-                    <Award className="w-10 h-10 text-white/20 mx-auto mb-4" />
+                  <div className="text-center py-12 px-6 rounded-xl border-2 border-dashed border-[#B9E7E6] bg-white border border-[#B9E7E6] shadow-sm">
+                    <Award className="w-10 h-10 text-[#B9E7E6] mx-auto mb-4" />
                     <p className="text-muted-foreground mb-2">No achievements in this category</p>
-                    <p className="text-xs text-white/40">Add your first achievement to get started</p>
+                    <p className="text-xs text-[#527d85]">Add your first achievement to get started</p>
                   </div>
                 ) : (
                   <SortableContext items={categoryAchievements.map(a => a.id)} strategy={verticalListSortingStrategy}>

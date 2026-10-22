@@ -279,7 +279,7 @@ export default function AircraftHangarPage() {
               <Plane className="w-6 h-6 text-cyan-500" />
             </div>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-white">Aircraft Hangar</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Aircraft Hangar</h1>
               <p className="text-sm text-muted-foreground">Manage your projects and achievements</p>
             </div>
           </div>
@@ -292,8 +292,8 @@ export default function AircraftHangarPage() {
 
       {isFormOpen && (
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="bg-black/20 border-white/5">
-            <CardHeader className="border-b border-white/5 pb-4">
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+            <CardHeader className="border-b border-[#B9E7E6] pb-4">
               <CardTitle className="text-lg">{editingItem ? 'Edit Project' : 'Add New Project'}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
@@ -307,11 +307,11 @@ export default function AircraftHangarPage() {
                         const newCategory = e.target.value;
                         setFormData({ ...formData, category: newCategory, icon: getIconForCategory(newCategory) });
                       }}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                       required
                     >
                       {categories.map((cat) => (
-                        <option key={cat.value} value={cat.value} className="bg-slate-900">{cat.label}</option>
+                        <option key={cat.value} value={cat.value} className="bg-white text-[#0c282d]">{cat.label}</option>
                       ))}
                     </select>
                   </div>
@@ -320,11 +320,11 @@ export default function AircraftHangarPage() {
                     <select
                       value={formData.color}
                       onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                       required
                     >
                       {colors.map((color) => (
-                        <option key={color.value} value={color.value} className="bg-slate-900">{color.label}</option>
+                        <option key={color.value} value={color.value} className="bg-white text-[#0c282d]">{color.label}</option>
                       ))}
                     </select>
                   </div>
@@ -332,29 +332,29 @@ export default function AircraftHangarPage() {
 
                 <div className="space-y-2">
                   <Label>Project Name</Label>
-                  <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., react-dashboard-pro" />
+                  <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., react-dashboard-pro" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Model/Aircraft</Label>
-                    <Input value={formData.model} onChange={(e) => setFormData({ ...formData, model: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., Boeing 787" />
+                    <Input value={formData.model} onChange={(e) => setFormData({ ...formData, model: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., Boeing 787" />
                   </div>
                   <div className="space-y-2">
                     <Label>Classification</Label>
-                    <Input value={formData.classification} onChange={(e) => setFormData({ ...formData, classification: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., Heavy Jet" />
+                    <Input value={formData.classification} onChange={(e) => setFormData({ ...formData, classification: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., Heavy Jet" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label>Description</Label>
-                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white/5 border-white/10 resize-none" placeholder="Project description..." required />
+                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white border border-[#B9E7E6] border-[#B9E7E6] resize-none" placeholder="Project description..." required />
                 </div>
 
                 {formData.category === 'github' && (
                   <div className="space-y-2">
                     <Label>GitHub URL</Label>
-                    <Input type="url" value={formData.url || ''} onChange={(e) => setFormData({ ...formData, url: e.target.value })} className="bg-white/5 border-white/10" placeholder="https://github.com/..." />
+                    <Input type="url" value={formData.url || ''} onChange={(e) => setFormData({ ...formData, url: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="https://github.com/..." />
                   </div>
                 )}
 
@@ -371,7 +371,7 @@ export default function AircraftHangarPage() {
                   <div className="flex gap-2">
                     <Input
                       id="system-input"
-                      className="bg-white/5 border-white/10"
+                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                       placeholder="Add technology..."
                       onKeyPress={(e) => {
                         if (e.key === 'Enter') {
@@ -408,7 +408,7 @@ export default function AircraftHangarPage() {
       )}
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-        <div className="bg-black/20 border border-white/5 rounded-2xl p-6">
+        <div className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d] rounded-2xl p-6">
           <div className="mb-4">
             <p className="text-muted-foreground text-sm">Drag and drop to reorder projects</p>
           </div>
@@ -467,9 +467,9 @@ function SortableHangarItem({ item, onEdit, onDelete }: SortableHangarItemProps)
   };
 
   return (
-    <div ref={setNodeRef} style={style} className={`bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all ${isDragging ? 'opacity-50' : ''}`}>
+    <div ref={setNodeRef} style={style} className={`bg-white border border-[#B9E7E6] border border-[#B9E7E6] rounded-xl p-4 hover:bg-white/10 transition-all ${isDragging ? 'opacity-50' : ''}`}>
       <div className="flex items-center gap-4">
-        <button {...attributes} {...listeners} className="text-white/40 hover:text-white/60 transition-colors p-1 cursor-grab active:cursor-grabbing">
+        <button {...attributes} {...listeners} className="text-[#527d85] hover:text-[#527d85] transition-colors p-1 cursor-grab active:cursor-grabbing">
           <GripVertical className="w-5 h-5" />
         </button>
 
@@ -477,13 +477,13 @@ function SortableHangarItem({ item, onEdit, onDelete }: SortableHangarItemProps)
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-white truncate">{item.name}</h3>
+            <h3 className="font-bold text-[#0c282d] truncate">{item.name}</h3>
             <span className={`px-2 py-0.5 rounded-full text-xs ${item.category === 'github' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : item.category === 'flight' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20'}`}>
               {item.category}
             </span>
           </div>
           <p className="text-sm text-muted-foreground truncate">{item.description}</p>
-          <div className="flex items-center gap-4 mt-2 text-xs text-white/40">
+          <div className="flex items-center gap-4 mt-2 text-xs text-[#527d85]">
             <span>{item.model}</span>
             {item.stats?.stars !== undefined && (
               <span className="flex items-center gap-1"><Star className="w-3 h-3 text-yellow-400" />{item.stats.stars}</span>

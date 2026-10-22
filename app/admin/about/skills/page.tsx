@@ -152,7 +152,7 @@ export default function SkillsPage() {
       key: 'category',
       label: 'Category',
       render: (skill: Skill) => (
-        <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-medium">
+        <span className="px-2.5 py-0.5 rounded-full bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-[#1e4a52] text-xs font-medium">
           {skill.category}
         </span>
       ),
@@ -171,7 +171,7 @@ export default function SkillsPage() {
               }}
             />
           </div>
-          <span className="text-white/80 text-sm font-medium w-12 text-right">
+          <span className="text-[#1e4a52] text-sm font-medium w-12 text-right">
             {skill.proficiency}%
           </span>
         </div>
@@ -204,7 +204,7 @@ export default function SkillsPage() {
             <Code2 className="w-6 h-6 text-blue-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Skills</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Skills</h1>
             <p className="text-sm text-muted-foreground">Manage your technical skills and proficiencies</p>
           </div>
         </div>
@@ -222,7 +222,7 @@ export default function SkillsPage() {
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
               filterCategory === cat
                 ? 'bg-blue-600 text-white'
-                : 'bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-white'
+                : 'bg-white border border-[#B9E7E6] text-muted-foreground hover:bg-white/10 hover:text-white'
             }`}
           >
             {cat}
@@ -233,8 +233,8 @@ export default function SkillsPage() {
       <AnimatePresence>
         {isFormOpen && (
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-            <Card className="bg-black/20 border-white/5">
-              <CardHeader className="border-b border-white/5 pb-4">
+            <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+              <CardHeader className="border-b border-[#B9E7E6] pb-4">
                 <CardTitle className="text-lg">{editingId ? 'Edit Skill' : 'Add New Skill'}</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
@@ -246,7 +246,7 @@ export default function SkillsPage() {
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="bg-white/5 border-white/10"
+                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                         placeholder="React"
                         required
                       />
@@ -257,15 +257,15 @@ export default function SkillsPage() {
                       <select
                         value={formData.category}
                         onChange={(e) => setFormData({ ...formData, category: e.target.value as Skill['category'] })}
-                        className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                         required
                       >
-                        <option value="Frontend" className="bg-slate-900">Frontend</option>
-                        <option value="Backend" className="bg-slate-900">Backend</option>
-                        <option value="Database" className="bg-slate-900">Database</option>
-                        <option value="DevOps" className="bg-slate-900">DevOps</option>
-                        <option value="Tools" className="bg-slate-900">Tools</option>
-                        <option value="Other" className="bg-slate-900">Other</option>
+                        <option value="Frontend" className="bg-white text-[#0c282d]">Frontend</option>
+                        <option value="Backend" className="bg-white text-[#0c282d]">Backend</option>
+                        <option value="Database" className="bg-white text-[#0c282d]">Database</option>
+                        <option value="DevOps" className="bg-white text-[#0c282d]">DevOps</option>
+                        <option value="Tools" className="bg-white text-[#0c282d]">Tools</option>
+                        <option value="Other" className="bg-white text-[#0c282d]">Other</option>
                       </select>
                     </div>
                   </div>
@@ -277,7 +277,7 @@ export default function SkillsPage() {
                         type="text"
                         value={formData.icon}
                         onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                        className="bg-white/5 border-white/10 text-xl text-center"
+                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6] text-xl text-center"
                         placeholder="⚛️"
                       />
                     </div>
@@ -289,14 +289,14 @@ export default function SkillsPage() {
                           type="color"
                           value={formData.color}
                           onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                          className="w-12 h-10 px-1 py-1 bg-white/5 border-white/10 cursor-pointer"
+                          className="w-12 h-10 px-1 py-1 bg-white border border-[#B9E7E6] border-[#B9E7E6] cursor-pointer"
                           required
                         />
                         <Input
                           type="text"
                           value={formData.color}
                           onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                          className="flex-1 bg-white/5 border-white/10 uppercase"
+                          className="flex-1 bg-white border border-[#B9E7E6] border-[#B9E7E6] uppercase"
                           placeholder="#06b6d4"
                         />
                       </div>
@@ -338,10 +338,10 @@ export default function SkillsPage() {
         {categories.filter(c => c !== 'All').map((cat) => {
           const count = skills.filter(s => s.category === cat).length;
           return (
-            <Card key={cat} className="bg-black/20 border-white/5">
+            <Card key={cat} className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
               <CardContent className="p-4 flex flex-col items-center justify-center text-center h-full">
                 <p className="text-muted-foreground text-sm mb-1">{cat}</p>
-                <p className="text-2xl font-bold text-white">{count}</p>
+                <p className="text-2xl font-bold text-[#0c282d]">{count}</p>
               </CardContent>
             </Card>
           );
@@ -349,7 +349,7 @@ export default function SkillsPage() {
       </div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="bg-black/20 border border-white/5 rounded-2xl p-6">
+        <div className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d] rounded-2xl p-6">
           <DataTable
             data={filteredSkills}
             columns={columns}

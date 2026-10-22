@@ -122,7 +122,7 @@ export default function GalleryPage() {
       key: 'image' as keyof MissionPhoto,
       label: 'Image',
       render: (item: MissionPhoto) => (
-        <div className="w-16 h-16 rounded-lg overflow-hidden bg-white/5 relative border border-white/10">
+        <div className="w-16 h-16 rounded-lg overflow-hidden bg-white border border-[#B9E7E6] relative border border-[#B9E7E6]">
           <Image
             src={item.image}
             alt="Mission photo"
@@ -141,25 +141,25 @@ export default function GalleryPage() {
       render: (item: MissionPhoto) => (
         <div className="flex items-center gap-2">
           <MapPin className="w-4 h-4 text-cyan-400" />
-          <span className="font-medium text-white">{item.location}</span>
+          <span className="font-bold text-[#0c282d]">{item.location}</span>
         </div>
       ),
     },
     {
       key: 'coordinates' as keyof MissionPhoto,
       label: 'Coordinates',
-      render: (item: MissionPhoto) => <span className="text-white/80">{item.coordinates}</span>,
+      render: (item: MissionPhoto) => <span className="text-[#1e4a52]">{item.coordinates}</span>,
     },
     {
       key: 'altitude' as keyof MissionPhoto,
       label: 'Altitude',
-      render: (item: MissionPhoto) => <span className="text-white/80">{item.altitude}</span>,
+      render: (item: MissionPhoto) => <span className="text-[#1e4a52]">{item.altitude}</span>,
     },
     {
       key: 'date' as keyof MissionPhoto,
       label: 'Date',
       render: (item: MissionPhoto) => (
-        <div className="flex items-center gap-2 text-white/80">
+        <div className="flex items-center gap-2 text-[#1e4a52]">
           <Calendar className="w-4 h-4 text-orange-400" />
           <span>{new Date(item.date).toLocaleDateString()}</span>
         </div>
@@ -169,7 +169,7 @@ export default function GalleryPage() {
       key: 'camera' as keyof MissionPhoto,
       label: 'Camera',
       render: (item: MissionPhoto) => (
-        <div className="flex items-center gap-2 text-white/80">
+        <div className="flex items-center gap-2 text-[#1e4a52]">
           <Camera className="w-4 h-4 text-purple-400" />
           <span>{item.camera}</span>
         </div>
@@ -202,7 +202,7 @@ export default function GalleryPage() {
             <ImageIcon className="w-6 h-6 text-cyan-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Gallery Management</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Gallery Management</h1>
             <p className="text-sm text-muted-foreground">Manage mission photos and metadata</p>
           </div>
         </div>
@@ -215,8 +215,8 @@ export default function GalleryPage() {
       <AnimatePresence>
         {isFormOpen && (
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-            <Card className="bg-black/20 border-white/5">
-              <CardHeader className="border-b border-white/5 pb-4">
+            <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+              <CardHeader className="border-b border-[#B9E7E6] pb-4">
                 <CardTitle className="text-lg">{editingPhoto ? 'Edit Mission Photo' : 'Add New Mission Photo'}</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
@@ -230,7 +230,7 @@ export default function GalleryPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setImageUploadMode('url')}
-                          className={`flex-1 ${imageUploadMode === 'url' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50' : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10'}`}
+                          className={`flex-1 ${imageUploadMode === 'url' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50' : 'bg-white border border-[#B9E7E6] text-[#527d85] border-[#B9E7E6] hover:bg-white/10'}`}
                         >
                           <Link className="w-4 h-4 mr-2" /> URL
                         </Button>
@@ -239,7 +239,7 @@ export default function GalleryPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setImageUploadMode('upload')}
-                          className={`flex-1 ${imageUploadMode === 'upload' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50' : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10'}`}
+                          className={`flex-1 ${imageUploadMode === 'upload' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50' : 'bg-white border border-[#B9E7E6] text-[#527d85] border-[#B9E7E6] hover:bg-white/10'}`}
                         >
                           <Upload className="w-4 h-4 mr-2" /> Upload
                         </Button>
@@ -251,7 +251,7 @@ export default function GalleryPage() {
                           required
                           value={formData.image}
                           onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                          className="bg-white/5 border-white/10"
+                          className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                           placeholder="https://example.com/image.jpg"
                         />
                       ) : (
@@ -274,7 +274,7 @@ export default function GalleryPage() {
                         required
                         value={formData.location}
                         onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                        className="bg-white/5 border-white/10"
+                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                         placeholder="Mt. Everest Summit"
                       />
                     </div>
@@ -286,7 +286,7 @@ export default function GalleryPage() {
                         required
                         value={formData.coordinates}
                         onChange={(e) => setFormData(prev => ({ ...prev, coordinates: e.target.value }))}
-                        className="bg-white/5 border-white/10"
+                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                         placeholder="27°59'N 86°55'E"
                       />
                     </div>
@@ -298,7 +298,7 @@ export default function GalleryPage() {
                         required
                         value={formData.altitude}
                         onChange={(e) => setFormData(prev => ({ ...prev, altitude: e.target.value }))}
-                        className="bg-white/5 border-white/10"
+                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                         placeholder="8848M MSL"
                       />
                     </div>
@@ -310,7 +310,7 @@ export default function GalleryPage() {
                         required
                         value={formData.date}
                         onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-                        className="bg-white/5 border-white/10"
+                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                       />
                     </div>
 
@@ -321,7 +321,7 @@ export default function GalleryPage() {
                         required
                         value={formData.camera}
                         onChange={(e) => setFormData(prev => ({ ...prev, camera: e.target.value }))}
-                        className="bg-white/5 border-white/10"
+                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                         placeholder="Sony A7III"
                       />
                     </div>
@@ -333,7 +333,7 @@ export default function GalleryPage() {
                         required
                         value={formData.heading}
                         onChange={(e) => setFormData(prev => ({ ...prev, heading: e.target.value }))}
-                        className="bg-white/5 border-white/10"
+                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                         placeholder="045°"
                       />
                     </div>
@@ -356,7 +356,7 @@ export default function GalleryPage() {
       </AnimatePresence>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-        <div className="bg-black/20 border border-white/5 rounded-2xl p-6">
+        <div className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d] rounded-2xl p-6">
           <DataTable
             data={photos}
             columns={columns}

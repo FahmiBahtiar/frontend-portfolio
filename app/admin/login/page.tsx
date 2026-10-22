@@ -74,22 +74,21 @@ export default function LoginPage() {
     await signIn('google', { callbackUrl: '/admin' });
   };
 
-  // Force dark theme for login page
+  // Use clean Arctic Ice Light theme for login page
   useEffect(() => {
-    document.documentElement.classList.add('dark');
-    document.body.style.backgroundColor = '#0f172a';
+    document.documentElement.classList.remove('dark');
+    document.body.style.backgroundColor = '#E2F4F3';
     return () => {
-      document.documentElement.classList.remove('dark');
       document.body.style.backgroundColor = '';
     };
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#E2F4F3] flex items-center justify-center p-4">
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-48 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 -left-48 w-96 h-96 bg-[#6FD4E1]/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-[#B9E7E6]/30 rounded-full blur-3xl" />
       </div>
 
       {/* Error Alert */}
@@ -103,16 +102,16 @@ export default function LoginPage() {
         animate={{ opacity: 1, y: 0 }}
         className="relative w-full max-w-md z-10"
       >
-        <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-white/95 backdrop-blur-xl border border-[#B9E7E6] rounded-2xl p-8 shadow-xl text-[#0c282d]">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 mb-4 border border-cyan-500/20">
-              <Plane className="w-8 h-8 text-cyan-400" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-[#E2F4F3] mb-4 border border-[#B9E7E6] shadow-sm">
+              <Plane className="w-8 h-8 text-[#0891b2]" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-3xl font-bold text-[#0c282d] mb-2">
               Admin Portal
             </h1>
-            <p className="text-white/60">
+            <p className="text-[#527d85] font-medium">
               Sign in with your authorized Google account
             </p>
           </div>
@@ -122,7 +121,7 @@ export default function LoginPage() {
             onClick={handleGoogleSignIn}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-white hover:bg-gray-50 transition-all shadow-lg group"
+            className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-white hover:bg-slate-50 transition-all border border-[#B9E7E6] shadow-md group"
           >
             <svg className="w-6 h-6" viewBox="0 0 24 24">
               <path
@@ -142,20 +141,20 @@ export default function LoginPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            <span className="text-gray-700 font-medium">
+            <span className="text-[#0c282d] font-bold">
               Continue with Google
             </span>
           </motion.button>
 
           {/* Security Notice */}
-          <div className="mt-6 p-4 rounded-xl bg-orange-500/5 border border-orange-500/20">
+          <div className="mt-6 p-4 rounded-xl bg-[#E2F4F3]/60 border border-[#B9E7E6]">
             <div className="flex items-start gap-3">
-              <Lock className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+              <Lock className="w-5 h-5 text-[#0891b2] flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm text-orange-200/90 font-medium mb-1">
+                <p className="text-sm text-[#0c282d] font-bold mb-1">
                   Authorized Access Only
                 </p>
-                <p className="text-xs text-orange-200/60">
+                <p className="text-xs text-[#527d85] font-medium">
                   Only pre-authorized Google accounts can access this admin panel. 
                   Contact the administrator if you need access.
                 </p>
@@ -165,7 +164,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-white/40 text-sm mt-6">
+        <p className="text-center text-[#527d85] text-sm mt-6 font-semibold">
           Protected by Google OAuth 2.0
         </p>
       </motion.div>

@@ -210,7 +210,7 @@ export default function LanyardCardPage() {
             <CreditCard className="w-6 h-6 text-purple-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Passport Card</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Passport Card</h1>
             <p className="text-sm text-muted-foreground">Manage your digital portfolio passport</p>
           </div>
         </div>
@@ -262,8 +262,8 @@ export default function LanyardCardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-          <Card className="bg-black/20 border-white/5">
-            <CardHeader className="border-b border-white/5 pb-4">
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+            <CardHeader className="border-b border-[#B9E7E6] pb-4">
               <CardTitle className="text-lg">Header Information</CardTitle>
             </CardHeader>
             <CardContent className="pt-6 space-y-4">
@@ -274,7 +274,7 @@ export default function LanyardCardPage() {
                   value={formData?.serviceName ?? ''}
                   onChange={(e) => handleChange('serviceName', e.target.value)}
                   disabled={!isEditing}
-                  className="bg-white/5 border-white/10 disabled:opacity-50"
+                  className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                 />
               </div>
               <div className="space-y-2">
@@ -284,14 +284,14 @@ export default function LanyardCardPage() {
                   value={formData?.serviceType ?? ''}
                   onChange={(e) => handleChange('serviceType', e.target.value)}
                   disabled={!isEditing}
-                  className="bg-white/5 border-white/10 disabled:opacity-50"
+                  className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                 />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-black/20 border-white/5">
-            <CardHeader className="border-b border-white/5 pb-4">
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+            <CardHeader className="border-b border-[#B9E7E6] pb-4">
               <CardTitle className="text-lg">Personal Information</CardTitle>
             </CardHeader>
             <CardContent className="pt-6 space-y-4">
@@ -303,7 +303,7 @@ export default function LanyardCardPage() {
                     value={formData?.type ?? ''}
                     onChange={(e) => handleChange('type', e.target.value)}
                     disabled={!isEditing}
-                    className="bg-white/5 border-white/10 disabled:opacity-50"
+                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -314,7 +314,7 @@ export default function LanyardCardPage() {
                     onChange={(e) => handleChange('countryCode', e.target.value.toUpperCase())}
                     disabled={!isEditing}
                     maxLength={3}
-                    className="bg-white/5 border-white/10 disabled:opacity-50 uppercase"
+                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50 uppercase"
                   />
                 </div>
               </div>
@@ -326,7 +326,7 @@ export default function LanyardCardPage() {
                   value={formData?.passportNo ?? ''}
                   onChange={(e) => handleChange('passportNo', e.target.value.toUpperCase())}
                   disabled={!isEditing}
-                  className="bg-white/5 border-white/10 disabled:opacity-50 uppercase font-mono"
+                  className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50 uppercase font-mono"
                 />
               </div>
 
@@ -337,7 +337,7 @@ export default function LanyardCardPage() {
                   value={formData?.surname ?? ''}
                   onChange={(e) => handleChange('surname', e.target.value.toUpperCase())}
                   disabled={!isEditing}
-                  className="bg-white/5 border-white/10 disabled:opacity-50 uppercase"
+                  className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50 uppercase"
                 />
               </div>
 
@@ -348,7 +348,7 @@ export default function LanyardCardPage() {
                   value={formData?.givenNames ?? ''}
                   onChange={(e) => handleChange('givenNames', e.target.value.toUpperCase())}
                   disabled={!isEditing}
-                  className="bg-white/5 border-white/10 disabled:opacity-50 uppercase"
+                  className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50 uppercase"
                 />
               </div>
 
@@ -360,7 +360,7 @@ export default function LanyardCardPage() {
                     value={formData?.nationality ?? ''}
                     onChange={(e) => handleChange('nationality', e.target.value)}
                     disabled={!isEditing}
-                    className="bg-white/5 border-white/10 disabled:opacity-50"
+                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -369,10 +369,10 @@ export default function LanyardCardPage() {
                     value={formData?.sex ?? 'M'}
                     onChange={(e) => handleChange('sex', e.target.value)}
                     disabled={!isEditing}
-                    className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 disabled:opacity-50"
+                    className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 disabled:opacity-50"
                   >
-                    <option value="M" className="bg-slate-900">M / L (Male)</option>
-                    <option value="F" className="bg-slate-900">F / P (Female)</option>
+                    <option value="M" className="bg-white text-[#0c282d]">M / L (Male)</option>
+                    <option value="F" className="bg-white text-[#0c282d]">F / P (Female)</option>
                   </select>
                 </div>
               </div>
@@ -384,7 +384,7 @@ export default function LanyardCardPage() {
                   value={formData?.placeOfBirth ?? ''}
                   onChange={(e) => handleChange('placeOfBirth', e.target.value)}
                   disabled={!isEditing}
-                  className="bg-white/5 border-white/10 disabled:opacity-50"
+                  className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                 />
               </div>
 
@@ -397,7 +397,7 @@ export default function LanyardCardPage() {
                     onChange={(e) => handleChange('dateOfBirth', e.target.value)}
                     disabled={!isEditing}
                     placeholder="01 JAN 1990"
-                    className="bg-white/5 border-white/10 disabled:opacity-50"
+                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -408,7 +408,7 @@ export default function LanyardCardPage() {
                     onChange={(e) => handleChange('dateOfIssue', e.target.value)}
                     disabled={!isEditing}
                     placeholder="01 OCT 2023"
-                    className="bg-white/5 border-white/10 disabled:opacity-50"
+                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -419,15 +419,15 @@ export default function LanyardCardPage() {
                     onChange={(e) => handleChange('dateOfExpiry', e.target.value)}
                     disabled={!isEditing}
                     placeholder="01 OCT 2033"
-                    className="bg-white/5 border-white/10 disabled:opacity-50"
+                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-black/20 border-white/5">
-            <CardHeader className="border-b border-white/5 pb-4">
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+            <CardHeader className="border-b border-[#B9E7E6] pb-4">
               <CardTitle className="text-lg">Card Design</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
@@ -439,7 +439,7 @@ export default function LanyardCardPage() {
                     value={formData?.backgroundColor ?? '#f5e6d3'}
                     onChange={(e) => handleChange('backgroundColor', e.target.value)}
                     disabled={!isEditing}
-                    className="h-12 px-2 cursor-pointer bg-white/5 border-white/10 disabled:opacity-50"
+                    className="h-12 px-2 cursor-pointer bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -449,7 +449,7 @@ export default function LanyardCardPage() {
                     value={formData?.textColor ?? '#1e3a8a'}
                     onChange={(e) => handleChange('textColor', e.target.value)}
                     disabled={!isEditing}
-                    className="h-12 px-2 cursor-pointer bg-white/5 border-white/10 disabled:opacity-50"
+                    className="h-12 px-2 cursor-pointer bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -459,7 +459,7 @@ export default function LanyardCardPage() {
                     value={formData?.accentColor ?? '#3b82f6'}
                     onChange={(e) => handleChange('accentColor', e.target.value)}
                     disabled={!isEditing}
-                    className="h-12 px-2 cursor-pointer bg-white/5 border-white/10 disabled:opacity-50"
+                    className="h-12 px-2 cursor-pointer bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -469,8 +469,8 @@ export default function LanyardCardPage() {
 
         <div className="space-y-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card className="bg-black/20 border-white/5">
-              <CardHeader className="border-b border-white/5 pb-4">
+            <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+              <CardHeader className="border-b border-[#B9E7E6] pb-4">
                 <CardTitle className="text-lg">Photo</CardTitle>
               </CardHeader>
               <CardContent className="pt-6 space-y-4">
@@ -482,7 +482,7 @@ export default function LanyardCardPage() {
                     onChange={(e) => handleChange('avatarUrl', e.target.value)}
                     disabled={!isEditing}
                     placeholder="https://example.com/avatar.jpg"
-                    className="bg-white/5 border-white/10 disabled:opacity-50"
+                    className="bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                   />
                 </div>
                 <ImageUpload
@@ -498,8 +498,8 @@ export default function LanyardCardPage() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="bg-black/20 border-white/5">
-              <CardHeader className="border-b border-white/5 pb-4">
+            <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+              <CardHeader className="border-b border-[#B9E7E6] pb-4">
                 <CardTitle className="text-lg">Preview</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">

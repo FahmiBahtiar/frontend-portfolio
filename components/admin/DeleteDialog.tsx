@@ -45,21 +45,21 @@ export function DeleteDialog({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-slate-900 border border-red-500/30 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+              className="bg-white border border-red-500/30 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden text-[#0c282d]"
             >
               {/* Header */}
-              <div className="bg-gradient-to-r from-red-500/20 to-orange-500/20 border-b border-red-500/30 p-6">
+              <div className="bg-red-50/80 border-b border-red-100 p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                    <AlertTriangle className="w-6 h-6 text-red-400" />
+                  <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="w-6 h-6 text-red-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-xl font-bold text-white mb-1">{title}</h2>
-                    <p className="text-white/70 text-sm">{description}</p>
+                    <h2 className="text-xl font-bold text-[#0c282d] mb-1">{title}</h2>
+                    <p className="text-[#527d85] text-sm font-medium">{description}</p>
                   </div>
                   <button
                     onClick={onClose}
-                    className="text-white/50 hover:text-white transition-colors"
+                    className="text-[#527d85] hover:text-[#0c282d] transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -69,29 +69,29 @@ export function DeleteDialog({
               {/* Content */}
               <div className="p-6">
                 {itemName && (
-                  <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-                    <p className="text-white/70 text-sm mb-1">You are about to delete:</p>
-                    <p className="text-white font-medium">{itemName}</p>
+                  <div className="mb-6 p-4 rounded-xl bg-red-50/50 border border-red-200">
+                    <p className="text-[#527d85] text-sm mb-1 font-semibold">You are about to delete:</p>
+                    <p className="text-[#0c282d] font-bold">{itemName}</p>
                   </div>
                 )}
-                <p className="text-white/60 text-sm">
+                <p className="text-[#527d85] text-sm font-medium">
                   This action cannot be undone. This will permanently delete the data from the server.
                 </p>
               </div>
 
               {/* Actions */}
-              <div className="bg-slate-800/50 border-t border-white/10 p-6 flex gap-3">
+              <div className="bg-[#E2F4F3]/30 border-t border-[#B9E7E6] p-6 flex gap-3">
                 <button
                   onClick={onClose}
                   disabled={isLoading}
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-all disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-white hover:bg-[#E2F4F3] border border-[#B9E7E6] text-[#0c282d] font-bold transition-all disabled:opacity-50 shadow-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={onConfirm}
                   disabled={isLoading}
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 hover:shadow-lg hover:shadow-red-500/50 text-white font-medium transition-all disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition-all disabled:opacity-50 shadow-sm"
                 >
                   {isLoading ? 'Deleting...' : 'Delete'}
                 </button>

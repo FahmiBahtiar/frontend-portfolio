@@ -106,7 +106,7 @@ export default function EducationRecordsPage() {
       sortable: true,
       render: (item: Education) => (
         <div>
-          <div className="font-medium text-white">{item.degree}</div>
+          <div className="font-bold text-[#0c282d]">{item.degree}</div>
           <div className="text-sm text-muted-foreground">{item.institution}</div>
         </div>
       ),
@@ -152,7 +152,7 @@ export default function EducationRecordsPage() {
             <GraduationCap className="w-6 h-6 text-purple-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Education Records</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Education Records</h1>
             <p className="text-sm text-muted-foreground">Manage your educational background</p>
           </div>
         </div>
@@ -164,8 +164,8 @@ export default function EducationRecordsPage() {
 
       {isFormOpen && (
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="bg-black/20 border-white/5">
-            <CardHeader className="border-b border-white/5 pb-4">
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+            <CardHeader className="border-b border-[#B9E7E6] pb-4">
               <CardTitle className="text-lg">{editingRecord ? 'Edit Education' : 'Add New Education'}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
@@ -173,33 +173,33 @@ export default function EducationRecordsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Degree/Certification</Label>
-                    <Input value={formData.degree} onChange={(e) => setFormData({ ...formData, degree: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., Bachelor of Computer Science" />
+                    <Input value={formData.degree} onChange={(e) => setFormData({ ...formData, degree: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., Bachelor of Computer Science" />
                   </div>
                   <div className="space-y-2">
                     <Label>Institution</Label>
-                    <Input value={formData.institution} onChange={(e) => setFormData({ ...formData, institution: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., University of Technology" />
+                    <Input value={formData.institution} onChange={(e) => setFormData({ ...formData, institution: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., University of Technology" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label>Period</Label>
-                    <Input value={formData.period} onChange={(e) => setFormData({ ...formData, period: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., 2020 - 2024" />
+                    <Input value={formData.period} onChange={(e) => setFormData({ ...formData, period: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., 2020 - 2024" />
                   </div>
                   <div className="space-y-2">
                     <Label>GPA/Grade</Label>
-                    <Input value={formData.gpa} onChange={(e) => setFormData({ ...formData, gpa: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., 3.85" />
+                    <Input value={formData.gpa} onChange={(e) => setFormData({ ...formData, gpa: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="e.g., 3.85" />
                   </div>
                   <div className="space-y-2">
                     <Label>Theme Color</Label>
                     <select
                       value={formData.color}
                       onChange={(e) => setFormData({ ...formData, color: e.target.value as Education['color'] })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                       required
                     >
                       {colors.map((color) => (
-                        <option key={color.value} value={color.value} className="bg-slate-900">{color.label}</option>
+                        <option key={color.value} value={color.value} className="bg-white text-[#0c282d]">{color.label}</option>
                       ))}
                     </select>
                   </div>
@@ -207,7 +207,7 @@ export default function EducationRecordsPage() {
 
                 <div className="space-y-2">
                   <Label>Description (Optional)</Label>
-                  <Textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white/5 border-white/10 resize-none" placeholder="Additional details..." />
+                  <Textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="bg-white border border-[#B9E7E6] border-[#B9E7E6] resize-none" placeholder="Additional details..." />
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">

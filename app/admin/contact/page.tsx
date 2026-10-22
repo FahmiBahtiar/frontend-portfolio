@@ -203,7 +203,7 @@ export default function ContactPage() {
               <Radio className="w-6 h-6 text-orange-500" />
             </div>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-white">Contact Information</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Contact Information</h1>
               <p className="text-sm text-muted-foreground">Manage contact frequencies and social links</p>
             </div>
           </div>
@@ -217,8 +217,8 @@ export default function ContactPage() {
       <AnimatePresence>
         {isFormOpen && (
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-            <Card className="bg-black/20 border-white/5">
-              <CardHeader className="border-b border-white/5 pb-4">
+            <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+              <CardHeader className="border-b border-[#B9E7E6] pb-4">
                 <CardTitle className="text-lg">{editingContact ? 'Edit Contact' : 'Add Contact'}</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
@@ -230,7 +230,7 @@ export default function ContactPage() {
                         type="text"
                         value={formData.frequency}
                         onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
-                        className="bg-white/5 border-white/10"
+                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                         placeholder="e.g., 121.5"
                         required
                       />
@@ -241,11 +241,11 @@ export default function ContactPage() {
                       <select
                         value={formData.type}
                         onChange={(e) => setFormData({ ...formData, type: e.target.value as ContactFrequency['type'] })}
-                        className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                         required
                       >
                         {types.map((type) => (
-                          <option key={type.value} value={type.value} className="bg-slate-900">
+                          <option key={type.value} value={type.value} className="bg-white text-[#0c282d]">
                             {type.label}
                           </option>
                         ))}
@@ -258,7 +258,7 @@ export default function ContactPage() {
                         type="text"
                         value={formData.label}
                         onChange={(e) => setFormData({ ...formData, label: e.target.value.toUpperCase() })}
-                        className="bg-white/5 border-white/10"
+                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                         placeholder="e.g., EMAIL"
                         required
                       />
@@ -270,7 +270,7 @@ export default function ContactPage() {
                         type="text"
                         value={formData.value}
                         onChange={(e) => setFormData({ ...formData, value: e.target.value })}
-                        className="bg-white/5 border-white/10"
+                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                         placeholder="e.g., email@example.com"
                         required
                       />
@@ -281,11 +281,11 @@ export default function ContactPage() {
                       <select
                         value={formData.icon}
                         onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                        className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                         required
                       >
                         {icons.map((icon) => (
-                          <option key={icon.value} value={icon.value} className="bg-slate-900">
+                          <option key={icon.value} value={icon.value} className="bg-white text-[#0c282d]">
                             {icon.label}
                           </option>
                         ))}
@@ -297,11 +297,11 @@ export default function ContactPage() {
                       <select
                         value={formData.color}
                         onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                        className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                         required
                       >
                         {colors.map((color) => (
-                          <option key={color.value} value={color.value} className="bg-slate-900">
+                          <option key={color.value} value={color.value} className="bg-white text-[#0c282d]">
                             {color.label}
                           </option>
                         ))}
@@ -314,7 +314,7 @@ export default function ContactPage() {
                         type="url"
                         value={formData.link || ''}
                         onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                        className="bg-white/5 border-white/10"
+                        className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                         placeholder="https://..."
                       />
                     </div>
@@ -337,7 +337,7 @@ export default function ContactPage() {
       </AnimatePresence>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-        <div className="bg-black/20 border border-white/5 rounded-2xl p-6">
+        <div className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d] rounded-2xl p-6">
           <DataTable
             data={contacts}
             columns={columns}

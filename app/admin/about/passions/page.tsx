@@ -139,7 +139,7 @@ export default function PassionsPage() {
       label: 'Color',
       render: (passion: Passion) => (
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded border border-white/20" style={{ backgroundColor: passion.color }} />
+          <div className="w-4 h-4 rounded border border-[#B9E7E6]" style={{ backgroundColor: passion.color }} />
           <span className="text-muted-foreground text-xs font-mono">{passion.color}</span>
         </div>
       ),
@@ -173,7 +173,7 @@ export default function PassionsPage() {
             <Heart className="w-6 h-6 text-pink-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Passions</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Passions</h1>
             <p className="text-sm text-muted-foreground">Manage your interests and hobbies</p>
           </div>
         </div>
@@ -185,8 +185,8 @@ export default function PassionsPage() {
 
       {isFormOpen && (
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="bg-black/20 border-white/5">
-            <CardHeader className="border-b border-white/5 pb-4">
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+            <CardHeader className="border-b border-[#B9E7E6] pb-4">
               <CardTitle className="text-lg">{editingId ? 'Edit Passion' : 'Add New Passion'}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
@@ -194,18 +194,18 @@ export default function PassionsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Icon (Emoji)</Label>
-                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white/5 border-white/10 text-xl text-center" placeholder="💻" />
+                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6] text-xl text-center" placeholder="💻" />
                   </div>
                   <div className="space-y-2">
                     <Label>Color</Label>
                     <select
                       value={formData.color}
                       onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50"
                       required
                     >
                       {availableColors.map((color) => (
-                        <option key={color.value} value={color.value} className="bg-slate-900">{color.label}</option>
+                        <option key={color.value} value={color.value} className="bg-white text-[#0c282d]">{color.label}</option>
                       ))}
                     </select>
                   </div>
@@ -213,26 +213,26 @@ export default function PassionsPage() {
 
                 <div className="space-y-2">
                   <Label>Title</Label>
-                  <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required className="bg-white/5 border-white/10" placeholder="Full Stack Development" />
+                  <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="Full Stack Development" />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Description</Label>
-                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required rows={3} className="bg-white/5 border-white/10 resize-none" placeholder="Describe your passion..." />
+                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required rows={3} className="bg-white border border-[#B9E7E6] border-[#B9E7E6] resize-none" placeholder="Describe your passion..." />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label>Stats Label</Label>
-                    <Input value={formData.statsLabel} onChange={(e) => setFormData({ ...formData, statsLabel: e.target.value })} required className="bg-white/5 border-white/10" placeholder="Projects" />
+                    <Input value={formData.statsLabel} onChange={(e) => setFormData({ ...formData, statsLabel: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="Projects" />
                   </div>
                   <div className="space-y-2">
                     <Label>Stats Value</Label>
-                    <Input value={formData.statsValue} onChange={(e) => setFormData({ ...formData, statsValue: e.target.value })} required className="bg-white/5 border-white/10" placeholder="50+" />
+                    <Input value={formData.statsValue} onChange={(e) => setFormData({ ...formData, statsValue: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="50+" />
                   </div>
                   <div className="space-y-2">
                     <Label>Gradient</Label>
-                    <Input value={formData.gradient} onChange={(e) => setFormData({ ...formData, gradient: e.target.value })} required className="bg-white/5 border-white/10" placeholder="from-cyan-500 to-blue-500" />
+                    <Input value={formData.gradient} onChange={(e) => setFormData({ ...formData, gradient: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="from-cyan-500 to-blue-500" />
                   </div>
                 </div>
 

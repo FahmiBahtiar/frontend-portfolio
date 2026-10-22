@@ -147,7 +147,7 @@ export default function SettingsPage() {
             <SettingsIcon className="w-6 h-6 text-slate-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Settings</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Settings</h1>
             <p className="text-sm text-muted-foreground">Manage your site configuration</p>
           </div>
         </div>
@@ -160,7 +160,7 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-1">
-          <Card className="bg-black/20 border-white/5">
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
             <CardContent className="p-2 space-y-1">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -171,7 +171,7 @@ export default function SettingsPage() {
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                       activeTab === tab.id
                         ? 'bg-white/10 text-white'
-                        : 'text-muted-foreground hover:bg-white/5 hover:text-white'
+                        : 'text-muted-foreground hover:bg-white border border-[#B9E7E6] hover:text-white'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -191,8 +191,8 @@ export default function SettingsPage() {
             className="space-y-6"
           >
             {activeTab === 'profile' && (
-              <Card className="bg-black/20 border-white/5">
-                <CardHeader className="border-b border-white/5 pb-4">
+              <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+                <CardHeader className="border-b border-[#B9E7E6] pb-4">
                   <CardTitle className="text-lg">Site Profile</CardTitle>
                   <CardDescription>Basic information about your website.</CardDescription>
                 </CardHeader>
@@ -203,7 +203,7 @@ export default function SettingsPage() {
                       type="text"
                       value={settings.siteName}
                       onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                     />
                   </div>
 
@@ -213,7 +213,7 @@ export default function SettingsPage() {
                       type="text"
                       value={settings.tagline}
                       onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                     />
                   </div>
 
@@ -223,7 +223,7 @@ export default function SettingsPage() {
                       value={settings.metaDescription}
                       onChange={(e) => setSettings({ ...settings, metaDescription: e.target.value })}
                       rows={3}
-                      className="bg-white/5 border-white/10 resize-none"
+                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6] resize-none"
                     />
                     <p className="text-xs text-muted-foreground">This will be used for SEO.</p>
                   </div>
@@ -232,8 +232,8 @@ export default function SettingsPage() {
             )}
 
             {activeTab === 'appearance' && (
-              <Card className="bg-black/20 border-white/5">
-                <CardHeader className="border-b border-white/5 pb-4">
+              <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+                <CardHeader className="border-b border-[#B9E7E6] pb-4">
                   <CardTitle className="text-lg">Appearance</CardTitle>
                   <CardDescription>Customize the look and feel of your site.</CardDescription>
                 </CardHeader>
@@ -243,11 +243,11 @@ export default function SettingsPage() {
                     <select
                       value={settings.theme}
                       onChange={(e) => setSettings({ ...settings, theme: e.target.value })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-slate-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-slate-500/50"
                     >
-                      <option value="dark" className="bg-slate-900">Dark</option>
-                      <option value="light" className="bg-slate-900">Light</option>
-                      <option value="auto" className="bg-slate-900">Auto</option>
+                      <option value="dark" className="bg-white text-[#0c282d]">Dark</option>
+                      <option value="light" className="bg-white text-[#0c282d]">Light</option>
+                      <option value="auto" className="bg-white text-[#0c282d]">Auto</option>
                     </select>
                   </div>
 
@@ -258,13 +258,13 @@ export default function SettingsPage() {
                         type="color"
                         value={settings.accentColor}
                         onChange={(e) => setSettings({ ...settings, accentColor: e.target.value })}
-                        className="w-16 h-10 px-1 py-1 cursor-pointer bg-white/5 border-white/10"
+                        className="w-16 h-10 px-1 py-1 cursor-pointer bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                       />
                       <Input
                         type="text"
                         value={settings.accentColor}
                         onChange={(e) => setSettings({ ...settings, accentColor: e.target.value })}
-                        className="flex-1 bg-white/5 border-white/10 font-mono uppercase"
+                        className="flex-1 bg-white border border-[#B9E7E6] border-[#B9E7E6] font-mono uppercase"
                       />
                     </div>
                   </div>
@@ -273,13 +273,13 @@ export default function SettingsPage() {
             )}
 
             {activeTab === 'notifications' && (
-              <Card className="bg-black/20 border-white/5">
-                <CardHeader className="border-b border-white/5 pb-4">
+              <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+                <CardHeader className="border-b border-[#B9E7E6] pb-4">
                   <CardTitle className="text-lg">Notifications</CardTitle>
                   <CardDescription>Manage how you receive alerts.</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6 space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[#B9E7E6] border border-[#B9E7E6]">
                     <div>
                       <p className="font-medium text-sm text-white">Email Notifications</p>
                       <p className="text-xs text-muted-foreground">Receive email updates</p>
@@ -295,7 +295,7 @@ export default function SettingsPage() {
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[#B9E7E6] border border-[#B9E7E6]">
                     <div>
                       <p className="font-medium text-sm text-white">Comment Notifications</p>
                       <p className="text-xs text-muted-foreground">Get notified of new comments</p>
@@ -311,7 +311,7 @@ export default function SettingsPage() {
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[#B9E7E6] border border-[#B9E7E6]">
                     <div>
                       <p className="font-medium text-sm text-white">Update Notifications</p>
                       <p className="text-xs text-muted-foreground">System and feature updates</p>
@@ -331,13 +331,13 @@ export default function SettingsPage() {
             )}
 
             {activeTab === 'security' && (
-              <Card className="bg-black/20 border-white/5">
-                <CardHeader className="border-b border-white/5 pb-4">
+              <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+                <CardHeader className="border-b border-[#B9E7E6] pb-4">
                   <CardTitle className="text-lg">Security</CardTitle>
                   <CardDescription>Keep your account secure.</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6 space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[#B9E7E6] border border-[#B9E7E6]">
                     <div>
                       <p className="font-medium text-sm text-white">Two-Factor Authentication</p>
                       <p className="text-xs text-muted-foreground">Add an extra layer of security</p>
@@ -359,7 +359,7 @@ export default function SettingsPage() {
                       type="number"
                       value={settings.sessionTimeout}
                       onChange={(e) => setSettings({ ...settings, sessionTimeout: Number(e.target.value) })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                       min="5"
                       max="120"
                     />
@@ -377,8 +377,8 @@ export default function SettingsPage() {
             )}
 
             {activeTab === 'maintenance' && (
-              <Card className="bg-black/20 border-white/5">
-                <CardHeader className="border-b border-white/5 pb-4">
+              <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+                <CardHeader className="border-b border-[#B9E7E6] pb-4">
                   <CardTitle className="text-lg">Maintenance Mode</CardTitle>
                   <CardDescription>Control downtime messaging and scheduling.</CardDescription>
                 </CardHeader>
@@ -389,9 +389,9 @@ export default function SettingsPage() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 rounded-lg border border-white/10 bg-white/5 p-4">
+                      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 rounded-lg border border-[#B9E7E6] bg-white border border-[#B9E7E6] p-4">
                         <div>
-                          <p className="text-sm font-medium text-white">Enable Maintenance Mode</p>
+                          <p className="text-sm font-bold text-[#0c282d]">Enable Maintenance Mode</p>
                           <p className="text-xs text-muted-foreground">Visitors will see the maintenance page while enabled.</p>
                         </div>
                         <Switch
@@ -411,20 +411,20 @@ export default function SettingsPage() {
                             type="text"
                             value={maintenanceForm.title}
                             onChange={(e) => setMaintenanceForm({ ...maintenanceForm, title: e.target.value })}
-                            className="bg-white/5 border-white/10"
+                            className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                             placeholder="We are tuning the engines"
                           />
                         </div>
 
                         <div className="space-y-2">
                           <Label>Status</Label>
-                          <div className="flex items-center gap-2 rounded-md border border-white/10 bg-black/30 px-3 py-2 text-sm">
+                          <div className="flex items-center gap-2 rounded-md border border-[#B9E7E6] bg-white border border-[#B9E7E6] shadow-sm px-3 py-2 text-sm">
                             {maintenancePreview.isActive ? (
                               <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                             ) : (
                               <AlertTriangle className="h-4 w-4 text-amber-400" />
                             )}
-                            <span className="text-white/90">{maintenancePreview.statusLabel}</span>
+                            <span className="text-[#0c282d]">{maintenancePreview.statusLabel}</span>
                           </div>
                         </div>
                       </div>
@@ -436,7 +436,7 @@ export default function SettingsPage() {
                             type="datetime-local"
                             value={maintenanceForm.startAt}
                             onChange={(e) => setMaintenanceForm({ ...maintenanceForm, startAt: e.target.value })}
-                            className="bg-white/5 border-white/10"
+                            className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                           />
                         </div>
 
@@ -446,7 +446,7 @@ export default function SettingsPage() {
                             type="datetime-local"
                             value={maintenanceForm.endAt}
                             onChange={(e) => setMaintenanceForm({ ...maintenanceForm, endAt: e.target.value })}
-                            className="bg-white/5 border-white/10"
+                            className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                           />
                         </div>
                       </div>
@@ -457,19 +457,19 @@ export default function SettingsPage() {
                           value={maintenanceForm.note}
                           onChange={(e) => setMaintenanceForm({ ...maintenanceForm, note: e.target.value })}
                           rows={4}
-                          className="bg-white/5 border-white/10 resize-none"
+                          className="bg-white border border-[#B9E7E6] border-[#B9E7E6] resize-none"
                           placeholder="Tell visitors what is happening and when you will be back online."
                         />
                       </div>
 
-                      <div className="rounded-xl border border-white/10 bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-transparent p-4">
+                      <div className="rounded-xl border border-[#B9E7E6] bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-transparent p-4">
                         <div className="flex items-start gap-3">
                           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-500/10 border border-cyan-500/20">
                             <CalendarClock className="h-5 w-5 text-cyan-400" />
                           </div>
                           <div className="space-y-2">
-                            <p className="text-sm font-semibold text-white">Visitor Preview</p>
-                            <p className="text-sm text-white/80">
+                            <p className="text-sm font-bold text-[#0c282d]">Visitor Preview</p>
+                            <p className="text-sm text-[#1e4a52]">
                               {(maintenanceForm.title || 'Maintenance Mode').trim()}
                             </p>
                             <p className="text-xs text-muted-foreground">

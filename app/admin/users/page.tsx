@@ -171,7 +171,7 @@ export default function AuthorizedUsersPage() {
             <UserIcon className="w-5 h-5 text-cyan-500" />
           </div>
           <div>
-            <div className="font-medium text-white">{user.name}</div>
+            <div className="font-bold text-[#0c282d]">{user.name}</div>
             <div className="text-sm text-muted-foreground">{user.email}</div>
           </div>
         </div>
@@ -253,7 +253,7 @@ export default function AuthorizedUsersPage() {
               <Users className="w-6 h-6 text-cyan-500" />
             </div>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-white">Authorized Users</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Authorized Users</h1>
               <p className="text-sm text-muted-foreground">Manage admin panel access</p>
             </div>
           </div>
@@ -267,8 +267,8 @@ export default function AuthorizedUsersPage() {
       <AnimatePresence>
         {isFormOpen && (
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-            <Card className="bg-black/20 border-white/5">
-              <CardHeader className="border-b border-white/5 pb-4">
+            <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+              <CardHeader className="border-b border-[#B9E7E6] pb-4">
                 <CardTitle className="text-lg">{editingUser ? 'Edit User' : 'Add Authorized User'}</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
@@ -282,7 +282,7 @@ export default function AuthorizedUsersPage() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         disabled={!!editingUser}
-                        className="pl-9 bg-white/5 border-white/10 disabled:opacity-50"
+                        className="pl-9 bg-white border border-[#B9E7E6] border-[#B9E7E6] disabled:opacity-50"
                         placeholder="user@gmail.com"
                         required
                       />
@@ -298,7 +298,7 @@ export default function AuthorizedUsersPage() {
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="pl-9 bg-white/5 border-white/10"
+                        className="pl-9 bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                         placeholder="John Doe"
                         required
                       />
@@ -310,10 +310,10 @@ export default function AuthorizedUsersPage() {
                     <select
                       value={formData.role}
                       onChange={(e) => setFormData({ ...formData, role: e.target.value as 'admin' | 'editor' })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                     >
-                      <option value="editor" className="bg-slate-900">Editor</option>
-                      <option value="admin" className="bg-slate-900">Admin</option>
+                      <option value="editor" className="bg-white text-[#0c282d]">Editor</option>
+                      <option value="admin" className="bg-white text-[#0c282d]">Admin</option>
                     </select>
                   </div>
 
@@ -322,7 +322,7 @@ export default function AuthorizedUsersPage() {
                       id="isActive" 
                       checked={formData.isActive}
                       onCheckedChange={(c) => setFormData({ ...formData, isActive: !!c })}
-                      className="border-white/20 data-[state=checked]:bg-cyan-500 data-[state=checked]:text-black"
+                      className="border-[#B9E7E6] data-[state=checked]:bg-cyan-500 data-[state=checked]:text-black"
                     />
                     <label
                       htmlFor="isActive"
@@ -349,7 +349,7 @@ export default function AuthorizedUsersPage() {
       </AnimatePresence>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-        <div className="bg-black/20 border border-white/5 rounded-2xl p-6">
+        <div className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d] rounded-2xl p-6">
           <DataTable
             data={tableData}
             columns={columns}

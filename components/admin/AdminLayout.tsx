@@ -88,12 +88,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     setExpandedItems(getInitialExpandedItems());
   }, [pathname]);
 
-  // Force dark mode for admin panel
+  // Use clean Arctic Ice Light theme for admin panel
   useEffect(() => {
-    document.documentElement.classList.add('dark');
-    document.body.style.backgroundColor = '#0f172a';
+    document.documentElement.classList.remove('dark');
+    document.body.style.backgroundColor = '#E2F4F3';
     return () => {
-      document.documentElement.classList.remove('dark');
       document.body.style.backgroundColor = '';
     };
   }, []);
@@ -187,7 +186,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 overflow-hidden overscroll-behavior-contain">
+    <div className="min-h-screen h-screen bg-[#E2F4F3] text-[#0c282d] overflow-hidden overscroll-behavior-contain">
       {/* Sidebar - Always rendered but can be hidden */}
       <motion.aside
         initial={false}
@@ -197,25 +196,25 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           opacity: isSidebarOpen ? 1 : 0
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className={`fixed left-0 top-0 h-full bg-slate-900/95 backdrop-blur-xl border-r border-white/10 flex flex-col flex-shrink-0 overflow-hidden overscroll-behavior-contain z-10 ${!isSidebarOpen ? 'pointer-events-none' : ''}`}
+        className={`fixed left-0 top-0 h-full bg-white/95 backdrop-blur-xl border-r border-[#B9E7E6] shadow-sm flex flex-col flex-shrink-0 overflow-hidden overscroll-behavior-contain z-10 ${!isSidebarOpen ? 'pointer-events-none' : ''}`}
         style={{ minWidth: isSidebarOpen ? '256px' : '0' }}
         onMouseEnter={() => setHoveredArea('sidebar')}
         onMouseLeave={() => setHoveredArea(null)}
       >
         {/* Logo - Fixed at top */}
-        <div className="p-6 border-b border-white/10 flex-shrink-0">
+        <div className="p-6 border-b border-[#B9E7E6] flex-shrink-0 bg-white">
           <div className="flex items-center gap-3">
             <Logo size={40} />
             <div>
-              <h1 className="text-white font-bold text-lg whitespace-nowrap">Admin Panel</h1>
-              <p className="text-white/50 text-xs whitespace-nowrap">Portfolio CMS</p>
+              <h1 className="text-[#0c282d] font-bold text-lg whitespace-nowrap">Admin Panel</h1>
+              <p className="text-[#527d85] text-xs font-semibold whitespace-nowrap">Portfolio CMS</p>
             </div>
           </div>
         </div>
 
         {/* Navigation - Scrollable in middle */}
         <nav 
-          className={`flex-1 p-4 space-y-2 overflow-x-hidden scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent hover:scrollbar-thumb-white/20 overscroll-behavior-contain ${
+          className={`flex-1 p-4 space-y-2 overflow-x-hidden scrollbar-thin scrollbar-thumb-[#B9E7E6] scrollbar-track-transparent overscroll-behavior-contain ${
             hoveredArea === 'sidebar' ? 'overflow-y-auto' : 
             hoveredArea === 'main' ? 'overflow-y-hidden' : 
             'overflow-y-auto'
@@ -233,15 +232,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     {hasSubItems ? (
                       <button
                         onClick={() => toggleExpanded(item.label)}
-                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
                           active
-                            ? 'bg-cyan-500/20 text-cyan-400'
-                            : 'text-white/70 hover:bg-white/5 hover:text-white'
+                            ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                            : 'text-[#1e4a52] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           <Icon className="w-5 h-5" />
-                          <span className="font-medium">{item.label}</span>
+                          <span className="font-semibold">{item.label}</span>
                         </div>
                         <motion.div
                           animate={{ rotate: isExpanded ? 90 : 0 }}
@@ -253,16 +252,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     ) : (
                       <Link
                         href={item.href}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                           active
-                            ? 'bg-cyan-500/20 text-cyan-400'
-                            : 'text-white/70 hover:bg-white/5 hover:text-white'
+                            ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                            : 'text-[#1e4a52] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
                         }`}
                       >
                         <Icon className="w-5 h-5" />
-                        <span className="font-medium">{item.label}</span>
+                        <span className="font-semibold">{item.label}</span>
                         {item.badge && (
-                          <span className="ml-auto bg-cyan-500 text-white text-xs px-2 py-1 rounded-full">
+                          <span className="ml-auto bg-[#6FD4E1] text-[#0c282d] font-bold text-xs px-2 py-1 rounded-full">
                             {item.badge}
                           </span>
                         )}
@@ -285,8 +284,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                               href={subItem.href}
                               className={`block px-4 py-2 rounded-lg text-sm transition-all ${
                                 pathname === subItem.href
-                                  ? 'bg-cyan-500/10 text-cyan-400'
-                                  : 'text-white/60 hover:bg-white/5 hover:text-white'
+                                  ? 'bg-[#E2F4F3] text-[#0891b2] font-bold border-l-2 border-[#6FD4E1]'
+                                  : 'text-[#527d85] hover:bg-[#E2F4F3]/60 hover:text-[#0c282d]'
                               }`}
                             >
                               {subItem.label}
@@ -301,14 +300,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </nav>
 
             {/* User Section - Fixed at bottom */}
-            <div className="flex-shrink-0 p-4 border-t border-white/10 bg-slate-900/80">
+            <div className="flex-shrink-0 p-4 border-t border-[#B9E7E6] bg-[#E2F4F3]/40">
               {status === 'loading' ? (
                 <div className="animate-pulse">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-slate-700"></div>
+                    <div className="w-10 h-10 rounded-full bg-[#B9E7E6]"></div>
                     <div className="flex-1">
-                      <div className="h-4 bg-slate-700 rounded mb-2"></div>
-                      <div className="h-3 bg-slate-700 rounded w-16"></div>
+                      <div className="h-4 bg-[#B9E7E6] rounded mb-2"></div>
+                      <div className="h-3 bg-[#B9E7E6] rounded w-16"></div>
                     </div>
                   </div>
                 </div>
@@ -321,10 +320,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         alt={session.user.name || 'User'}
                         width={40}
                         height={40}
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="w-10 h-10 rounded-full object-cover border border-[#B9E7E6]"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                      <div className="w-10 h-10 rounded-full bg-[#6FD4E1] flex items-center justify-center text-[#0c282d] font-bold shadow-sm">
                         {session.user.name
                           ?.split(' ')
                           .map((n) => n[0])
@@ -334,29 +333,29 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm font-medium truncate">
+                      <p className="text-[#0c282d] text-sm font-bold truncate">
                         {session.user.name || 'User'}
                       </p>
                       <div className="flex items-center gap-2">
-                        <p className="text-white/50 text-xs truncate capitalize">
+                        <p className="text-[#527d85] text-xs truncate capitalize font-medium">
                           {session.user.role || 'user'}
                         </p>
                         {session.user.role === 'admin' && (
-                          <Shield className="w-3 h-3 text-cyan-400" />
+                          <Shield className="w-3 h-3 text-[#0891b2]" />
                         )}
                       </div>
                     </div>
                   </div>
                   <button
                     onClick={() => signOut({ callbackUrl: '/admin/login' })}
-                    className="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-all"
+                    className="w-full flex items-center gap-2 px-4 py-2 rounded-xl text-red-600 hover:bg-red-500/10 font-bold transition-all text-sm"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span className="text-sm">Logout</span>
+                    <span>Logout</span>
                   </button>
                 </>
               ) : (
-                <div className="text-center text-white/50 text-sm">
+                <div className="text-center text-[#527d85] text-sm font-medium">
                   Not logged in
                 </div>
               )}
@@ -373,25 +372,25 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             onClick={() => setIsSidebarOpen(false)}
             type="button"
             aria-label="Close sidebar"
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-9 lg:hidden"
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-9 lg:hidden"
           />
         )}
       </AnimatePresence>
 
       {/* Main Content Wrapper */}
       <div 
-        className="flex-1 flex flex-col min-w-0 h-full overflow-hidden transition-all duration-300"
+        className="flex-1 flex flex-col min-w-0 h-full overflow-hidden transition-all duration-300 bg-[#E2F4F3]"
         style={{ marginLeft: isSidebarOpen && isDesktop ? '256px' : '0' }}
       >
         {/* Header */}
-        <header className="flex-shrink-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/10">
+        <header className="flex-shrink-0 bg-white/95 backdrop-blur-xl border-b border-[#B9E7E6] shadow-sm">
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center gap-4">
               <motion.button
                 onClick={toggleSidebar}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-lg text-white/70 hover:bg-white/5 hover:text-white transition-all"
+                className="p-2 rounded-xl text-[#0c282d] hover:bg-[#E2F4F3] transition-all"
                 aria-label={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
                 title={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
               >
@@ -407,16 +406,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   )}
                 </motion.div>
               </motion.button>
-              
-              {/* Breadcrumb or page title can go here */}
             </div>
 
             <div className="flex items-center gap-4">
               {/* Quick Stats */}
               <div className="hidden md:flex items-center gap-4">
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20">
-                  <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                  <span className="text-xs text-cyan-400 font-medium">Live</span>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E2F4F3] border border-[#B9E7E6] shadow-sm">
+                  <div className="w-2 h-2 rounded-full bg-[#6FD4E1]" />
+                  <span className="text-xs text-[#0891b2] font-bold font-mono">Live</span>
                 </div>
               </div>
             </div>

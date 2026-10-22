@@ -110,7 +110,7 @@ export default function HighlightsPage() {
       label: 'Color',
       render: (highlight: Highlight) => (
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded border border-white/20" style={{ backgroundColor: highlight.color }} />
+          <div className="w-4 h-4 rounded border border-[#B9E7E6]" style={{ backgroundColor: highlight.color }} />
           <span className="text-muted-foreground text-xs font-mono">{highlight.color}</span>
         </div>
       ),
@@ -134,7 +134,7 @@ export default function HighlightsPage() {
             <Star className="w-6 h-6 text-yellow-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Highlights</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Highlights</h1>
             <p className="text-sm text-muted-foreground">Showcase your key achievements and statistics</p>
           </div>
         </div>
@@ -146,8 +146,8 @@ export default function HighlightsPage() {
 
       {isFormOpen && (
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="bg-black/20 border-white/5">
-            <CardHeader className="border-b border-white/5 pb-4">
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+            <CardHeader className="border-b border-[#B9E7E6] pb-4">
               <CardTitle className="text-lg">{editingId ? 'Edit Highlight' : 'Add New Highlight'}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
@@ -155,13 +155,13 @@ export default function HighlightsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Icon (Emoji)</Label>
-                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white/5 border-white/10 text-xl text-center" placeholder="🚀" />
+                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6] text-xl text-center" placeholder="🚀" />
                   </div>
                   <div className="space-y-2">
                     <Label>Color (Hex)</Label>
                     <div className="flex items-center gap-3">
-                      <input type="color" value={formData.color.startsWith('#') ? formData.color : '#06b6d4'} onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })} className="w-12 h-10 rounded-md bg-white/5 border border-white/10 cursor-pointer" required />
-                      <Input value={formData.color} onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })} className="flex-1 bg-white/5 border-white/10" placeholder="#06b6d4 or cyan" />
+                      <input type="color" value={formData.color.startsWith('#') ? formData.color : '#06b6d4'} onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })} className="w-12 h-10 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] cursor-pointer" required />
+                      <Input value={formData.color} onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })} className="flex-1 bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="#06b6d4 or cyan" />
                     </div>
                   </div>
                 </div>
@@ -169,11 +169,11 @@ export default function HighlightsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Label</Label>
-                    <Input value={formData.label} onChange={(e) => setFormData({ ...formData, label: e.target.value })} required className="bg-white/5 border-white/10" placeholder="Projects Completed" />
+                    <Input value={formData.label} onChange={(e) => setFormData({ ...formData, label: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="Projects Completed" />
                   </div>
                   <div className="space-y-2">
                     <Label>Value</Label>
-                    <Input value={formData.value} onChange={(e) => setFormData({ ...formData, value: e.target.value })} required className="bg-white/5 border-white/10" placeholder="50" />
+                    <Input value={formData.value} onChange={(e) => setFormData({ ...formData, value: e.target.value })} required className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="50" />
                   </div>
                 </div>
 

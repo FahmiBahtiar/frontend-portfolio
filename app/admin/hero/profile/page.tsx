@@ -116,15 +116,15 @@ export default function HeroProfilePage() {
           <User className="w-6 h-6 text-blue-500" />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white">Hero Profile</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-[#0c282d]">Hero Profile</h1>
           <p className="text-sm text-muted-foreground">Manage your main introduction and roles</p>
         </div>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-2">
-          <Card className="bg-black/20 border-white/5">
-            <CardHeader className="border-b border-white/5 pb-4">
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm">
+            <CardHeader className="border-b border-[#B9E7E6] pb-4">
               <CardTitle className="text-lg">Profile Details</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
@@ -132,11 +132,11 @@ export default function HeroProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label>Full Name</Label>
-                    <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="bg-white/5 border-white/10" />
+                    <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="bg-white border border-[#B9E7E6]" />
                   </div>
                   <div className="space-y-2">
                     <Label>Badge/Role</Label>
-                    <Input value={formData.badge} onChange={(e) => setFormData({ ...formData, badge: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., Backend Developer" />
+                    <Input value={formData.badge} onChange={(e) => setFormData({ ...formData, badge: e.target.value })} required className="bg-white border border-[#B9E7E6]" placeholder="e.g., Backend Developer" />
                   </div>
                 </div>
 
@@ -145,8 +145,8 @@ export default function HeroProfilePage() {
                   <p className="text-xs text-muted-foreground">Titles displayed in rotation on the hero section.</p>
                   <div className="space-y-2">
                     {formData.titles.map((title, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 rounded-md bg-white/5 border border-white/10">
-                        <span className="text-sm text-white/90">{title}</span>
+                      <div key={index} className="flex items-center justify-between p-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6]">
+                        <span className="text-sm text-[#0c282d]">{title}</span>
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-500/20" onClick={() => removeTitle(index)} type="button">
                           <X className="w-4 h-4" />
                         </Button>
@@ -154,7 +154,7 @@ export default function HeroProfilePage() {
                     ))}
                   </div>
                   <div className="flex gap-2 pt-2">
-                    <Input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTitle())} className="bg-white/5 border-white/10" placeholder="Add new title" />
+                    <Input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTitle())} className="bg-white border border-[#B9E7E6]" placeholder="Add new title" />
                     <Button type="button" variant="secondary" onClick={addTitle} className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">
                       <Plus className="w-4 h-4 mr-2" /> Add
                     </Button>
@@ -163,34 +163,34 @@ export default function HeroProfilePage() {
 
                 <div className="space-y-2">
                   <Label>Passions</Label>
-                  <Input value={formData.passions} onChange={(e) => setFormData({ ...formData, passions: e.target.value })} required className="bg-white/5 border-white/10" placeholder="e.g., Coding • Aviation • Mountaineering" />
+                  <Input value={formData.passions} onChange={(e) => setFormData({ ...formData, passions: e.target.value })} required className="bg-white border border-[#B9E7E6]" placeholder="e.g., Coding • Aviation • Mountaineering" />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Hero Description</Label>
-                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required rows={3} className="bg-white/5 border-white/10 resize-none" />
+                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required rows={3} className="bg-white border border-[#B9E7E6] resize-none" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label>Welcome Message</Label>
-                    <Input value={formData.loginMessage} onChange={(e) => setFormData({ ...formData, loginMessage: e.target.value })} required className="bg-white/5 border-white/10" />
+                    <Input value={formData.loginMessage} onChange={(e) => setFormData({ ...formData, loginMessage: e.target.value })} required className="bg-white border border-[#B9E7E6]" />
                   </div>
                   <div className="space-y-2">
                     <Label>CTA Text</Label>
-                    <Input value={formData.ctaText} onChange={(e) => setFormData({ ...formData, ctaText: e.target.value })} required className="bg-white/5 border-white/10" />
+                    <Input value={formData.ctaText} onChange={(e) => setFormData({ ...formData, ctaText: e.target.value })} required className="bg-white border border-[#B9E7E6]" />
                   </div>
                   <div className="space-y-2">
                     <Label>Status</Label>
-                    <Input value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} required className="bg-white/5 border-white/10" />
+                    <Input value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} required className="bg-white border border-[#B9E7E6]" />
                   </div>
                   <div className="space-y-2">
                     <Label>Location</Label>
-                    <Input value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required className="bg-white/5 border-white/10" />
+                    <Input value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required className="bg-white border border-[#B9E7E6]" />
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label>Flight Level</Label>
-                    <Input value={formData.flightLevel} onChange={(e) => setFormData({ ...formData, flightLevel: e.target.value })} required className="bg-white/5 border-white/10" />
+                    <Input value={formData.flightLevel} onChange={(e) => setFormData({ ...formData, flightLevel: e.target.value })} required className="bg-white border border-[#B9E7E6]" />
                   </div>
                 </div>
 
@@ -199,10 +199,10 @@ export default function HeroProfilePage() {
                   <p className="text-xs text-muted-foreground">Manage your technology stack references.</p>
                   <div className="space-y-2">
                     {formData.techStack.map((item, index) => (
-                      <div key={index} className="flex items-center gap-2 p-2 rounded-md bg-white/5 border border-white/10">
+                      <div key={index} className="flex items-center gap-2 p-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6]">
                         <div className="flex-1 grid grid-cols-3 gap-2">
                           <span className="text-sm font-mono text-cyan-400">{item.callsign}</span>
-                          <span className="text-sm text-white">{item.label}</span>
+                          <span className="text-sm text-[#0c282d]">{item.label}</span>
                           <span className="text-sm text-muted-foreground">{item.icon}</span>
                         </div>
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400 hover:bg-red-500/20" onClick={() => removeTechStackItem(index)} type="button">
@@ -212,9 +212,9 @@ export default function HeroProfilePage() {
                     ))}
                   </div>
                   <div className="grid grid-cols-4 gap-2 pt-2">
-                    <Input value={newTechStackItem.callsign} onChange={(e) => setNewTechStackItem({ ...newTechStackItem, callsign: e.target.value })} className="bg-white/5 border-white/10" placeholder="Callsign" />
-                    <Input value={newTechStackItem.label} onChange={(e) => setNewTechStackItem({ ...newTechStackItem, label: e.target.value })} className="bg-white/5 border-white/10" placeholder="Label" />
-                    <Input value={newTechStackItem.icon} onChange={(e) => setNewTechStackItem({ ...newTechStackItem, icon: e.target.value })} className="bg-white/5 border-white/10" placeholder="Icon" />
+                    <Input value={newTechStackItem.callsign} onChange={(e) => setNewTechStackItem({ ...newTechStackItem, callsign: e.target.value })} className="bg-white border border-[#B9E7E6]" placeholder="Callsign" />
+                    <Input value={newTechStackItem.label} onChange={(e) => setNewTechStackItem({ ...newTechStackItem, label: e.target.value })} className="bg-white border border-[#B9E7E6]" placeholder="Label" />
+                    <Input value={newTechStackItem.icon} onChange={(e) => setNewTechStackItem({ ...newTechStackItem, icon: e.target.value })} className="bg-white border border-[#B9E7E6]" placeholder="Icon" />
                     <Button type="button" variant="secondary" onClick={addTechStackItem} className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">
                       <Plus className="w-4 h-4 mr-2" /> Add
                     </Button>
@@ -222,7 +222,7 @@ export default function HeroProfilePage() {
                 </div>
 
                 <div className="pt-4">
-                  <Button type="submit" disabled={isSaving} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  <Button type="submit" disabled={isSaving} className="w-full bg-blue-600 hover:bg-blue-700 text-[#0c282d]">
                     {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                     {isSaving ? 'Saving...' : 'Save Changes'}
                   </Button>
@@ -233,8 +233,8 @@ export default function HeroProfilePage() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="bg-black/20 border-white/5 sticky top-6">
-            <CardHeader className="border-b border-white/5 pb-4 flex flex-row items-center gap-2 space-y-0">
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm sticky top-6">
+            <CardHeader className="border-b border-[#B9E7E6] pb-4 flex flex-row items-center gap-2 space-y-0">
               <Sparkles className="w-5 h-5 text-yellow-400" />
               <CardTitle className="text-lg">Preview</CardTitle>
             </CardHeader>
@@ -243,7 +243,7 @@ export default function HeroProfilePage() {
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20">
                   <span className="text-blue-400 text-xs font-medium uppercase tracking-wider">{formData.badge || 'BADGE'}</span>
                 </div>
-                <h1 className="text-3xl font-bold text-white tracking-tight">{formData.name || 'Hero Name'}</h1>
+                <h1 className="text-3xl font-bold text-[#0c282d] tracking-tight">{formData.name || 'Hero Name'}</h1>
                 <div className="space-y-1">
                   {formData.titles.length > 0 ? formData.titles.map((title, index) => (
                     <p key={index} className="text-blue-400 text-sm font-medium">{title}</p>

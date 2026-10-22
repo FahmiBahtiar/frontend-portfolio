@@ -106,14 +106,14 @@ export default function AdminDashboard() {
         className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
       >
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-            <LayoutDashboard className="w-6 h-6 text-blue-500" />
+          <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shadow-sm">
+            <LayoutDashboard className="w-6 h-6 text-[#0891b2]" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">
+            <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">
               Welcome back, {profile?.name?.split(' ')[0] || 'Admin'}
             </h1>
-            <p className="text-sm text-muted-foreground">Here&apos;s your data-dense portfolio overview.</p>
+            <p className="text-sm text-[#527d85] font-medium">Here&apos;s your portfolio overview.</p>
           </div>
         </div>
         
@@ -121,14 +121,14 @@ export default function AdminDashboard() {
           <Link
             href="/"
             target="_blank"
-            className="flex items-center gap-2 px-4 py-2 rounded-md bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-[#B9E7E6] text-sm font-bold text-[#0c282d] hover:bg-[#E2F4F3] transition-colors shadow-sm"
           >
-            <Eye className="w-4 h-4" />
+            <Eye className="w-4 h-4 text-[#0891b2]" />
             View Live
           </Link>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-emerald-500/10 border border-emerald-500/20">
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-emerald-400 text-xs font-medium uppercase tracking-wider">Live API</span>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] shadow-sm">
+            <div className="w-2 h-2 rounded-full bg-[#6FD4E1] animate-pulse" />
+            <span className="text-[#0891b2] text-xs font-bold uppercase tracking-wider">Live API</span>
           </div>
         </div>
       </motion.div>
@@ -144,14 +144,14 @@ export default function AdminDashboard() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.05 }}
             >
-              <Card className="hover:border-blue-500/30 transition-colors bg-black/20 border-white/5">
+              <Card className="hover:border-[#6FD4E1] transition-all bg-white border border-[#B9E7E6] shadow-sm">
                 <CardContent className="p-5 flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-md ${stat.bgColor} flex items-center justify-center shrink-0`}>
-                    <Icon className={`w-6 h-6 ${stat.color}`} />
+                  <div className="w-12 h-12 rounded-xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center shrink-0">
+                    <Icon className="w-6 h-6 text-[#0891b2]" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
-                    <h3 className="text-2xl font-semibold tracking-tight mt-0.5">{stat.value}</h3>
+                    <p className="text-sm font-semibold text-[#527d85]">{stat.label}</p>
+                    <h3 className="text-2xl font-bold tracking-tight mt-0.5 text-[#0c282d]">{stat.value}</h3>
                   </div>
                 </CardContent>
               </Card>
@@ -162,43 +162,43 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Activities Table */}
-        <Card className="lg:col-span-2 bg-black/20 border-white/5 overflow-hidden flex flex-col">
-          <CardHeader className="border-b border-white/5 pb-4">
+        <Card className="lg:col-span-2 bg-white border border-[#B9E7E6] overflow-hidden flex flex-col shadow-sm">
+          <CardHeader className="border-b border-[#B9E7E6] pb-4 bg-white">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Activity className="w-5 h-5 text-blue-400" />
+              <CardTitle className="text-lg flex items-center gap-2 text-[#0c282d] font-bold">
+                <Activity className="w-5 h-5 text-[#0891b2]" />
                 Recent Activities
               </CardTitle>
             </div>
           </CardHeader>
           <CardContent className="p-0 flex-1 overflow-x-auto">
             <Table>
-              <TableHeader className="bg-white/5">
-                <TableRow className="border-white/5 hover:bg-transparent">
+              <TableHeader className="bg-[#E2F4F3]/60">
+                <TableRow className="border-b border-[#B9E7E6] hover:bg-transparent">
                   <TableHead className="w-[50px]"></TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead className="hidden md:table-cell">Type</TableHead>
-                  <TableHead className="text-right">Date</TableHead>
+                  <TableHead className="text-[#0c282d] font-bold">Title</TableHead>
+                  <TableHead className="hidden md:table-cell text-[#0c282d] font-bold">Type</TableHead>
+                  <TableHead className="text-right text-[#0c282d] font-bold">Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {recentActivities.map((activity, idx) => {
                   const Icon = activity.icon;
                   return (
-                    <TableRow key={idx} className="border-white/5 group">
+                    <TableRow key={idx} className="border-b border-[#B9E7E6]/40 hover:bg-[#E2F4F3]/30 transition-colors group">
                       <TableCell>
-                        <div className={`w-8 h-8 rounded bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors ${activity.color}`}>
-                          <Icon className="w-4 h-4" />
+                        <div className="w-8 h-8 rounded-lg bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center text-[#0891b2]">
+                          <Icon className="w-4 h-4 text-[#0891b2]" />
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="font-medium text-white/90">{activity.title}</div>
-                        <div className="text-xs text-muted-foreground">{activity.description}</div>
+                        <div className="font-bold text-[#0c282d]">{activity.title}</div>
+                        <div className="text-xs text-[#527d85] font-medium">{activity.description}</div>
                       </TableCell>
-                      <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
+                      <TableCell className="hidden md:table-cell text-[#527d85] text-sm font-medium">
                         {activity.type}
                       </TableCell>
-                      <TableCell className="text-right text-muted-foreground text-sm whitespace-nowrap">
+                      <TableCell className="text-right text-[#527d85] text-sm font-medium whitespace-nowrap">
                         {activity.date}
                       </TableCell>
                     </TableRow>
@@ -206,7 +206,7 @@ export default function AdminDashboard() {
                 })}
                 {recentActivities.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={4} className="h-24 text-center text-[#527d85] font-medium">
                       No recent activities found.
                     </TableCell>
                   </TableRow>
@@ -218,27 +218,27 @@ export default function AdminDashboard() {
 
         {/* Quick Links Column */}
         <div className="space-y-6">
-          <Card className="bg-black/20 border-white/5">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm">
+            <CardHeader className="pb-4 border-b border-[#B9E7E6]">
+              <CardTitle className="text-lg text-[#0c282d] font-bold">Quick Actions</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 pt-4">
               {quickLinks.map((link, idx) => {
                 const Icon = link.icon;
                 return (
                   <Link href={link.href} key={idx} className="block">
                     <motion.div
                       whileHover={{ x: 4 }}
-                      className="flex items-center gap-3 p-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-blue-500/30 transition-all group cursor-pointer"
+                      className="flex items-center gap-3 p-3 rounded-xl border border-[#B9E7E6] bg-[#E2F4F3]/40 hover:bg-[#E2F4F3] hover:border-[#6FD4E1] transition-all group cursor-pointer"
                     >
-                      <div className="w-10 h-10 rounded bg-black/20 flex items-center justify-center shrink-0">
-                        <Icon className="w-5 h-5 text-muted-foreground group-hover:text-blue-400 transition-colors" />
+                      <div className="w-10 h-10 rounded-lg bg-white border border-[#B9E7E6] flex items-center justify-center shrink-0 shadow-sm">
+                        <Icon className="w-5 h-5 text-[#0891b2]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-medium text-white/90">{link.title}</h4>
-                        <p className="text-xs text-muted-foreground truncate">{link.desc}</p>
+                        <h4 className="text-sm font-bold text-[#0c282d]">{link.title}</h4>
+                        <p className="text-xs text-[#527d85] truncate font-medium">{link.desc}</p>
                       </div>
-                      <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ArrowUpRight className="w-4 h-4 text-[#0891b2] opacity-0 group-hover:opacity-100 transition-opacity" />
                     </motion.div>
                   </Link>
                 );

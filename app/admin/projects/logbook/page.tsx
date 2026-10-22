@@ -344,7 +344,7 @@ export default function FlightLogbookPage() {
             <Plane className="w-6 h-6 text-cyan-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Work Logbook</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-[#0c282d]">Work Logbook</h1>
             <p className="text-sm text-muted-foreground">Track your projects, experience & achievements</p>
           </div>
         </div>
@@ -362,13 +362,13 @@ export default function FlightLogbookPage() {
           { label: 'Open Source', value: openSourceProjects, icon: MapPin, color: 'text-green-400', border: 'border-green-500/20' },
         ].map((stat, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-            <Card className={`bg-black/20 border-white/5 ${stat.border}`}>
+            <Card className={`bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d] ${stat.border}`}>
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <stat.icon className={`w-5 h-5 ${stat.color}`} />
                   <p className="text-muted-foreground text-sm">{stat.label}</p>
                 </div>
-                <p className="text-2xl font-bold text-white">{stat.value}</p>
+                <p className="text-2xl font-bold text-[#0c282d]">{stat.value}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -383,7 +383,7 @@ export default function FlightLogbookPage() {
             className={`px-4 py-2 rounded-md font-medium transition-all text-sm ${
               filterType === type
                 ? 'bg-cyan-600 text-white'
-                : 'bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-white'
+                : 'bg-white border border-[#B9E7E6] text-muted-foreground hover:bg-white/10 hover:text-white'
             }`}
           >
             {type}
@@ -393,8 +393,8 @@ export default function FlightLogbookPage() {
 
       {isFormOpen && (
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="bg-black/20 border-white/5">
-            <CardHeader className="border-b border-white/5 pb-4">
+          <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
+            <CardHeader className="border-b border-[#B9E7E6] pb-4">
               <CardTitle className="text-lg">{editingId ? 'Edit Project Entry' : 'Add New Project'}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
@@ -402,23 +402,23 @@ export default function FlightLogbookPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label>Departure Date</Label>
-                    <Input type="date" value={formData.departure.date} onChange={(e) => setFormData({ ...formData, departure: { ...formData.departure, date: e.target.value } })} className="bg-white/5 border-white/10" required />
+                    <Input type="date" value={formData.departure.date} onChange={(e) => setFormData({ ...formData, departure: { ...formData.departure, date: e.target.value } })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" required />
                   </div>
                   <div className="space-y-2">
                     <Label>End Date</Label>
-                    <Input type="date" value={formData.arrival.date} onChange={(e) => setFormData({ ...formData, arrival: { ...formData.arrival, date: e.target.value } })} className="bg-white/5 border-white/10" required />
+                    <Input type="date" value={formData.arrival.date} onChange={(e) => setFormData({ ...formData, arrival: { ...formData.arrival, date: e.target.value } })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" required />
                   </div>
                   <div className="space-y-2">
                     <Label>Status</Label>
                     <select
                       value={formData.arrival.status}
                       onChange={(e) => setFormData({ ...formData, arrival: { ...formData.arrival, status: e.target.value } })}
-                      className="w-full h-10 px-3 py-2 rounded-md bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                      className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] border border-[#B9E7E6] text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                       required
                     >
-                      <option value="Landed" className="bg-slate-900">Complete</option>
-                      <option value="In Progress" className="bg-slate-900">In Progress</option>
-                      <option value="Cancelled" className="bg-slate-900">Cancelled</option>
+                      <option value="Landed" className="bg-white text-[#0c282d]">Complete</option>
+                      <option value="In Progress" className="bg-white text-[#0c282d]">In Progress</option>
+                      <option value="Cancelled" className="bg-white text-[#0c282d]">Cancelled</option>
                     </select>
                   </div>
                 </div>
@@ -426,7 +426,7 @@ export default function FlightLogbookPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Project Name</Label>
-                    <Input type="text" value={formData.projectName} onChange={(e) => setFormData({ ...formData, projectName: e.target.value })} className="bg-white/5 border-white/10" placeholder="E-Commerce Platform" required />
+                    <Input type="text" value={formData.projectName} onChange={(e) => setFormData({ ...formData, projectName: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="E-Commerce Platform" required />
                   </div>
 
                   <div className="space-y-2">
@@ -435,7 +435,7 @@ export default function FlightLogbookPage() {
                       <div className="flex gap-2">
                         <Input
                           id="role-input"
-                          className="bg-white/5 border-white/10"
+                          className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                           placeholder="Add a role..."
                           onKeyPress={(e) => {
                             if (e.key === 'Enter') {
@@ -457,7 +457,7 @@ export default function FlightLogbookPage() {
 
                       <div className="space-y-2 max-h-32 overflow-y-auto pr-2">
                         {formData.departure.roles.map((role, index) => (
-                          <div key={index} className="flex items-center justify-between bg-white/5 rounded-md p-2">
+                          <div key={index} className="flex items-center justify-between bg-white border border-[#B9E7E6] rounded-md p-2">
                             <div className="flex items-center gap-2">
                               <input
                                 type="radio"
@@ -466,7 +466,7 @@ export default function FlightLogbookPage() {
                                 onChange={() => setFormData({ ...formData, departure: { ...formData.departure, highlightedRole: role } })}
                                 className="text-cyan-500 focus:ring-cyan-500 cursor-pointer"
                               />
-                              <span className="text-sm text-white/80">{role}</span>
+                              <span className="text-sm text-[#1e4a52]">{role}</span>
                             </div>
                             <button type="button" onClick={() => removeRole(index)} className="text-red-400 hover:text-red-300">
                               <X className="w-4 h-4" />
@@ -484,29 +484,29 @@ export default function FlightLogbookPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label>Company</Label>
-                    <Input type="text" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} className="bg-white/5 border-white/10" placeholder="Tech Solutions Inc." required />
+                    <Input type="text" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="Tech Solutions Inc." required />
                   </div>
                   <div className="space-y-2">
                     <Label>Departure Code</Label>
-                    <Input type="text" value={formData.departure.code} onChange={(e) => setFormData({ ...formData, departure: { ...formData.departure, code: e.target.value } })} className="bg-white/5 border-white/10" placeholder="FSD" required />
+                    <Input type="text" value={formData.departure.code} onChange={(e) => setFormData({ ...formData, departure: { ...formData.departure, code: e.target.value } })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="FSD" required />
                   </div>
                   <div className="space-y-2">
                     <Label>Location</Label>
-                    <Input type="text" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} className="bg-white/5 border-white/10" placeholder="Remote / Jakarta" required />
+                    <Input type="text" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="Remote / Jakarta" required />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Duration (months)</Label>
-                    <Input type="number" step="1" value={formData.duration} onChange={(e) => setFormData({ ...formData, duration: e.target.value })} className="bg-white/5 border-white/10" placeholder="6" required />
+                    <Input type="number" step="1" value={formData.duration} onChange={(e) => setFormData({ ...formData, duration: e.target.value })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="6" required />
                   </div>
                   <div className="flex items-center space-x-2 pt-6">
                     <Checkbox 
                       id="isActive" 
                       checked={formData.isActive}
                       onCheckedChange={(c) => setFormData({ ...formData, isActive: !!c })}
-                      className="border-white/20 data-[state=checked]:bg-yellow-500 data-[state=checked]:text-black"
+                      className="border-[#B9E7E6] data-[state=checked]:bg-yellow-500 data-[state=checked]:text-black"
                     />
                     <label
                       htmlFor="isActive"
@@ -520,7 +520,7 @@ export default function FlightLogbookPage() {
 
                 <div className="space-y-2">
                   <Label>Technologies (comma separated)</Label>
-                  <Input type="text" value={formData.crew?.join(', ') || ''} onChange={(e) => setFormData({ ...formData, crew: e.target.value.split(',').map(t => t.trim()) })} className="bg-white/5 border-white/10" placeholder="Next.js, TypeScript, Tailwind CSS" />
+                  <Input type="text" value={formData.crew?.join(', ') || ''} onChange={(e) => setFormData({ ...formData, crew: e.target.value.split(',').map(t => t.trim()) })} className="bg-white border border-[#B9E7E6] border-[#B9E7E6]" placeholder="Next.js, TypeScript, Tailwind CSS" />
                 </div>
 
                 <div className="space-y-2">
@@ -536,7 +536,7 @@ export default function FlightLogbookPage() {
                   <div className="flex gap-2">
                     <Input
                       id="responsibility-input"
-                      className="bg-white/5 border-white/10"
+                      className="bg-white border border-[#B9E7E6] border-[#B9E7E6]"
                       placeholder="Add responsibility..."
                       onKeyPress={(e) => {
                         if (e.key === 'Enter') {
@@ -573,7 +573,7 @@ export default function FlightLogbookPage() {
       )}
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="bg-black/20 border border-white/5 rounded-2xl p-6">
+        <div className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d] rounded-2xl p-6">
           <div className="mb-4">
             <p className="text-muted-foreground text-sm">Drag and drop to reorder • Click star to mark as currently active</p>
           </div>
@@ -625,13 +625,13 @@ function SortableFlightItem({ flight, onEdit, onDelete, onToggleActive }: Sortab
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="group relative bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all">
+    <div ref={setNodeRef} style={style} className="group relative bg-white border border-[#B9E7E6] border border-[#B9E7E6] rounded-xl p-4 hover:bg-white/10 transition-all">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-white/40 hover:text-white/60 p-1">
+          <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-[#527d85] hover:text-[#527d85] p-1">
             <GripVertical className="w-5 h-5" />
           </button>
-          <button onClick={() => onToggleActive(flight)} className={`transition-all ${flight.isActive ? 'text-yellow-400 hover:text-yellow-300' : 'text-white/20 hover:text-white/40'}`} title={flight.isActive ? 'Currently active' : 'Mark as active'}>
+          <button onClick={() => onToggleActive(flight)} className={`transition-all ${flight.isActive ? 'text-yellow-400 hover:text-yellow-300' : 'text-[#B9E7E6] hover:text-[#527d85]'}`} title={flight.isActive ? 'Currently active' : 'Mark as active'}>
             <Star className="w-5 h-5" fill={flight.isActive ? 'currentColor' : 'none'} />
           </button>
         </div>
@@ -639,7 +639,7 @@ function SortableFlightItem({ flight, onEdit, onDelete, onToggleActive }: Sortab
         <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full">
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-white truncate">{flight.company}</span>
+              <span className="font-bold text-[#0c282d] truncate">{flight.company}</span>
               {flight.isActive && (
                 <span className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-yellow-400/10 border border-yellow-400/30 text-yellow-400">
                   Active
@@ -651,12 +651,12 @@ function SortableFlightItem({ flight, onEdit, onDelete, onToggleActive }: Sortab
           
           <div className="min-w-0">
             <div className="text-xs text-muted-foreground mb-1">Role</div>
-            <p className="text-sm text-white/80 truncate">{flight.departure.highlightedRole}</p>
+            <p className="text-sm text-[#1e4a52] truncate">{flight.departure.highlightedRole}</p>
           </div>
           
           <div className="min-w-0">
             <div className="text-xs text-muted-foreground mb-1">Duration</div>
-            <p className="text-sm text-white/80">{flight.duration} mos</p>
+            <p className="text-sm text-[#1e4a52]">{flight.duration} mos</p>
           </div>
           
           <div className="min-w-0">
