@@ -17,14 +17,12 @@ interface Page2PortfolioProps {
 const GRAIN_SVG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`;
 
 export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
-  // Use SWR for data fetching
   const { data: passions = [], isLoading: passionsLoading, error: passionsError } = useSWR('passions', () => AboutService.getPassions());
   const { data: highlights = [], isLoading: highlightsLoading, error: highlightsError } = useSWR('highlights', () => AboutService.getHighlights());
 
   const loading = passionsLoading || highlightsLoading;
   const error = passionsError || highlightsError ? 'Unable to load portfolio data.' : null;
 
-  // Icon mapping function
   const getIcon = (iconName: string): LucideIcon => {
     const iconMap: Record<string, LucideIcon> = {
       Code, Code2, Plane, Mountain, GraduationCap, Briefcase, Trophy, Target, Heart,
@@ -32,7 +30,6 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
     return iconMap[iconName] || Code;
   };
 
-  // Color mapping function for Tailwind semantic colors
   const getColorClasses = (color: string) => {
     const colorMap: Record<string, string> = {
       cyan: 'text-cyan-400 border-cyan-500/20 bg-cyan-500/10 hover:border-cyan-500/40',
@@ -46,7 +43,6 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
     return colorMap[color] || colorMap.cyan;
   };
 
-  // Convert named colors to text classes
   const getTextColor = (color: string) => {
     const colorMap: Record<string, string> = {
       cyan: 'text-cyan-400',
@@ -57,7 +53,6 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
       yellow: 'text-yellow-400',
       pink: 'text-pink-400',
     };
-    // Map hex colors if present
     if (color.startsWith('#')) {
       const hexMap: Record<string, string> = {
         '#00ffff': 'text-cyan-400',
@@ -73,7 +68,6 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
     return colorMap[color] || 'text-cyan-400';
   };
 
-  // Helper function to get stats data
   const getStatsData = (passion: Passion) => {
     if (passion.stats) return passion.stats;
     if (passion.statsLabel && passion.statsValue) {
@@ -98,49 +92,21 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
           }}
         />
 
+        {/* Subtle ambient lighting */}
         <div className="absolute inset-0 overflow-hidden">
           <div
-            className="absolute w-[520px] h-[520px] rounded-full opacity-[0.06]"
+            className="absolute w-[600px] h-[600px] rounded-full opacity-[0.05]"
             style={{
-              background: 'radial-gradient(circle, rgba(56, 189, 248, 0.8) 0%, transparent 70%)',
-              top: '12%',
-              left: '10%',
-              filter: 'blur(90px)',
-            }}
-          />
-          <div
-            className="absolute w-[420px] h-[420px] rounded-full opacity-[0.05]"
-            style={{
-              background: 'radial-gradient(circle, rgba(99, 102, 241, 0.8) 0%, transparent 70%)',
-              bottom: '18%',
-              right: '8%',
-              filter: 'blur(90px)',
-            }}
-          />
-          <div
-            className="absolute w-[360px] h-[360px] rounded-full opacity-[0.04]"
-            style={{
-              background: 'radial-gradient(circle, rgba(34, 211, 238, 0.8) 0%, transparent 70%)',
-              top: '45%',
-              left: '60%',
-              filter: 'blur(110px)',
+              background: 'radial-gradient(circle, rgba(56, 189, 248, 0.6) 0%, transparent 70%)',
+              top: '20%',
+              left: '15%',
+              filter: 'blur(100px)',
             }}
           />
         </div>
 
         <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(148, 163, 184, 0.3) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(148, 163, 184, 0.3) 1px, transparent 1px)
-            `,
-            backgroundSize: '60px 60px',
-          }}
-        />
-
-        <div
-          className="absolute inset-0 opacity-[0.035] mix-blend-overlay"
+          className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
           style={{
             backgroundImage: GRAIN_SVG,
             backgroundRepeat: 'repeat',
@@ -338,7 +304,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-full group"
-                  onClick={() => onNavigate && onNavigate(4)} // Assuming section 4 is Contact based on Page5Contact name
+                  onClick={() => onNavigate && onNavigate(4)}
                 >
                   Let&apos;s Collaborate
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import useSWR from 'swr';
-import { Sparkles, Code2, Plane, Mountain, MapPin, ChevronDown } from 'lucide-react';
+import { Compass, Code2, Plane, Mountain, MapPin, ChevronDown } from 'lucide-react';
 import { HeroService } from '@/lib/services/hero';
 import { SpotifyService } from '@/lib/services/spotify';
 import { useIsLiteGraphics } from '@/components/providers/GraphicsModeProvider';
@@ -14,7 +14,6 @@ interface CinematicHeroProps {
   onNavigate: (page: number) => void;
 }
 
-// Noise grain SVG filter as data URI
 const GRAIN_SVG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`;
 
 export function CinematicHero({ onNavigate }: CinematicHeroProps) {
@@ -27,7 +26,6 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
   // loop, no infinite blink/pulse. Desktop keeps the full animated experience.
   const calm = lite || isMobile;
 
-  // ---- Data fetching (same SWR hooks) ----
   const { data: heroProfile, isLoading: loading } = useSWR(
     'heroProfile',
     () => HeroService.getHeroProfile(),
@@ -283,7 +281,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
       {/* ===== MAIN CONTENT ===== */}
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-20 sm:py-24 lg:py-28 flex flex-col items-center text-center">
 
-        {/* Badge */}
+        {/* Eyebrow badge */}
         <motion.div
           initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
           animate={revealPhase >= 1 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
@@ -291,7 +289,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
           className="mb-6 sm:mb-8"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <Compass className="w-3.5 h-3.5 text-cyan-400" />
             <span className="text-[13px] text-slate-300 tracking-wide">{heroProfile?.badge || ''}</span>
           </div>
         </motion.div>
