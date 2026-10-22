@@ -310,6 +310,109 @@ function CameraFocusController({ targetCoord }: { targetCoord: [number, number, 
 }
 
 // ── Master Component ──────────────────────────────────────────────────────
+function TopographicContourFallback({
+  camps,
+  selectedIdx,
+  onSelectCamp,
+}: {
+  camps: ExpeditionRecord[];
+  selectedIdx: number;
+  onSelectCamp: (idx: number) => void;
+}) {
+  const campCoordsSVG: [number, number][] = [
+    [140, 420],
+    [220, 360],
+    [290, 290],
+    [350, 220],
+    [400, 140],
+  ];
+
+  return (
+    <div className="w-full h-full relative flex items-center justify-center p-4 sm:p-6 overflow-hidden select-none">
+      <svg viewBox="0 0 800 500" className="w-full h-full max-h-[460px]" fill="none">
+        <defs>
+          <linearGradient id="mountainGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor="#E2F4F3" stopOpacity="0.8" />
+            <stop offset="50%" stopColor="#B9E7E6" stopOpacity="0.9" />
+            <stop offset="85%" stopColor="#6FD4E1" stopOpacity="0.95" />
+            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="1" />
+          </linearGradient>
+          <linearGradient id="ridgeLine" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#527d85" />
+            <stop offset="100%" stopColor="#0891b2" />
+          </linearGradient>
+        </defs>
+
+        {/* Mountain Silhouette Base */}
+        <path
+          d="M 50 460 Q 220 380 400 135 Q 580 370 750 460 Z"
+          fill="url(#mountainGrad)"
+          stroke="#B9E7E6"
+          strokeWidth="2.5"
+        />
+
+        {/* Topographic Contour Curves */}
+        <path d="M 100 430 Q 240 370 400 200 Q 560 370 700 430" stroke="#0891b2" strokeWidth="1.5" strokeDasharray="6 4" opacity="0.35" />
+        <path d="M 160 390 Q 270 330 400 260 Q 530 330 640 390" stroke="#0891b2" strokeWidth="1.5" strokeDasharray="6 4" opacity="0.35" />
+        <path d="M 230 330 Q 310 270 400 310 Q 490 280 570 330" stroke="#0891b2" strokeWidth="1.5" strokeDasharray="6 4" opacity="0.35" />
+
+        {/* Glowing Climbing Spine */}
+        <path
+          d="M 140 420 Q 250 330 400 140"
+          stroke="#6FD4E1"
+          strokeWidth="12"
+          strokeLinecap="round"
+          opacity="0.3"
+        />
+        <path
+          d="M 140 420 Q 250 330 400 140"
+          stroke="#0891b2"
+          strokeWidth="4"
+          strokeLinecap="round"
+        />
+
+        {/* Interactive Camp Pins */}
+        {camps.map((camp, idx) => {
+          const [cx, cy] = campCoordsSVG[Math.min(idx, campCoordsSVG.length - 1)];
+          const isSelected = idx === selectedIdx;
+
+          return (
+            <g
+              key={camp.id || idx}
+              onClick={() => onSelectCamp(idx)}
+              className="cursor-pointer group"
+            >
+              {isSelected && (
+                <circle cx={cx} cy={cy} r="22" fill="#6FD4E1" opacity="0.35" className="animate-ping" />
+              )}
+              <circle
+                cx={cx}
+                cy={cy}
+                r={isSelected ? 11 : 7}
+                fill={isSelected ? '#0891b2' : '#FFFFFF'}
+                stroke={isSelected ? '#FFFFFF' : '#0891b2'}
+                strokeWidth={isSelected ? 3.5 : 2}
+                className="transition-all duration-300"
+              />
+              <text
+                x={cx + 18}
+                y={cy + 4}
+                fill="#0c282d"
+                fontFamily="monospace"
+                fontSize={isSelected ? '13' : '11'}
+                fontWeight={isSelected ? 'bold' : '600'}
+                className="pointer-events-none"
+              >
+                {camp.stageName} • {camp.altitudeLabel}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 export function TopographicExpeditionTimeline({
   educationRecords,
 }: {
@@ -319,6 +422,15 @@ export function TopographicExpeditionTimeline({
   const [renderMode, setRenderMode] = useState<'topo' | 'satellite'>('topo');
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [autoRotate, setAutoRotate] = useState(true);
+  const [webGLSupported] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    try {
+      const c = document.createElement('canvas');
+      return !!(c.getContext('webgl') || c.getContext('experimental-webgl'));
+    } catch {
+      return false;
+    }
+  });
 
   // Normalize education data with authentic Puncak Jaya ridge checkpoints
   const records: ExpeditionRecord[] = useMemo(() => {
@@ -409,46 +521,54 @@ export function TopographicExpeditionTimeline({
             </div>
           </div>
 
-          {/* 3D Canvas */}
+          {/* 3D Canvas or Topographic Contour View */}
           <div className="flex-1 w-full h-full relative cursor-grab active:cursor-grabbing">
-            <Suspense fallback={<div className="w-full h-full flex items-center justify-center font-mono text-sm text-[#527d85]">Loading Copernicus 3D Terrain...</div>}>
-              <Canvas
-                shadows
-                camera={{ position: [5, 4, 8], fov: 48, near: 0.1, far: 50 }}
-                dpr={[1, 2]}
-                gl={{ antialias: true, powerPreference: 'high-performance' }}
-              >
-                <color attach="background" args={['#F7FCFC']} />
-                <ambientLight intensity={0.9} />
-                <directionalLight position={[10, 15, 8]} intensity={1.4} castShadow />
-                <directionalLight position={[-8, 6, -5]} intensity={0.5} />
+            {webGLSupported ? (
+              <Suspense fallback={<div className="w-full h-full flex items-center justify-center font-mono text-sm text-[#527d85]">Loading Copernicus 3D Terrain...</div>}>
+                <Canvas
+                  shadows
+                  camera={{ position: [5, 4, 8], fov: 48, near: 0.1, far: 50 }}
+                  dpr={[1, 2]}
+                  gl={{ antialias: true, powerPreference: 'high-performance' }}
+                >
+                  <color attach="background" args={['#F7FCFC']} />
+                  <ambientLight intensity={0.9} />
+                  <directionalLight position={[10, 15, 8]} intensity={1.4} castShadow />
+                  <directionalLight position={[-8, 6, -5]} intensity={0.5} />
 
-                {/* Smooth Camera Focusing */}
-                <CameraFocusController targetCoord={currentCamp.campCoord} />
+                  {/* Smooth Camera Focusing */}
+                  <CameraFocusController targetCoord={currentCamp.campCoord} />
 
-                {/* 3D Mountain Mesh */}
-                <MountainMesh
-                  terrainKey={activeTerrain}
-                  mode={renderMode}
-                />
+                  {/* 3D Mountain Mesh */}
+                  <MountainMesh
+                    terrainKey={activeTerrain}
+                    mode={renderMode}
+                  />
 
-                {/* Expedition Route & Camp Nodes */}
-                <ExpeditionClimbingRoute
-                  camps={records}
-                  selectedIdx={selectedIdx}
-                  onSelectCamp={setSelectedIdx}
-                />
+                  {/* Expedition Route & Camp Nodes */}
+                  <ExpeditionClimbingRoute
+                    camps={records}
+                    selectedIdx={selectedIdx}
+                    onSelectCamp={setSelectedIdx}
+                  />
 
-                <OrbitControls
-                  autoRotate={autoRotate}
-                  autoRotateSpeed={0.8}
-                  enablePan={false}
-                  minDistance={4}
-                  maxDistance={14}
-                  maxPolarAngle={Math.PI / 2 - 0.05}
-                />
-              </Canvas>
-            </Suspense>
+                  <OrbitControls
+                    autoRotate={autoRotate}
+                    autoRotateSpeed={0.8}
+                    enablePan={false}
+                    minDistance={4}
+                    maxDistance={14}
+                    maxPolarAngle={Math.PI / 2 - 0.05}
+                  />
+                </Canvas>
+              </Suspense>
+            ) : (
+              <TopographicContourFallback
+                camps={records}
+                selectedIdx={selectedIdx}
+                onSelectCamp={setSelectedIdx}
+              />
+            )}
           </div>
 
           {/* Bottom HUD: Live Altimeter Telemetry */}

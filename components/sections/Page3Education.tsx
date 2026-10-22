@@ -11,19 +11,16 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import dynamic from 'next/dynamic';
 import { EducationService } from '@/lib/services/education';
 import { Achievement } from '@/lib/types/admin';
 import { FALLBACK_EDUCATION_RECORDS, FALLBACK_ACHIEVEMENTS } from '@/lib/fallback-data';
-import { JourneyScrollStory } from '@/components/features/JourneyScrollStory';
-import { useIsLiteGraphics } from '@/components/providers/GraphicsModeProvider';
-import { useIsMobile } from '@/components/ui/use-mobile';
 
 // WebGL (three.js / R3F) is heavy and GPU-only — load the 3D topographic
 // expedition timeline as its own client-only chunk, on demand, so it never bloats
-// the section's initial JS. Lite-graphics devices fall back to the 2D scroll story.
+// the section's initial JS.
 const TopographicExpeditionTimeline = dynamic(
   () =>
     import('@/components/features/TopographicExpeditionTimeline').then((m) => ({
@@ -44,13 +41,6 @@ interface Page3EducationProps {
 }
 
 export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
-  const lite = useIsLiteGraphics();
-  const isMobile = useIsMobile();
-  // The 3D flythrough is framed for wide screens — on phones (or GPU-less
-  // devices) use the responsive 2D scroll story instead.
-  // three.js stays off the initial load because the whole Education section is
-  // lazy-mounted (see LazySection in app/page.tsx) only when scrolled near.
-  const use2D = lite || isMobile;
   const [selectedAchievement, setSelectedAchievement] = useState<{
     category: string;
     achievementId: string;
@@ -201,15 +191,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
             <span className="text-[#527d85] font-mono text-sm hidden sm:block">2010 → Now</span>
           </div>
 
-          {use2D ? (
-            <Card className="border border-[#B9E7E6] bg-white/90 overflow-hidden shadow-md">
-              <CardContent className="p-6 md:p-10">
-                <JourneyScrollStory educationRecords={educationRecords} />
-              </CardContent>
-            </Card>
-          ) : (
-            <TopographicExpeditionTimeline educationRecords={educationRecords} />
-          )}
+          <TopographicExpeditionTimeline educationRecords={educationRecords} />
         </div>
 
         {/* Achievements Section */}
