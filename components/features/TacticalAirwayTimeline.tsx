@@ -43,6 +43,21 @@ export interface WaypointLeg {
   coord: [number, number, number];
 }
 
+// ── Long Scenic Mountain Corridor Path ───────────────────────────────────────
+// Weaves through valleys, mountain spurs, saddle passes, and alpine ridges
+export const FLIGHT_CORRIDOR_POINTS: [number, number, number][] = [
+  [-5.8, 0.85, -4.2], // 0: DMK 01 Departure Lake
+  [-4.2, 1.25, -1.0], // 1: West valley canyon
+  [-3.2, 1.65, 2.8],  // 2: Mountain spur sweeping turn
+  [-1.8, 1.95, 1.5],  // 3: DMN 02 Canyon River Pass
+  [-0.4, 2.30, -2.2], // 4: North basin climbing turn
+  [0.8, 2.70, 0.2],   // 5: RUS 03 Continental Divide Ridgeline
+  [2.2, 3.10, 3.0],   // 6: East cirque sweeping pass
+  [3.6, 3.35, 0.6],   // 7: BNR 04 Glacier Valley Waypoint
+  [4.6, 3.65, -2.6],  // 8: High alpine cruising bank
+  [5.8, 3.90, -0.5],  // 9: UDN 05 Summit Approach Destination
+];
+
 const DEFAULT_WAYPOINTS: WaypointLeg[] = [
   {
     id: 'wpt-01-demak',
@@ -61,8 +76,8 @@ const DEFAULT_WAYPOINTS: WaypointLeg[] = [
     status: 'Cleared & Complete',
     description:
       'Building strong academic foundation and character development. Active in journey, survival, and exploration clubs.',
-    tProgress: 0.04,
-    coord: [-4.6, 1.25, 3.2],
+    tProgress: 0.02,
+    coord: [-5.8, 0.85, -4.2],
   },
   {
     id: 'wpt-02-smpn2',
@@ -71,9 +86,9 @@ const DEFAULT_WAYPOINTS: WaypointLeg[] = [
     waypointName: 'SMPN2 FIX',
     flightLevel: 'FL120',
     altitudeFeet: 12000,
-    legDistanceNm: 18.2,
-    courseHeading: 56,
-    flightPhase: 'EN-ROUTE MOUNTAIN CLIMB',
+    legDistanceNm: 24.2,
+    courseHeading: 58,
+    flightPhase: 'EN-ROUTE MOUNTAIN PASS',
     fixType: 'IF',
     degree: 'Junior High School',
     institution: 'SMP Negeri 2 Demak',
@@ -81,18 +96,18 @@ const DEFAULT_WAYPOINTS: WaypointLeg[] = [
     status: 'Cleared & Complete',
     description:
       'Initiated programming journey and algorithmic foundations. First explorations into logic, web development, and digital problem solving.',
-    tProgress: 0.26,
-    coord: [-2.1, 1.85, 1.6],
+    tProgress: 0.34,
+    coord: [-1.8, 1.95, 1.5],
   },
   {
     id: 'wpt-03-kudus',
     order: 3,
     fixCode: 'RUS 03',
-    waypointName: 'KUDUS PASS',
+    waypointName: 'KUDUS RIDGE',
     flightLevel: 'FL240',
     altitudeFeet: 24000,
-    legDistanceNm: 22.4,
-    courseHeading: 68,
+    legDistanceNm: 31.0,
+    courseHeading: 72,
     flightPhase: 'TRANSITION RIDGELINE',
     fixType: 'FAF',
     degree: 'Senior High School',
@@ -101,8 +116,8 @@ const DEFAULT_WAYPOINTS: WaypointLeg[] = [
     status: 'Cleared & Complete',
     description:
       'Deep dive into modern software engineering, 3D graphics pipeline, animation, and responsive web applications at Raden Umar Said.',
-    tProgress: 0.50,
-    coord: [0.3, 2.45, 0.1],
+    tProgress: 0.58,
+    coord: [0.8, 2.70, 0.2],
   },
   {
     id: 'wpt-04-binar',
@@ -111,9 +126,9 @@ const DEFAULT_WAYPOINTS: WaypointLeg[] = [
     waypointName: 'BINAR TRANSIT',
     flightLevel: 'FL320',
     altitudeFeet: 32000,
-    legDistanceNm: 15.8,
-    courseHeading: 82,
-    flightPhase: 'HIGH ALTITUDE CRUISE',
+    legDistanceNm: 26.5,
+    courseHeading: 84,
+    flightPhase: 'HIGH ALPINE CRUISE',
     fixType: 'CRZ',
     degree: 'Djarum Foundation Scholarship',
     institution: 'Binar Academy',
@@ -121,8 +136,8 @@ const DEFAULT_WAYPOINTS: WaypointLeg[] = [
     status: 'Cleared & Complete',
     description:
       'Specialized intensive computer science scholarship. Mastery in full-stack architecture, clean code principles, and collaborative agile engineering.',
-    tProgress: 0.74,
-    coord: [2.5, 3.05, -1.5],
+    tProgress: 0.79,
+    coord: [3.6, 3.35, 0.6],
   },
   {
     id: 'wpt-05-udinus',
@@ -131,9 +146,9 @@ const DEFAULT_WAYPOINTS: WaypointLeg[] = [
     waypointName: 'SEMARANG ILS',
     flightLevel: 'FL380',
     altitudeFeet: 38000,
-    legDistanceNm: 34.0,
+    legDistanceNm: 38.0,
     courseHeading: 90,
-    flightPhase: 'TERMINAL CRUISE & ADVANCED OPS',
+    flightPhase: 'TERMINAL SUMMIT & ADVANCED OPS',
     fixType: 'DEST',
     degree: 'Bachelor Degree (Informatics)',
     institution: 'Dian Nuswantoro University',
@@ -141,8 +156,8 @@ const DEFAULT_WAYPOINTS: WaypointLeg[] = [
     status: 'Active En-Route',
     description:
       'Pursuing Bachelor of Computer Science. Researching distributed systems, cloud infrastructure, AI agents, and high-performance interactive 3D web technologies.',
-    tProgress: 0.96,
-    coord: [4.6, 3.65, -2.8],
+    tProgress: 0.98,
+    coord: [5.8, 3.90, -0.5],
   },
 ];
 
@@ -289,7 +304,7 @@ function ForeFlightTerrainCurtain({
         }
       />
 
-      {/* 3D Floating Waypoint Badges */}
+      {/* Sleek Checkpoints (Nav Ring Gates + Compact Micro-Badges) */}
       {waypoints.map((wpt, idx) => {
         const isSelected = idx === selectedIdx;
         const [x, y, z] = wpt.coord;
@@ -303,9 +318,31 @@ function ForeFlightTerrainCurtain({
               onSelectWaypoint(idx);
             }}
           >
-            {/* Waypoint Beacon Sphere */}
+            {/* 3D Glowing Nav Ring Gate (Plane flies through) */}
+            <mesh rotation={[0, -THREE.MathUtils.degToRad(wpt.courseHeading - 90), 0]}>
+              <ringGeometry args={[isSelected ? 0.38 : 0.28, isSelected ? 0.44 : 0.32, 28]} />
+              <meshBasicMaterial
+                color={isSelected ? '#0891b2' : '#6FD4E1'}
+                side={THREE.DoubleSide}
+                transparent
+                opacity={isSelected ? 0.95 : 0.55}
+              />
+            </mesh>
+
+            {/* Inner Diamond Reticle */}
+            <mesh rotation={[0, -THREE.MathUtils.degToRad(wpt.courseHeading - 90), 0]}>
+              <ringGeometry args={[0.16, 0.19, 4]} />
+              <meshBasicMaterial
+                color={isSelected ? '#ffffff' : '#B9E7E6'}
+                side={THREE.DoubleSide}
+                transparent
+                opacity={isSelected ? 0.9 : 0.4}
+              />
+            </mesh>
+
+            {/* Center Beacon Node */}
             <mesh>
-              <sphereGeometry args={[isSelected ? 0.16 : 0.1, 16, 16]} />
+              <sphereGeometry args={[isSelected ? 0.1 : 0.07, 16, 16]} />
               <meshStandardMaterial
                 color={isSelected ? '#0891b2' : '#6FD4E1'}
                 emissive={isSelected ? '#0891b2' : '#6FD4E1'}
@@ -313,19 +350,33 @@ function ForeFlightTerrainCurtain({
               />
             </mesh>
 
-            {/* Floating ForeFlight Billboard Badge */}
-            <Html position={[0, isSelected ? 0.95 : 0.75, 0]} center distanceFactor={13}>
+            {/* Slender Laser Anchor Line to Ground */}
+            <line>
+              <bufferGeometry
+                attach="geometry"
+                {...new THREE.BufferGeometry().setFromPoints([
+                  new THREE.Vector3(0, 0, 0),
+                  new THREE.Vector3(0, -y + 0.25, 0),
+                ])}
+              />
+              <lineBasicMaterial attach="material" color="#0891b2" transparent opacity={0.35} />
+            </line>
+
+            {/* Sleek, Compact Tactical Micro-Badge (Never Blocks Screen) */}
+            <Html position={[0, isSelected ? 0.58 : 0.45, 0]} center distanceFactor={28}>
               <div
                 onClick={() => onSelectWaypoint(idx)}
-                className={`transition-all duration-300 pointer-events-auto cursor-pointer select-none px-2.5 py-1.5 rounded-lg border text-[11px] font-mono tracking-wider shadow-md flex items-center gap-1.5 whitespace-nowrap ${
+                className={`transition-all duration-200 pointer-events-auto cursor-pointer select-none rounded font-mono shadow-sm flex items-center gap-1 whitespace-nowrap ${
                   isSelected
-                    ? 'bg-[#0891b2] text-white border-white ring-2 ring-[#6FD4E1]/80 font-bold scale-110 shadow-cyan-500/20'
-                    : 'bg-white/95 text-[#0c282d] border-[#B9E7E6] hover:bg-[#E2F4F3]'
+                    ? 'bg-[#0891b2] text-white px-2 py-0.5 text-[10px] font-bold border border-white ring-1 ring-[#6FD4E1]/80 scale-105'
+                    : 'bg-white/90 text-[#0c282d] px-1.5 py-0.5 text-[9px] border border-[#B9E7E6] opacity-80 hover:opacity-100 hover:bg-[#E2F4F3]'
                 }`}
               >
-                <Radio className={`w-3 h-3 ${isSelected ? 'animate-pulse text-white' : 'text-[#0891b2]'}`} />
+                <Radio className={`w-2.5 h-2.5 ${isSelected ? 'animate-pulse text-white' : 'text-[#0891b2]'}`} />
                 <span>{wpt.fixCode}</span>
-                <span className="opacity-80 text-[10px]">({wpt.altitudeFeet.toLocaleString()}&apos;)</span>
+                {isSelected && (
+                  <span className="opacity-90 text-[9px]">({wpt.altitudeFeet.toLocaleString()}&apos;)</span>
+                )}
               </div>
             </Html>
           </group>
@@ -380,38 +431,43 @@ function TrackingAircraft({
     const lookTarget = currentPoint.clone().add(tangent);
     groupRef.current.lookAt(lookTarget);
 
-    // Dynamic banking calculation
+    // Dynamic banking calculation (banks into turns)
     const nextProgress = Math.min(0.999, clampedProgress + 0.02);
     const nextTangent = curve.getTangentAt(nextProgress).normalize();
     const crossY = tangent.x * nextTangent.z - tangent.z * nextTangent.x;
-    const targetBankRad = THREE.MathUtils.clamp(crossY * 70, -0.65, 0.65);
+    const targetBankRad = THREE.MathUtils.clamp(crossY * 65, -0.65, 0.65);
 
-    // Set absolute bank angle on inner mesh (avoids infinite compounding)
+    // Negative rolls left wing into left turns
     if (meshRef.current) {
-      meshRef.current.rotation.z = targetBankRad;
+      meshRef.current.rotation.z = -targetBankRad;
     }
   });
 
   return (
     <group ref={groupRef}>
       <group ref={meshRef}>
-        {/* Scaled jet mesh */}
+        {/*
+          Orientation Fix:
+          jet.glb nose is at local -X, top is at +Y.
+          Rotating by +Math.PI/2 (+90 deg) rotates -X into +Z (forward)!
+          Top (+Y) stays UP (cockpit right side up, wings horizontal along X).
+        */}
         <primitive
           object={sceneClone}
           scale={[0.042, 0.042, 0.042]}
-          rotation={[0, -Math.PI / 2, 0]}
+          rotation={[0, Math.PI / 2, 0]}
         />
 
-        {/* Twin Engine Contrail Trails */}
-        <group position={[-0.42, -0.04, 0.9]}>
+        {/* Twin Engine Contrail Trails positioned behind engines */}
+        <group position={[-0.32, -0.02, -0.75]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.02, 0.08, 1.4, 8]} />
+            <cylinderGeometry args={[0.02, 0.07, 1.4, 8]} />
             <meshBasicMaterial color="#6FD4E1" transparent opacity={0.5} />
           </mesh>
         </group>
-        <group position={[0.42, -0.04, 0.9]}>
+        <group position={[0.32, -0.02, -0.75]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.02, 0.08, 1.4, 8]} />
+            <cylinderGeometry args={[0.02, 0.07, 1.4, 8]} />
             <meshBasicMaterial color="#6FD4E1" transparent opacity={0.5} />
           </mesh>
         </group>
@@ -438,12 +494,13 @@ function CameraFollower({
     const tangent = curve.getTangentAt(clampedProgress).normalize();
 
     if (cameraMode === 'chase') {
+      // ForeFlight elevated chase camera gliding smoothly behind the jet
       const desiredPos = currentPoint.clone()
-        .sub(tangent.clone().multiplyScalar(4.0))
-        .add(new THREE.Vector3(0.8, 1.8, 0));
+        .sub(tangent.clone().multiplyScalar(3.6))
+        .add(new THREE.Vector3(0.4, 1.3, 0));
 
       state.camera.position.lerp(desiredPos, delta * 3.5);
-      state.camera.lookAt(currentPoint.clone().add(tangent.clone().multiplyScalar(2.0)));
+      state.camera.lookAt(currentPoint.clone().add(tangent.clone().multiplyScalar(1.8)));
     }
   });
 
@@ -576,8 +633,8 @@ export function TacticalAirwayTimeline({
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
-  const [progress, setProgress] = useState(0.04);
-  const [cameraMode, setCameraMode] = useState<'chase' | 'orbit'>('orbit');
+  const [progress, setProgress] = useState(0.02);
+  const [cameraMode, setCameraMode] = useState<'chase' | 'orbit'>('chase');
 
   const [webGLSupported] = useState<boolean>(() => {
     if (typeof window === 'undefined') return true;
@@ -609,11 +666,11 @@ export function TacticalAirwayTimeline({
     });
   }, [educationRecords]);
 
-  // Construct 3D flight trajectory curve
+  // Construct long, winding 3D flight trajectory curve through mountain valleys
   const curve = useMemo(() => {
-    const points = waypoints.map((w) => new THREE.Vector3(...w.coord));
-    return new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.25);
-  }, [waypoints]);
+    const points = FLIGHT_CORRIDOR_POINTS.map((p) => new THREE.Vector3(...p));
+    return new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.3);
+  }, []);
 
   // Active tracking playback loop
   useEffect(() => {
@@ -627,7 +684,7 @@ export function TacticalAirwayTimeline({
       lastTime = now;
 
       setProgress((prev) => {
-        const next = prev + delta * 0.05 * playbackSpeed;
+        const next = prev + delta * 0.04 * playbackSpeed;
         if (next >= 0.999) return 0.001; // Loop back smoothly
         return next;
       });
@@ -642,7 +699,7 @@ export function TacticalAirwayTimeline({
   // Auto-sync selected milestone based on flight progress
   useEffect(() => {
     for (let i = waypoints.length - 1; i >= 0; i--) {
-      if (progress >= waypoints[i].tProgress - 0.08) {
+      if (progress >= waypoints[i].tProgress - 0.06) {
         setSelectedIdx(i);
         break;
       }
