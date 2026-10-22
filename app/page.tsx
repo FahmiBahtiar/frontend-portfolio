@@ -7,17 +7,13 @@ import { SpotifyService } from '@/lib/services/spotify';
 import { apiRequestWithRetry, API_CONFIG, ApiResponse } from '@/lib/api';
 import { preloadAllSections } from '@/lib/services/prefetch';
 
-// Lazy load components untuk mengurangi initial bundle
+// Eager load hero & command bar so they are pre-rendered underneath loading screen
+import { Page1Hero } from '@/components/sections/Page1Hero';
+import { MinimalistCommandBar } from '@/components/features/MinimalistCommandBar';
+
+// Lazy load below-the-fold components to preserve low TBT on mobile
 const LoadingScreen = dynamic(() => import('@/components/features/LoadingScreen').then(mod => ({ default: mod.LoadingScreen })), {
   ssr: false,
-});
-
-const MinimalistCommandBar = dynamic(() => import('@/components/features/MinimalistCommandBar').then(mod => ({ default: mod.MinimalistCommandBar })), {
-  ssr: false,
-});
-
-const Page1Hero = dynamic(() => import('@/components/sections/Page1Hero').then(mod => ({ default: mod.Page1Hero })), {
-  loading: () => <div className="min-h-screen bg-[#E2F4F3]" />
 });
 const Page2Portfolio = dynamic(() => import('@/components/sections/Page2Portfolio').then(mod => ({ default: mod.Page2Portfolio })));
 const Page3Education = dynamic(() => import('@/components/sections/Page3Education').then(mod => ({ default: mod.Page3Education })));
@@ -181,6 +177,18 @@ export default function HomePage() {
     setShowGallery(prev => !prev);
   };
 
+  // Lock body scroll while loading screen is active to prevent scroll jumps
+  useEffect(() => {
+    if (isLoading) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isLoading]);
+
   // Optimized scroll spy with Intersection Observer
   useEffect(() => {
     const observerOptions = {
@@ -223,8 +231,8 @@ export default function HomePage() {
         Skip to main content
       </a>
 
-      {/* Loading Screen */}
-      <AnimatePresence mode="wait">
+      {/* Loading Screen Overlay */}
+      <AnimatePresence>
         {isLoading && (
           <LoadingScreen
             onComplete={handleLoadingComplete}
@@ -235,72 +243,73 @@ export default function HomePage() {
         )}
       </AnimatePresence>
 
-      {/* Main App - Only render after loading is complete */}
-      {!isLoading && (
-        <div className="relative w-full overflow-x-hidden bg-[#E2F4F3] text-[#0c282d]">
-
-          {/* Main Content - All sections stacked vertically */}
-          <main id="main-content" tabIndex={-1} className="relative z-[2] focus:outline-none">
-            {sections.map((section, index) => {
-              const SectionComponent = section.component;
-              return (
-                <LazySection
-                  key={section.id}
-                  id={section.id}
-                  index={index}
-                  eager={index === 0}
-                  registerRef={(el) => {
-                    sectionRefs.current[index] = el;
-                  }}
-                >
-                  <SectionComponent onNavigate={handleNavigate} />
-                </LazySection>
-              );
-            })}
-          </main>
-
-          {/* Footer */}
-          <LazyFooter />
-
-          {/* Gallery Modal/Overlay */}
-          <AnimatePresence mode="wait">
-            {showGallery && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-                className="fixed inset-0 z-[100]"
+      {/* Main App - Pre-rendered underneath loading screen for seamless zero-flicker reveal */}
+      <div 
+        className={`relative w-full overflow-x-hidden bg-[#E2F4F3] text-[#0c282d] transition-opacity duration-300 ${
+          isLoading ? 'pointer-events-none select-none max-h-screen overflow-hidden' : ''
+        }`}
+      >
+        {/* Main Content - All sections stacked vertically */}
+        <main id="main-content" tabIndex={-1} className="relative z-[2] focus:outline-none">
+          {sections.map((section, index) => {
+            const SectionComponent = section.component;
+            return (
+              <LazySection
+                key={section.id}
+                id={section.id}
+                index={index}
+                eager={index === 0}
+                registerRef={(el) => {
+                  sectionRefs.current[index] = el;
+                }}
               >
-                <PageGallery />
-                
-                {/* Close button */}
-                <motion.button
-                  onClick={handleGalleryToggle}
-                  aria-label="Close gallery"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0, opacity: 0 }}
-                  className="fixed top-6 right-6 z-[101] w-12 h-12 rounded-xl bg-white/95 border border-[#B9E7E6] hover:border-[#6FD4E1] transition-all duration-300 flex items-center justify-center shadow-lg group will-change-transform"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-                >
-                  <span className="text-[#0c282d] group-hover:text-[#0891b2] text-2xl font-light transition-colors duration-300" aria-hidden="true">✕</span>
-                </motion.button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                <SectionComponent onNavigate={handleNavigate} />
+              </LazySection>
+            );
+          })}
+        </main>
 
-          {/* Minimalist Command Bar - All devices */}
-          <MinimalistCommandBar 
-            activeSection={activeSection} 
-            onNavigate={handleNavigate} 
-            onGalleryToggle={handleGalleryToggle}
-            totalSections={sections.length} 
-          />
-        </div>
-      )}
+        {/* Footer */}
+        <LazyFooter />
+
+        {/* Gallery Modal/Overlay */}
+        <AnimatePresence mode="wait">
+          {showGallery && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+              className="fixed inset-0 z-[100]"
+            >
+              <PageGallery />
+              
+              {/* Close button */}
+              <motion.button
+                onClick={handleGalleryToggle}
+                aria-label="Close gallery"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                className="fixed top-6 right-6 z-[101] w-12 h-12 rounded-xl bg-white/95 border border-[#B9E7E6] hover:border-[#6FD4E1] transition-all duration-300 flex items-center justify-center shadow-lg group will-change-transform"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                <span className="text-[#0c282d] group-hover:text-[#0891b2] text-2xl font-light transition-colors duration-300" aria-hidden="true">✕</span>
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Minimalist Command Bar - All devices */}
+        <MinimalistCommandBar 
+          activeSection={activeSection} 
+          onNavigate={handleNavigate} 
+          onGalleryToggle={handleGalleryToggle}
+          totalSections={sections.length} 
+        />
+      </div>
     </>
   );
 }

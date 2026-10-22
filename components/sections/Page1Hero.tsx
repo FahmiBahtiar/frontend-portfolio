@@ -1,8 +1,4 @@
-import dynamic from 'next/dynamic';
-
-const CinematicHero = dynamic(() => import('@/components/features/CinematicHero').then(mod => ({ default: mod.CinematicHero })), {
-  ssr: false,
-});
+import { CinematicHero } from '@/components/features/CinematicHero';
 
 interface Page1HeroProps {
   onNavigate: (page: number) => void;
