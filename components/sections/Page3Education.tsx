@@ -18,19 +18,19 @@ import { EducationService } from '@/lib/services/education';
 import { Achievement } from '@/lib/types/admin';
 import { FALLBACK_EDUCATION_RECORDS, FALLBACK_ACHIEVEMENTS } from '@/lib/fallback-data';
 
-// WebGL (three.js / R3F) is heavy and GPU-only — load the 3D topographic
-// expedition timeline as its own client-only chunk, on demand, so it never bloats
+// WebGL (three.js / R3F) is heavy and GPU-only — load the 3D tactical airway
+// glass cockpit timeline as its own client-only chunk, on demand, so it never bloats
 // the section's initial JS.
-const TopographicExpeditionTimeline = dynamic(
+const TacticalAirwayTimeline = dynamic(
   () =>
-    import('@/components/features/TopographicExpeditionTimeline').then((m) => ({
-      default: m.TopographicExpeditionTimeline,
+    import('@/components/features/TacticalAirwayTimeline').then((m) => ({
+      default: m.TacticalAirwayTimeline,
     })),
   {
     ssr: false,
     loading: () => (
       <div className="min-h-[580px] rounded-3xl border border-[#B9E7E6] bg-white/60 animate-pulse flex items-center justify-center font-mono text-xs text-[#527d85]">
-        Loading 3D Expedition Terrain...
+        Initializing Tactical Airway Corridor...
       </div>
     ),
   },
@@ -180,18 +180,18 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
           </p>
         </div>
 
-        {/* Topographic Expedition Timeline */}
+        {/* Tactical Airway 3D Flight Plan Timeline */}
         <div className="mb-20">
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
-              <Mountain className="w-6 h-6 text-[#0891b2]" />
-              <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">EXPEDITION TIMELINE</h3>
+              <Plane className="w-6 h-6 text-[#0891b2]" />
+              <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">TACTICAL AIRWAY & FLIGHT PLAN</h3>
             </div>
             <div className="flex-1 h-px bg-[#B9E7E6]" />
-            <span className="text-[#527d85] font-mono text-sm hidden sm:block">2010 → Now</span>
+            <span className="text-[#527d85] font-mono text-sm hidden sm:block">IFR ROUTE • 2010 → NOW</span>
           </div>
 
-          <TopographicExpeditionTimeline educationRecords={educationRecords} />
+          <TacticalAirwayTimeline educationRecords={educationRecords} />
         </div>
 
         {/* Achievements Section */}
