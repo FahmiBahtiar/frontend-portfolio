@@ -59,10 +59,10 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
   // ---- Magnetic cursor effect for name (desktop) ----
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const springX = useSpring(mouseX, { stiffness: 150, damping: 20 });
-  const springY = useSpring(mouseY, { stiffness: 150, damping: 20 });
-  const nameTranslateX = useTransform(springX, [-400, 400], [-6, 6]);
-  const nameTranslateY = useTransform(springY, [-400, 400], [-4, 4]);
+  const springX = useSpring(mouseX, { stiffness: 75, damping: 25, mass: 0.8 });
+  const springY = useSpring(mouseY, { stiffness: 75, damping: 25, mass: 0.8 });
+  const nameTranslateX = useTransform(springX, [-500, 500], [-8, 8]);
+  const nameTranslateY = useTransform(springY, [-500, 500], [-5, 5]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!nameRef.current) return;
@@ -88,11 +88,11 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
     if (!heroProfile || loading) return;
 
     const timers = [
-      setTimeout(() => setRevealPhase(1), 100),   // badge
-      setTimeout(() => setRevealPhase(2), 300),   // name
-      setTimeout(() => setRevealPhase(3), 700),   // subtitle + desc
-      setTimeout(() => setRevealPhase(4), 1100),  // info grid
-      setTimeout(() => setRevealPhase(5), 1500),  // scroll hint
+      setTimeout(() => setRevealPhase(1), 60),    // badge
+      setTimeout(() => setRevealPhase(2), 200),   // name
+      setTimeout(() => setRevealPhase(3), 650),   // subtitle + desc
+      setTimeout(() => setRevealPhase(4), 1050),  // info grid
+      setTimeout(() => setRevealPhase(5), 1450),  // scroll hint
     ];
 
     return () => timers.forEach(clearTimeout);
@@ -283,35 +283,41 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
 
         {/* Eyebrow badge */}
         <motion.div
-          initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+          initial={{ opacity: 0, y: 18, filter: 'blur(8px)' }}
           animate={revealPhase >= 1 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="mb-6 sm:mb-8"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm shadow-sm hover:border-cyan-500/30 transition-colors duration-300">
             <Compass className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="text-[13px] text-slate-300 tracking-wide">{heroProfile?.badge || ''}</span>
+            <span className="text-[13px] text-slate-300 tracking-wide font-medium">{heroProfile?.badge || ''}</span>
           </div>
         </motion.div>
 
-        {/* Name — the hero. The magnetic cursor effect is desktop-only: on
-            mobile/lite there's no pointer, so skip the transform + will-change
-            (an idle non-composited animation Lighthouse flags). */}
+        {/* Name — the hero with staggered mask reveal */}
         <motion.div
           ref={nameRef}
           style={calm ? undefined : { x: nameTranslateX, y: nameTranslateY }}
           className={calm ? 'mb-6 sm:mb-8' : 'mb-6 sm:mb-8 will-change-transform'}
         >
-          {/* Single <h1> for the document; each name line is an animated span. */}
           <h1
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.05] text-white"
-            style={{ textShadow: '0 0 80px rgba(56, 189, 248, 0.15)' }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.08] text-white"
+            style={{ textShadow: '0 0 70px rgba(56, 189, 248, 0.2), 0 0 120px rgba(99, 102, 241, 0.12)' }}
           >
-            {/* Rendered visible from first paint (no opacity/blur gate) so the
-                name is the LCP element and paints as soon as the hero mounts. */}
             {nameLines.map((line, i) => (
-              <span key={i} className="block">
-                {line}
+              <span key={i} className="block overflow-hidden py-0.5 sm:py-1">
+                <motion.span
+                  className="block bg-gradient-to-b from-white via-slate-100 to-slate-300 bg-clip-text text-transparent"
+                  initial={{ y: '105%', opacity: 0, filter: 'blur(12px)' }}
+                  animate={revealPhase >= 2 ? { y: '0%', opacity: 1, filter: 'blur(0px)' } : {}}
+                  transition={{
+                    duration: 0.85,
+                    delay: i * 0.15,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                >
+                  {line}
+                </motion.span>
               </span>
             ))}
           </h1>
@@ -319,9 +325,9 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
 
         {/* Subtitle with typing effect */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={revealPhase >= 3 ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
+          animate={revealPhase >= 3 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="mb-4 sm:mb-5 h-8 flex items-center justify-center"
         >
           <span className="text-base sm:text-lg md:text-xl text-slate-400 font-mono tracking-wide">
@@ -336,9 +342,9 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
 
         {/* Description */}
         <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          animate={revealPhase >= 3 ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+          initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
+          animate={revealPhase >= 3 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+          transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="text-slate-400 text-sm sm:text-base max-w-xl leading-relaxed mb-10 sm:mb-14"
         >
           {heroProfile?.description || ''}
@@ -348,7 +354,7 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="mb-8 sm:mb-10"
         >
           <div className="flex flex-wrap items-center justify-center gap-4">
@@ -358,10 +364,10 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
               return (
                 <motion.div
                   key={item.callsign}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.3, delay: 0.2 + idx * 0.08 }}
-                  className="group relative flex items-center gap-3"
+                  initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }}
+                  animate={revealPhase >= 4 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+                  transition={{ duration: 0.6, delay: 0.15 + idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                  className="group relative flex items-center gap-3 cursor-default"
                 >
                   <div className="relative flex items-center gap-2">
                     <div className={`h-8 w-8 rounded-full border ${colors.border} ${colors.bg} flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-0.5`}>
@@ -388,16 +394,16 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="w-full max-w-3xl mb-10 sm:mb-14"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Status */}
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.4, delay: 0 }}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:translate-y-[-2px]"
+              initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
+              animate={revealPhase >= 4 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+              transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:-translate-y-1"
             >
               <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(120px 80px at 20% 0%, rgba(56, 189, 248, 0.16), transparent 70%)' }} />
               <div className="relative flex items-center justify-between">
@@ -421,10 +427,10 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
 
             {/* Location */}
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.4, delay: 0.08 }}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:translate-y-[-2px]"
+              initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
+              animate={revealPhase >= 4 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+              transition={{ duration: 0.6, delay: 0.33, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:-translate-y-1"
             >
               <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(120px 80px at 20% 0%, rgba(99, 102, 241, 0.16), transparent 70%)' }} />
               <div className="relative flex items-center gap-2">
@@ -438,10 +444,10 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
 
             {/* Spotify */}
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={revealPhase >= 4 ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.4, delay: 0.16 }}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:translate-y-[-2px]"
+              initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
+              animate={revealPhase >= 4 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+              transition={{ duration: 0.6, delay: 0.41, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:-translate-y-1"
             >
               <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(140px 90px at 20% 0%, rgba(29, 185, 84, 0.18), transparent 70%)' }} />
               <div className="relative flex items-center gap-2">
@@ -490,9 +496,9 @@ export function CinematicHero({ onNavigate }: CinematicHeroProps) {
 
         {/* ===== SCROLL HINT ===== */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={revealPhase >= 5 ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={revealPhase >= 5 ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col items-center gap-2 cursor-pointer group"
           onClick={() => onNavigate(1)}
         >
