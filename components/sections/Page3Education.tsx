@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import dynamic from 'next/dynamic';
 import { EducationService } from '@/lib/services/education';
 import { Achievement } from '@/lib/types/admin';
+import { FALLBACK_EDUCATION_RECORDS, FALLBACK_ACHIEVEMENTS } from '@/lib/fallback-data';
 import { JourneyScrollStory } from '@/components/features/JourneyScrollStory';
 import { useIsLiteGraphics } from '@/components/providers/GraphicsModeProvider';
 import { useIsMobile } from '@/components/ui/use-mobile';
@@ -48,18 +49,20 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
     achievementId: string;
   } | null>(null);
 
-  // SWR for data fetching
+  // SWR for data fetching with instant fallback to avoid spinner block
   const { data: educationRecords = [], isLoading: isEduLoading, error: eduError } = useSWR(
     'educationRecords',
-    () => EducationService.getEducationRecords()
+    () => EducationService.getEducationRecords(),
+    { fallbackData: FALLBACK_EDUCATION_RECORDS }
   );
 
   const { data: achievements = [], isLoading: isAchLoading, error: achError } = useSWR(
     'achievementsData',
-    () => EducationService.getAchievements()
+    () => EducationService.getAchievements(),
+    { fallbackData: FALLBACK_ACHIEVEMENTS }
   );
 
-  const loading = isEduLoading || isAchLoading;
+  const loading = (isEduLoading || isAchLoading) && educationRecords.length === 0;
   const error = eduError || achError ? 'Failed to load education data' : null;
 
   // Listen for data updates from admin panel via local storage

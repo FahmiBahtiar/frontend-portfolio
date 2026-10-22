@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { API_BASE_URL } from '@/lib/config';
+import { FALLBACK_CONTACT_FREQUENCIES } from '@/lib/fallback-data';
 
 interface ContactFrequency {
   id: string;
@@ -214,9 +215,14 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
   // SWR for automated deduping, caching, and revalidation
   const { data: contactData, error, isLoading } = useSWR('/api/contact-info', fetcher, {
     revalidateOnFocus: false,
+    fallbackData: FALLBACK_CONTACT_FREQUENCIES,
   });
 
-  const frequencies: ContactFrequency[] = Array.isArray(contactData) ? contactData : contactData?.data || [];
+  const frequencies: ContactFrequency[] = Array.isArray(contactData)
+    ? contactData
+    : contactData?.data || FALLBACK_CONTACT_FREQUENCIES;
+
+  const showLoading = isLoading && frequencies.length === 0;
 
   // Icon mapping function
   const getIconComponent = (iconName: string) => {
@@ -306,7 +312,7 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {isLoading ? (
+            {showLoading ? (
               <div className="col-span-full flex items-center justify-center py-12">
                 <Loader2 className="w-8 h-8 text-cyan-500 animate-spin" />
               </div>
@@ -443,7 +449,7 @@ export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {isLoading ? (
+            {showLoading ? (
               <div className="col-span-full flex items-center justify-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-cyan-500" />
               </div>
