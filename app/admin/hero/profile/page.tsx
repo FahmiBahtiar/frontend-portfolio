@@ -65,9 +65,11 @@ export default function HeroProfilePage() {
         description: formData.description,
       };
       await HeroService.updateHeroProfile(updateData);
-      mutate();
+      await mutate();
+      alert('Profile updated successfully!');
     } catch (error) {
-      alert('Failed to save profile');
+      console.error('Failed to save profile:', error);
+      alert(error instanceof Error ? error.message : 'Failed to save profile');
     } finally {
       setIsSaving(false);
     }

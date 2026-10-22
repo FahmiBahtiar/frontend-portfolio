@@ -88,7 +88,10 @@ export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${API_CONFIG.BASE_URL}${endpoint}`;
+  const isBrowser = typeof window !== 'undefined';
+  const url = isBrowser && endpoint.startsWith('/api/admin')
+    ? endpoint
+    : `${API_CONFIG.BASE_URL}${endpoint}`;
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => {
