@@ -124,7 +124,7 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
 // ── Authentic ITom Low-Poly Origami Paper Airplane (Scale: 0.52 Nimble) ───────
 function PaperAirplane({
   color = '#fcfbfa',
-  scale = 0.28,
+  scale = 0.22,
 }: {
   color?: string;
   scale?: number;
@@ -419,15 +419,10 @@ function PartingStoryMilestone({
       motto1Ref.current.position.x = spreadFactor * maxSpread * 0.7;
     }
 
-    // Subtitle Line 2: spreads left (-X)
-    if (motto2Ref.current) {
-      motto2Ref.current.position.x = -spreadFactor * maxSpread * 0.6;
-    }
-
     // Badge: spreads downward and right
     if (badgeRef.current) {
       badgeRef.current.position.x = spreadFactor * maxSpread * 0.55;
-      badgeRef.current.position.y = -1.1 - spreadFactor * 1.0;
+      badgeRef.current.position.y = -0.85 - spreadFactor * 1.0;
     }
 
     // Smooth fade out after the plane passes through
@@ -444,8 +439,7 @@ function PartingStoryMilestone({
 
     applyOpacity(leftTitleRef.current, fadeOpacity);
     applyOpacity(rightTitleRef.current, fadeOpacity);
-    applyOpacity(motto1Ref.current, fadeOpacity * 0.92);
-    applyOpacity(motto2Ref.current, fadeOpacity * 0.88);
+    applyOpacity(motto1Ref.current, fadeOpacity * 0.95);
     applyOpacity(badgeRef.current, fadeOpacity);
     applyOpacity(islandRef.current, fadeOpacity);
   });
@@ -493,7 +487,7 @@ function PartingStoryMilestone({
 
       {/* Motto Line 1 (Spreads Right) */}
       {motto1Tex && (
-        <mesh ref={motto1Ref} position={[0, 0.35, 0.1]}>
+        <mesh ref={motto1Ref} position={[0, 0.1, 0.1]}>
           <planeGeometry args={[7.2, 0.78]} />
           <meshBasicMaterial
             map={motto1Tex}
@@ -504,22 +498,9 @@ function PartingStoryMilestone({
         </mesh>
       )}
 
-      {/* Motto Line 2 (Spreads Left) */}
-      {motto2Tex && (
-        <mesh ref={motto2Ref} position={[0, -0.45, 0.1]}>
-          <planeGeometry args={[7.2, 0.78]} />
-          <meshBasicMaterial
-            map={motto2Tex}
-            transparent
-            side={THREE.DoubleSide}
-            depthWrite={false}
-          />
-        </mesh>
-      )}
-
       {/* Tag Badge (Spreads Down/Right) */}
       {badgeTex && (
-        <mesh ref={badgeRef} position={[0, -1.25, 0.1]}>
+        <mesh ref={badgeRef} position={[0, -0.85, 0.1]}>
           <planeGeometry args={[5.4, 0.72]} />
           <meshBasicMaterial
             map={badgeTex}
@@ -699,14 +680,16 @@ function SkyFlightWorld({
       const dist = 4.2 - z;
       const factor = 0.64 + ((seed % 5) / 5) * 0.22;
       const y = 0.4 + Math.tan((26 * Math.PI) / 180) * dist * factor;
-      const x = (((seed * 5) % 22) - 11) * (dist / 16);
+      // Offset slightly to the right to leave the top-left brand header crystal clear
+      const rawX = ((seed * 5) % 18) - 5.5; // from -5.5 to +12.5
+      const x = rawX * (dist / 16);
       const texIdx = (j * 3) % CLOUD_TEXTURES.length;
-      const scale = (1.1 + ((seed % 4) / 4) * 0.6) * (dist / 16);
+      const scale = (1.05 + ((seed % 4) / 4) * 0.55) * (dist / 16);
 
       list.push({
         id: `cloud-top-${j}`,
         position: [x, y, z],
-        scale: Math.max(0.9, scale),
+        scale: Math.max(0.85, scale),
         texIndex: texIdx,
         baseOpacity: 0.7 + ((seed % 4) / 4) * 0.25,
         driftSpeed: 0.35 + ((seed % 3) / 3) * 0.35,
@@ -809,9 +792,9 @@ function ManeuveringPaperAirplane({
 
   return (
     <group position={[0, 0, 0]}>
-      {/* Paper airplane with small, nimble origami scale (0.28) & generous clearance */}
+      {/* Paper airplane with small, nimble origami scale (0.22) & generous clearance */}
       <group ref={airplaneRef} position={[0, -0.16, 1.1]}>
-        <PaperAirplane color="#fcfbfa" scale={0.28} />
+        <PaperAirplane color="#fcfbfa" scale={0.22} />
       </group>
     </group>
   );
