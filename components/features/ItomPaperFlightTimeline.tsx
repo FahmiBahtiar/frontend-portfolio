@@ -2,17 +2,12 @@
 
 import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Edges } from '@react-three/drei';
+import { Edges, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import {
   Play,
   Pause,
-  ChevronRight,
-  ChevronLeft,
   RotateCcw,
-  Calendar,
-  Award,
-  Sparkles,
   Plane,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -54,7 +49,7 @@ export interface PartingMilestone {
   mottoLine1: string; // Top subtitle (parts right)
   mottoLine2: string; // Bottom subtitle (parts left)
   tagBadge: string; // Honor badge
-  hasAvatar?: boolean; // Milestone 1 includes ITom avatar on cloud
+  textureAsset?: string; // Optional cloud island / avatar asset
   color: string;
 }
 
@@ -62,66 +57,66 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
   {
     id: 'm1',
     order: 1,
-    fixCode: 'DMK 01',
-    zDistance: -20,
+    fixCode: 'FAHMI 01',
+    zDistance: -18,
     titleLeft: 'FAHMI BAHTIAR',
     titleRight: '(BLIMBING)',
     mottoLine1: '"Elementary School • MI Negeri 1 Demak"',
     mottoLine2: 'Building strong foundations & journey club',
     tagBadge: '★ Top 10 Student (2010 – 2018)',
-    hasAvatar: true,
+    textureAsset: '/textures/about/awatarnachmurce.webp',
     color: '#0891b2',
   },
   {
     id: 'm2',
     order: 2,
-    fixCode: 'DMN 02',
-    zDistance: -60,
+    fixCode: 'SMP 02',
+    zDistance: -58,
     titleLeft: 'SMP NEGERI 2',
     titleRight: 'DEMAK (2016 – 2019)',
     mottoLine1: '"Junior High School Education"',
     mottoLine2: 'Started self-taught programming & algorithms',
     tagBadge: '★ Honor Roll Graduate',
-    hasAvatar: false,
+    textureAsset: '/textures/about/uowyspa.webp',
     color: '#059669',
   },
   {
     id: 'm3',
     order: 3,
-    fixCode: 'BNR 03',
-    zDistance: -100,
+    fixCode: 'BINAR 03',
+    zDistance: -98,
     titleLeft: 'BINAR ACADEMY',
     titleRight: 'TECH SCHOLAR (2021)',
     mottoLine1: '"Djarum Foundation Scholarship"',
     mottoLine2: 'Full-stack engineering, agile & cloud systems',
     tagBadge: '★ Djarum Foundation Scholar',
-    hasAvatar: false,
+    textureAsset: '/textures/about/freelancewyspa.webp',
     color: '#d97706',
   },
   {
     id: 'm4',
     order: 4,
     fixCode: 'RUS 04',
-    zDistance: -140,
+    zDistance: -138,
     titleLeft: 'SMK RADEN UMAR SAID',
     titleRight: 'SOFTWARE ENG (2019 – 2022)',
     mottoLine1: '"Vocational Academy of Excellence"',
     mottoLine2: 'Backend infrastructure, databases & high-perf APIs',
     tagBadge: '★ Software Engineering Major',
-    hasAvatar: false,
+    textureAsset: '/textures/about/uowyspa.webp',
     color: '#7c3aed',
   },
   {
     id: 'm5',
     order: 5,
-    fixCode: 'UDN 05',
-    zDistance: -180,
+    fixCode: 'UDINUS 05',
+    zDistance: -178,
     titleLeft: 'DIAN NUSWANTORO',
     titleRight: 'UNIVERSITY (2022 – 2026)',
     mottoLine1: '"Bachelor of Computer Science"',
     mottoLine2: 'Distributed systems, data science & autonomous AI',
     tagBadge: '★ Active • Informatics Engineering',
-    hasAvatar: false,
+    textureAsset: '/textures/about/awatarnachmurce.webp',
     color: '#2563eb',
   },
 ];
@@ -129,7 +124,7 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
 // ── Authentic ITom Low-Poly Origami Paper Airplane ───────────────────────────
 function PaperAirplane({
   color = '#fcfbfa',
-  scale = 0.95,
+  scale = 0.55,
 }: {
   color?: string;
   scale?: number;
@@ -157,12 +152,9 @@ function PaperAirplane({
     ]);
 
     const indices = [
-      // Top surface
       0, 1, 3,  1, 4, 3,  1, 5, 4,  5, 7, 4,
       0, 3, 2,  3, 4, 2,  4, 6, 2,  4, 7, 6,
-      // Bottom surface
       8, 11, 9,  8, 10, 11,
-      // Side connections
       0, 8, 1,  8, 9, 1,  1, 9, 5,
       0, 2, 8,  8, 2, 10,  2, 6, 10,
       5, 9, 11,  5, 11, 7,
@@ -180,7 +172,7 @@ function PaperAirplane({
       <mesh ref={meshRef} geometry={geometry}>
         <meshBasicMaterial color={color} side={THREE.DoubleSide} />
         {/* Origami fold edge outlines */}
-        <Edges linewidth={2} threshold={15} color="#444444" />
+        <Edges linewidth={2} threshold={15} color="#2b2b2b" />
       </mesh>
 
       {/* Center spine ridge fold line */}
@@ -199,135 +191,33 @@ function PaperAirplane({
             ]}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#444444" linewidth={2} />
+        <lineBasicMaterial color="#2b2b2b" linewidth={2} />
       </line>
     </group>
   );
-}
-
-// ── Canvas Texture Text Sprite Generator (Zero Network, 1ms Render) ───────────
-function useTextTexture({
-  text,
-  fontSize = 38,
-  color = '#1a1a1a',
-  strokeColor = '#ffffff',
-  strokeWidth = 4,
-  fontFamily = 'Impact, sans-serif',
-  width = 512,
-  height = 128,
-}: {
-  text: string;
-  fontSize?: number;
-  color?: string;
-  strokeColor?: string;
-  strokeWidth?: number;
-  fontFamily?: string;
-  width?: number;
-  height?: number;
-}) {
-  return useMemo(() => {
-    if (typeof document === 'undefined') return null;
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
-
-    ctx.clearRect(0, 0, width, height);
-
-    ctx.font = `bold ${fontSize}px ${fontFamily}`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    if (strokeWidth > 0) {
-      ctx.strokeStyle = strokeColor;
-      ctx.lineWidth = strokeWidth;
-      ctx.lineJoin = 'round';
-      ctx.strokeText(text, width / 2, height / 2);
-    }
-
-    ctx.fillStyle = color;
-    ctx.fillText(text, width / 2, height / 2);
-
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.needsUpdate = true;
-    return tex;
-  }, [text, fontSize, color, strokeColor, strokeWidth, fontFamily, width, height]);
 }
 
 // ── In-Sky Parting Milestone Component (Parts Away When Approached!) ──────────
 function PartingStoryMilestone({
   milestone,
   scrollRef,
-  avatarTexture,
+  texture,
 }: {
   milestone: PartingMilestone;
   scrollRef: React.MutableRefObject<number>;
-  avatarTexture: THREE.Texture | null;
+  texture: THREE.Texture | null;
 }) {
   const groupRef = useRef<THREE.Group>(null);
-  const leftTitleRef = useRef<THREE.Mesh>(null);
-  const rightTitleRef = useRef<THREE.Mesh>(null);
-  const motto1Ref = useRef<THREE.Mesh>(null);
-  const motto2Ref = useRef<THREE.Mesh>(null);
-  const badgeRef = useRef<THREE.Mesh>(null);
-  const avatarMeshRef = useRef<THREE.Mesh>(null);
+  const titleLeftRef = useRef<any>(null);
+  const titleRightRef = useRef<any>(null);
+  const motto1Ref = useRef<any>(null);
+  const motto2Ref = useRef<any>(null);
+  const badgeRef = useRef<any>(null);
+  const islandRef = useRef<THREE.Mesh>(null);
 
-  // Generate canvas textures for parting typography
-  const titleLeftTex = useTextTexture({
-    text: milestone.titleLeft,
-    fontSize: 42,
-    color: '#0c282d',
-    strokeColor: '#ffffff',
-    strokeWidth: 6,
-    fontFamily: '"CabinSketch", Impact, sans-serif',
-    width: 600,
-    height: 120,
-  });
-
-  const titleRightTex = useTextTexture({
-    text: milestone.titleRight,
-    fontSize: 34,
-    color: milestone.color,
-    strokeColor: '#ffffff',
-    strokeWidth: 5,
-    fontFamily: '"CabinSketch", sans-serif',
-    width: 500,
-    height: 120,
-  });
-
-  const motto1Tex = useTextTexture({
-    text: milestone.mottoLine1,
-    fontSize: 26,
-    color: '#2d5f68',
-    strokeColor: '#ffffff',
-    strokeWidth: 4,
-    fontFamily: 'sans-serif',
-    width: 600,
-    height: 80,
-  });
-
-  const motto2Tex = useTextTexture({
-    text: milestone.mottoLine2,
-    fontSize: 24,
-    color: '#527d85',
-    strokeColor: '#ffffff',
-    strokeWidth: 4,
-    fontFamily: 'sans-serif',
-    width: 600,
-    height: 80,
-  });
-
-  const badgeTex = useTextTexture({
-    text: milestone.tagBadge,
-    fontSize: 24,
-    color: '#0891b2',
-    strokeColor: '#ffffff',
-    strokeWidth: 4,
-    fontFamily: 'monospace',
-    width: 500,
-    height: 80,
-  });
+  const baseY = 2.2;
+  const islandWidth = 5.6;
+  const islandHeight = islandWidth / (2816 / 1536);
 
   useFrame((state) => {
     if (!groupRef.current) return;
@@ -337,7 +227,7 @@ function PartingStoryMilestone({
     // Relative distance of this milestone to the camera plane
     const distanceZ = scrollZ + milestone.zDistance;
 
-    // Visibility cull: hide if far ahead or passed behind
+    // Visibility range
     groupRef.current.visible = distanceZ > -55 && distanceZ < 15;
     if (!groupRef.current.visible) return;
 
@@ -356,24 +246,23 @@ function PartingStoryMilestone({
       spreadFactor = 1;
     }
 
-    const maxSpread = 7.2; // lateral distance elements disperse outward
+    const maxSpread = 10.5; // lateral distance elements disperse outward
 
     // Left Title: moves to the left (-X)
-    if (leftTitleRef.current) {
-      leftTitleRef.current.position.x = -1.4 - spreadFactor * maxSpread * 0.75;
+    if (titleLeftRef.current) {
+      titleLeftRef.current.position.x = -1.5 - spreadFactor * maxSpread * 0.75;
     }
 
     // Right Title: moves to the right (+X)
-    if (rightTitleRef.current) {
-      rightTitleRef.current.position.x = 1.4 + spreadFactor * maxSpread * 0.7;
+    if (titleRightRef.current) {
+      titleRightRef.current.position.x = 1.5 + spreadFactor * maxSpread * 0.7;
     }
 
-    // Avatar on Cloud: parts upward and slightly to the left, bobbing gently
-    if (avatarMeshRef.current) {
-      const baseY = 2.6;
-      avatarMeshRef.current.position.y =
-        baseY + Math.sin(time * 0.9) * 0.15 + spreadFactor * 1.8;
-      avatarMeshRef.current.position.x = -spreadFactor * maxSpread * 0.25;
+    // Central Island / Avatar: parts upward and slightly to the left, bobbing gently
+    if (islandRef.current) {
+      islandRef.current.position.y =
+        baseY + Math.sin(time * 0.85) * 0.15 + spreadFactor * 2.8;
+      islandRef.current.position.x = -spreadFactor * maxSpread * 0.25;
     }
 
     // Subtitle Line 1: spreads right (+X)
@@ -389,18 +278,33 @@ function PartingStoryMilestone({
     // Badge: spreads downward and right
     if (badgeRef.current) {
       badgeRef.current.position.x = 1.2 + spreadFactor * maxSpread * 0.5;
-      badgeRef.current.position.y = -0.9 - spreadFactor * 0.9;
+      badgeRef.current.position.y = -1.1 - spreadFactor * 1.0;
+    }
+
+    // Smooth fade out after the plane passes through
+    let fadeOpacity = 1;
+    if (distanceZ > 0) {
+      fadeOpacity = Math.max(0, 1 - distanceZ / 10);
+    }
+
+    if (titleLeftRef.current) titleLeftRef.current.fillOpacity = fadeOpacity;
+    if (titleRightRef.current) titleRightRef.current.fillOpacity = fadeOpacity;
+    if (motto1Ref.current) motto1Ref.current.fillOpacity = fadeOpacity * 0.9;
+    if (motto2Ref.current) motto2Ref.current.fillOpacity = fadeOpacity * 0.85;
+    if (badgeRef.current) badgeRef.current.fillOpacity = fadeOpacity;
+    if (islandRef.current && (islandRef.current.material as THREE.MeshBasicMaterial)) {
+      (islandRef.current.material as THREE.MeshBasicMaterial).opacity = fadeOpacity;
     }
   });
 
   return (
     <group ref={groupRef} position={[0, 0, milestone.zDistance]}>
-      {/* Avatar on Cloud (for Milestone 1, exact ITom reference!) */}
-      {milestone.hasAvatar && avatarTexture && (
-        <mesh ref={avatarMeshRef} position={[0, 2.6, 0]}>
-          <planeGeometry args={[5.2, 2.6]} />
+      {/* Central Island / Reclining Avatar on Cloud */}
+      {texture && (
+        <mesh ref={islandRef} position={[0, baseY, 0]}>
+          <planeGeometry args={[islandWidth, islandHeight]} />
           <meshBasicMaterial
-            map={avatarTexture}
+            map={texture}
             transparent
             side={THREE.DoubleSide}
             depthWrite={false}
@@ -408,70 +312,82 @@ function PartingStoryMilestone({
         </mesh>
       )}
 
-      {/* Main Title Left (Spreads Left!) */}
-      {titleLeftTex && (
-        <mesh ref={leftTitleRef} position={[-1.4, 1.4, 0.1]}>
-          <planeGeometry args={[5.4, 1.1]} />
-          <meshBasicMaterial
-            map={titleLeftTex}
-            transparent
-            side={THREE.DoubleSide}
-            depthWrite={false}
-          />
-        </mesh>
-      )}
+      {/* Main Title Left (RubikScribble Display Heading) */}
+      <Text
+        ref={titleLeftRef}
+        position={[-1.5, 5.0, 0.1]}
+        fontSize={0.9}
+        color="#0c282d"
+        anchorX="center"
+        anchorY="middle"
+        font="/fonts/RubikScribble-Regular.ttf"
+        outlineWidth={0.035}
+        outlineColor="#ffffff"
+      >
+        {milestone.titleLeft}
+      </Text>
 
-      {/* Main Title Right (Spreads Right!) */}
-      {titleRightTex && (
-        <mesh ref={rightTitleRef} position={[1.4, 1.1, 0.1]}>
-          <planeGeometry args={[4.4, 1.0]} />
-          <meshBasicMaterial
-            map={titleRightTex}
-            transparent
-            side={THREE.DoubleSide}
-            depthWrite={false}
-          />
-        </mesh>
-      )}
+      {/* Main Title Right (CabinSketch Bold Subtitle) */}
+      <Text
+        ref={titleRightRef}
+        position={[1.5, 4.3, 0.1]}
+        fontSize={0.48}
+        color={milestone.color}
+        anchorX="center"
+        anchorY="middle"
+        font="/fonts/CabinSketch-Bold.ttf"
+        outlineWidth={0.025}
+        outlineColor="#ffffff"
+      >
+        {milestone.titleRight}
+      </Text>
 
-      {/* Motto Line 1 (Spreads Right!) */}
-      {motto1Tex && (
-        <mesh ref={motto1Ref} position={[1.2, 0.2, 0.1]}>
-          <planeGeometry args={[5.2, 0.7]} />
-          <meshBasicMaterial
-            map={motto1Tex}
-            transparent
-            side={THREE.DoubleSide}
-            depthWrite={false}
-          />
-        </mesh>
-      )}
+      {/* Motto Line 1 (Parts Right) */}
+      <Text
+        ref={motto1Ref}
+        position={[1.2, 0.1, 0.1]}
+        fontSize={0.36}
+        color="#2d5f68"
+        anchorX="center"
+        anchorY="middle"
+        font="/fonts/CabinSketch-Regular.ttf"
+        fontStyle="italic"
+        outlineWidth={0.02}
+        outlineColor="#ffffff"
+      >
+        {milestone.mottoLine1}
+      </Text>
 
-      {/* Motto Line 2 (Spreads Left!) */}
-      {motto2Tex && (
-        <mesh ref={motto2Ref} position={[-1.2, -0.4, 0.1]}>
-          <planeGeometry args={[5.4, 0.7]} />
-          <meshBasicMaterial
-            map={motto2Tex}
-            transparent
-            side={THREE.DoubleSide}
-            depthWrite={false}
-          />
-        </mesh>
-      )}
+      {/* Motto Line 2 (Parts Left) */}
+      <Text
+        ref={motto2Ref}
+        position={[-1.2, -0.5, 0.1]}
+        fontSize={0.34}
+        color="#527d85"
+        anchorX="center"
+        anchorY="middle"
+        font="/fonts/CabinSketch-Regular.ttf"
+        fontStyle="italic"
+        outlineWidth={0.02}
+        outlineColor="#ffffff"
+      >
+        {milestone.mottoLine2}
+      </Text>
 
-      {/* Honor Tag Badge (Spreads Right/Down!) */}
-      {badgeTex && (
-        <mesh ref={badgeRef} position={[1.2, -1.0, 0.1]}>
-          <planeGeometry args={[4.4, 0.7]} />
-          <meshBasicMaterial
-            map={badgeTex}
-            transparent
-            side={THREE.DoubleSide}
-            depthWrite={false}
-          />
-        </mesh>
-      )}
+      {/* Tag Badge */}
+      <Text
+        ref={badgeRef}
+        position={[1.2, -1.1, 0.1]}
+        fontSize={0.3}
+        color={milestone.color}
+        anchorX="center"
+        anchorY="middle"
+        font="/fonts/CabinSketch-Bold.ttf"
+        outlineWidth={0.02}
+        outlineColor="#ffffff"
+      >
+        {milestone.tagBadge}
+      </Text>
     </group>
   );
 }
@@ -566,7 +482,7 @@ function DriftingPaperCloud({
   );
 }
 
-// ── Infinite Sky World (Clouds + Parting Story Milestones) ───────────────────
+// ── Infinite Sky World (Full-Sky Clouds + Parting Story Milestones) ───────────
 function SkyFlightWorld({
   milestones,
   scrollRef,
@@ -588,15 +504,18 @@ function SkyFlightWorld({
     });
   }, []);
 
-  const avatarTexture = useMemo(() => {
-    if (typeof window === 'undefined') return null;
+  // Preload milestone island textures
+  const milestoneTextures = useMemo<Record<string, THREE.Texture | undefined>>(() => {
+    if (typeof window === 'undefined') return {};
     const loader = new THREE.TextureLoader();
-    const tex = loader.load('/textures/about/awatarnachmurce.webp');
-    tex.colorSpace = THREE.SRGBColorSpace;
-    return tex;
+    return {
+      '/textures/about/awatarnachmurce.webp': loader.load('/textures/about/awatarnachmurce.webp'),
+      '/textures/about/uowyspa.webp': loader.load('/textures/about/uowyspa.webp'),
+      '/textures/about/freelancewyspa.webp': loader.load('/textures/about/freelancewyspa.webp'),
+    };
   }, []);
 
-  // Generate 48 clouds distributed along the flight corridor
+  // Generate 65 clouds distributed across the entire sky (top, mid, bottom!)
   const cloudList = useMemo(() => {
     const list: Array<{
       id: string;
@@ -610,29 +529,28 @@ function SkyFlightWorld({
       timeOffset: number;
     }> = [];
 
-    const totalZSegments = 12;
-    for (let seg = 0; seg < totalZSegments; seg++) {
-      const segZ = -seg * 18 - 4;
-      const countInSeg = 4;
-      for (let i = 0; i < countInSeg; i++) {
-        const seed = seg * 19 + i * 29;
-        const xSide = (i % 2 === 0 ? 1 : -1) * (3.8 + ((seed % 10) / 10) * 5.4);
-        const yHeight = -2.6 + ((seed * 7) % 10) * 0.7;
-        const zPos = segZ - ((seed * 3) % 14);
-        const texIdx = (seg + i) % CLOUD_TEXTURES.length;
+    const totalClouds = 65;
+    for (let i = 0; i < totalClouds; i++) {
+      const seed = i * 23 + 7;
+      // Spread across X = -10 to +10
+      const x = ((seed * 7) % 20) - 10;
+      // Spread across Y = -4.5 to +5.8 (FULL SKY COVERAGE, TOP IS NEVER EMPTY!)
+      const y = ((seed * 11) % 10.3) - 4.5;
+      // Spread along Z from -5 down to -220
+      const z = -((i * 3.4) % 215) - 4;
+      const texIdx = i % CLOUD_TEXTURES.length;
 
-        list.push({
-          id: `cloud-${seg}-${i}`,
-          position: [xSide, yHeight, zPos],
-          scale: 0.9 + ((seed % 5) / 5) * 0.75,
-          texIndex: texIdx,
-          baseOpacity: 0.7 + ((seed % 4) / 4) * 0.25,
-          driftSpeed: 0.35 + ((seed % 3) / 3) * 0.45,
-          driftAmount: 0.5 + ((seed % 6) / 6) * 0.7,
-          bobAmount: 0.12 + ((seed % 4) / 4) * 0.18,
-          timeOffset: (seed % 10) * 0.65,
-        });
-      }
+      list.push({
+        id: `cloud-${i}`,
+        position: [x, y, z],
+        scale: 0.85 + ((seed % 7) / 7) * 0.85,
+        texIndex: texIdx,
+        baseOpacity: 0.6 + ((seed % 5) / 5) * 0.3,
+        driftSpeed: 0.3 + ((seed % 4) / 4) * 0.4,
+        driftAmount: 0.5 + ((seed % 6) / 6) * 0.8,
+        bobAmount: 0.1 + ((seed % 4) / 4) * 0.18,
+        timeOffset: (seed % 10) * 0.628,
+      });
     }
     return list;
   }, []);
@@ -651,11 +569,11 @@ function SkyFlightWorld({
           key={m.id}
           milestone={m}
           scrollRef={scrollRef}
-          avatarTexture={avatarTexture}
+          texture={m.textureAsset ? milestoneTextures[m.textureAsset] || null : null}
         />
       ))}
 
-      {/* Floating Paper Clouds (Continuous Drift!) */}
+      {/* Floating Paper Clouds (Covering Entire Sky, Continuous Drift!) */}
       {textures.length > 0 &&
         cloudList.map((c) => (
           <DriftingPaperCloud
@@ -676,7 +594,7 @@ function SkyFlightWorld({
   );
 }
 
-// ── Maneuvering Paper Airplane Cockpit Rig (Camera Pulled Back!) ───────────────
+// ── Maneuvering Paper Airplane Cockpit Rig (Camera Pulled Back & Nimble Scale!)
 function ManeuveringPaperAirplane({
   scrollRef,
   scrollVelocityRef,
@@ -712,11 +630,11 @@ function ManeuveringPaperAirplane({
 
     if (airplaneRef.current) {
       // Gentle swaying flight float (runs always!)
-      const idleFloatY = Math.sin(time * 2.2) * 0.04;
-      const idleFloatX = Math.sin(time * 1.4) * 0.05;
+      const idleFloatY = Math.sin(time * 2.2) * 0.035;
+      const idleFloatX = Math.sin(time * 1.4) * 0.04;
 
       // Elevated above the bottom dock with comfortable breathing room!
-      airplaneRef.current.position.y = 0.22 + idleFloatY;
+      airplaneRef.current.position.y = -0.32 + idleFloatY;
       airplaneRef.current.position.x = idleFloatX;
 
       airplaneRef.current.rotation.x = currentPitch.current * 3.2 + 0.12;
@@ -727,9 +645,9 @@ function ManeuveringPaperAirplane({
 
   return (
     <group position={[0, 0, 0]}>
-      {/* Paper airplane positioned with ample breathing room in camera view */}
-      <group ref={airplaneRef} position={[0, 0.22, 1.8]} scale={1.05}>
-        <PaperAirplane color="#fcfbfa" scale={0.92} />
+      {/* Paper airplane with small, delicate origami scale (0.55) & breathing room */}
+      <group ref={airplaneRef} position={[0, -0.32, 1.1]}>
+        <PaperAirplane color="#fcfbfa" scale={0.55} />
       </group>
     </group>
   );
@@ -792,8 +710,8 @@ export function ItomPaperFlightTimeline({
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Momentum-based scroll system: start at 2 (Milestone 1 directly ahead)
-  const scrollRef = useRef<number>(2);
+  // Momentum-based scroll system: start at 0 (Milestone 1 directly ahead at z = -18)
+  const scrollRef = useRef<number>(0);
   const scrollVelocityRef = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -818,7 +736,6 @@ export function ItomPaperFlightTimeline({
       const matched = raw[idx];
       if (!matched) return m;
       if (idx === 0) {
-        // Milestone 1 is the signature ITom intro hero milestone with avatar on cloud
         return {
           ...m,
           titleLeft: 'FAHMI BAHTIAR',
@@ -839,16 +756,17 @@ export function ItomPaperFlightTimeline({
     });
   }, [educationRecords]);
 
-  // Handle wheel scrolling over the canvas container
+  // Handle wheel scrolling over the canvas container (exact ITom velocity delta: e.deltaY * 0.002!)
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      const delta = e.deltaY * 0.025;
+      // Controlled, smooth flight speed
+      const delta = e.deltaY * 0.002;
       scrollVelocityRef.current += delta;
-      scrollVelocityRef.current = Math.max(-4.5, Math.min(4.5, scrollVelocityRef.current));
+      scrollVelocityRef.current = Math.max(-2.0, Math.min(2.0, scrollVelocityRef.current));
       setIsPlaying(false);
     };
 
@@ -865,22 +783,22 @@ export function ItomPaperFlightTimeline({
       const delta = (now - lastTime) / 1000;
       lastTime = now;
 
-      // Autoplay cruise
+      // Autoplay cruise: calm, graceful gliding
       if (isPlaying) {
-        scrollRef.current += delta * 12.0;
-        if (scrollRef.current > 188) {
-          scrollRef.current = 2;
+        scrollRef.current += delta * 3.8;
+        if (scrollRef.current > 185) {
+          scrollRef.current = 0;
         }
       }
 
       // Momentum deceleration
       scrollRef.current += scrollVelocityRef.current * delta * 60;
-      scrollVelocityRef.current *= 0.94; // Friction
-      if (Math.abs(scrollVelocityRef.current) < 0.002) {
+      scrollVelocityRef.current *= 0.95; // Friction
+      if (Math.abs(scrollVelocityRef.current) < 0.001) {
         scrollVelocityRef.current = 0;
       }
 
-      // Bound flight range (Milestone 1 at ~0 to Milestone 5 at ~185)
+      // Bound flight range (Milestone 1 at ~0 to Milestone 5 at ~180)
       if (scrollRef.current < 0) scrollRef.current = 0;
       if (scrollRef.current > 190) scrollRef.current = 190;
 
@@ -890,8 +808,7 @@ export function ItomPaperFlightTimeline({
       let minDiff = Infinity;
 
       milestones.forEach((m, idx) => {
-        // Milestone is in focus when scroll is ~18 units before it passes
-        const targetScroll = Math.abs(m.zDistance) - 18;
+        const targetScroll = Math.abs(m.zDistance);
         const diff = Math.abs(currentScroll - targetScroll);
         if (diff < minDiff) {
           minDiff = diff;
@@ -912,8 +829,8 @@ export function ItomPaperFlightTimeline({
   const handleSelectMilestone = useCallback(
     (idx: number) => {
       setSelectedIdx(idx);
-      // Place plane 18 units before milestone so content is right ahead and parts as you fly
-      const targetScroll = Math.max(0, Math.abs(milestones[idx].zDistance) - 18);
+      // Place plane just before milestone so content is in view and parts as you fly forward
+      const targetScroll = idx === 0 ? 0 : Math.abs(milestones[idx].zDistance) - 15;
       scrollRef.current = targetScroll;
       scrollVelocityRef.current = 0;
       setIsPlaying(false);
@@ -923,7 +840,7 @@ export function ItomPaperFlightTimeline({
 
   // Progress percentage (0% to 100%)
   const flightPercentage = Math.round(
-    Math.max(0, Math.min(100, (scrollRef.current / 165) * 100))
+    Math.max(0, Math.min(100, (scrollRef.current / 175) * 100))
   );
 
   return (
@@ -959,11 +876,11 @@ export function ItomPaperFlightTimeline({
         </Badge>
       </div>
 
-      {/* 3D WebGL Canvas Layer (Wider Perspective, Pulled-Back Camera!) */}
+      {/* 3D WebGL Canvas Layer (Spacious Perspective, Small Nimble Plane!) */}
       <div className="absolute inset-0 z-0">
         {webGLSupported ? (
           <Canvas
-            camera={{ position: [0, 0.8, 5.0], fov: 48, near: 0.1, far: 240 }}
+            camera={{ position: [0, 0.4, 4.2], fov: 52, near: 0.1, far: 240 }}
             dpr={[1, 2]}
             gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
           >
@@ -978,7 +895,7 @@ export function ItomPaperFlightTimeline({
               scrollVelocityRef={scrollVelocityRef}
             />
 
-            {/* Infinite Sky World (Continuous Floating Clouds + Parting Milestones) */}
+            {/* Infinite Sky World (Full Sky Clouds + Parting Milestones) */}
             <SkyFlightWorld
               milestones={milestones}
               scrollRef={scrollRef}
@@ -992,8 +909,6 @@ export function ItomPaperFlightTimeline({
           />
         )}
       </div>
-
-      {/* Note: Left 2D Detail Card has been removed per user instruction! Content parts in-sky! */}
 
       {/* Floating Bottom Flight Controller & Waypoint Quick-Selector */}
       <div className="relative z-20 p-4 sm:p-5 m-3 sm:m-4 rounded-2xl bg-white/95 backdrop-blur-md border border-[#B9E7E6] shadow-xl flex flex-col gap-3 pointer-events-auto">
@@ -1061,8 +976,8 @@ export function ItomPaperFlightTimeline({
           <span className="font-mono text-[10px] text-[#527d85] font-semibold">START</span>
           <input
             type="range"
-            min="15"
-            max="185"
+            min="0"
+            max="180"
             step="0.5"
             value={scrollRef.current}
             onChange={(e) => {
