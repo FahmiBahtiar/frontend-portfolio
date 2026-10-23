@@ -417,7 +417,7 @@ function ManeuveringPaperAirplane({
       const idleFloatY = Math.sin(time * 2.2) * 0.03;
       const idleFloatX = Math.sin(time * 1.4) * 0.035;
 
-      airplaneRef.current.position.y = -0.2 + idleFloatY;
+      airplaneRef.current.position.y = -0.42 + idleFloatY;
       airplaneRef.current.position.x = idleFloatX;
 
       airplaneRef.current.rotation.x = currentPitch.current * 3.2 + 0.12;
@@ -428,7 +428,7 @@ function ManeuveringPaperAirplane({
 
   return (
     <group position={[0, 0, 0]}>
-      <group ref={airplaneRef} position={[0, -0.2, 1.1]}>
+      <group ref={airplaneRef} position={[0, -0.42, 1.1]}>
         <PaperAirplane color="#fcfbfa" scale={0.55} />
       </group>
     </group>
@@ -475,7 +475,7 @@ function FlyThroughMilestoneCard({
     <div
       className="absolute inset-0 flex items-center justify-center pointer-events-none p-4 sm:p-6 transition-transform duration-75"
       style={{
-        transform: `translate3d(0, -52px, 0) scale(${scale})`,
+        transform: `translate3d(0, -75px, 0) scale(${scale})`,
         opacity,
         willChange: 'transform, opacity',
       }}
