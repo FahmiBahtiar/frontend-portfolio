@@ -9,6 +9,11 @@ import {
   Pause,
   RotateCcw,
   Plane,
+  Sparkles,
+  Calendar,
+  Award,
+  CheckCircle2,
+  ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,12 +43,12 @@ const CLOUD_ASPECT_RATIOS: Record<string, number> = {
   'f6e358bc-d27c-41dd-95f4-6787a835c41e.webp': 1.875,
 };
 
-// ── Milestone Structure (Breakable 3D Flight Card) ──────────────────────────
-export interface PartingMilestone {
+// ── Milestone Structure (Crisp Boarding Pass Card) ──────────────────────────
+export interface MilestoneRecord {
   id: string;
   order: number;
   fixCode: string;
-  zDistance: number;
+  targetScroll: number; // Flight progress coordinate
   institution: string;
   degree: string;
   period: string;
@@ -52,64 +57,69 @@ export interface PartingMilestone {
   color: string;
 }
 
-export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
+export const DEFAULT_MILESTONES: MilestoneRecord[] = [
   {
     id: 'm1',
     order: 1,
-    fixCode: 'MI 01',
-    zDistance: -18,
+    fixCode: '01 MI',
+    targetScroll: 0,
     institution: 'MI NEGERI 1 DEMAK',
     degree: 'Elementary School Education',
     period: '2010 – 2018',
-    description: 'Building strong academic foundations & character development.',
+    description:
+      'Building strong academic foundations, logical thinking, and active leadership in journey & survival club.',
     badge: '★ Top 10 Student',
     color: '#0891b2',
   },
   {
     id: 'm2',
     order: 2,
-    fixCode: 'SMP 02',
-    zDistance: -58,
+    fixCode: '02 SMP',
+    targetScroll: 40,
     institution: 'SMP NEGERI 2 DEMAK',
     degree: 'Junior High School Education',
     period: '2016 – 2019',
-    description: 'Started self-taught programming & algorithmic problem-solving.',
+    description:
+      'Discovered passion for computer science and started self-taught programming with core algorithms.',
     badge: '★ Honor Roll Graduate',
     color: '#059669',
   },
   {
     id: 'm3',
     order: 3,
-    fixCode: 'BINAR 03',
-    zDistance: -98,
+    fixCode: '03 BINAR',
+    targetScroll: 80,
     institution: 'BINAR ACADEMY',
     degree: 'Tech Scholar • Djarum Foundation',
     period: '2021',
-    description: 'Full-stack engineering, agile methodologies & cloud systems.',
+    description:
+      'Full-stack software engineering, microservices, agile development workflows, and modern cloud deployment.',
     badge: '★ Djarum Foundation Scholar',
     color: '#d97706',
   },
   {
     id: 'm4',
     order: 4,
-    fixCode: 'RUS 04',
-    zDistance: -138,
+    fixCode: '04 SMK',
+    targetScroll: 120,
     institution: 'SMK RADEN UMAR SAID',
     degree: 'Software Engineering Major',
     period: '2019 – 2022',
-    description: 'High-performance APIs, database modeling & backend infrastructure.',
+    description:
+      'High-performance backend systems, database architecture, network security, and production application development.',
     badge: '★ Software Engineering Major',
     color: '#7c3aed',
   },
   {
     id: 'm5',
     order: 5,
-    fixCode: 'UDINUS 05',
-    zDistance: -178,
+    fixCode: '05 DIAN',
+    targetScroll: 160,
     institution: 'DIAN NUSWANTORO UNIVERSITY',
     degree: 'Bachelor of Computer Science',
     period: '2022 – 2026',
-    description: 'Distributed systems, data science & autonomous AI agents.',
+    description:
+      'Distributed computing, autonomous AI systems, data science, and next-generation cloud infrastructure.',
     badge: '★ Active • Informatics Engineering',
     color: '#2563eb',
   },
@@ -186,352 +196,6 @@ function PaperAirplane({
   );
 }
 
-// ── Power-of-2 Card Texture Generator (Stateful & Guaranteed Hydration) ──────
-function useFracturedCardTextures(milestone: PartingMilestone) {
-  const [textures, setTextures] = useState<{
-    leftTex: THREE.CanvasTexture | null;
-    rightTex: THREE.CanvasTexture | null;
-  }>({ leftTex: null, rightTex: null });
-
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-
-    const fullW = 2048;
-    const fullH = 1024;
-    const halfW = 1024;
-    const halfH = 1024;
-
-    const fullCanvas = document.createElement('canvas');
-    fullCanvas.width = fullW;
-    fullCanvas.height = fullH;
-    const ctx = fullCanvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.clearRect(0, 0, fullW, fullH);
-
-    // 1. Crisp White Card with Rounded Corners
-    const pad = 24;
-    const cardX = pad;
-    const cardY = pad;
-    const cardW = fullW - pad * 2;
-    const cardH = fullH - pad * 2;
-    const r = 40;
-
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(cardX, cardY, cardW, cardH, r);
-    } else {
-      ctx.rect(cardX, cardY, cardW, cardH);
-    }
-    ctx.fill();
-
-    // Solid accent card border
-    ctx.strokeStyle = milestone.color;
-    ctx.lineWidth = 14;
-    ctx.stroke();
-
-    // Inner subtle border line
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.06)';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    // 2. Top Header Bar
-    const cpText = `CHECKPOINT #0${milestone.order} • EDUCATION MILESTONE`;
-    ctx.font = 'bold 34px monospace';
-    const cpMetrics = ctx.measureText(cpText);
-    const cpW = cpMetrics.width + 56;
-    ctx.fillStyle = milestone.color + '20';
-    ctx.beginPath();
-    if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(64, 56, cpW, 60, 16);
-    } else {
-      ctx.rect(64, 56, cpW, 60);
-    }
-    ctx.fill();
-    ctx.fillStyle = milestone.color;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(cpText, 92, 86);
-
-    const yrText = milestone.period;
-    ctx.font = 'bold 34px monospace';
-    const yrMetrics = ctx.measureText(yrText);
-    const yrW = yrMetrics.width + 56;
-    const yrX = fullW - 64 - yrW;
-    ctx.fillStyle = '#f1f5f9';
-    ctx.beginPath();
-    if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(yrX, 56, yrW, 60, 16);
-    } else {
-      ctx.rect(yrX, 56, yrW, 60);
-    }
-    ctx.fill();
-    ctx.fillStyle = '#334155';
-    ctx.textAlign = 'left';
-    ctx.fillText(yrText, yrX + 28, 86);
-
-    // Header divider line (horizontal dashed)
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 3;
-    ctx.setLineDash([12, 10]);
-    ctx.beginPath();
-    ctx.moveTo(64, 145);
-    ctx.lineTo(fullW - 64, 145);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // 3. Central Content
-    ctx.textAlign = 'center';
-    let instFontSize = 82;
-    ctx.font = `bold ${instFontSize}px "CabinSketch", Impact, sans-serif`;
-    let instW = ctx.measureText(milestone.institution).width;
-    while (instW > fullW - 180 && instFontSize > 44) {
-      instFontSize -= 2;
-      ctx.font = `bold ${instFontSize}px "CabinSketch", Impact, sans-serif`;
-      instW = ctx.measureText(milestone.institution).width;
-    }
-    ctx.fillStyle = '#0c282d';
-    ctx.fillText(milestone.institution, fullW / 2, 290);
-
-    ctx.font = 'bold 50px "CabinSketch", sans-serif';
-    ctx.fillStyle = milestone.color;
-    ctx.fillText(milestone.degree, fullW / 2, 395);
-
-    // Description text card (inner clean panel)
-    const descY = 480;
-    const descH = 240;
-    ctx.fillStyle = '#f8fafc';
-    ctx.beginPath();
-    if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(100, descY, fullW - 200, descH, 20);
-    } else {
-      ctx.rect(100, descY, fullW - 200, descH);
-    }
-    ctx.fill();
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    ctx.font = '500 42px sans-serif';
-    ctx.fillStyle = '#1e293b';
-    ctx.textAlign = 'center';
-    ctx.fillText(milestone.description, fullW / 2, descY + descH / 2);
-
-    // 4. Perforated center fracture seam
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
-    ctx.lineWidth = 3;
-    ctx.setLineDash([16, 12]);
-    ctx.beginPath();
-    ctx.moveTo(halfW, 30);
-    ctx.lineTo(halfW, fullH - 30);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // 5. Card Footer
-    const badgeText = milestone.badge;
-    ctx.font = 'bold 36px monospace';
-    const bMetrics = ctx.measureText(badgeText);
-    const bW = bMetrics.width + 64;
-    ctx.fillStyle = milestone.color;
-    ctx.beginPath();
-    if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(64, fullH - 150, bW, 72, 18);
-    } else {
-      ctx.rect(64, fullH - 150, bW, 72);
-    }
-    ctx.fill();
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'left';
-    ctx.fillText(badgeText, 96, fullH - 114);
-
-    const verText = '✓ VERIFIED EDUCATION';
-    ctx.font = 'bold 32px monospace';
-    ctx.fillStyle = '#059669';
-    ctx.textAlign = 'right';
-    ctx.fillText(verText, fullW - 80, fullH - 114);
-
-    // 6. Split into Left Half and Right Half Textures (1024x1024 POT)
-    const leftCanvas = document.createElement('canvas');
-    leftCanvas.width = halfW;
-    leftCanvas.height = halfH;
-    const leftCtx = leftCanvas.getContext('2d');
-    if (leftCtx) {
-      leftCtx.drawImage(fullCanvas, 0, 0, halfW, halfH, 0, 0, halfW, halfH);
-    }
-
-    const rightCanvas = document.createElement('canvas');
-    rightCanvas.width = halfW;
-    rightCanvas.height = halfH;
-    const rightCtx = rightCanvas.getContext('2d');
-    if (rightCtx) {
-      rightCtx.drawImage(fullCanvas, halfW, 0, halfW, halfH, 0, 0, halfW, halfH);
-    }
-
-    const leftTex = new THREE.CanvasTexture(leftCanvas);
-    leftTex.minFilter = THREE.LinearFilter;
-    leftTex.magFilter = THREE.LinearFilter;
-    leftTex.generateMipmaps = false;
-    leftTex.needsUpdate = true;
-
-    const rightTex = new THREE.CanvasTexture(rightCanvas);
-    rightTex.minFilter = THREE.LinearFilter;
-    rightTex.magFilter = THREE.LinearFilter;
-    rightTex.generateMipmaps = false;
-    rightTex.needsUpdate = true;
-
-    setTextures({ leftTex, rightTex });
-  }, [milestone]);
-
-  return textures;
-}
-
-// ── 3D Fractured Milestone Card Component (Pecah / Breaks Apart When Passed!) ─
-function FracturedMilestoneCard({
-  milestone,
-  scrollRef,
-}: {
-  milestone: PartingMilestone;
-  scrollRef: React.MutableRefObject<number>;
-}) {
-  const groupRef = useRef<THREE.Group>(null);
-  const leftMeshRef = useRef<THREE.Mesh>(null);
-  const rightMeshRef = useRef<THREE.Mesh>(null);
-  const shardsGroupRef = useRef<THREE.Group>(null);
-
-  const { leftTex, rightTex } = useFracturedCardTextures(milestone);
-
-  const cardW = 7.6;
-  const cardH = 3.8;
-  const halfW = 3.8;
-  const baseY = 1.8;
-
-  const shards = useMemo(
-    () => [
-      { id: 's1', baseX: -0.35, baseY: baseY + 1.0, vx: -2.8, vy: 1.8, vz: 1.5, rotSpeed: 4.5, size: [0.65, 0.45] as [number, number] },
-      { id: 's2', baseX: 0.35, baseY: baseY + 0.9, vx: 2.6, vy: 2.0, vz: -1.2, rotSpeed: -5.0, size: [0.55, 0.5] as [number, number] },
-      { id: 's3', baseX: -0.45, baseY: baseY + 0.1, vx: -3.2, vy: 0.4, vz: 1.8, rotSpeed: -4.2, size: [0.6, 0.4] as [number, number] },
-      { id: 's4', baseX: 0.45, baseY: baseY - 0.1, vx: 3.4, vy: -0.5, vz: -1.5, rotSpeed: 4.8, size: [0.55, 0.45] as [number, number] },
-      { id: 's5', baseX: -0.35, baseY: baseY - 1.0, vx: -2.4, vy: -1.8, vz: 1.2, rotSpeed: 3.8, size: [0.5, 0.4] as [number, number] },
-      { id: 's6', baseX: 0.35, baseY: baseY - 0.9, vx: 2.8, vy: -2.0, vz: -1.4, rotSpeed: -4.4, size: [0.6, 0.35] as [number, number] },
-    ],
-    [baseY]
-  );
-
-  useFrame(() => {
-    if (!groupRef.current) return;
-    const scrollZ = scrollRef.current || 0;
-    const distanceZ = scrollZ + milestone.zDistance;
-
-    groupRef.current.visible = distanceZ > -55 && distanceZ < 15;
-    if (!groupRef.current.visible) return;
-
-    // ── THE DYNAMIC CARD FRACTURE / PECAH MECHANIC ────────────────────────────
-    const fractureStart = -15;
-    const fractureEnd = -1.5;
-    let spreadFactor = 0;
-
-    if (distanceZ > fractureStart && distanceZ < fractureEnd) {
-      spreadFactor = (distanceZ - fractureStart) / (fractureEnd - fractureStart);
-      spreadFactor = Math.min(1, Math.max(0, spreadFactor));
-      spreadFactor = spreadFactor * spreadFactor;
-    } else if (distanceZ >= fractureEnd) {
-      spreadFactor = 1;
-    }
-
-    const maxSpread = 5.2;
-
-    // Left Half Piece
-    if (leftMeshRef.current) {
-      leftMeshRef.current.position.x = -halfW / 2 - spreadFactor * maxSpread;
-      leftMeshRef.current.position.y = baseY + spreadFactor * 0.7;
-      leftMeshRef.current.position.z = spreadFactor * 0.4;
-      leftMeshRef.current.rotation.z = spreadFactor * 0.26;
-      leftMeshRef.current.rotation.y = -spreadFactor * 0.38;
-    }
-
-    // Right Half Piece
-    if (rightMeshRef.current) {
-      rightMeshRef.current.position.x = halfW / 2 + spreadFactor * maxSpread;
-      rightMeshRef.current.position.y = baseY - spreadFactor * 0.7;
-      rightMeshRef.current.position.z = -spreadFactor * 0.4;
-      rightMeshRef.current.rotation.z = -spreadFactor * 0.26;
-      rightMeshRef.current.rotation.y = spreadFactor * 0.38;
-    }
-
-    // Shards explosion physics
-    if (shardsGroupRef.current) {
-      shardsGroupRef.current.children.forEach((child, idx) => {
-        const s = shards[idx];
-        if (!s) return;
-        child.scale.setScalar(spreadFactor > 0.05 ? Math.min(1, spreadFactor * 1.5) : 0);
-        child.position.x = s.baseX + spreadFactor * s.vx * 1.8;
-        child.position.y = s.baseY + spreadFactor * s.vy * 1.5;
-        child.position.z = spreadFactor * s.vz * 1.2;
-        child.rotation.z = spreadFactor * s.rotSpeed;
-        child.rotation.x = spreadFactor * s.rotSpeed * 0.6;
-      });
-    }
-
-    // Fade out after passing
-    let fadeOpacity = 1;
-    if (distanceZ > 0) {
-      fadeOpacity = Math.max(0, 1 - distanceZ / 10);
-    }
-
-    const applyOp = (mesh: THREE.Mesh | null) => {
-      if (mesh && mesh.material) {
-        (mesh.material as THREE.MeshBasicMaterial).opacity = fadeOpacity;
-      }
-    };
-    applyOp(leftMeshRef.current);
-    applyOp(rightMeshRef.current);
-  });
-
-  return (
-    <group ref={groupRef} position={[0, 0, milestone.zDistance]}>
-      {/* Left Card Half */}
-      {leftTex && (
-        <mesh ref={leftMeshRef} position={[-halfW / 2, baseY, 0]} renderOrder={10}>
-          <planeGeometry args={[halfW, cardH]} />
-          <meshBasicMaterial
-            map={leftTex}
-            transparent
-            side={THREE.DoubleSide}
-            depthWrite={true}
-            depthTest={true}
-          />
-        </mesh>
-      )}
-
-      {/* Right Card Half */}
-      {rightTex && (
-        <mesh ref={rightMeshRef} position={[halfW / 2, baseY, 0]} renderOrder={10}>
-          <planeGeometry args={[halfW, cardH]} />
-          <meshBasicMaterial
-            map={rightTex}
-            transparent
-            side={THREE.DoubleSide}
-            depthWrite={true}
-            depthTest={true}
-          />
-        </mesh>
-      )}
-
-      {/* Floating Shard Pieces */}
-      <group ref={shardsGroupRef} renderOrder={11}>
-        {shards.map((s) => (
-          <mesh key={s.id} position={[s.baseX, s.baseY, 0]}>
-            <planeGeometry args={s.size} />
-            <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} transparent depthWrite={true} />
-            <Edges linewidth={2} threshold={15} color={milestone.color} />
-          </mesh>
-        ))}
-      </group>
-    </group>
-  );
-}
-
 // ── Continuously Floating & Evasive Paper Cloud ──────────────────────────────
 function DriftingPaperCloud({
   position,
@@ -543,7 +207,6 @@ function DriftingPaperCloud({
   driftAmount = 0.8,
   bobAmount = 0.15,
   timeOffset = 0,
-  isCeiling = false,
   scrollRef,
 }: {
   position: [number, number, number];
@@ -555,7 +218,6 @@ function DriftingPaperCloud({
   driftAmount?: number;
   bobAmount?: number;
   timeOffset?: number;
-  isCeiling?: boolean;
   scrollRef: React.MutableRefObject<number>;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -573,28 +235,10 @@ function DriftingPaperCloud({
 
     const worldZ = currentScroll + basePos.current[2];
 
-    // ITom Cloud Evasion: Ceiling clouds stay put; corridor clouds evade when close!
-    let evasionX = 0;
-    if (!isCeiling) {
-      const evasionStart = -18;
-      const evasionEnd = -2;
-      let evasionFactor = 0;
-
-      if (worldZ > evasionStart && worldZ < evasionEnd) {
-        evasionFactor = (worldZ - evasionStart) / (evasionEnd - evasionStart);
-        evasionFactor = evasionFactor * evasionFactor;
-      } else if (worldZ >= evasionEnd) {
-        evasionFactor = 1;
-      }
-
-      const dirX = basePos.current[0] >= 0 ? 1 : -1;
-      evasionX = evasionFactor * 5.0 * dirX;
-    }
-
     const driftX = Math.sin(time * driftSpeed + timeOffset) * driftAmount;
     const driftY = Math.sin(time * driftSpeed * 0.75 + timeOffset + 1.2) * bobAmount;
 
-    meshRef.current.position.x = basePos.current[0] + driftX + evasionX;
+    meshRef.current.position.x = basePos.current[0] + driftX;
     meshRef.current.position.y = basePos.current[1] + driftY;
     meshRef.current.position.z = basePos.current[2];
 
@@ -624,12 +268,10 @@ function DriftingPaperCloud({
   );
 }
 
-// ── Infinite Sky World (Full-Sky Clouds + Fractured Milestone Cards) ──────────
+// ── Infinite Sky World (Clouds + Airplane) ────────────────────────────────────
 function SkyFlightWorld({
-  milestones,
   scrollRef,
 }: {
-  milestones: PartingMilestone[];
   scrollRef: React.MutableRefObject<number>;
 }) {
   const worldGroupRef = useRef<THREE.Group>(null);
@@ -658,56 +300,53 @@ function SkyFlightWorld({
       driftAmount: number;
       bobAmount: number;
       timeOffset: number;
-      isCeiling: boolean;
     }> = [];
 
-    // 1. General Sky Clouds (60 clouds on left and right sides - leaving center corridor clear!)
-    const totalClouds = 60;
+    // 1. Clouds on left and right borders (keeping center corridor open)
+    const totalClouds = 50;
     for (let i = 0; i < totalClouds; i++) {
       const seed = i * 23 + 7;
       const side = i % 2 === 0 ? 1 : -1;
-      const x = side * (4.4 + ((seed * 7) % 10) * 0.65);
+      const x = side * (4.8 + ((seed * 7) % 10) * 0.7);
       const y = ((seed * 11) % 8.5) - 3.8;
-      const z = -((i * 3.6) % 215) - 4;
+      const z = -((i * 4.2) % 215) - 4;
       const texIdx = i % CLOUD_TEXTURES.length;
 
       list.push({
         id: `cloud-${i}`,
         position: [x, y, z],
-        scale: 0.85 + ((seed % 7) / 7) * 0.85,
+        scale: 0.9 + ((seed % 7) / 7) * 0.85,
         texIndex: texIdx,
-        baseOpacity: 0.6 + ((seed % 5) / 5) * 0.3,
+        baseOpacity: 0.65 + ((seed % 5) / 5) * 0.3,
         driftSpeed: 0.3 + ((seed % 4) / 4) * 0.4,
-        driftAmount: 0.4 + ((seed % 6) / 6) * 0.4,
+        driftAmount: 0.4 + ((seed % 6) / 6) * 0.5,
         bobAmount: 0.1 + ((seed % 4) / 4) * 0.18,
         timeOffset: (seed % 10) * 0.628,
-        isCeiling: false,
       });
     }
 
-    // 2. Dedicated Top Ceiling Clouds (20 clouds filling the upper sky ceiling)
-    for (let j = 0; j < 20; j++) {
+    // 2. Upper ceiling clouds (framing the top of the sky)
+    for (let j = 0; j < 24; j++) {
       const seed = j * 31 + 13;
       const z = -((j * 9.5) % 210) - 4;
       const dist = 4.2 - z;
       const factor = 0.64 + ((seed % 5) / 5) * 0.22;
       const y = 0.4 + Math.tan((26 * Math.PI) / 180) * dist * factor;
-      const rawX = ((seed * 5) % 18) - 5.0;
+      const rawX = ((seed * 5) % 20) - 10;
       const x = rawX * (dist / 16);
       const texIdx = (j * 3) % CLOUD_TEXTURES.length;
-      const scale = (1.05 + ((seed % 4) / 4) * 0.55) * (dist / 16);
+      const scale = (1.1 + ((seed % 4) / 4) * 0.55) * (dist / 16);
 
       list.push({
         id: `cloud-top-${j}`,
         position: [x, y, z],
-        scale: Math.max(0.85, scale),
+        scale: Math.max(0.9, scale),
         texIndex: texIdx,
-        baseOpacity: 0.7 + ((seed % 4) / 4) * 0.25,
+        baseOpacity: 0.75 + ((seed % 4) / 4) * 0.2,
         driftSpeed: 0.35 + ((seed % 3) / 3) * 0.35,
-        driftAmount: 0.6 + ((seed % 5) / 5) * 0.7,
+        driftAmount: 0.6 + ((seed % 5) / 5) * 0.6,
         bobAmount: 0.12 + ((seed % 3) / 3) * 0.15,
         timeOffset: (seed % 8) * 0.785,
-        isCeiling: true,
       });
     }
 
@@ -722,16 +361,6 @@ function SkyFlightWorld({
 
   return (
     <group ref={worldGroupRef}>
-      {/* 5 In-Sky Fractured Milestone Cards (Pecah / Breaks Apart!) */}
-      {milestones.map((m) => (
-        <FracturedMilestoneCard
-          key={m.id}
-          milestone={m}
-          scrollRef={scrollRef}
-        />
-      ))}
-
-      {/* Floating Paper Clouds (Covering Entire Sky, Continuous Drift!) */}
       {textures.length > 0 &&
         cloudList.map((c) => (
           <DriftingPaperCloud
@@ -745,7 +374,6 @@ function SkyFlightWorld({
             driftAmount={c.driftAmount}
             bobAmount={c.bobAmount}
             timeOffset={c.timeOffset}
-            isCeiling={c.isCeiling}
             scrollRef={scrollRef}
           />
         ))}
@@ -789,7 +417,7 @@ function ManeuveringPaperAirplane({
       const idleFloatY = Math.sin(time * 2.2) * 0.03;
       const idleFloatX = Math.sin(time * 1.4) * 0.035;
 
-      airplaneRef.current.position.y = -0.22 + idleFloatY;
+      airplaneRef.current.position.y = -0.2 + idleFloatY;
       airplaneRef.current.position.x = idleFloatX;
 
       airplaneRef.current.rotation.x = currentPitch.current * 3.2 + 0.12;
@@ -800,59 +428,148 @@ function ManeuveringPaperAirplane({
 
   return (
     <group position={[0, 0, 0]}>
-      <group ref={airplaneRef} position={[0, -0.22, 1.1]}>
+      <group ref={airplaneRef} position={[0, -0.2, 1.1]}>
         <PaperAirplane color="#fcfbfa" scale={0.55} />
       </group>
     </group>
   );
 }
 
-// ── 2.5D Fallback for Non-WebGL Environments ─────────────────────────────────
-function PaperSvgFallback({
-  milestones,
-  selectedIdx,
-  onSelect,
+// ── Interactive Fly-Through Crash Card (Razor Sharp Vector HTML UX) ───────────
+function FlyThroughMilestoneCard({
+  milestone,
+  scroll,
+  onNext,
 }: {
-  milestones: PartingMilestone[];
-  selectedIdx: number;
-  onSelect: (idx: number) => void;
+  milestone: MilestoneRecord;
+  scroll: number;
+  onNext?: () => void;
 }) {
-  const current = milestones[selectedIdx];
+  const rel = scroll - milestone.targetScroll;
+
+  // Determine visibility, scale, and crash penetration progress
+  if (rel < -20 || rel > 26) return null;
+
+  let scale = 1.0;
+  let opacity = 1.0;
+  let isCrashing = false;
+  let crashT = 0;
+
+  if (rel <= 12) {
+    // Approaching smoothly: card scales up from 0.88 to 1.04 as plane flies forward
+    const approachT = Math.max(0, Math.min(1, (rel + 16) / 28));
+    scale = 0.88 + approachT * 0.16;
+    opacity = 1.0;
+  } else if (rel <= 20) {
+    // "di tabrak terus tembus gitu aja" -> Airplane crashes into and pierces right through!
+    isCrashing = true;
+    crashT = (rel - 12) / 8; // 0 to 1
+    // Expands like a portal/gateway as the plane punches through the center!
+    scale = 1.04 + crashT * 0.95; // expands up to 2.0x
+    opacity = Math.max(0, 1 - crashT * 1.3); // dissolves smoothly
+  } else {
+    return null;
+  }
 
   return (
-    <div className="w-full h-full flex flex-col justify-between p-6 sm:p-10 relative overflow-hidden bg-[#87CEEB]">
-      <div className="relative z-10 max-w-lg bg-white/95 p-6 rounded-2xl border-2 border-dashed border-[#0891b2] shadow-lg">
-        <Badge className="bg-[#E2F4F3] text-[#0891b2] border border-[#B9E7E6] mb-3 font-mono">
-          CHECKPOINT #{current.order.toString().padStart(2, '0')}
-        </Badge>
-        <h2 className="text-3xl font-serif font-bold text-[#0c282d] mb-1">
-          {current.institution}
-        </h2>
-        <p className="text-sm font-semibold text-[#0891b2] mb-3">
-          {current.degree} ({current.period})
-        </p>
-        <p className="text-xs sm:text-sm text-[#2d5f68] leading-relaxed mb-4">
-          {current.description}
-        </p>
-        <Badge className="bg-[#0891b2] text-white font-mono text-xs">
-          {current.badge}
-        </Badge>
-      </div>
+    <div
+      className="absolute inset-0 flex items-center justify-center pointer-events-none p-4 sm:p-6 transition-transform duration-75"
+      style={{
+        transform: `translate3d(0, -28px, 0) scale(${scale})`,
+        opacity,
+        willChange: 'transform, opacity',
+      }}
+    >
+      {/* Shockwave Impact Ripple Ring when crashing through */}
+      {isCrashing && (
+        <div
+          className="absolute rounded-full border-4 pointer-events-none animate-ping"
+          style={{
+            borderColor: milestone.color,
+            width: `${160 + crashT * 400}px`,
+            height: `${160 + crashT * 400}px`,
+            opacity: Math.max(0, 0.8 - crashT * 0.8),
+          }}
+        />
+      )}
 
-      <div className="relative z-10 flex items-center gap-2 overflow-x-auto pb-2">
-        {milestones.map((m, i) => (
-          <button
-            key={m.id}
-            onClick={() => onSelect(i)}
-            className={`px-3 py-1.5 rounded-xl font-mono text-xs font-semibold transition-all ${
-              i === selectedIdx
-                ? 'bg-[#0891b2] text-white shadow-md'
-                : 'bg-white/80 text-[#2d5f68] hover:bg-white'
-            }`}
+      {/* The Master Boarding Pass Card (100% Vector Sharp, High Contrast) */}
+      <div
+        className="w-full max-w-xl rounded-3xl bg-white/95 backdrop-blur-xl border-2 shadow-2xl p-6 sm:p-8 pointer-events-auto flex flex-col gap-4 relative overflow-hidden transition-shadow"
+        style={{
+          borderColor: milestone.color,
+          boxShadow: `0 20px 45px -10px ${milestone.color}25, 0 10px 20px -5px rgba(0,0,0,0.08)`,
+        }}
+      >
+        {/* Top Accent Strip */}
+        <div
+          className="absolute top-0 left-0 right-0 h-2"
+          style={{ backgroundColor: milestone.color }}
+        />
+
+        {/* Header Row: Checkpoint Tag & Period */}
+        <div className="flex items-center justify-between gap-3 pt-1">
+          <Badge
+            className="font-mono text-xs font-bold px-3 py-1 rounded-xl shadow-xs"
+            style={{
+              backgroundColor: `${milestone.color}15`,
+              color: milestone.color,
+              border: `1px solid ${milestone.color}35`,
+            }}
           >
-            {m.fixCode}
-          </button>
-        ))}
+            CHECKPOINT #0{milestone.order} • EDUCATION MILESTONE
+          </Badge>
+
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 text-slate-700 font-mono text-xs font-semibold border border-slate-200">
+            <Calendar className="w-3.5 h-3.5 text-slate-500" />
+            <span>{milestone.period}</span>
+          </div>
+        </div>
+
+        {/* Institution Title (100% Crisp, Ultra-Sharp Navy Slate Heading) */}
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0c282d] tracking-tight mb-1">
+            {milestone.institution}
+          </h2>
+          <p
+            className="text-base sm:text-lg font-bold flex items-center gap-2"
+            style={{ color: milestone.color }}
+          >
+            <span>{milestone.degree}</span>
+          </p>
+        </div>
+
+        {/* Description Body Card (High-Contrast, Zero Blurriness) */}
+        <div className="rounded-2xl bg-slate-50/90 border border-slate-200/80 p-4 sm:p-5">
+          <p className="text-sm sm:text-base text-slate-800 leading-relaxed font-normal">
+            {milestone.description}
+          </p>
+        </div>
+
+        {/* Footer Row: Badge & Flight Guidance */}
+        <div className="flex items-center justify-between gap-3 pt-1 flex-wrap">
+          <Badge
+            className="text-white font-mono text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-sm flex items-center gap-1.5"
+            style={{ backgroundColor: milestone.color }}
+          >
+            <Award className="w-3.5 h-3.5" />
+            <span>{milestone.badge}</span>
+          </Badge>
+
+          <div className="flex items-center gap-1.5 text-xs font-mono font-semibold text-slate-600">
+            {isCrashing ? (
+              <span className="text-cyan-700 font-bold animate-pulse flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5" />
+                FLYING THROUGH CARD...
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 text-slate-500">
+                Scroll wheel to fly through
+                <ChevronRight className="w-3.5 h-3.5" />
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -867,6 +584,7 @@ export function ItomPaperFlightTimeline({
   const [mounted, setMounted] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentScrollVal, setCurrentScrollVal] = useState(0);
 
   const scrollRef = useRef<number>(0);
   const scrollVelocityRef = useRef<number>(0);
@@ -886,13 +604,13 @@ export function ItomPaperFlightTimeline({
     }
   });
 
-  const milestones: PartingMilestone[] = useMemo(() => {
+  const milestones: MilestoneRecord[] = useMemo(() => {
     const raw =
       educationRecords && educationRecords.length > 0
         ? educationRecords
         : FALLBACK_EDUCATION_RECORDS;
 
-    return DEFAULT_PARTING_MILESTONES.map((m, idx) => {
+    return DEFAULT_MILESTONES.map((m, idx) => {
       const matched = raw[idx];
       if (!matched) return m;
       return {
@@ -906,15 +624,16 @@ export function ItomPaperFlightTimeline({
     });
   }, [educationRecords]);
 
+  // Wheel interaction (smooth flight cruise)
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      const delta = e.deltaY * 0.002;
+      const delta = e.deltaY * 0.0022;
       scrollVelocityRef.current += delta;
-      scrollVelocityRef.current = Math.max(-2.0, Math.min(2.0, scrollVelocityRef.current));
+      scrollVelocityRef.current = Math.max(-2.2, Math.min(2.2, scrollVelocityRef.current));
       setIsPlaying(false);
     };
 
@@ -922,6 +641,7 @@ export function ItomPaperFlightTimeline({
     return () => container.removeEventListener('wheel', handleWheel);
   }, []);
 
+  // Animation frame loop for momentum & autoplay
   useEffect(() => {
     let animId: number;
     let lastTime = performance.now();
@@ -930,15 +650,17 @@ export function ItomPaperFlightTimeline({
       const delta = (now - lastTime) / 1000;
       lastTime = now;
 
+      // Autoplay cruise
       if (isPlaying) {
-        scrollRef.current += delta * 3.5;
+        scrollRef.current += delta * 4.2;
         if (scrollRef.current > 185) {
           scrollRef.current = 0;
         }
       }
 
+      // Momentum deceleration
       scrollRef.current += scrollVelocityRef.current * delta * 60;
-      scrollVelocityRef.current *= 0.95;
+      scrollVelocityRef.current *= 0.94;
       if (Math.abs(scrollVelocityRef.current) < 0.001) {
         scrollVelocityRef.current = 0;
       }
@@ -946,13 +668,15 @@ export function ItomPaperFlightTimeline({
       if (scrollRef.current < 0) scrollRef.current = 0;
       if (scrollRef.current > 190) scrollRef.current = 190;
 
-      const currentScroll = scrollRef.current;
+      setCurrentScrollVal(scrollRef.current);
+
+      // Determine closest milestone tab
+      const current = scrollRef.current;
       let closestIdx = 0;
       let minDiff = Infinity;
 
       milestones.forEach((m, idx) => {
-        const targetScroll = Math.abs(m.zDistance);
-        const diff = Math.abs(currentScroll - targetScroll);
+        const diff = Math.abs(current - m.targetScroll);
         if (diff < minDiff) {
           minDiff = diff;
           closestIdx = idx;
@@ -968,19 +692,20 @@ export function ItomPaperFlightTimeline({
     return () => cancelAnimationFrame(animId);
   }, [isPlaying, milestones]);
 
+  // Tab click navigation (jumps directly in front of target card)
   const handleSelectMilestone = useCallback(
     (idx: number) => {
       setSelectedIdx(idx);
-      const targetScroll = idx === 0 ? 0 : Math.abs(milestones[idx].zDistance) - 15;
-      scrollRef.current = targetScroll;
+      scrollRef.current = milestones[idx].targetScroll;
       scrollVelocityRef.current = 0;
       setIsPlaying(false);
+      setCurrentScrollVal(milestones[idx].targetScroll);
     },
     [milestones]
   );
 
   const flightPercentage = Math.round(
-    Math.max(0, Math.min(100, (scrollRef.current / 175) * 100))
+    Math.max(0, Math.min(100, (currentScrollVal / 175) * 100))
   );
 
   if (!mounted) {
@@ -1030,9 +755,9 @@ export function ItomPaperFlightTimeline({
         </Badge>
       </div>
 
-      {/* 3D WebGL Canvas Layer */}
+      {/* Layer 1: 3D WebGL Canvas (Paper Airplane & Clouds) */}
       <div className="absolute inset-0 z-0 w-full h-full">
-        {webGLSupported ? (
+        {webGLSupported && (
           <Canvas
             className="w-full h-full"
             style={{ width: '100%', height: '100%', display: 'block' }}
@@ -1049,21 +774,21 @@ export function ItomPaperFlightTimeline({
               scrollVelocityRef={scrollVelocityRef}
             />
 
-            <SkyFlightWorld
-              milestones={milestones}
-              scrollRef={scrollRef}
-            />
+            <SkyFlightWorld scrollRef={scrollRef} />
           </Canvas>
-        ) : (
-          <PaperSvgFallback
-            milestones={milestones}
-            selectedIdx={selectedIdx}
-            onSelect={handleSelectMilestone}
-          />
         )}
       </div>
 
-      {/* Floating Bottom Flight Controller */}
+      {/* Layer 2: Fly-Through Milestone Cards (100% Crisp Vector HTML UX) */}
+      {milestones.map((m) => (
+        <FlyThroughMilestoneCard
+          key={m.id}
+          milestone={m}
+          scroll={currentScrollVal}
+        />
+      ))}
+
+      {/* Layer 3: Floating Bottom Flight Controller */}
       <div className="relative z-20 p-4 sm:p-5 m-3 sm:m-4 rounded-2xl bg-white/95 backdrop-blur-md border border-[#B9E7E6] shadow-xl flex flex-col gap-3 pointer-events-auto">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           {/* Autoplay & Reset */}
@@ -1132,10 +857,11 @@ export function ItomPaperFlightTimeline({
             min="0"
             max="180"
             step="0.5"
-            value={scrollRef.current}
+            value={currentScrollVal}
             onChange={(e) => {
               const val = parseFloat(e.target.value);
               scrollRef.current = val;
+              setCurrentScrollVal(val);
               scrollVelocityRef.current = 0;
               setIsPlaying(false);
             }}
