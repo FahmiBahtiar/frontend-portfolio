@@ -485,36 +485,38 @@ function FracturedMilestoneCard({
     <group ref={groupRef} position={[0, 0, milestone.zDistance]}>
       {/* Left Card Half */}
       {leftTex && (
-        <mesh ref={leftMeshRef} position={[-halfW / 2, baseY, 0]}>
+        <mesh ref={leftMeshRef} position={[-halfW / 2, baseY, 0]} renderOrder={10}>
           <planeGeometry args={[halfW, cardH]} />
           <meshBasicMaterial
             map={leftTex}
             transparent
             side={THREE.DoubleSide}
-            depthWrite={false}
+            depthWrite={true}
+            depthTest={true}
           />
         </mesh>
       )}
 
       {/* Right Card Half */}
       {rightTex && (
-        <mesh ref={rightMeshRef} position={[halfW / 2, baseY, 0]}>
+        <mesh ref={rightMeshRef} position={[halfW / 2, baseY, 0]} renderOrder={10}>
           <planeGeometry args={[halfW, cardH]} />
           <meshBasicMaterial
             map={rightTex}
             transparent
             side={THREE.DoubleSide}
-            depthWrite={false}
+            depthWrite={true}
+            depthTest={true}
           />
         </mesh>
       )}
 
       {/* Floating Shard Pieces */}
-      <group ref={shardsGroupRef}>
+      <group ref={shardsGroupRef} renderOrder={11}>
         {shards.map((s) => (
           <mesh key={s.id} position={[s.baseX, s.baseY, 0]}>
             <planeGeometry args={s.size} />
-            <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} transparent />
+            <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} transparent depthWrite={true} />
             <Edges linewidth={2} threshold={15} color={milestone.color} />
           </mesh>
         ))}
@@ -650,12 +652,14 @@ function SkyFlightWorld({
       isCeiling: boolean;
     }> = [];
 
-    // 1. General Sky Clouds (60 clouds across bottom, mid, and sides)
+    // 1. General Sky Clouds (60 clouds on left and right sides - leaving center corridor clear!)
     const totalClouds = 60;
     for (let i = 0; i < totalClouds; i++) {
       const seed = i * 23 + 7;
-      const x = ((seed * 7) % 20) - 10;
-      const y = ((seed * 11) % 9.0) - 4.2;
+      const side = i % 2 === 0 ? 1 : -1;
+      // Center corridor (|x| < 4.2) is kept clear so clouds NEVER occlude the card!
+      const x = side * (4.4 + ((seed * 7) % 10) * 0.65);
+      const y = ((seed * 11) % 8.5) - 3.8;
       const z = -((i * 3.6) % 215) - 4;
       const texIdx = i % CLOUD_TEXTURES.length;
 
@@ -666,7 +670,7 @@ function SkyFlightWorld({
         texIndex: texIdx,
         baseOpacity: 0.6 + ((seed % 5) / 5) * 0.3,
         driftSpeed: 0.3 + ((seed % 4) / 4) * 0.4,
-        driftAmount: 0.5 + ((seed % 6) / 6) * 0.8,
+        driftAmount: 0.4 + ((seed % 6) / 6) * 0.4,
         bobAmount: 0.1 + ((seed % 4) / 4) * 0.18,
         timeOffset: (seed % 10) * 0.628,
         isCeiling: false,
