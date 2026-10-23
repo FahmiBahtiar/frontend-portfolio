@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import useSWR from 'swr';
+import { useInView } from 'motion/react';
 import Image from 'next/image';
 import { 
   Radio, 
@@ -72,9 +73,12 @@ interface IvaoResponse {
 }
 
 export function LiveStatusCards() {
-  // 1. Fetch Discord presence via Lanyard API
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { margin: '200px' });
+
+  // 1. Fetch Discord presence via Lanyard API (only when visible)
   const { data: lanyardRes } = useSWR<LanyardResponse>(
-    'https://api.lanyard.rest/v1/users/467600406000697354',
+    isInView ? 'https://api.lanyard.rest/v1/users/467600406000697354' : null,
     fetcher,
     {
       refreshInterval: 30000,
@@ -84,16 +88,16 @@ export function LiveStatusCards() {
     }
   );
 
-  // 2. Fetch IVAO status via internal proxy API (cached at edge for 60s, polled gently every 60s)
+  // 2. Fetch IVAO status via internal proxy API (strictly on-demand when visible, 2 min poll)
   const { data: ivaoData } = useSWR<IvaoResponse>(
-    '/api/ivao/status?vid=704291',
+    isInView ? '/api/ivao/status?vid=704291' : null,
     fetcher,
     {
-      refreshInterval: 60000,
+      refreshInterval: 120000,
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      dedupingInterval: 45000,
-      errorRetryCount: 2,
+      dedupingInterval: 60000,
+      errorRetryCount: 1,
     }
   );
 
@@ -146,7 +150,7 @@ export function LiveStatusCards() {
     : 'https://cdn.discordapp.com/embed/avatars/0.png';
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* ===== DISCORD STATUS CARD (ARCTIC ICE) ===== */}
       <Card className="border border-[#B9E7E6] hover:border-[#6FD4E1] hover:shadow-md transition-all bg-white/95 shadow-sm rounded-2xl">
         <CardContent className="p-6 md:p-8 flex flex-col justify-between h-full">

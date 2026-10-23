@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 
-export const dynamic = 'force-dynamic';
+// Revalidate at most once every 2 minutes at Edge CDN to prevent function log spam
+export const revalidate = 120;
 
 const CACHE_HEADERS = {
-  'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+  'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
 };
 
 export async function GET(request: Request) {
