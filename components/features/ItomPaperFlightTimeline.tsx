@@ -38,18 +38,17 @@ const CLOUD_ASPECT_RATIOS: Record<string, number> = {
   'f6e358bc-d27c-41dd-95f4-6787a835c41e.webp': 1.875,
 };
 
-// ── Milestone Structure (ITom Architecture) ────────────────────────────────
+// ── Milestone Structure (Breakable 3D Flight Card) ──────────────────────────
 export interface PartingMilestone {
   id: string;
   order: number;
   fixCode: string;
-  zDistance: number; // World Z position where this milestone sits
-  titleLeft: string; // Left side of title (parts to -X)
-  titleRight: string; // Right side of title (parts to +X)
-  mottoLine1: string; // Top subtitle (parts right)
-  mottoLine2: string; // Bottom subtitle (parts left)
-  tagBadge: string; // Honor badge
-  textureAsset?: string; // Cloud island or avatar asset
+  zDistance: number;
+  institution: string;
+  degree: string;
+  period: string;
+  description: string;
+  badge: string;
   color: string;
 }
 
@@ -57,14 +56,13 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
   {
     id: 'm1',
     order: 1,
-    fixCode: 'FAHMI 01',
+    fixCode: 'MI 01',
     zDistance: -18,
-    titleLeft: 'FAHMI BAHTIAR',
-    titleRight: '(BLIMBING)',
-    mottoLine1: '"Elementary School • MI Negeri 1 Demak"',
-    mottoLine2: 'Building strong foundations & journey club',
-    tagBadge: '★ Top 10 Student (2010 – 2018)',
-    textureAsset: '/textures/about/awatarnachmurce.webp',
+    institution: 'MI NEGERI 1 DEMAK',
+    degree: 'Elementary School Education',
+    period: '2010 – 2018',
+    description: 'Building strong academic foundations & character development.',
+    badge: '★ Top 10 Student',
     color: '#0891b2',
   },
   {
@@ -72,12 +70,11 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
     order: 2,
     fixCode: 'SMP 02',
     zDistance: -58,
-    titleLeft: 'SMP NEGERI 2',
-    titleRight: 'DEMAK (2016 – 2019)',
-    mottoLine1: '"Junior High School Education"',
-    mottoLine2: 'Started self-taught programming & algorithms',
-    tagBadge: '★ Honor Roll Graduate',
-    textureAsset: '/textures/about/uowyspa.webp',
+    institution: 'SMP NEGERI 2 DEMAK',
+    degree: 'Junior High School Education',
+    period: '2016 – 2019',
+    description: 'Started self-taught programming & algorithmic problem-solving.',
+    badge: '★ Honor Roll Graduate',
     color: '#059669',
   },
   {
@@ -85,12 +82,11 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
     order: 3,
     fixCode: 'BINAR 03',
     zDistance: -98,
-    titleLeft: 'BINAR ACADEMY',
-    titleRight: 'TECH SCHOLAR (2021)',
-    mottoLine1: '"Djarum Foundation Scholarship"',
-    mottoLine2: 'Full-stack engineering, agile & cloud systems',
-    tagBadge: '★ Djarum Foundation Scholar',
-    textureAsset: '/textures/about/freelancewyspa.webp',
+    institution: 'BINAR ACADEMY',
+    degree: 'Tech Scholar • Djarum Foundation',
+    period: '2021',
+    description: 'Full-stack engineering, agile methodologies & cloud systems.',
+    badge: '★ Djarum Foundation Scholar',
     color: '#d97706',
   },
   {
@@ -98,12 +94,11 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
     order: 4,
     fixCode: 'RUS 04',
     zDistance: -138,
-    titleLeft: 'SMK RADEN UMAR SAID',
-    titleRight: 'SOFTWARE ENG (2019 – 2022)',
-    mottoLine1: '"Vocational Academy of Excellence"',
-    mottoLine2: 'Backend infrastructure, databases & high-perf APIs',
-    tagBadge: '★ Software Engineering Major',
-    textureAsset: '/textures/about/uowyspa.webp',
+    institution: 'SMK RADEN UMAR SAID',
+    degree: 'Software Engineering Major',
+    period: '2019 – 2022',
+    description: 'High-performance APIs, database modeling & backend infrastructure.',
+    badge: '★ Software Engineering Major',
     color: '#7c3aed',
   },
   {
@@ -111,17 +106,16 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
     order: 5,
     fixCode: 'UDINUS 05',
     zDistance: -178,
-    titleLeft: 'DIAN NUSWANTORO',
-    titleRight: 'UNIVERSITY (2022 – 2026)',
-    mottoLine1: '"Bachelor of Computer Science"',
-    mottoLine2: 'Distributed systems, data science & autonomous AI',
-    tagBadge: '★ Active • Informatics Engineering',
-    textureAsset: '/textures/about/awatarnachmurce.webp',
+    institution: 'DIAN NUSWANTORO UNIVERSITY',
+    degree: 'Bachelor of Computer Science',
+    period: '2022 – 2026',
+    description: 'Distributed systems, data science & autonomous AI agents.',
+    badge: '★ Active • Informatics Engineering',
     color: '#2563eb',
   },
 ];
 
-// ── Authentic ITom Low-Poly Origami Paper Airplane (Scale: 0.52 Nimble) ───────
+// ── Authentic ITom Low-Poly Origami Paper Airplane (Scale: 0.22 Nimble) ───────
 function PaperAirplane({
   color = '#fcfbfa',
   scale = 0.22,
@@ -131,24 +125,21 @@ function PaperAirplane({
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
 
-  // Exact BufferGeometry from ITomPoland/portfolio-itom/PaperAirplane.jsx
   const geometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
     const vertices = new Float32Array([
-      // Main Body Top
-      0, 0, -1.6,          // 0: Nose tip
-      -1.25, 0.06, 0.35,   // 1: Left wing tip
-      1.25, 0.06, 0.35,    // 2: Right wing tip
-      0, 0.16, -0.5,       // 3: Front crease fold
-      0, 0.13, 0.55,       // 4: Back crease fold
-      -0.32, 0.09, 0.85,   // 5: Left tail
-      0.32, 0.09, 0.85,    // 6: Right tail
-      0, 0.11, 0.65,       // 7: Tail center top
-      // Underside
-      0, -0.02, -1.6,      // 8: Nose bottom
-      -1.25, -0.02, 0.35,  // 9: Left wing bottom
-      1.25, -0.02, 0.35,   // 10: Right wing bottom
-      0, 0, 0.55,          // 11: Tail bottom
+      0, 0, -1.6,
+      -1.25, 0.06, 0.35,
+      1.25, 0.06, 0.35,
+      0, 0.16, -0.5,
+      0, 0.13, 0.55,
+      -0.32, 0.09, 0.85,
+      0.32, 0.09, 0.85,
+      0, 0.11, 0.65,
+      0, -0.02, -1.6,
+      -1.25, -0.02, 0.35,
+      1.25, -0.02, 0.35,
+      0, 0, 0.55,
     ]);
 
     const indices = [
@@ -171,11 +162,9 @@ function PaperAirplane({
     <group scale={scale}>
       <mesh ref={meshRef} geometry={geometry}>
         <meshBasicMaterial color={color} side={THREE.DoubleSide} />
-        {/* Origami fold edge outlines */}
         <Edges linewidth={2} threshold={15} color="#2b2b2b" />
       </mesh>
 
-      {/* Center spine ridge fold line */}
       <line>
         <bufferGeometry>
           <bufferAttribute
@@ -197,261 +186,319 @@ function PaperAirplane({
   );
 }
 
-// ── Ultra-Sharp 4K CanvasTexture Text Sprite (Zero Suspense, Instant 1ms) ─────
-function useUltraSharpTextTexture({
-  text,
-  fontSize = 90,
-  color = '#0c282d',
-  strokeColor = '#ffffff',
-  strokeWidth = 12,
-  fontFamily = 'Impact, sans-serif',
-  isBold = true,
-  backgroundColor,
-  backgroundBorder,
-  width = 2048,
-  height = 256,
-}: {
-  text: string;
-  fontSize?: number;
-  color?: string;
-  strokeColor?: string;
-  strokeWidth?: number;
-  fontFamily?: string;
-  isBold?: boolean;
-  backgroundColor?: string;
-  backgroundBorder?: string;
-  width?: number;
-  height?: number;
-}) {
+// ── Ultra-Sharp 4K Card Texture Generator (Splits into Left & Right Halves) ───
+function useFracturedCardTextures(milestone: PartingMilestone) {
   return useMemo(() => {
-    if (typeof document === 'undefined') return null;
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
+    if (typeof document === 'undefined') return { leftTex: null, rightTex: null };
 
-    ctx.clearRect(0, 0, width, height);
+    const fullW = 2048;
+    const fullH = 1180;
+    const halfW = fullW / 2;
 
-    // Dynamic auto-scaling font size to ensure ZERO clipping
-    let currentFontSize = fontSize;
-    ctx.font = `${isBold ? 'bold ' : ''}${currentFontSize}px ${fontFamily}`;
-    let textW = ctx.measureText(text).width;
-    while (textW > width - 160 && currentFontSize > 28) {
-      currentFontSize -= 2;
-      ctx.font = `${isBold ? 'bold ' : ''}${currentFontSize}px ${fontFamily}`;
-      textW = ctx.measureText(text).width;
+    const fullCanvas = document.createElement('canvas');
+    fullCanvas.width = fullW;
+    fullCanvas.height = fullH;
+    const ctx = fullCanvas.getContext('2d');
+    if (!ctx) return { leftTex: null, rightTex: null };
+
+    ctx.clearRect(0, 0, fullW, fullH);
+
+    // 1. Crisp White Card with Rounded Corners
+    const pad = 24;
+    const cardX = pad;
+    const cardY = pad;
+    const cardW = fullW - pad * 2;
+    const cardH = fullH - pad * 2;
+    const r = 40;
+
+    // Card background (pure white for pristine readability)
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    if (typeof ctx.roundRect === 'function') {
+      ctx.roundRect(cardX, cardY, cardW, cardH, r);
+    } else {
+      ctx.rect(cardX, cardY, cardW, cardH);
     }
+    ctx.fill();
 
-    ctx.textAlign = 'center';
+    // Solid accent card border
+    ctx.strokeStyle = milestone.color;
+    ctx.lineWidth = 14;
+    ctx.stroke();
+
+    // Inner subtle border line
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.06)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // 2. Top Header Bar
+    // Left pill: Checkpoint Badge
+    const cpText = `CHECKPOINT #0${milestone.order} • EDUCATION MILESTONE`;
+    ctx.font = 'bold 34px monospace';
+    const cpMetrics = ctx.measureText(cpText);
+    const cpW = cpMetrics.width + 56;
+    ctx.fillStyle = milestone.color + '20'; // 12% tint
+    ctx.beginPath();
+    if (typeof ctx.roundRect === 'function') {
+      ctx.roundRect(64, 60, cpW, 64, 16);
+    } else {
+      ctx.rect(64, 60, cpW, 64);
+    }
+    ctx.fill();
+    ctx.fillStyle = milestone.color;
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
+    ctx.fillText(cpText, 92, 92);
 
-    // Optional high-contrast pill backdrop for pristine readability
-    if (backgroundColor) {
-      const padX = 42;
-      const padY = 18;
-      const bgW = Math.min(width - 24, textW + padX * 2);
-      const bgH = Math.min(height - 24, currentFontSize + padY * 2);
-      const bgX = (width - bgW) / 2;
-      const bgY = (height - bgH) / 2;
+    // Right pill: Period
+    const yrText = milestone.period;
+    ctx.font = 'bold 34px monospace';
+    const yrMetrics = ctx.measureText(yrText);
+    const yrW = yrMetrics.width + 56;
+    const yrX = fullW - 64 - yrW;
+    ctx.fillStyle = '#f1f5f9';
+    ctx.beginPath();
+    if (typeof ctx.roundRect === 'function') {
+      ctx.roundRect(yrX, 60, yrW, 64, 16);
+    } else {
+      ctx.rect(yrX, 60, yrW, 64);
+    }
+    ctx.fill();
+    ctx.fillStyle = '#334155';
+    ctx.textAlign = 'left';
+    ctx.fillText(yrText, yrX + 28, 92);
 
-      ctx.fillStyle = backgroundColor;
-      ctx.beginPath();
-      if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(bgX, bgY, bgW, bgH, 24);
-      } else {
-        ctx.rect(bgX, bgY, bgW, bgH);
-      }
-      ctx.fill();
+    // Header divider line (horizontal dashed)
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([12, 10]);
+    ctx.beginPath();
+    ctx.moveTo(64, 160);
+    ctx.lineTo(fullW - 64, 160);
+    ctx.stroke();
+    ctx.setLineDash([]);
 
-      if (backgroundBorder) {
-        ctx.strokeStyle = backgroundBorder;
-        ctx.lineWidth = 4;
-        ctx.stroke();
-      }
+    // 3. Central Content
+    // Main Institution Title
+    ctx.textAlign = 'center';
+    let instFontSize = 78;
+    ctx.font = `bold ${instFontSize}px "CabinSketch", Impact, sans-serif`;
+    let instW = ctx.measureText(milestone.institution).width;
+    while (instW > fullW - 180 && instFontSize > 44) {
+      instFontSize -= 2;
+      ctx.font = `bold ${instFontSize}px "CabinSketch", Impact, sans-serif`;
+      instW = ctx.measureText(milestone.institution).width;
+    }
+    ctx.fillStyle = '#0c282d';
+    ctx.fillText(milestone.institution, fullW / 2, 330);
+
+    // Degree / Major
+    ctx.font = 'bold 48px "CabinSketch", sans-serif';
+    ctx.fillStyle = milestone.color;
+    ctx.fillText(milestone.degree, fullW / 2, 450);
+
+    // Description text card (inner clean panel)
+    const descY = 540;
+    const descH = 260;
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    if (typeof ctx.roundRect === 'function') {
+      ctx.roundRect(100, descY, fullW - 200, descH, 20);
+    } else {
+      ctx.rect(100, descY, fullW - 200, descH);
+    }
+    ctx.fill();
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.font = '500 42px sans-serif';
+    ctx.fillStyle = '#1e293b';
+    ctx.textAlign = 'center';
+    ctx.fillText(milestone.description, fullW / 2, descY + descH / 2);
+
+    // 4. Perforated center fracture seam
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([16, 12]);
+    ctx.beginPath();
+    ctx.moveTo(halfW, 40);
+    ctx.lineTo(halfW, fullH - 40);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 5. Card Footer
+    // Left Achievement Badge
+    const badgeText = milestone.badge;
+    ctx.font = 'bold 36px monospace';
+    const bMetrics = ctx.measureText(badgeText);
+    const bW = bMetrics.width + 64;
+    ctx.fillStyle = milestone.color;
+    ctx.beginPath();
+    if (typeof ctx.roundRect === 'function') {
+      ctx.roundRect(64, fullH - 170, bW, 76, 18);
+    } else {
+      ctx.rect(64, fullH - 170, bW, 76);
+    }
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'left';
+    ctx.fillText(badgeText, 96, fullH - 132);
+
+    // Right Verification pill
+    const verText = '✓ VERIFIED EDUCATION';
+    ctx.font = 'bold 32px monospace';
+    ctx.fillStyle = '#059669';
+    ctx.textAlign = 'right';
+    ctx.fillText(verText, fullW - 80, fullH - 132);
+
+    // 6. Split into Left Half and Right Half Textures
+    const leftCanvas = document.createElement('canvas');
+    leftCanvas.width = halfW;
+    leftCanvas.height = fullH;
+    const leftCtx = leftCanvas.getContext('2d');
+    if (leftCtx) {
+      leftCtx.drawImage(fullCanvas, 0, 0, halfW, fullH, 0, 0, halfW, fullH);
     }
 
-    if (strokeWidth > 0 && !backgroundColor) {
-      ctx.strokeStyle = strokeColor;
-      ctx.lineWidth = strokeWidth;
-      ctx.lineJoin = 'round';
-      ctx.miterLimit = 2;
-      ctx.strokeText(text, width / 2, height / 2);
+    const rightCanvas = document.createElement('canvas');
+    rightCanvas.width = halfW;
+    rightCanvas.height = fullH;
+    const rightCtx = rightCanvas.getContext('2d');
+    if (rightCtx) {
+      rightCtx.drawImage(fullCanvas, halfW, 0, halfW, fullH, 0, 0, halfW, fullH);
     }
 
-    ctx.fillStyle = color;
-    ctx.fillText(text, width / 2, height / 2);
+    const leftTex = new THREE.CanvasTexture(leftCanvas);
+    leftTex.generateMipmaps = true;
+    leftTex.minFilter = THREE.LinearMipmapLinearFilter;
+    leftTex.magFilter = THREE.LinearFilter;
+    leftTex.needsUpdate = true;
 
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.generateMipmaps = true;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
-    tex.magFilter = THREE.LinearFilter;
-    tex.needsUpdate = true;
-    return tex;
-  }, [text, fontSize, color, strokeColor, strokeWidth, fontFamily, isBold, backgroundColor, backgroundBorder, width, height]);
+    const rightTex = new THREE.CanvasTexture(rightCanvas);
+    rightTex.generateMipmaps = true;
+    rightTex.minFilter = THREE.LinearMipmapLinearFilter;
+    rightTex.magFilter = THREE.LinearFilter;
+    rightTex.needsUpdate = true;
+
+    return { leftTex, rightTex };
+  }, [milestone]);
 }
 
-// ── In-Sky Parting Milestone Component (Parts Away When Approached!) ──────────
-function PartingStoryMilestone({
+// ── 3D Fractured Milestone Card Component (Pecah / Breaks Apart When Passed!) ─
+function FracturedMilestoneCard({
   milestone,
   scrollRef,
-  texture,
 }: {
   milestone: PartingMilestone;
   scrollRef: React.MutableRefObject<number>;
-  texture: THREE.Texture | null;
 }) {
   const groupRef = useRef<THREE.Group>(null);
-  const leftTitleRef = useRef<THREE.Mesh>(null);
-  const rightTitleRef = useRef<THREE.Mesh>(null);
-  const motto1Ref = useRef<THREE.Mesh>(null);
-  const motto2Ref = useRef<THREE.Mesh>(null);
-  const badgeRef = useRef<THREE.Mesh>(null);
-  const islandRef = useRef<THREE.Mesh>(null);
+  const leftMeshRef = useRef<THREE.Mesh>(null);
+  const rightMeshRef = useRef<THREE.Mesh>(null);
+  const shardsGroupRef = useRef<THREE.Group>(null);
 
-  const baseY = 2.2;
-  const islandWidth = 5.6;
-  const islandHeight = islandWidth / (2816 / 1536);
+  const { leftTex, rightTex } = useFracturedCardTextures(milestone);
 
-  // Generate 4K ultra-sharp canvas textures for crisp typography
-  const titleLeftTex = useUltraSharpTextTexture({
-    text: milestone.titleLeft,
-    fontSize: 98,
-    color: '#0c282d',
-    strokeColor: '#ffffff',
-    strokeWidth: 14,
-    fontFamily: '"CabinSketch", Impact, sans-serif',
-    width: 1536,
-    height: 256,
-  });
+  const cardW = 7.6;
+  const cardH = 4.4;
+  const halfW = cardW / 2; // 3.8
+  const baseY = 1.8;
 
-  const titleRightTex = useUltraSharpTextTexture({
-    text: milestone.titleRight,
-    fontSize: 74,
-    color: '#0891b2',
-    backgroundColor: 'rgba(255, 255, 255, 0.96)',
-    backgroundBorder: '#0891b2',
-    fontFamily: '"CabinSketch", Impact, sans-serif',
-    width: 1536,
-    height: 220,
-  });
+  // 6 Procedural Shards around the center break line
+  const shards = useMemo(
+    () => [
+      { id: 's1', baseX: -0.4, baseY: baseY + 1.2, vx: -2.8, vy: 1.8, vz: 1.5, rotSpeed: 4.5, size: [0.65, 0.45] as [number, number] },
+      { id: 's2', baseX: 0.4, baseY: baseY + 1.1, vx: 2.6, vy: 2.0, vz: -1.2, rotSpeed: -5.0, size: [0.55, 0.5] as [number, number] },
+      { id: 's3', baseX: -0.5, baseY: baseY + 0.1, vx: -3.2, vy: 0.4, vz: 1.8, rotSpeed: -4.2, size: [0.6, 0.4] as [number, number] },
+      { id: 's4', baseX: 0.5, baseY: baseY - 0.1, vx: 3.4, vy: -0.5, vz: -1.5, rotSpeed: 4.8, size: [0.55, 0.45] as [number, number] },
+      { id: 's5', baseX: -0.4, baseY: baseY - 1.2, vx: -2.4, vy: -1.8, vz: 1.2, rotSpeed: 3.8, size: [0.5, 0.4] as [number, number] },
+      { id: 's6', baseX: 0.4, baseY: baseY - 1.1, vx: 2.8, vy: -2.0, vz: -1.4, rotSpeed: -4.4, size: [0.6, 0.35] as [number, number] },
+    ],
+    [baseY]
+  );
 
-  const motto1Tex = useUltraSharpTextTexture({
-    text: milestone.mottoLine1,
-    fontSize: 62,
-    color: '#042f2e',
-    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-    backgroundBorder: '#0891b2',
-    fontFamily: '"CabinSketch", Impact, sans-serif',
-    width: 2048,
-    height: 220,
-  });
-
-  const motto2Tex = useUltraSharpTextTexture({
-    text: milestone.mottoLine2,
-    fontSize: 52,
-    color: '#0f172a',
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    backgroundBorder: '#64748b',
-    fontFamily: 'sans-serif',
-    width: 2048,
-    height: 220,
-  });
-
-  const badgeTex = useUltraSharpTextTexture({
-    text: milestone.tagBadge,
-    fontSize: 56,
-    color: '#ffffff',
-    backgroundColor: milestone.color,
-    backgroundBorder: '#ffffff',
-    fontFamily: 'monospace',
-    width: 1536,
-    height: 200,
-  });
-
-  useFrame((state) => {
+  useFrame(() => {
     if (!groupRef.current) return;
-    const time = state.clock.elapsedTime;
     const scrollZ = scrollRef.current || 0;
-
-    // Relative distance of this milestone to the camera plane
     const distanceZ = scrollZ + milestone.zDistance;
 
     // Visibility range
     groupRef.current.visible = distanceZ > -55 && distanceZ < 15;
     if (!groupRef.current.visible) return;
 
-    // ── THE ITOM PARTING SPREAD MECHANIC ──────────────────────────────────────
-    // When approaching (-16 to -1.5): elements smoothly part to the sides!
-    const spreadStart = -16;
-    const spreadEnd = -1.5;
+    // ── THE DYNAMIC CARD FRACTURE / PECAH MECHANIC ────────────────────────────
+    // When far away (distanceZ < -15): Seamless unified card (spreadFactor = 0)
+    // As plane approaches (-15 to -1.5): The card fractures, shatters, and parts open!
+    const fractureStart = -15;
+    const fractureEnd = -1.5;
     let spreadFactor = 0;
 
-    if (distanceZ > spreadStart && distanceZ < spreadEnd) {
-      spreadFactor = (distanceZ - spreadStart) / (spreadEnd - spreadStart);
+    if (distanceZ > fractureStart && distanceZ < fractureEnd) {
+      spreadFactor = (distanceZ - fractureStart) / (fractureEnd - fractureStart);
       spreadFactor = Math.min(1, Math.max(0, spreadFactor));
-      spreadFactor = spreadFactor * spreadFactor; // ease-in
-    } else if (distanceZ >= spreadEnd) {
+      spreadFactor = spreadFactor * spreadFactor; // ease-in explosion
+    } else if (distanceZ >= fractureEnd) {
       spreadFactor = 1;
     }
 
-    const maxSpread = 10.5; // lateral distance elements disperse outward
+    const maxSpread = 5.6;
 
-    // Left Title: moves to the left (-X)
-    if (leftTitleRef.current) {
-      leftTitleRef.current.position.x = -spreadFactor * maxSpread * 0.75;
+    // Left Half Piece (breaks away left, tilts roll and yaw outward)
+    if (leftMeshRef.current) {
+      leftMeshRef.current.position.x = -halfW / 2 - spreadFactor * maxSpread;
+      leftMeshRef.current.position.y = baseY + spreadFactor * 0.7;
+      leftMeshRef.current.position.z = spreadFactor * 0.4;
+      leftMeshRef.current.rotation.z = spreadFactor * 0.26;
+      leftMeshRef.current.rotation.y = -spreadFactor * 0.38;
     }
 
-    // Right Title: moves to the right (+X)
-    if (rightTitleRef.current) {
-      rightTitleRef.current.position.x = spreadFactor * maxSpread * 0.65;
+    // Right Half Piece (breaks away right, tilts roll and yaw outward)
+    if (rightMeshRef.current) {
+      rightMeshRef.current.position.x = halfW / 2 + spreadFactor * maxSpread;
+      rightMeshRef.current.position.y = baseY - spreadFactor * 0.7;
+      rightMeshRef.current.position.z = -spreadFactor * 0.4;
+      rightMeshRef.current.rotation.z = -spreadFactor * 0.26;
+      rightMeshRef.current.rotation.y = spreadFactor * 0.38;
     }
 
-    // Central Island / Avatar: parts upward and slightly to the left, bobbing gently
-    if (islandRef.current) {
-      islandRef.current.position.y =
-        baseY + Math.sin(time * 0.85) * 0.15 + spreadFactor * 2.8;
-      islandRef.current.position.x = -spreadFactor * maxSpread * 0.25;
+    // Shards explosion physics
+    if (shardsGroupRef.current) {
+      shardsGroupRef.current.children.forEach((child, idx) => {
+        const s = shards[idx];
+        if (!s) return;
+        child.scale.setScalar(spreadFactor > 0.05 ? Math.min(1, spreadFactor * 1.5) : 0);
+        child.position.x = s.baseX + spreadFactor * s.vx * 1.8;
+        child.position.y = s.baseY + spreadFactor * s.vy * 1.5;
+        child.position.z = spreadFactor * s.vz * 1.2;
+        child.rotation.z = spreadFactor * s.rotSpeed;
+        child.rotation.x = spreadFactor * s.rotSpeed * 0.6;
+      });
     }
 
-    // Subtitle Line 1: spreads right (+X)
-    if (motto1Ref.current) {
-      motto1Ref.current.position.x = spreadFactor * maxSpread * 0.7;
-    }
-
-    // Badge: spreads downward and right
-    if (badgeRef.current) {
-      badgeRef.current.position.x = spreadFactor * maxSpread * 0.55;
-      badgeRef.current.position.y = -0.85 - spreadFactor * 1.0;
-    }
-
-    // Smooth fade out after the plane passes through
+    // Smooth fade out after plane passes
     let fadeOpacity = 1;
     if (distanceZ > 0) {
       fadeOpacity = Math.max(0, 1 - distanceZ / 10);
     }
 
-    const applyOpacity = (mesh: THREE.Mesh | null, op: number) => {
+    const applyOp = (mesh: THREE.Mesh | null) => {
       if (mesh && mesh.material) {
-        (mesh.material as THREE.MeshBasicMaterial).opacity = op;
+        (mesh.material as THREE.MeshBasicMaterial).opacity = fadeOpacity;
       }
     };
-
-    applyOpacity(leftTitleRef.current, fadeOpacity);
-    applyOpacity(rightTitleRef.current, fadeOpacity);
-    applyOpacity(motto1Ref.current, fadeOpacity * 0.95);
-    applyOpacity(badgeRef.current, fadeOpacity);
-    applyOpacity(islandRef.current, fadeOpacity);
+    applyOp(leftMeshRef.current);
+    applyOp(rightMeshRef.current);
   });
 
   return (
     <group ref={groupRef} position={[0, 0, milestone.zDistance]}>
-      {/* Central Island / Reclining Avatar on Cloud */}
-      {texture && (
-        <mesh ref={islandRef} position={[0, baseY, 0]}>
-          <planeGeometry args={[islandWidth, islandHeight]} />
+      {/* Left Card Half */}
+      {leftTex && (
+        <mesh ref={leftMeshRef} position={[-halfW / 2, baseY, 0]}>
+          <planeGeometry args={[halfW, cardH]} />
           <meshBasicMaterial
-            map={texture}
+            map={leftTex}
             transparent
             side={THREE.DoubleSide}
             depthWrite={false}
@@ -459,12 +506,12 @@ function PartingStoryMilestone({
         </mesh>
       )}
 
-      {/* Main Title Left (Spreads Left) */}
-      {titleLeftTex && (
-        <mesh ref={leftTitleRef} position={[0, 4.8, 0.1]}>
-          <planeGeometry args={[7.2, 1.2]} />
+      {/* Right Card Half */}
+      {rightTex && (
+        <mesh ref={rightMeshRef} position={[halfW / 2, baseY, 0]}>
+          <planeGeometry args={[halfW, cardH]} />
           <meshBasicMaterial
-            map={titleLeftTex}
+            map={rightTex}
             transparent
             side={THREE.DoubleSide}
             depthWrite={false}
@@ -472,44 +519,16 @@ function PartingStoryMilestone({
         </mesh>
       )}
 
-      {/* Main Title Right (Spreads Right) */}
-      {titleRightTex && (
-        <mesh ref={rightTitleRef} position={[0, 4.0, 0.1]}>
-          <planeGeometry args={[5.6, 1.1]} />
-          <meshBasicMaterial
-            map={titleRightTex}
-            transparent
-            side={THREE.DoubleSide}
-            depthWrite={false}
-          />
-        </mesh>
-      )}
-
-      {/* Motto Line 1 (Spreads Right) */}
-      {motto1Tex && (
-        <mesh ref={motto1Ref} position={[0, 0.1, 0.1]}>
-          <planeGeometry args={[7.2, 0.78]} />
-          <meshBasicMaterial
-            map={motto1Tex}
-            transparent
-            side={THREE.DoubleSide}
-            depthWrite={false}
-          />
-        </mesh>
-      )}
-
-      {/* Tag Badge (Spreads Down/Right) */}
-      {badgeTex && (
-        <mesh ref={badgeRef} position={[0, -0.85, 0.1]}>
-          <planeGeometry args={[5.4, 0.72]} />
-          <meshBasicMaterial
-            map={badgeTex}
-            transparent
-            side={THREE.DoubleSide}
-            depthWrite={false}
-          />
-        </mesh>
-      )}
+      {/* Floating Shard Pieces (Burst outward when cracked!) */}
+      <group ref={shardsGroupRef}>
+        {shards.map((s) => (
+          <mesh key={s.id} position={[s.baseX, s.baseY, 0]}>
+            <planeGeometry args={s.size} />
+            <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} transparent />
+            <Edges linewidth={2} threshold={15} color={milestone.color} />
+          </mesh>
+        ))}
+      </group>
     </group>
   );
 }
@@ -604,7 +623,7 @@ function DriftingPaperCloud({
   );
 }
 
-// ── Infinite Sky World (Full-Sky Clouds + Parting Story Milestones) ───────────
+// ── Infinite Sky World (Full-Sky Clouds + Fractured Milestone Cards) ──────────
 function SkyFlightWorld({
   milestones,
   scrollRef,
@@ -614,7 +633,6 @@ function SkyFlightWorld({
 }) {
   const worldGroupRef = useRef<THREE.Group>(null);
 
-  // Synchronous texture loading via THREE.TextureLoader (NEVER suspends!)
   const textures = useMemo(() => {
     if (typeof window === 'undefined') return [];
     const loader = new THREE.TextureLoader();
@@ -626,18 +644,6 @@ function SkyFlightWorld({
     });
   }, []);
 
-  // Preload milestone island textures
-  const milestoneTextures = useMemo<Record<string, THREE.Texture | undefined>>(() => {
-    if (typeof window === 'undefined') return {};
-    const loader = new THREE.TextureLoader();
-    return {
-      '/textures/about/awatarnachmurce.webp': loader.load('/textures/about/awatarnachmurce.webp'),
-      '/textures/about/uowyspa.webp': loader.load('/textures/about/uowyspa.webp'),
-      '/textures/about/freelancewyspa.webp': loader.load('/textures/about/freelancewyspa.webp'),
-    };
-  }, []);
-
-  // Generate 80 clouds distributed across the ENTIRE sky (including top ceiling!)
   const cloudList = useMemo(() => {
     const list: Array<{
       id: string;
@@ -673,15 +679,14 @@ function SkyFlightWorld({
       });
     }
 
-    // 2. Dedicated Top Ceiling Clouds (24 clouds filling the upper 20% sky ceiling!)
-    for (let j = 0; j < 24; j++) {
+    // 2. Dedicated Top Ceiling Clouds (20 clouds filling the upper sky ceiling)
+    for (let j = 0; j < 20; j++) {
       const seed = j * 31 + 13;
-      const z = -((j * 9.2) % 210) - 4;
+      const z = -((j * 9.5) % 210) - 4;
       const dist = 4.2 - z;
       const factor = 0.64 + ((seed % 5) / 5) * 0.22;
       const y = 0.4 + Math.tan((26 * Math.PI) / 180) * dist * factor;
-      // Offset slightly to the right to leave the top-left brand header crystal clear
-      const rawX = ((seed * 5) % 18) - 5.5; // from -5.5 to +12.5
+      const rawX = ((seed * 5) % 18) - 5.0; // -5.0 to +13.0
       const x = rawX * (dist / 16);
       const texIdx = (j * 3) % CLOUD_TEXTURES.length;
       const scale = (1.05 + ((seed % 4) / 4) * 0.55) * (dist / 16);
@@ -710,13 +715,12 @@ function SkyFlightWorld({
 
   return (
     <group ref={worldGroupRef}>
-      {/* 5 In-Sky Parting Milestones */}
+      {/* 5 In-Sky Fractured Milestone Cards (Pecah / Breaks Apart!) */}
       {milestones.map((m) => (
-        <PartingStoryMilestone
+        <FracturedMilestoneCard
           key={m.id}
           milestone={m}
           scrollRef={scrollRef}
-          texture={m.textureAsset ? milestoneTextures[m.textureAsset] || null : null}
         />
       ))}
 
@@ -759,10 +763,8 @@ function ManeuveringPaperAirplane({
     const vel = scrollVelocityRef.current || 0;
     const time = state.clock.elapsedTime;
 
-    // Chunk progress (0 to 1 every 40 units)
     const chunkProgress = (((scrollZ % 40) + 40) % 40) / 40;
 
-    // Dynamic flight banking & pitching maneuver curve
     let bankAngle = Math.sin(chunkProgress * Math.PI * 2) * 0.18;
     let pitchAngle = Math.sin(chunkProgress * Math.PI * 4) * 0.07;
 
@@ -776,7 +778,6 @@ function ManeuveringPaperAirplane({
     camera.rotation.x = currentPitch.current * 0.6;
 
     if (airplaneRef.current) {
-      // Gentle swaying flight float (runs always!)
       const idleFloatY = Math.sin(time * 2.2) * 0.03;
       const idleFloatX = Math.sin(time * 1.4) * 0.035;
 
@@ -819,14 +820,17 @@ function PaperSvgFallback({
           CHECKPOINT #{current.order.toString().padStart(2, '0')}
         </Badge>
         <h2 className="text-3xl font-serif font-bold text-[#0c282d] mb-1">
-          {current.titleLeft} {current.titleRight}
+          {current.institution}
         </h2>
         <p className="text-sm font-semibold text-[#0891b2] mb-3">
-          {current.mottoLine1}
+          {current.degree} ({current.period})
         </p>
-        <p className="text-xs sm:text-sm text-[#2d5f68] leading-relaxed">
-          {current.mottoLine2}
+        <p className="text-xs sm:text-sm text-[#2d5f68] leading-relaxed mb-4">
+          {current.description}
         </p>
+        <Badge className="bg-[#0891b2] text-white font-mono text-xs">
+          {current.badge}
+        </Badge>
       </div>
 
       <div className="relative z-10 flex items-center gap-2 overflow-x-auto pb-2">
@@ -882,23 +886,13 @@ export function ItomPaperFlightTimeline({
     return DEFAULT_PARTING_MILESTONES.map((m, idx) => {
       const matched = raw[idx];
       if (!matched) return m;
-      if (idx === 0) {
-        return {
-          ...m,
-          titleLeft: 'FAHMI BAHTIAR',
-          titleRight: '(BLIMBING)',
-          mottoLine1: matched.institution ? `"Elementary School • ${matched.institution}"` : m.mottoLine1,
-          mottoLine2: matched.description || m.mottoLine2,
-          tagBadge: matched.gpa ? `★ ${matched.gpa} (${matched.period})` : m.tagBadge,
-        };
-      }
       return {
         ...m,
-        titleLeft: matched.institution ? matched.institution.split(' ').slice(0, 3).join(' ') : m.titleLeft,
-        titleRight: matched.period ? `(${matched.period})` : m.titleRight,
-        mottoLine1: matched.degree ? `"${matched.degree}"` : m.mottoLine1,
-        mottoLine2: matched.description || m.mottoLine2,
-        tagBadge: matched.gpa ? `★ ${matched.gpa}` : m.tagBadge,
+        institution: matched.institution ? matched.institution.toUpperCase() : m.institution,
+        degree: matched.degree || m.degree,
+        period: matched.period || m.period,
+        description: matched.description || m.description,
+        badge: matched.gpa ? `★ ${matched.gpa}` : m.badge,
       };
     });
   }, [educationRecords]);
@@ -910,7 +904,6 @@ export function ItomPaperFlightTimeline({
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      // Controlled, smooth flight speed
       const delta = e.deltaY * 0.002;
       scrollVelocityRef.current += delta;
       scrollVelocityRef.current = Math.max(-2.0, Math.min(2.0, scrollVelocityRef.current));
@@ -976,7 +969,6 @@ export function ItomPaperFlightTimeline({
   const handleSelectMilestone = useCallback(
     (idx: number) => {
       setSelectedIdx(idx);
-      // Place plane just before milestone so content is in view and parts as you fly forward
       const targetScroll = idx === 0 ? 0 : Math.abs(milestones[idx].zDistance) - 15;
       scrollRef.current = targetScroll;
       scrollVelocityRef.current = 0;
@@ -1042,7 +1034,7 @@ export function ItomPaperFlightTimeline({
               scrollVelocityRef={scrollVelocityRef}
             />
 
-            {/* Infinite Sky World (Full Sky Clouds + Parting Milestones) */}
+            {/* Infinite Sky World (Full Sky Clouds + Fractured Cards) */}
             <SkyFlightWorld
               milestones={milestones}
               scrollRef={scrollRef}
@@ -1111,7 +1103,7 @@ export function ItomPaperFlightTimeline({
                   }`}
                 >
                   <span className="opacity-75 mr-1">0{m.order}</span>
-                  <span>{m.titleLeft.split(' ')[0]}</span>
+                  <span>{m.institution.split(' ')[0]}</span>
                 </button>
               );
             })}
