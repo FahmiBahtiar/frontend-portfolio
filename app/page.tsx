@@ -67,17 +67,6 @@ function LazySection({
   );
 }
 
-/** Footer is below the last section — defer its mount until scrolled near. */
-function LazyFooter() {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '300px' });
-  return (
-    <div ref={ref} className="min-h-[160px]">
-      {inView && <Footer />}
-    </div>
-  );
-}
-
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeSection, setActiveSection] = useState(0);
@@ -292,7 +281,7 @@ export default function HomePage() {
 
       {/* Main App - Pre-rendered underneath loading screen for seamless zero-flicker reveal */}
       <div 
-        className={`relative w-full overflow-x-hidden bg-[#E2F4F3] text-[#0c282d] transition-opacity duration-500 ${
+        className={`relative min-h-screen w-full flex flex-col justify-between overflow-x-hidden bg-[#E2F4F3] text-[#0c282d] transition-opacity duration-500 ${
           isLoading ? 'pointer-events-none select-none max-h-screen overflow-hidden' : ''
         }`}
         style={{
@@ -301,7 +290,7 @@ export default function HomePage() {
         }}
       >
         {/* Main Content - All sections stacked vertically */}
-        <main id="main-content" tabIndex={-1} className="relative z-[2] focus:outline-none">
+        <main id="main-content" tabIndex={-1} className="flex-1 relative z-[2] focus:outline-none">
           {sections.map((section, index) => {
             const SectionComponent = section.component;
             return (
@@ -323,8 +312,8 @@ export default function HomePage() {
           })}
         </main>
 
-        {/* Footer */}
-        <LazyFooter />
+        {/* Footer sits flush at the very bottom */}
+        <Footer />
 
         {/* Gallery Modal/Overlay */}
         <AnimatePresence mode="wait">

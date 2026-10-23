@@ -40,7 +40,7 @@ export default function Footer() {
   return (
     <footer
       ref={footerRef}
-      className="relative z-[2] bg-white border-t border-[#B9E7E6]"
+      className="w-full mt-auto relative z-[2] bg-white border-t border-[#B9E7E6]"
       aria-label="Site footer"
     >
       <motion.div
