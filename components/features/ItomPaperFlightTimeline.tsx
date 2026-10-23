@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useRef, useMemo, useEffect, Suspense, useCallback } from 'react';
-import { Canvas, useFrame, useThree, useLoader } from '@react-three/fiber';
-import { Edges, Text } from '@react-three/drei';
+import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Edges } from '@react-three/drei';
 import * as THREE from 'three';
 import {
   Play,
@@ -14,14 +14,13 @@ import {
   Award,
   Sparkles,
   Plane,
-  Compass,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { Education } from '@/lib/types/admin';
 import { FALLBACK_EDUCATION_RECORDS } from '@/lib/fallback-data';
 
-// ── Available Cloud Textures (from itomdev.com/about) ────────────────────────
+// ── Cloud Texture Assets (from itomdev.com/about) ───────────────────────────
 const CLOUD_TEXTURES = [
   '/textures/clouds/1131c3eb-dfae-423f-924b-ff39d8ccd6dc.webp',
   '/textures/clouds/254b8ec8-d6f7-4275-956f-7bab65b2ce2d.webp',
@@ -44,19 +43,18 @@ const CLOUD_ASPECT_RATIOS: Record<string, number> = {
   'f6e358bc-d27c-41dd-95f4-6787a835c41e.webp': 1.875,
 };
 
-// ── Milestones Configuration (Spacing: 40 units per chunk) ───────────────────
+// ── Milestone Structure ─────────────────────────────────────────────────────
 export interface ItomMilestone {
   id: string;
   order: number;
   fixCode: string;
   zDistance: number; // Z position in world space
-  tProgress: number; // 0.0 to 1.0 along the flight journey
   degree: string;
   institution: string;
   period: string;
   highlight: string;
   description: string;
-  decorColor: string;
+  color: string;
 }
 
 export const DEFAULT_ITOM_MILESTONES: ItomMilestone[] = [
@@ -65,76 +63,71 @@ export const DEFAULT_ITOM_MILESTONES: ItomMilestone[] = [
     order: 1,
     fixCode: 'DMK 01',
     zDistance: -18,
-    tProgress: 0.10,
     degree: 'Elementary School',
     institution: 'MI Negeri 1 Demak',
     period: '2010 – 2018',
     highlight: 'Top 10 Student',
     description:
       'Building strong academic foundation and character development. Active in journey and survival club, sparking a lifelong fascination with aviation, mathematics, and exploration.',
-    decorColor: '#6FD4E1',
+    color: '#0891b2',
   },
   {
     id: '03e13fb8-0688-4df4-b2fc-7f287b8ddabb',
     order: 2,
     fixCode: 'DMN 02',
     zDistance: -58,
-    tProgress: 0.30,
     degree: 'Junior High School',
     institution: 'SMP Negeri 2 Demak',
     period: '2016 – 2019',
     highlight: 'Honor Roll Graduate',
     description:
       'Initiated self-taught programming journey with fundamental algorithms, logic systems, and early software experiments while consistently maintaining academic excellence.',
-    decorColor: '#10b981',
+    color: '#059669',
   },
   {
     id: '12495985-a7eb-4fd9-a7d2-273c9d7028db',
     order: 3,
     fixCode: 'BNR 03',
     zDistance: -98,
-    tProgress: 0.50,
     degree: 'Tech Scholarship',
     institution: 'Binar Academy',
     period: '2021 – 2021',
     highlight: 'Djarum Foundation Scholar',
     description:
       'Awarded prestigious Djarum Foundation scholarship for intensive full-stack engineering, studying agile paradigms, cloud architectures, and modern web application development.',
-    decorColor: '#f59e0b',
+    color: '#d97706',
   },
   {
     id: '41f518cd-38da-4d95-8314-5c943a55d10e',
     order: 4,
     fixCode: 'RUS 04',
     zDistance: -138,
-    tProgress: 0.70,
     degree: 'Vocational High School',
     institution: 'SMK Raden Umar Said',
     period: '2019 – 2022',
     highlight: 'Software Engineering Major',
     description:
       'Graduated from the renowned creative and tech academy SMK Raden Umar Said. Specialized in backend infrastructure, relational databases, security models, and high-performance APIs.',
-    decorColor: '#8b5cf6',
+    color: '#7c3aed',
   },
   {
     id: '691a3904-f1ba-440d-a650-f77e17c495c2',
     order: 5,
     fixCode: 'UDN 05',
     zDistance: -178,
-    tProgress: 0.90,
     degree: 'Bachelor of Computer Science',
     institution: 'Dian Nuswantoro University',
     period: '2022 – 2026',
     highlight: 'Active • Informatics Engineering',
     description:
       'Pursuing Bachelor Degree in Informatics Engineering with focus on distributed systems, data science, and cloud networking. Merging aviation telemetry with autonomous AI pipelines.',
-    decorColor: '#3b82f6',
+    color: '#2563eb',
   },
 ];
 
 // ── Authentic ITom Low-Poly Origami Paper Airplane ───────────────────────────
 function PaperAirplane({
-  color = '#faf8f5',
+  color = '#fcfbfa',
   scale = 0.95,
 }: {
   color?: string;
@@ -142,7 +135,7 @@ function PaperAirplane({
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
 
-  // Exact BufferGeometry specification from portfolio-itom/PaperAirplane.jsx
+  // Exact BufferGeometry from ITomPoland/portfolio-itom/PaperAirplane.jsx
   const geometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
     const vertices = new Float32Array([
@@ -211,12 +204,179 @@ function PaperAirplane({
   );
 }
 
-// ── Single Floating Paper Cloud (with ITom Drift & Evasion Physics) ───────────
-function FloatingCloud({
+// ── In-Sky 3D CanvasTexture Milestone Banner (Instant Zero-Network) ──────────
+function InSkyMilestoneGate({
+  milestone,
+  scrollRef,
+  onSelect,
+}: {
+  milestone: ItomMilestone;
+  scrollRef: React.MutableRefObject<number>;
+  onSelect: () => void;
+}) {
+  const groupRef = useRef<THREE.Group>(null);
+  const bannerMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const ringMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const currentOpacity = useRef(0);
+
+  // Generate crisp 2D canvas texture with dashed border & typography
+  const texture = useMemo(() => {
+    if (typeof document === 'undefined') return null;
+    const canvas = document.createElement('canvas');
+    canvas.width = 640;
+    canvas.height = 360;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    ctx.clearRect(0, 0, 640, 360);
+
+    // Sketch card background with dashed outline
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+    ctx.strokeStyle = milestone.color;
+    ctx.lineWidth = 5;
+    ctx.setLineDash([14, 8]);
+
+    const r = 28;
+    ctx.beginPath();
+    ctx.moveTo(r, 8);
+    ctx.lineTo(640 - r, 8);
+    ctx.quadraticCurveTo(640 - 8, 8, 640 - 8, r);
+    ctx.lineTo(640 - 8, 360 - r);
+    ctx.quadraticCurveTo(640 - 8, 360 - 8, 640 - r, 360 - 8);
+    ctx.lineTo(r, 360 - 8);
+    ctx.quadraticCurveTo(8, 360 - 8, 8, 360 - r);
+    ctx.lineTo(8, r);
+    ctx.quadraticCurveTo(8, 8, r, 8);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Checkpoint Tag
+    ctx.setLineDash([]);
+    ctx.fillStyle = milestone.color;
+    ctx.font = 'bold 22px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(
+      `CHECKPOINT #${milestone.order.toString().padStart(2, '0')} • ${milestone.fixCode}`,
+      320,
+      54
+    );
+
+    // Main Institution Title
+    ctx.fillStyle = '#0c282d';
+    ctx.font = 'bold 36px sans-serif';
+    ctx.fillText(milestone.institution, 320, 118);
+
+    // Degree & Period
+    ctx.fillStyle = '#2d5f68';
+    ctx.font = '600 24px sans-serif';
+    ctx.fillText(`${milestone.degree} (${milestone.period})`, 320, 170);
+
+    // Highlight Honor Box
+    ctx.fillStyle = '#E2F4F3';
+    ctx.fillRect(140, 208, 360, 44);
+    ctx.strokeStyle = '#B9E7E6';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(140, 208, 360, 44);
+
+    ctx.fillStyle = '#0891b2';
+    ctx.font = 'bold 20px monospace';
+    ctx.fillText(`★ ${milestone.highlight}`, 320, 237);
+
+    // Narrative preview
+    ctx.fillStyle = '#527d85';
+    ctx.font = '18px sans-serif';
+    const preview =
+      milestone.description.length > 56
+        ? milestone.description.slice(0, 56) + '...'
+        : milestone.description;
+    ctx.fillText(preview, 320, 296);
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.needsUpdate = true;
+    return tex;
+  }, [milestone]);
+
+  useFrame((_, delta) => {
+    if (!groupRef.current) return;
+    const scrollZ = scrollRef.current || 0;
+    // Relative distance to camera
+    const relZ = scrollZ + milestone.zDistance;
+
+    // Smooth proximity fade (ITom StoryMilestone.jsx formula)
+    let targetOp = 0;
+    if (relZ < -55) {
+      targetOp = 0;
+    } else if (relZ >= -55 && relZ <= -20) {
+      targetOp = (relZ - -55) / 35;
+    } else if (relZ > -20 && relZ < -4) {
+      targetOp = 1.0;
+    } else if (relZ >= -4 && relZ <= 8) {
+      targetOp = 1.0 - (relZ - -4) / 12;
+    } else {
+      targetOp = 0;
+    }
+
+    currentOpacity.current = THREE.MathUtils.damp(
+      currentOpacity.current,
+      Math.max(0, Math.min(1, targetOp)),
+      6.0,
+      delta
+    );
+
+    const op = currentOpacity.current;
+    const s = 0.85 + op * 0.18;
+    groupRef.current.scale.set(s, s, s);
+
+    if (bannerMatRef.current) bannerMatRef.current.opacity = op * 0.95;
+    if (ringMatRef.current) ringMatRef.current.opacity = op * 0.75;
+  });
+
+  return (
+    <group
+      ref={groupRef}
+      position={[0, 0.45, milestone.zDistance]}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect();
+      }}
+    >
+      {/* 3D Nav Ring Gate (Plane flies through) */}
+      <mesh rotation={[Math.PI / 4, Math.PI / 4, 0]}>
+        <torusGeometry args={[2.2, 0.035, 16, 48]} />
+        <meshBasicMaterial
+          ref={ringMatRef}
+          color={milestone.color}
+          transparent
+          opacity={0}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+
+      {/* 2D Canvas Texture Milestone Banner */}
+      {texture && (
+        <mesh position={[0, 0, 0]}>
+          <planeGeometry args={[6.4, 3.6]} />
+          <meshBasicMaterial
+            ref={bannerMatRef}
+            map={texture}
+            transparent
+            opacity={0}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      )}
+    </group>
+  );
+}
+
+// ── Single Floating Cloud (Non-Suspending Direct Texture Loading) ─────────────
+function SingleCloud({
   position,
   scale = 1.0,
-  baseOpacity = 0.8,
-  texturePath,
+  baseOpacity = 0.75,
+  texture,
+  fileName,
   driftSpeed = 0.5,
   driftAmount = 0.8,
   bobAmount = 0.15,
@@ -226,7 +386,8 @@ function FloatingCloud({
   position: [number, number, number];
   scale?: number;
   baseOpacity?: number;
-  texturePath: string;
+  texture: THREE.Texture;
+  fileName: string;
   driftSpeed?: number;
   driftAmount?: number;
   bobAmount?: number;
@@ -237,12 +398,8 @@ function FloatingCloud({
   const materialRef = useRef<THREE.MeshBasicMaterial>(null);
   const basePos = useRef(position);
 
-  // Load cloud texture
-  const texture = useLoader(THREE.TextureLoader, texturePath);
-
-  const fileName = texturePath.split('/').pop() || '';
   const aspect = CLOUD_ASPECT_RATIOS[fileName] || 2.0;
-  const width = 3.6 * scale;
+  const width = 3.8 * scale;
   const height = width / aspect;
 
   useFrame((state) => {
@@ -250,7 +407,7 @@ function FloatingCloud({
     const time = state.clock.elapsedTime;
     const currentScroll = scrollRef.current || 0;
 
-    // World Z position relative to camera (camera is at z=0, world moves with scroll)
+    // World Z position relative to camera
     const worldZ = currentScroll + basePos.current[2];
 
     // ITom Cloud Evasion: As clouds approach camera, they glide outward to clear flight view
@@ -260,7 +417,7 @@ function FloatingCloud({
 
     if (worldZ > evasionStart && worldZ < evasionEnd) {
       evasionFactor = (worldZ - evasionStart) / (evasionEnd - evasionStart);
-      evasionFactor = evasionFactor * evasionFactor * (3 - 2 * evasionFactor); // smoothstep
+      evasionFactor = evasionFactor * evasionFactor * (3 - 2 * evasionFactor);
     } else if (worldZ >= evasionEnd) {
       evasionFactor = 1;
     }
@@ -268,7 +425,7 @@ function FloatingCloud({
     const dirX = basePos.current[0] >= 0 ? 1 : -1;
     const evasionX = evasionFactor * 8.5 * dirX;
 
-    // Organic harmonic drift & bobbing
+    // Organic drift & bobbing
     const driftX = Math.sin(time * driftSpeed + timeOffset) * driftAmount;
     const driftY = Math.sin(time * driftSpeed * 0.7 + timeOffset + 1.5) * bobAmount;
 
@@ -303,157 +460,8 @@ function FloatingCloud({
   );
 }
 
-// ── In-Sky 3D Story Milestone (Fades in on Approach, Scales, Frames Text) ──────
-function InSkyStoryMilestone({
-  milestone,
-  scrollRef,
-  onSelect,
-}: {
-  milestone: ItomMilestone;
-  scrollRef: React.MutableRefObject<number>;
-  onSelect: () => void;
-}) {
-  const groupRef = useRef<THREE.Group>(null);
-  const titleRef = useRef<any>(null);
-  const subtitleRef = useRef<any>(null);
-  const cardMatRef = useRef<THREE.MeshBasicMaterial>(null);
-  const currentOpacity = useRef(0);
-
-  useFrame((_, delta) => {
-    if (!groupRef.current) return;
-    const scrollZ = scrollRef.current || 0;
-    // World distance relative to camera (camera is at z=0)
-    const relZ = scrollZ + milestone.zDistance;
-
-    // Proximity fade curve (matches ITom StoryMilestone.jsx)
-    // FADE_IN_START: -45, FADE_IN_END: -20, FADE_OUT_START: -6, FADE_OUT_END: 4
-    let targetOpacity = 0;
-    if (relZ < -50) {
-      targetOpacity = 0;
-    } else if (relZ >= -50 && relZ <= -22) {
-      targetOpacity = (relZ - -50) / 28;
-    } else if (relZ > -22 && relZ < -6) {
-      targetOpacity = 1.0;
-    } else if (relZ >= -6 && relZ <= 6) {
-      targetOpacity = 1.0 - (relZ - -6) / 12;
-    } else {
-      targetOpacity = 0;
-    }
-
-    currentOpacity.current = THREE.MathUtils.damp(
-      currentOpacity.current,
-      Math.max(0, Math.min(1, targetOpacity)),
-      6.0,
-      delta
-    );
-
-    const op = currentOpacity.current;
-
-    // Apply scale growth on approach
-    const s = 0.85 + op * 0.2;
-    groupRef.current.scale.set(s, s, s);
-
-    if (titleRef.current) titleRef.current.fillOpacity = op;
-    if (subtitleRef.current) subtitleRef.current.fillOpacity = op * 0.9;
-    if (cardMatRef.current) cardMatRef.current.opacity = op * 0.92;
-  });
-
-  return (
-    <group
-      ref={groupRef}
-      position={[0, 0.4, milestone.zDistance]}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect();
-      }}
-    >
-      {/* 3D Floating Sketch Card Background with Fold Border */}
-      <mesh position={[0, 0, -0.05]}>
-        <planeGeometry args={[7.6, 4.4]} />
-        <meshBasicMaterial
-          ref={cardMatRef}
-          color="#ffffff"
-          transparent
-          opacity={0}
-          side={THREE.DoubleSide}
-        />
-        <Edges linewidth={2} threshold={15} color="#0891b2" />
-      </mesh>
-
-      {/* Checkpoint Tag */}
-      <Text
-        position={[0, 1.45, 0.05]}
-        fontSize={0.24}
-        color="#0891b2"
-        anchorX="center"
-        anchorY="middle"
-        font="/fonts/CabinSketch-Bold.ttf"
-        fillOpacity={0}
-      >
-        {`CHECKPOINT #${milestone.order.toString().padStart(2, '0')} • ${milestone.fixCode}`}
-      </Text>
-
-      {/* Main Educational Institution Headline */}
-      <Text
-        ref={titleRef}
-        position={[0, 0.7, 0.05]}
-        fontSize={0.62}
-        color="#0c282d"
-        anchorX="center"
-        anchorY="middle"
-        font="/fonts/CabinSketch-Bold.ttf"
-        fillOpacity={0}
-      >
-        {milestone.institution}
-      </Text>
-
-      {/* Degree & Period Subtitle */}
-      <Text
-        ref={subtitleRef}
-        position={[0, 0.05, 0.05]}
-        fontSize={0.3}
-        color="#2d5f68"
-        anchorX="center"
-        anchorY="middle"
-        font="/fonts/CabinSketch-Regular.ttf"
-        fillOpacity={0}
-      >
-        {`${milestone.degree} (${milestone.period})`}
-      </Text>
-
-      {/* Highlight Honor Pill */}
-      <Text
-        position={[0, -0.65, 0.05]}
-        fontSize={0.26}
-        color="#0891b2"
-        anchorX="center"
-        anchorY="middle"
-        font="/fonts/CabinSketch-Bold.ttf"
-        fillOpacity={0}
-      >
-        {`★ ${milestone.highlight}`}
-      </Text>
-
-      {/* Short Narrative Preview */}
-      <Text
-        position={[0, -1.25, 0.05]}
-        fontSize={0.21}
-        maxWidth={6.8}
-        lineHeight={1.3}
-        color="#527d85"
-        anchorX="center"
-        anchorY="middle"
-        font="/fonts/CabinSketch-Regular.ttf"
-        fillOpacity={0}
-      >
-        {milestone.description}
-      </Text>
-    </group>
-  );
-}
-
-// ── Complete Infinite Sky World (Clouds + Milestones + Moving World Group) ────
-function ItomSkyWorld({
+// ── Infinite Sky World (Clouds + Story Milestones + Moving Group) ─────────────
+function InfiniteSkyWorld({
   milestones,
   scrollRef,
   onSelectMilestone,
@@ -464,13 +472,25 @@ function ItomSkyWorld({
 }) {
   const worldGroupRef = useRef<THREE.Group>(null);
 
+  // Synchronous texture loading via THREE.TextureLoader (NEVER suspends)
+  const textures = useMemo(() => {
+    if (typeof window === 'undefined') return [];
+    const loader = new THREE.TextureLoader();
+    return CLOUD_TEXTURES.map((url) => {
+      const tex = loader.load(url);
+      tex.generateMipmaps = true;
+      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      return tex;
+    });
+  }, []);
+
   // Generate repeatable cloud layout matching ITom SkyChunk
   const cloudList = useMemo(() => {
     const list: Array<{
       id: string;
       position: [number, number, number];
       scale: number;
-      texturePath: string;
+      texIndex: number;
       baseOpacity: number;
       driftSpeed: number;
       driftAmount: number;
@@ -485,16 +505,16 @@ function ItomSkyWorld({
       const countInSeg = 4;
       for (let i = 0; i < countInSeg; i++) {
         const seed = seg * 17 + i * 31;
-        const xSide = (i % 2 === 0 ? 1 : -1) * (3.5 + ((seed % 10) / 10) * 5.0);
-        const yHeight = -2.5 + ((seed * 7) % 10) * 0.6;
+        const xSide = (i % 2 === 0 ? 1 : -1) * (3.6 + ((seed % 10) / 10) * 5.2);
+        const yHeight = -2.4 + ((seed * 7) % 10) * 0.6;
         const zPos = segZ - ((seed * 3) % 15);
         const texIdx = (seg + i) % CLOUD_TEXTURES.length;
 
         list.push({
           id: `cloud-${seg}-${i}`,
           position: [xSide, yHeight, zPos],
-          scale: 0.9 + ((seed % 5) / 5) * 0.7,
-          texturePath: CLOUD_TEXTURES[texIdx],
+          scale: 0.95 + ((seed % 5) / 5) * 0.75,
+          texIndex: texIdx,
           baseOpacity: 0.65 + ((seed % 4) / 4) * 0.25,
           driftSpeed: 0.35 + ((seed % 3) / 3) * 0.4,
           driftAmount: 0.4 + ((seed % 6) / 6) * 0.6,
@@ -508,16 +528,16 @@ function ItomSkyWorld({
 
   useFrame(() => {
     if (worldGroupRef.current) {
-      // Move entire world towards camera along Z with scroll!
+      // Move entire world group toward camera with scroll progress!
       worldGroupRef.current.position.z = scrollRef.current || 0;
     }
   });
 
   return (
     <group ref={worldGroupRef}>
-      {/* 3D Story Milestones */}
+      {/* 3D Story Milestone Gates */}
       {milestones.map((m, idx) => (
-        <InSkyStoryMilestone
+        <InSkyMilestoneGate
           key={m.id}
           milestone={m}
           scrollRef={scrollRef}
@@ -526,26 +546,28 @@ function ItomSkyWorld({
       ))}
 
       {/* Floating Paper Clouds */}
-      {cloudList.map((c) => (
-        <FloatingCloud
-          key={c.id}
-          position={c.position}
-          scale={c.scale}
-          baseOpacity={c.baseOpacity}
-          texturePath={c.texturePath}
-          driftSpeed={c.driftSpeed}
-          driftAmount={c.driftAmount}
-          bobAmount={c.bobAmount}
-          timeOffset={c.timeOffset}
-          scrollRef={scrollRef}
-        />
-      ))}
+      {textures.length > 0 &&
+        cloudList.map((c) => (
+          <SingleCloud
+            key={c.id}
+            position={c.position}
+            scale={c.scale}
+            baseOpacity={c.baseOpacity}
+            texture={textures[c.texIndex]}
+            fileName={CLOUD_TEXTURES[c.texIndex].split('/').pop() || ''}
+            driftSpeed={c.driftSpeed}
+            driftAmount={c.driftAmount}
+            bobAmount={c.bobAmount}
+            timeOffset={c.timeOffset}
+            scrollRef={scrollRef}
+          />
+        ))}
     </group>
   );
 }
 
 // ── Flight Cockpit Rig (Camera + Maneuvering Paper Airplane) ─────────────────
-function FlightCockpitRig({
+function CockpitFlightRig({
   scrollRef,
   scrollVelocityRef,
 }: {
@@ -563,7 +585,7 @@ function FlightCockpitRig({
     const time = state.clock.elapsedTime;
 
     // Chunk progress (0 to 1 every 40 units)
-    const chunkProgress = ((scrollZ % 40) + 40) % 40 / 40;
+    const chunkProgress = (((scrollZ % 40) + 40) % 40) / 40;
 
     // Dynamic flight banking & pitching maneuver curve (matches ITom AboutRoom.jsx)
     let bankAngle = Math.sin(chunkProgress * Math.PI * 2) * 0.15;
@@ -583,11 +605,11 @@ function FlightCockpitRig({
 
     // Maneuver paper airplane in front of camera
     if (airplaneRef.current) {
-      // Swaying flight float
-      const idleFloatY = Math.sin(time * 2.2) * 0.04;
-      const idleFloatX = Math.sin(time * 1.4) * 0.05;
+      // Gentle swaying flight float
+      const idleFloatY = Math.sin(time * 2.2) * 0.035;
+      const idleFloatX = Math.sin(time * 1.4) * 0.04;
 
-      airplaneRef.current.position.y = -0.42 + idleFloatY;
+      airplaneRef.current.position.y = -0.15 + idleFloatY;
       airplaneRef.current.position.x = idleFloatX;
 
       // Authentic ITom paper airplane banking
@@ -600,8 +622,8 @@ function FlightCockpitRig({
   return (
     <group position={[0, 0, 0]}>
       {/* Paper airplane soaring right in front of camera view */}
-      <group ref={airplaneRef} position={[0, -0.42, -2.4]}>
-        <PaperAirplane color="#faf8f5" scale={0.92} />
+      <group ref={airplaneRef} position={[0, -0.15, 0]}>
+        <PaperAirplane color="#fcfbfa" scale={0.92} />
       </group>
     </group>
   );
@@ -707,10 +729,8 @@ export function ItomPaperFlightTimeline({
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      // Apply delta to velocity (smooth acceleration)
       const delta = e.deltaY * 0.025;
       scrollVelocityRef.current += delta;
-      // Cap max velocity
       scrollVelocityRef.current = Math.max(-4.5, Math.min(4.5, scrollVelocityRef.current));
       setIsPlaying(false);
     };
@@ -840,7 +860,7 @@ export function ItomPaperFlightTimeline({
       <div className="absolute inset-0 z-0">
         {webGLSupported ? (
           <Canvas
-            camera={{ position: [0, 0, 0], fov: 50, near: 0.1, far: 240 }}
+            camera={{ position: [0, 0.3, 2.5], fov: 50, near: 0.1, far: 240 }}
             dpr={[1, 2]}
             gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
           >
@@ -849,20 +869,18 @@ export function ItomPaperFlightTimeline({
             <directionalLight position={[-4, 8, 6]} intensity={1.4} color="#fffcf5" />
             <directionalLight position={[4, -4, -4]} intensity={0.4} color="#87CEEB" />
 
-            <Suspense fallback={null}>
-              {/* Cockpit Rig with Maneuvering Paper Airplane */}
-              <FlightCockpitRig
-                scrollRef={scrollRef}
-                scrollVelocityRef={scrollVelocityRef}
-              />
+            {/* Cockpit Rig with Maneuvering Paper Airplane */}
+            <CockpitFlightRig
+              scrollRef={scrollRef}
+              scrollVelocityRef={scrollVelocityRef}
+            />
 
-              {/* Infinite Sky World (Clouds + Story Milestones) */}
-              <ItomSkyWorld
-                milestones={milestones}
-                scrollRef={scrollRef}
-                onSelectMilestone={handleSelectMilestone}
-              />
-            </Suspense>
+            {/* Infinite Sky World (Clouds + Story Milestones) */}
+            <InfiniteSkyWorld
+              milestones={milestones}
+              scrollRef={scrollRef}
+              onSelectMilestone={handleSelectMilestone}
+            />
           </Canvas>
         ) : (
           <ItomSvgFallback
