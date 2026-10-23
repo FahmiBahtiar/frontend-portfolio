@@ -206,6 +206,8 @@ function useUltraSharpTextTexture({
   strokeWidth = 12,
   fontFamily = 'Impact, sans-serif',
   isBold = true,
+  backgroundColor,
+  backgroundBorder,
   width = 1536,
   height = 256,
 }: {
@@ -216,6 +218,8 @@ function useUltraSharpTextTexture({
   strokeWidth?: number;
   fontFamily?: string;
   isBold?: boolean;
+  backgroundColor?: string;
+  backgroundBorder?: string;
   width?: number;
   height?: number;
 }) {
@@ -233,7 +237,34 @@ function useUltraSharpTextTexture({
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    if (strokeWidth > 0) {
+    // Optional high-contrast pill backdrop for pristine readability
+    if (backgroundColor) {
+      const metrics = ctx.measureText(text);
+      const textW = metrics.width;
+      const padX = 36;
+      const padY = 16;
+      const bgW = Math.min(width - 20, textW + padX * 2);
+      const bgH = Math.min(height - 20, fontSize + padY * 2);
+      const bgX = (width - bgW) / 2;
+      const bgY = (height - bgH) / 2;
+
+      ctx.fillStyle = backgroundColor;
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(bgX, bgY, bgW, bgH, 24);
+      } else {
+        ctx.rect(bgX, bgY, bgW, bgH);
+      }
+      ctx.fill();
+
+      if (backgroundBorder) {
+        ctx.strokeStyle = backgroundBorder;
+        ctx.lineWidth = 4;
+        ctx.stroke();
+      }
+    }
+
+    if (strokeWidth > 0 && !backgroundColor) {
       ctx.strokeStyle = strokeColor;
       ctx.lineWidth = strokeWidth;
       ctx.lineJoin = 'round';
@@ -250,7 +281,7 @@ function useUltraSharpTextTexture({
     tex.magFilter = THREE.LinearFilter;
     tex.needsUpdate = true;
     return tex;
-  }, [text, fontSize, color, strokeColor, strokeWidth, fontFamily, isBold, width, height]);
+  }, [text, fontSize, color, strokeColor, strokeWidth, fontFamily, isBold, backgroundColor, backgroundBorder, width, height]);
 }
 
 // ── In-Sky Parting Milestone Component (Parts Away When Approached!) ──────────
@@ -300,35 +331,35 @@ function PartingStoryMilestone({
 
   const motto1Tex = useUltraSharpTextTexture({
     text: milestone.mottoLine1,
-    fontSize: 60,
-    color: '#164e63',
-    strokeColor: '#ffffff',
-    strokeWidth: 10,
-    fontFamily: 'sans-serif',
+    fontSize: 58,
+    color: '#083344',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundBorder: '#0891b2',
+    fontFamily: '"CabinSketch", Impact, sans-serif',
     width: 1536,
-    height: 200,
+    height: 180,
   });
 
   const motto2Tex = useUltraSharpTextTexture({
     text: milestone.mottoLine2,
-    fontSize: 54,
-    color: '#334155',
-    strokeColor: '#ffffff',
-    strokeWidth: 9,
+    fontSize: 52,
+    color: '#1e293b',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    backgroundBorder: '#94a3b8',
     fontFamily: 'sans-serif',
     width: 1536,
-    height: 200,
+    height: 180,
   });
 
   const badgeTex = useUltraSharpTextTexture({
     text: milestone.tagBadge,
-    fontSize: 56,
-    color: milestone.color,
-    strokeColor: '#ffffff',
-    strokeWidth: 9,
+    fontSize: 54,
+    color: '#ffffff',
+    backgroundColor: milestone.color,
+    backgroundBorder: '#ffffff',
     fontFamily: 'monospace',
     width: 1280,
-    height: 200,
+    height: 180,
   });
 
   useFrame((state) => {
@@ -618,7 +649,7 @@ function SkyFlightWorld({
     };
   }, []);
 
-  // Generate 65 clouds distributed across the entire sky (top, mid, bottom!)
+  // Generate 80 clouds distributed across the ENTIRE sky (including top ceiling!)
   const cloudList = useMemo(() => {
     const list: Array<{
       id: string;
@@ -632,15 +663,13 @@ function SkyFlightWorld({
       timeOffset: number;
     }> = [];
 
-    const totalClouds = 65;
+    // 1. General Sky Clouds (60 clouds across bottom, mid, and sides)
+    const totalClouds = 60;
     for (let i = 0; i < totalClouds; i++) {
       const seed = i * 23 + 7;
-      // Spread across X = -10 to +10
       const x = ((seed * 7) % 20) - 10;
-      // Spread across Y = -4.5 to +5.8 (FULL SKY COVERAGE, TOP IS NEVER EMPTY!)
-      const y = ((seed * 11) % 10.3) - 4.5;
-      // Spread along Z from -5 down to -220
-      const z = -((i * 3.4) % 215) - 4;
+      const y = ((seed * 11) % 9.0) - 4.2; // -4.2 to +4.8
+      const z = -((i * 3.6) % 215) - 4;
       const texIdx = i % CLOUD_TEXTURES.length;
 
       list.push({
@@ -655,6 +684,28 @@ function SkyFlightWorld({
         timeOffset: (seed % 10) * 0.628,
       });
     }
+
+    // 2. Dedicated Top Ceiling Clouds (20 clouds filling y = 5.2 to 7.4!)
+    for (let j = 0; j < 20; j++) {
+      const seed = j * 31 + 13;
+      const x = ((seed * 5) % 22) - 11; // -11 to +11
+      const y = 5.2 + ((seed % 7) / 7) * 2.2; // 5.2 to 7.4 (TOP CEILING!)
+      const z = -((j * 11) % 210) - 5;
+      const texIdx = (j * 3) % CLOUD_TEXTURES.length;
+
+      list.push({
+        id: `cloud-top-${j}`,
+        position: [x, y, z],
+        scale: 0.95 + ((seed % 4) / 4) * 0.65,
+        texIndex: texIdx,
+        baseOpacity: 0.65 + ((seed % 4) / 4) * 0.25,
+        driftSpeed: 0.35 + ((seed % 3) / 3) * 0.35,
+        driftAmount: 0.6 + ((seed % 5) / 5) * 0.7,
+        bobAmount: 0.12 + ((seed % 3) / 3) * 0.15,
+        timeOffset: (seed % 8) * 0.785,
+      });
+    }
+
     return list;
   }, []);
 
