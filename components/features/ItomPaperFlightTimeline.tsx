@@ -677,7 +677,7 @@ function ManeuveringPaperAirplane({
     let bankAngle = Math.sin(chunkProgress * Math.PI * 2) * 0.18;
     let pitchAngle = Math.sin(chunkProgress * Math.PI * 4) * 0.07;
 
-    const velInfluence = Math.max(-0.25, Math.min(0.25, vel * 0.04));
+    const velInfluence = Math.max(-0.25, Math.min(0.25, vel * 0.02));
     pitchAngle += velInfluence;
 
     currentBank.current = THREE.MathUtils.damp(currentBank.current, bankAngle, 4.0, delta);
@@ -770,8 +770,13 @@ export function ItomPaperFlightTimeline({
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // Actual rendered position in 3D world
   const scrollRef = useRef<number>(0);
+  // Target position where user desires to fly (interpolated smoothly)
+  const targetScrollRef = useRef<number>(0);
+  // Velocity derivative for aerodynamic banking & pitch
   const scrollVelocityRef = useRef<number>(0);
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -808,29 +813,29 @@ export function ItomPaperFlightTimeline({
     });
   }, [educationRecords]);
 
-  // ── Robust Scroll & Drag Interaction (Guaranteed Listener Attachment) ──────
+  // ── Silky-Smooth Controlled Scroll & Drag Physics ──────────────────────────
   useEffect(() => {
     if (!mounted) return;
     const container = containerRef.current;
     if (!container) return;
 
-    // 1. Mouse wheel on container
+    // 1. Mouse wheel / trackpad: smooth, measured increment (1 notch = ~3.2 units)
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      // Highly responsive: 0.024 multiplier moves smoothly on every flick
-      const delta = e.deltaY * 0.024;
-      scrollVelocityRef.current += delta;
-      scrollVelocityRef.current = Math.max(-6.5, Math.min(6.5, scrollVelocityRef.current));
+
+      // Perfectly measured pacing: not too fast, not too slow
+      const delta = e.deltaY * 0.032;
+      targetScrollRef.current += delta;
+      targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
       setIsPlaying(false);
     };
 
-    // 2. Drag on desktop mouse & mobile touch
+    // 2. Drag / Touch: 1:1 proportional displacement
     let isDragging = false;
     let lastY = 0;
 
     const handlePointerDown = (e: PointerEvent) => {
-      // Don't intercept button clicks inside island cards
       if ((e.target as HTMLElement).closest('button, a, input, [role="button"]')) return;
       isDragging = true;
       lastY = e.clientY;
@@ -842,11 +847,11 @@ export function ItomPaperFlightTimeline({
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!isDragging) return;
-      const dy = lastY - e.clientY; // drag up to fly forward, drag down to fly back
+      const dy = lastY - e.clientY; // drag up to advance
       lastY = e.clientY;
 
-      scrollVelocityRef.current += dy * 0.09;
-      scrollVelocityRef.current = Math.max(-6.5, Math.min(6.5, scrollVelocityRef.current));
+      targetScrollRef.current += dy * 0.14;
+      targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
     };
 
     const handlePointerUp = (e: PointerEvent) => {
@@ -858,7 +863,7 @@ export function ItomPaperFlightTimeline({
       }
     };
 
-    // 3. Touch events directly for mobile touchscreens (iOS/Android)
+    // 3. Touch events for mobile touchscreens (iOS Safari / Android Chrome)
     let touchY = 0;
     const handleTouchStart = (e: TouchEvent) => {
       if ((e.target as HTMLElement).closest('button, a, input, [role="button"]')) return;
@@ -873,18 +878,21 @@ export function ItomPaperFlightTimeline({
         const currentY = e.touches[0].clientY;
         const dy = touchY - currentY;
         touchY = currentY;
-        scrollVelocityRef.current += dy * 0.08;
-        scrollVelocityRef.current = Math.max(-6.5, Math.min(6.5, scrollVelocityRef.current));
+
+        targetScrollRef.current += dy * 0.12;
+        targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
       }
     };
 
-    // 4. Keyboard arrow navigation
+    // 4. Keyboard arrow navigation (discrete step)
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-        scrollVelocityRef.current += 2.5;
+        targetScrollRef.current += 6.0;
+        targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
         setIsPlaying(false);
       } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-        scrollVelocityRef.current -= 2.5;
+        targetScrollRef.current -= 6.0;
+        targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
         setIsPlaying(false);
       }
     };
@@ -910,32 +918,35 @@ export function ItomPaperFlightTimeline({
     };
   }, [mounted]);
 
-  // Animation frame loop for momentum & autoplay
+  // Animation frame loop with Three.js damp interpolation (buttery smooth glide!)
   useEffect(() => {
     let animId: number;
     let lastTime = performance.now();
 
     const tick = (now: number) => {
-      const delta = (now - lastTime) / 1000;
+      const delta = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
 
       // Autoplay cruise
       if (isPlaying) {
-        scrollRef.current += delta * 4.2;
-        if (scrollRef.current > 185) {
+        targetScrollRef.current += delta * 3.8;
+        if (targetScrollRef.current > 185) {
+          targetScrollRef.current = 0;
           scrollRef.current = 0;
         }
       }
 
-      // Momentum deceleration
-      scrollRef.current += scrollVelocityRef.current * delta * 60;
-      scrollVelocityRef.current *= 0.92;
-      if (Math.abs(scrollVelocityRef.current) < 0.001) {
-        scrollVelocityRef.current = 0;
-      }
+      // Smooth damp interpolation towards target (silky smooth, zero sudden jumps)
+      const prevScroll = scrollRef.current;
+      scrollRef.current = THREE.MathUtils.damp(
+        scrollRef.current,
+        targetScrollRef.current,
+        5.2, // damping lambda: perfectly balanced between snappy response and buttery glide
+        delta
+      );
 
-      if (scrollRef.current < 0) scrollRef.current = 0;
-      if (scrollRef.current > 190) scrollRef.current = 190;
+      // Track smooth velocity for banking/pitch effects
+      scrollVelocityRef.current = (scrollRef.current - prevScroll) / Math.max(0.001, delta);
 
       // Determine closest milestone tab
       const current = scrollRef.current;
@@ -959,16 +970,22 @@ export function ItomPaperFlightTimeline({
     return () => cancelAnimationFrame(animId);
   }, [isPlaying, milestones]);
 
-  // Tab click navigation (jumps directly in front of target card)
+  // Tab click navigation (smoothly glides straight to the target milestone!)
   const handleSelectMilestone = useCallback(
     (idx: number) => {
       setSelectedIdx(idx);
-      scrollRef.current = milestones[idx].targetScroll;
-      scrollVelocityRef.current = 0;
+      targetScrollRef.current = milestones[idx].targetScroll;
       setIsPlaying(false);
     },
     [milestones]
   );
+
+  const handleResetDeparture = useCallback(() => {
+    setSelectedIdx(0);
+    targetScrollRef.current = 0;
+    scrollRef.current = 0;
+    setIsPlaying(false);
+  }, []);
 
   if (!mounted) {
     return (
@@ -1087,7 +1104,7 @@ export function ItomPaperFlightTimeline({
           <Button
             size="sm"
             variant="ghost"
-            onClick={() => handleSelectMilestone(0)}
+            onClick={handleResetDeparture}
             className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-mono text-xs rounded-xl h-8 px-2"
             title="Reset to departure"
           >
