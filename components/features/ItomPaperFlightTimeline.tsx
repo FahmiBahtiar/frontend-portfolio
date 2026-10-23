@@ -208,7 +208,7 @@ function useUltraSharpTextTexture({
   isBold = true,
   backgroundColor,
   backgroundBorder,
-  width = 1536,
+  width = 2048,
   height = 256,
 }: {
   text: string;
@@ -233,18 +233,25 @@ function useUltraSharpTextTexture({
 
     ctx.clearRect(0, 0, width, height);
 
-    ctx.font = `${isBold ? 'bold ' : ''}${fontSize}px ${fontFamily}`;
+    // Dynamic auto-scaling font size to ensure ZERO clipping
+    let currentFontSize = fontSize;
+    ctx.font = `${isBold ? 'bold ' : ''}${currentFontSize}px ${fontFamily}`;
+    let textW = ctx.measureText(text).width;
+    while (textW > width - 160 && currentFontSize > 28) {
+      currentFontSize -= 2;
+      ctx.font = `${isBold ? 'bold ' : ''}${currentFontSize}px ${fontFamily}`;
+      textW = ctx.measureText(text).width;
+    }
+
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
     // Optional high-contrast pill backdrop for pristine readability
     if (backgroundColor) {
-      const metrics = ctx.measureText(text);
-      const textW = metrics.width;
-      const padX = 36;
-      const padY = 16;
-      const bgW = Math.min(width - 20, textW + padX * 2);
-      const bgH = Math.min(height - 20, fontSize + padY * 2);
+      const padX = 42;
+      const padY = 18;
+      const bgW = Math.min(width - 24, textW + padX * 2);
+      const bgH = Math.min(height - 24, currentFontSize + padY * 2);
       const bgX = (width - bgW) / 2;
       const bgY = (height - bgH) / 2;
 
@@ -685,20 +692,23 @@ function SkyFlightWorld({
       });
     }
 
-    // 2. Dedicated Top Ceiling Clouds (20 clouds filling y = 5.2 to 7.4!)
-    for (let j = 0; j < 20; j++) {
+    // 2. Dedicated Top Ceiling Clouds (24 clouds filling the upper 20% sky ceiling!)
+    for (let j = 0; j < 24; j++) {
       const seed = j * 31 + 13;
-      const x = ((seed * 5) % 22) - 11; // -11 to +11
-      const y = 5.2 + ((seed % 7) / 7) * 2.2; // 5.2 to 7.4 (TOP CEILING!)
-      const z = -((j * 11) % 210) - 5;
+      const z = -((j * 9.2) % 210) - 4;
+      const dist = 4.2 - z;
+      const factor = 0.64 + ((seed % 5) / 5) * 0.22;
+      const y = 0.4 + Math.tan((26 * Math.PI) / 180) * dist * factor;
+      const x = (((seed * 5) % 22) - 11) * (dist / 16);
       const texIdx = (j * 3) % CLOUD_TEXTURES.length;
+      const scale = (1.1 + ((seed % 4) / 4) * 0.6) * (dist / 16);
 
       list.push({
         id: `cloud-top-${j}`,
         position: [x, y, z],
-        scale: 0.95 + ((seed % 4) / 4) * 0.65,
+        scale: Math.max(0.9, scale),
         texIndex: texIdx,
-        baseOpacity: 0.65 + ((seed % 4) / 4) * 0.25,
+        baseOpacity: 0.7 + ((seed % 4) / 4) * 0.25,
         driftSpeed: 0.35 + ((seed % 3) / 3) * 0.35,
         driftAmount: 0.6 + ((seed % 5) / 5) * 0.7,
         bobAmount: 0.12 + ((seed % 3) / 3) * 0.15,
@@ -787,8 +797,8 @@ function ManeuveringPaperAirplane({
       const idleFloatY = Math.sin(time * 2.2) * 0.035;
       const idleFloatX = Math.sin(time * 1.4) * 0.04;
 
-      // Elevated above the bottom dock with comfortable breathing room!
-      airplaneRef.current.position.y = -0.36 + idleFloatY;
+      // Elevated above the bottom dock with generous breathing room (~100px clearance!)
+      airplaneRef.current.position.y = -0.24 + idleFloatY;
       airplaneRef.current.position.x = idleFloatX;
 
       airplaneRef.current.rotation.x = currentPitch.current * 3.2 + 0.12;
@@ -799,9 +809,9 @@ function ManeuveringPaperAirplane({
 
   return (
     <group position={[0, 0, 0]}>
-      {/* Paper airplane with small, delicate origami scale (0.52) & breathing room */}
-      <group ref={airplaneRef} position={[0, -0.36, 1.1]}>
-        <PaperAirplane color="#fcfbfa" scale={0.52} />
+      {/* Paper airplane with small, nimble origami scale (0.38) & generous clearance */}
+      <group ref={airplaneRef} position={[0, -0.24, 1.1]}>
+        <PaperAirplane color="#fcfbfa" scale={0.38} />
       </group>
     </group>
   );
