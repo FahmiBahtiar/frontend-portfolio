@@ -808,79 +808,107 @@ export function ItomPaperFlightTimeline({
     });
   }, [educationRecords]);
 
-  // ── Robust Scroll & Drag Interaction (Wheel, Touch Drag, Mouse Drag, Keys) ─
+  // ── Robust Scroll & Drag Interaction (Guaranteed Listener Attachment) ──────
   useEffect(() => {
+    if (!mounted) return;
     const container = containerRef.current;
     if (!container) return;
 
-    // 1. Mouse wheel & trackpad with high responsiveness (0.018 multiplier)
+    // 1. Mouse wheel on container
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      const delta = e.deltaY * 0.018;
+      e.stopPropagation();
+      // Highly responsive: 0.024 multiplier moves smoothly on every flick
+      const delta = e.deltaY * 0.024;
       scrollVelocityRef.current += delta;
-      scrollVelocityRef.current = Math.max(-5.5, Math.min(5.5, scrollVelocityRef.current));
+      scrollVelocityRef.current = Math.max(-6.5, Math.min(6.5, scrollVelocityRef.current));
       setIsPlaying(false);
     };
 
-    // 2. Drag / Touch (works seamlessly on desktop mouse and mobile touchscreen)
+    // 2. Drag on desktop mouse & mobile touch
     let isDragging = false;
     let lastY = 0;
-    let lastX = 0;
 
     const handlePointerDown = (e: PointerEvent) => {
-      // Don't drag if clicking buttons, tabs, or badges
+      // Don't intercept button clicks inside island cards
       if ((e.target as HTMLElement).closest('button, a, input, [role="button"]')) return;
       isDragging = true;
       lastY = e.clientY;
-      lastX = e.clientX;
       setIsPlaying(false);
+      try {
+        container.setPointerCapture(e.pointerId);
+      } catch {}
     };
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!isDragging) return;
-      const dy = lastY - e.clientY; // drag up/down to fly
-      const dx = lastX - e.clientX; // drag left/right to fly
-      const move = Math.abs(dy) > Math.abs(dx) ? dy : dx;
-
+      const dy = lastY - e.clientY; // drag up to fly forward, drag down to fly back
       lastY = e.clientY;
-      lastX = e.clientX;
 
-      scrollRef.current += move * 0.15;
-      scrollVelocityRef.current += move * 0.04;
-      scrollVelocityRef.current = Math.max(-5.5, Math.min(5.5, scrollVelocityRef.current));
+      scrollVelocityRef.current += dy * 0.09;
+      scrollVelocityRef.current = Math.max(-6.5, Math.min(6.5, scrollVelocityRef.current));
     };
 
-    const handlePointerUp = () => {
-      isDragging = false;
+    const handlePointerUp = (e: PointerEvent) => {
+      if (isDragging) {
+        try {
+          container.releasePointerCapture(e.pointerId);
+        } catch {}
+        isDragging = false;
+      }
     };
 
-    // 3. Arrow keyboard navigation
+    // 3. Touch events directly for mobile touchscreens (iOS/Android)
+    let touchY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      if ((e.target as HTMLElement).closest('button, a, input, [role="button"]')) return;
+      if (e.touches.length === 1) {
+        touchY = e.touches[0].clientY;
+        setIsPlaying(false);
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        const currentY = e.touches[0].clientY;
+        const dy = touchY - currentY;
+        touchY = currentY;
+        scrollVelocityRef.current += dy * 0.08;
+        scrollVelocityRef.current = Math.max(-6.5, Math.min(6.5, scrollVelocityRef.current));
+      }
+    };
+
+    // 4. Keyboard arrow navigation
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-        scrollVelocityRef.current += 2.0;
+        scrollVelocityRef.current += 2.5;
         setIsPlaying(false);
       } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-        scrollVelocityRef.current -= 2.0;
+        scrollVelocityRef.current -= 2.5;
         setIsPlaying(false);
       }
     };
 
     container.addEventListener('wheel', handleWheel, { passive: false });
     container.addEventListener('pointerdown', handlePointerDown);
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
-    window.addEventListener('pointercancel', handlePointerUp);
+    container.addEventListener('pointermove', handlePointerMove);
+    container.addEventListener('pointerup', handlePointerUp);
+    container.addEventListener('pointercancel', handlePointerUp);
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       container.removeEventListener('wheel', handleWheel);
       container.removeEventListener('pointerdown', handlePointerDown);
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-      window.removeEventListener('pointercancel', handlePointerUp);
+      container.removeEventListener('pointermove', handlePointerMove);
+      container.removeEventListener('pointerup', handlePointerUp);
+      container.removeEventListener('pointercancel', handlePointerUp);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [mounted]);
 
   // Animation frame loop for momentum & autoplay
   useEffect(() => {
@@ -1022,9 +1050,9 @@ export function ItomPaperFlightTimeline({
         )}
       </div>
 
-      {/* Floating Bottom Island Cards (Split into Left and Right Islands — Not Stretching Across!) */}
-      <div className="relative z-20 px-3 sm:px-5 pb-3 sm:pb-5 w-full flex items-center justify-between gap-3 pointer-events-none flex-wrap">
-        {/* Left Floating Island Card: Mode Selection (AUTOPLAY vs BY SCROLL) + Reset */}
+      {/* Floating Bottom Island Cards (Split into Left and Right Independent Cards) */}
+      <div className="relative z-20 px-3 sm:px-6 pb-3 sm:pb-5 w-full flex items-center justify-between gap-3 pointer-events-none flex-wrap">
+        {/* Left Card: Mode Selection (AUTOPLAY vs BY SCROLL) + Reset */}
         <div className="rounded-2xl bg-white/95 backdrop-blur-md border border-[#B9E7E6] shadow-xl p-2 sm:p-2.5 flex items-center gap-2 pointer-events-auto">
           {/* Segmented Mode Control */}
           <div className="flex items-center p-1 rounded-xl bg-[#E2F4F3]/70 border border-[#B9E7E6]/70 shadow-inner">
@@ -1077,7 +1105,7 @@ export function ItomPaperFlightTimeline({
           )}
         </div>
 
-        {/* Right Floating Island Card: Quick-Jump Milestone Tabs */}
+        {/* Right Card: Quick-Jump Milestone Tabs */}
         <div className="rounded-2xl bg-white/95 backdrop-blur-md border border-[#B9E7E6] shadow-xl p-2 sm:p-2.5 flex items-center gap-1.5 overflow-x-auto max-w-full pointer-events-auto">
           {milestones.map((m, idx) => {
             const isSelected = idx === selectedIdx;
