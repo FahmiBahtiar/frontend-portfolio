@@ -18,8 +18,8 @@ import { EducationService } from '@/lib/services/education';
 import { Achievement } from '@/lib/types/admin';
 import { FALLBACK_EDUCATION_RECORDS, FALLBACK_ACHIEVEMENTS } from '@/lib/fallback-data';
 
-// WebGL (three.js / R3F) ITOM-inspired interactive 3D paper flight journey
-// with low-poly origami paper airplane, authentic paper clouds, and in-sky story milestones.
+// WebGL (three.js / R3F) interactive 3D paper flight journey
+// with low-poly origami paper airplane, paper clouds, and in-sky story milestones.
 const ItomPaperFlightTimeline = dynamic(
   () =>
     import('@/components/features/ItomPaperFlightTimeline').then((m) => ({
@@ -29,7 +29,7 @@ const ItomPaperFlightTimeline = dynamic(
     ssr: false,
     loading: () => (
       <div className="min-h-[640px] rounded-3xl border border-[#B9E7E6] bg-white/60 animate-pulse flex items-center justify-center font-mono text-xs text-[#527d85]">
-        Launching ITom Paper Airplane Odyssey...
+        Launching 3D Sky Journey Timeline...
       </div>
     ),
   },
@@ -179,12 +179,12 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
           </p>
         </div>
 
-        {/* ITom Paper Airplane 3D Infinite Sky Flight Journey */}
+        {/* 3D Infinite Sky Flight Journey Timeline */}
         <div className="mb-20 scroll-mt-36 pt-4">
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
               <Plane className="w-6 h-6 text-[#0891b2]" />
-              <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">ITOM PAPER FLIGHT</h3>
+              <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">JOURNEY FLIGHT TIMELINE</h3>
             </div>
             <div className="flex-1 h-px bg-[#B9E7E6]" />
             <span className="text-[#527d85] font-mono text-sm hidden sm:block">3D SKY ODYSSEY • 2010 → NOW</span>

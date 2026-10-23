@@ -6,16 +6,16 @@ import { Edges } from '@react-three/drei';
 import * as THREE from 'three';
 import {
   Play,
-  Pause,
   RotateCcw,
   Plane,
+  Mouse,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { Education } from '@/lib/types/admin';
 import { FALLBACK_EDUCATION_RECORDS } from '@/lib/fallback-data';
 
-// ── Cloud Texture Assets (from itomdev.com/about) ───────────────────────────
+// ── Cloud Texture Assets ─────────────────────────────────────────────────────
 const CLOUD_TEXTURES = [
   '/textures/clouds/1131c3eb-dfae-423f-924b-ff39d8ccd6dc.webp',
   '/textures/clouds/254b8ec8-d6f7-4275-956f-7bab65b2ce2d.webp',
@@ -126,7 +126,7 @@ export const DEFAULT_MILESTONES: MilestoneRecord[] = [
   },
 ];
 
-// ── Authentic ITom Low-Poly Origami Paper Airplane ───────────────────────────
+// ── Low-Poly Origami Paper Airplane ──────────────────────────────────────────
 function PaperAirplane({
   color = '#fcfbfa',
   scale = 0.55,
@@ -331,7 +331,7 @@ function use3DCardTexture(milestone: MilestoneRecord) {
     ctx.fillStyle = '#0f172a';
     ctx.textAlign = 'center';
 
-    // Word wrap description to 2 comfortable lines
+    // Word wrap description to comfortable lines
     const words = milestone.description.split(' ');
     const lines: string[] = [];
     let curLine = '';
@@ -370,7 +370,7 @@ function use3DCardTexture(milestone: MilestoneRecord) {
     ctx.fillText(badgeText, 104, canvasH - 131);
 
     // Right Fly-through cue
-    const cueText = 'Scroll wheel to fly through →';
+    const cueText = 'Scroll or autoplay to fly through →';
     ctx.font = 'bold 36px monospace';
     ctx.fillStyle = '#0891b2';
     ctx.textAlign = 'right';
@@ -416,10 +416,7 @@ function InSky3DMilestoneCardMesh({
     groupRef.current.visible = relDist > -52 && relDist < 6.5;
     if (!groupRef.current.visible) return;
 
-    // ── THE PASS-THROUGH DISSOLVE MECHANIC ("di tabrak terus tembus gitu aja") ──
-    // Approach: fades in smoothly when far (-52 to -22)
-    // In focus: 100% opaque, stable, and readable (-22 to -3)
-    // Pass-through: when airplane reaches and pierces through (-3 to +3.5), card dissolves smoothly
+    // Pass-through dissolve mechanic ("di tabrak terus tembus gitu aja")
     let opacity = 1.0;
     let scale = 1.0;
 
@@ -627,7 +624,7 @@ function SkyFlightWorld({
 
   return (
     <group ref={worldGroupRef}>
-      {/* 5 In-Sky 3D Milestone Cards (Positioned in 3D Space Ahead, Fly-Through!) */}
+      {/* 5 In-Sky 3D Milestone Cards */}
       {milestones.map((m) => (
         <InSky3DMilestoneCardMesh
           key={m.id}
@@ -636,7 +633,7 @@ function SkyFlightWorld({
         />
       ))}
 
-      {/* Floating Paper Clouds (Covering Sky, Continuous Drift!) */}
+      {/* Floating Paper Clouds */}
       {textures.length > 0 &&
         cloudList.map((c) => (
           <DriftingPaperCloud
@@ -693,7 +690,7 @@ function ManeuveringPaperAirplane({
       const idleFloatY = Math.sin(time * 2.2) * 0.03;
       const idleFloatX = Math.sin(time * 1.4) * 0.035;
 
-      // Positioned comfortably in the lower third with ample clearance!
+      // Positioned comfortably in the lower third with ample clearance
       airplaneRef.current.position.y = -0.36 + idleFloatY;
       airplaneRef.current.position.x = idleFloatX;
 
@@ -772,7 +769,6 @@ export function ItomPaperFlightTimeline({
   const [mounted, setMounted] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentScrollVal, setCurrentScrollVal] = useState(0);
 
   const scrollRef = useRef<number>(0);
   const scrollVelocityRef = useRef<number>(0);
@@ -812,7 +808,7 @@ export function ItomPaperFlightTimeline({
     });
   }, [educationRecords]);
 
-  // Wheel interaction (smooth flight cruise)
+  // Wheel interaction (smooth flight cruise with automatic switch to scroll mode)
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -856,8 +852,6 @@ export function ItomPaperFlightTimeline({
       if (scrollRef.current < 0) scrollRef.current = 0;
       if (scrollRef.current > 190) scrollRef.current = 190;
 
-      setCurrentScrollVal(scrollRef.current);
-
       // Determine closest milestone tab
       const current = scrollRef.current;
       let closestIdx = 0;
@@ -871,7 +865,7 @@ export function ItomPaperFlightTimeline({
         }
       });
 
-      setSelectedIdx(closestIdx);
+      setSelectedIdx((prev) => (prev !== closestIdx ? closestIdx : prev));
 
       animId = requestAnimationFrame(tick);
     };
@@ -887,13 +881,8 @@ export function ItomPaperFlightTimeline({
       scrollRef.current = milestones[idx].targetScroll;
       scrollVelocityRef.current = 0;
       setIsPlaying(false);
-      setCurrentScrollVal(milestones[idx].targetScroll);
     },
     [milestones]
-  );
-
-  const flightPercentage = Math.round(
-    Math.max(0, Math.min(100, (currentScrollVal / 175) * 100))
   );
 
   if (!mounted) {
@@ -921,7 +910,7 @@ export function ItomPaperFlightTimeline({
         backgroundSize: 'cover',
       }}
     >
-      {/* Top ITom Style Header */}
+      {/* Top Header */}
       <div className="relative z-20 px-6 py-4 flex items-center justify-between pointer-events-auto">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-full bg-white/90 border border-black/10 flex items-center justify-center text-[#0c282d] shadow-sm">
@@ -929,10 +918,10 @@ export function ItomPaperFlightTimeline({
           </div>
           <div>
             <span className="font-serif font-bold text-sm sm:text-base text-[#0c282d] tracking-wide">
-              ITom Paper Flight
+              Journey Timeline
             </span>
             <span className="font-mono text-[10px] text-[#2d5f68] ml-2 tracking-widest uppercase">
-              • Infinite Sky Journey
+              • Infinite Sky Odyssey
             </span>
           </div>
         </div>
@@ -976,88 +965,79 @@ export function ItomPaperFlightTimeline({
         )}
       </div>
 
-      {/* Floating Bottom Flight Controller */}
-      <div className="relative z-20 p-4 sm:p-5 m-3 sm:m-4 rounded-2xl bg-white/95 backdrop-blur-md border border-[#B9E7E6] shadow-xl flex flex-col gap-3 pointer-events-auto">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          {/* Autoplay & Reset */}
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="border-[#B9E7E6] text-[#0891b2] hover:bg-[#E2F4F3] font-mono text-xs rounded-xl h-8 px-3"
+      {/* Floating Bottom Flight Controller (Mode Toggle & Quick-Jump Tabs, No Duration Slider) */}
+      <div className="relative z-20 p-3 sm:p-4 m-3 sm:m-4 rounded-2xl bg-white/95 backdrop-blur-md border border-[#B9E7E6] shadow-xl flex items-center justify-between gap-3 pointer-events-auto flex-wrap">
+        {/* Left: Mode Selection (AUTOPLAY vs BY SCROLL) + Reset */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Segmented Mode Control */}
+          <div className="flex items-center p-1 rounded-xl bg-[#E2F4F3]/70 border border-[#B9E7E6]/70 shadow-inner">
+            <button
+              type="button"
+              onClick={() => setIsPlaying(true)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all ${
+                isPlaying
+                  ? 'bg-[#0891b2] text-white shadow-sm'
+                  : 'text-[#2d5f68] hover:text-[#0c282d] hover:bg-white/60'
+              }`}
             >
-              {isPlaying ? (
-                <>
-                  <Pause className="w-3.5 h-3.5 mr-1 fill-current" />
-                  PAUSE
-                </>
-              ) : (
-                <>
-                  <Play className="w-3.5 h-3.5 mr-1 fill-current" />
-                  AUTOPLAY
-                </>
-              )}
-            </Button>
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>AUTOPLAY</span>
+            </button>
 
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => handleSelectMilestone(0)}
-              className="text-[#527d85] hover:text-[#0c282d] font-mono text-xs rounded-xl h-8 px-2"
-              title="Reset to departure"
+            <button
+              type="button"
+              onClick={() => setIsPlaying(false)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all ${
+                !isPlaying
+                  ? 'bg-[#0891b2] text-white shadow-sm'
+                  : 'text-[#2d5f68] hover:text-[#0c282d] hover:bg-white/60'
+              }`}
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </Button>
+              <Mouse className="w-3.5 h-3.5" />
+              <span>BY SCROLL</span>
+            </button>
+          </div>
 
-            <span className="font-mono text-xs text-[#527d85] hidden sm:inline ml-1">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => handleSelectMilestone(0)}
+            className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-mono text-xs rounded-xl h-8 px-2"
+            title="Reset to departure"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+          </Button>
+
+          {isPlaying ? (
+            <span className="font-mono text-xs text-[#0891b2] font-semibold hidden md:inline ml-1 animate-pulse">
+              Autoplay cruising...
+            </span>
+          ) : (
+            <span className="font-mono text-xs text-[#527d85] hidden md:inline ml-1">
               Scroll wheel to fly!
             </span>
-          </div>
-
-          {/* Quick-Jump Milestone Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto max-w-full py-0.5">
-            {milestones.map((m, idx) => {
-              const isSelected = idx === selectedIdx;
-              return (
-                <button
-                  key={m.id}
-                  onClick={() => handleSelectMilestone(idx)}
-                  className={`px-3 py-1 rounded-xl font-mono text-xs font-semibold whitespace-nowrap transition-all ${
-                    isSelected
-                      ? 'bg-[#0891b2] text-white shadow-sm'
-                      : 'bg-[#E2F4F3]/70 text-[#2d5f68] hover:bg-[#E2F4F3] border border-[#B9E7E6]/40'
-                  }`}
-                >
-                  <span className="opacity-75 mr-1">0{m.order}</span>
-                  <span>{m.institution.split(' ')[0]}</span>
-                </button>
-              );
-            })}
-          </div>
+          )}
         </div>
 
-        {/* Flight Scrubber Slider */}
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-[#527d85] font-semibold">START</span>
-          <input
-            type="range"
-            min="0"
-            max="180"
-            step="0.5"
-            value={currentScrollVal}
-            onChange={(e) => {
-              const val = parseFloat(e.target.value);
-              scrollRef.current = val;
-              setCurrentScrollVal(val);
-              scrollVelocityRef.current = 0;
-              setIsPlaying(false);
-            }}
-            className="flex-1 h-2 bg-[#E2F4F3] rounded-lg appearance-none cursor-pointer accent-[#0891b2]"
-          />
-          <span className="font-mono text-[10px] text-[#527d85] font-semibold">
-            {flightPercentage}%
-          </span>
+        {/* Right: Quick-Jump Milestone Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full py-0.5">
+          {milestones.map((m, idx) => {
+            const isSelected = idx === selectedIdx;
+            return (
+              <button
+                key={m.id}
+                onClick={() => handleSelectMilestone(idx)}
+                className={`px-3 py-1.5 rounded-xl font-mono text-xs font-semibold whitespace-nowrap transition-all ${
+                  isSelected
+                    ? 'bg-[#0891b2] text-white shadow-sm'
+                    : 'bg-[#E2F4F3]/70 text-[#2d5f68] hover:bg-[#E2F4F3] border border-[#B9E7E6]/40'
+                }`}
+              >
+                <span className="opacity-75 mr-1">0{m.order}</span>
+                <span>{m.institution.split(' ')[0]}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
