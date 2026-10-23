@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useEffect, useCallback, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Edges, Text } from '@react-three/drei';
 import * as THREE from 'three';
@@ -250,12 +250,12 @@ function PartingStoryMilestone({
 
     // Left Title: moves to the left (-X)
     if (titleLeftRef.current) {
-      titleLeftRef.current.position.x = -1.5 - spreadFactor * maxSpread * 0.75;
+      titleLeftRef.current.position.x = -spreadFactor * maxSpread * 0.75;
     }
 
     // Right Title: moves to the right (+X)
     if (titleRightRef.current) {
-      titleRightRef.current.position.x = 1.5 + spreadFactor * maxSpread * 0.7;
+      titleRightRef.current.position.x = spreadFactor * maxSpread * 0.65;
     }
 
     // Central Island / Avatar: parts upward and slightly to the left, bobbing gently
@@ -267,17 +267,17 @@ function PartingStoryMilestone({
 
     // Subtitle Line 1: spreads right (+X)
     if (motto1Ref.current) {
-      motto1Ref.current.position.x = 1.2 + spreadFactor * maxSpread * 0.65;
+      motto1Ref.current.position.x = spreadFactor * maxSpread * 0.7;
     }
 
     // Subtitle Line 2: spreads left (-X)
     if (motto2Ref.current) {
-      motto2Ref.current.position.x = -1.2 - spreadFactor * maxSpread * 0.65;
+      motto2Ref.current.position.x = -spreadFactor * maxSpread * 0.6;
     }
 
     // Badge: spreads downward and right
     if (badgeRef.current) {
-      badgeRef.current.position.x = 1.2 + spreadFactor * maxSpread * 0.5;
+      badgeRef.current.position.x = spreadFactor * maxSpread * 0.55;
       badgeRef.current.position.y = -1.1 - spreadFactor * 1.0;
     }
 
@@ -315,8 +315,8 @@ function PartingStoryMilestone({
       {/* Main Title Left (RubikScribble Display Heading) */}
       <Text
         ref={titleLeftRef}
-        position={[-1.5, 5.0, 0.1]}
-        fontSize={0.9}
+        position={[0, 4.8, 0.1]}
+        fontSize={0.95}
         color="#0c282d"
         anchorX="center"
         anchorY="middle"
@@ -330,8 +330,8 @@ function PartingStoryMilestone({
       {/* Main Title Right (CabinSketch Bold Subtitle) */}
       <Text
         ref={titleRightRef}
-        position={[1.5, 4.3, 0.1]}
-        fontSize={0.48}
+        position={[0, 4.1, 0.1]}
+        fontSize={0.52}
         color={milestone.color}
         anchorX="center"
         anchorY="middle"
@@ -345,9 +345,9 @@ function PartingStoryMilestone({
       {/* Motto Line 1 (Parts Right) */}
       <Text
         ref={motto1Ref}
-        position={[1.2, 0.1, 0.1]}
-        fontSize={0.36}
-        color="#2d5f68"
+        position={[0, 0.2, 0.1]}
+        fontSize={0.38}
+        color="#164e63"
         anchorX="center"
         anchorY="middle"
         font="/fonts/CabinSketch-Regular.ttf"
@@ -361,9 +361,9 @@ function PartingStoryMilestone({
       {/* Motto Line 2 (Parts Left) */}
       <Text
         ref={motto2Ref}
-        position={[-1.2, -0.5, 0.1]}
+        position={[0, -0.4, 0.1]}
         fontSize={0.34}
-        color="#527d85"
+        color="#334155"
         anchorX="center"
         anchorY="middle"
         font="/fonts/CabinSketch-Regular.ttf"
@@ -377,8 +377,8 @@ function PartingStoryMilestone({
       {/* Tag Badge */}
       <Text
         ref={badgeRef}
-        position={[1.2, -1.1, 0.1]}
-        fontSize={0.3}
+        position={[0, -1.0, 0.1]}
+        fontSize={0.32}
         color={milestone.color}
         anchorX="center"
         anchorY="middle"
@@ -884,22 +884,24 @@ export function ItomPaperFlightTimeline({
             dpr={[1, 2]}
             gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
           >
-            {/* Diffuse Lighting for Paper Craft Aesthetic */}
-            <ambientLight intensity={1.3} color="#ffffff" />
-            <directionalLight position={[-4, 8, 6]} intensity={1.5} color="#fffcf5" />
-            <directionalLight position={[4, -4, -4]} intensity={0.4} color="#87CEEB" />
+            <Suspense fallback={null}>
+              {/* Diffuse Lighting for Paper Craft Aesthetic */}
+              <ambientLight intensity={1.3} color="#ffffff" />
+              <directionalLight position={[-4, 8, 6]} intensity={1.5} color="#fffcf5" />
+              <directionalLight position={[4, -4, -4]} intensity={0.4} color="#87CEEB" />
 
-            {/* Maneuvering Paper Airplane Cockpit Rig */}
-            <ManeuveringPaperAirplane
-              scrollRef={scrollRef}
-              scrollVelocityRef={scrollVelocityRef}
-            />
+              {/* Maneuvering Paper Airplane Cockpit Rig */}
+              <ManeuveringPaperAirplane
+                scrollRef={scrollRef}
+                scrollVelocityRef={scrollVelocityRef}
+              />
 
-            {/* Infinite Sky World (Full Sky Clouds + Parting Milestones) */}
-            <SkyFlightWorld
-              milestones={milestones}
-              scrollRef={scrollRef}
-            />
+              {/* Infinite Sky World (Full Sky Clouds + Parting Milestones) */}
+              <SkyFlightWorld
+                milestones={milestones}
+                scrollRef={scrollRef}
+              />
+            </Suspense>
           </Canvas>
         ) : (
           <PaperSvgFallback
