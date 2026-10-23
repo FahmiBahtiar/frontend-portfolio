@@ -88,16 +88,15 @@ export function LiveStatusCards() {
     }
   );
 
-  // 2. Fetch IVAO status via internal proxy API (strictly on-demand when visible, 2 min poll)
+  // 2. Fetch IVAO status via internal proxy API (fetch ONCE when visible, zero background interval polling to keep Discord logs completely silent)
   const { data: ivaoData } = useSWR<IvaoResponse>(
     isInView ? '/api/ivao/status?vid=704291' : null,
     fetcher,
     {
-      refreshInterval: 120000,
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      dedupingInterval: 60000,
-      errorRetryCount: 1,
+      dedupingInterval: 120000,
+      errorRetryCount: 0,
     }
   );
 
