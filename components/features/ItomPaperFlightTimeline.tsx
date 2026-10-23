@@ -124,7 +124,7 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
 // ── Authentic ITom Low-Poly Origami Paper Airplane (Scale: 0.52 Nimble) ───────
 function PaperAirplane({
   color = '#fcfbfa',
-  scale = 0.52,
+  scale = 0.28,
 }: {
   color?: string;
   scale?: number;
@@ -327,46 +327,46 @@ function PartingStoryMilestone({
 
   const titleRightTex = useUltraSharpTextTexture({
     text: milestone.titleRight,
-    fontSize: 78,
-    color: milestone.color,
-    strokeColor: '#ffffff',
-    strokeWidth: 12,
-    fontFamily: '"CabinSketch", sans-serif',
-    width: 1280,
-    height: 256,
+    fontSize: 74,
+    color: '#0891b2',
+    backgroundColor: 'rgba(255, 255, 255, 0.96)',
+    backgroundBorder: '#0891b2',
+    fontFamily: '"CabinSketch", Impact, sans-serif',
+    width: 1536,
+    height: 220,
   });
 
   const motto1Tex = useUltraSharpTextTexture({
     text: milestone.mottoLine1,
-    fontSize: 58,
-    color: '#083344',
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    fontSize: 62,
+    color: '#042f2e',
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
     backgroundBorder: '#0891b2',
     fontFamily: '"CabinSketch", Impact, sans-serif',
-    width: 1536,
-    height: 180,
+    width: 2048,
+    height: 220,
   });
 
   const motto2Tex = useUltraSharpTextTexture({
     text: milestone.mottoLine2,
     fontSize: 52,
-    color: '#1e293b',
-    backgroundColor: 'rgba(255, 255, 255, 0.92)',
-    backgroundBorder: '#94a3b8',
+    color: '#0f172a',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundBorder: '#64748b',
     fontFamily: 'sans-serif',
-    width: 1536,
-    height: 180,
+    width: 2048,
+    height: 220,
   });
 
   const badgeTex = useUltraSharpTextTexture({
     text: milestone.tagBadge,
-    fontSize: 54,
+    fontSize: 56,
     color: '#ffffff',
     backgroundColor: milestone.color,
     backgroundBorder: '#ffffff',
     fontFamily: 'monospace',
-    width: 1280,
-    height: 180,
+    width: 1536,
+    height: 200,
   });
 
   useFrame((state) => {
@@ -493,8 +493,8 @@ function PartingStoryMilestone({
 
       {/* Motto Line 1 (Spreads Right) */}
       {motto1Tex && (
-        <mesh ref={motto1Ref} position={[0, 0.2, 0.1]}>
-          <planeGeometry args={[6.8, 0.9]} />
+        <mesh ref={motto1Ref} position={[0, 0.35, 0.1]}>
+          <planeGeometry args={[7.2, 0.78]} />
           <meshBasicMaterial
             map={motto1Tex}
             transparent
@@ -507,7 +507,7 @@ function PartingStoryMilestone({
       {/* Motto Line 2 (Spreads Left) */}
       {motto2Tex && (
         <mesh ref={motto2Ref} position={[0, -0.45, 0.1]}>
-          <planeGeometry args={[6.8, 0.9]} />
+          <planeGeometry args={[7.2, 0.78]} />
           <meshBasicMaterial
             map={motto2Tex}
             transparent
@@ -519,8 +519,8 @@ function PartingStoryMilestone({
 
       {/* Tag Badge (Spreads Down/Right) */}
       {badgeTex && (
-        <mesh ref={badgeRef} position={[0, -1.1, 0.1]}>
-          <planeGeometry args={[5.2, 0.8]} />
+        <mesh ref={badgeRef} position={[0, -1.25, 0.1]}>
+          <planeGeometry args={[5.4, 0.72]} />
           <meshBasicMaterial
             map={badgeTex}
             transparent
@@ -794,11 +794,11 @@ function ManeuveringPaperAirplane({
 
     if (airplaneRef.current) {
       // Gentle swaying flight float (runs always!)
-      const idleFloatY = Math.sin(time * 2.2) * 0.035;
-      const idleFloatX = Math.sin(time * 1.4) * 0.04;
+      const idleFloatY = Math.sin(time * 2.2) * 0.03;
+      const idleFloatX = Math.sin(time * 1.4) * 0.035;
 
-      // Elevated above the bottom dock with generous breathing room (~100px clearance!)
-      airplaneRef.current.position.y = -0.24 + idleFloatY;
+      // Elevated above the bottom dock with generous breathing room (~130px clearance!)
+      airplaneRef.current.position.y = -0.16 + idleFloatY;
       airplaneRef.current.position.x = idleFloatX;
 
       airplaneRef.current.rotation.x = currentPitch.current * 3.2 + 0.12;
@@ -809,9 +809,9 @@ function ManeuveringPaperAirplane({
 
   return (
     <group position={[0, 0, 0]}>
-      {/* Paper airplane with small, nimble origami scale (0.38) & generous clearance */}
-      <group ref={airplaneRef} position={[0, -0.24, 1.1]}>
-        <PaperAirplane color="#fcfbfa" scale={0.38} />
+      {/* Paper airplane with small, nimble origami scale (0.28) & generous clearance */}
+      <group ref={airplaneRef} position={[0, -0.16, 1.1]}>
+        <PaperAirplane color="#fcfbfa" scale={0.28} />
       </group>
     </group>
   );
