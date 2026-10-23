@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Logo dengan SVG path custom untuk hasil lebih artistik
+// Arctic Ice Logo matching web theme (White & Ice Squircle with vibrant cyan letter B)
 export function Logo({ size = 40, className = '' }: { size?: number; className?: string }) {
   return (
     <svg 
@@ -12,44 +12,55 @@ export function Logo({ size = 40, className = '' }: { size?: number; className?:
       className={className}
     >
       <defs>
-        {/* Dark background gradient matching web theme */}
+        {/* Arctic Ice background gradient */}
         <linearGradient id="logoBgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#020617" stopOpacity="1" />
-          <stop offset="50%" stopColor="#0f172a" stopOpacity="1" />
-          <stop offset="100%" stopColor="#020617" stopOpacity="1" />
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#E2F4F3" />
         </linearGradient>
         
-        {/* Accent gradient for letter B */}
+        {/* Accent cyan gradient for letter B */}
         <linearGradient id="logoTextGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#06b6d4" stopOpacity="1" />
-          <stop offset="50%" stopColor="#3b82f6" stopOpacity="1" />
-          <stop offset="100%" stopColor="#a855f7" stopOpacity="1" />
+          <stop offset="0%" stopColor="#0891b2" />
+          <stop offset="50%" stopColor="#06b6d4" />
+          <stop offset="100%" stopColor="#0284c7" />
         </linearGradient>
         
-        <filter id="shadow">
-          <feDropShadow dx="0" dy="4" stdDeviation="3" floodOpacity="0.3"/>
+        <filter id="logoShadow" x="-10%" y="-10%" width="130%" height="130%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2.5" floodColor="#0c282d" floodOpacity="0.12"/>
         </filter>
       </defs>
       
-      {/* Dark background rounded square */}
-      <rect width="100" height="100" rx="22" fill="url(#logoBgGradient)" filter="url(#shadow)" />
+      {/* Arctic Ice background rounded squircle */}
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="url(#logoBgGradient)" filter="url(#logoShadow)" />
       
-      {/* Border with subtle accent */}
+      {/* Borders */}
       <rect 
-        width="100" 
-        height="100" 
+        x="2" 
+        y="2" 
+        width="96" 
+        height="96" 
         rx="22" 
         fill="none" 
-        stroke="url(#logoTextGradient)" 
+        stroke="#6FD4E1" 
+        strokeWidth="2" 
+        strokeOpacity="0.8"
+      />
+      <rect 
+        x="4" 
+        y="4" 
+        width="92" 
+        height="92" 
+        rx="20" 
+        fill="none" 
+        stroke="#B9E7E6" 
         strokeWidth="1" 
-        strokeOpacity="0.2"
+        strokeOpacity="0.6"
       />
       
-      {/* Stylized letter B with gradient */}
+      {/* Stylized letter B with Arctic Gradient */}
       <path
-        d="M32 25 h20 c8 0 14 4 14 11 c0 5 -3 8 -7 9 c5 1 9 5 9 11 c0 8 -7 12 -15 12 h-21 z M40 33 v12 h10 c4 0 7 -2 7 -6 c0 -4 -3 -6 -7 -6 z M40 52 v13 h11 c5 0 8 -2 8 -6.5 c0 -4.5 -3 -6.5 -8 -6.5 z"
+        d="M32 24 h21 c8.5 0 14.5 4.2 14.5 11.5 c0 5.2 -3.2 8.5 -7.5 9.8 c5.5 1.2 9.5 5.5 9.5 11.7 c0 8.5 -7.5 13 -16 13 h-21.5 z M40.5 32.5 v12.5 h11 c4.5 0 7.5 -2.2 7.5 -6.2 c0 -4.2 -3 -6.3 -7.5 -6.3 z M40.5 52.5 v14.5 h12 c5 0 8.5 -2.2 8.5 -7.2 c0 -4.8 -3.5 -7.3 -8.5 -7.3 z"
         fill="url(#logoTextGradient)"
-        fillOpacity="0.95"
       />
     </svg>
   );

@@ -1,4 +1,4 @@
-// Open Graph Image Generator menggunakan Next.js Image Response
+// Open Graph Image Generator menggunakan Next.js Image Response (Arctic Ice Theme)
 import { ImageResponse } from 'next/og';
 import { getHeroProfileServer } from '@/lib/services/server-data';
 
@@ -23,7 +23,7 @@ export default async function Image() {
       (
         <div
           style={{
-            background: 'linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%)',
+            background: 'linear-gradient(135deg, #E2F4F3 0%, #ffffff 50%, #B9E7E6 100%)',
             width: '100%',
             height: '100%',
             display: 'flex',
@@ -34,21 +34,35 @@ export default async function Image() {
             position: 'relative',
           }}
         >
-          {/* Background Pattern */}
+          {/* Background Decorative Rings */}
           <div
             style={{
               position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              opacity: 0.1,
-              backgroundImage: 'radial-gradient(circle at 25px 25px, #06b6d4 2%, transparent 0%), radial-gradient(circle at 75px 75px, #3b82f6 2%, transparent 0%)',
-              backgroundSize: '100px 100px',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '800px',
+              height: '800px',
+              borderRadius: '50%',
+              border: '2px dashed #B9E7E6',
+              opacity: 0.6,
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '600px',
+              height: '600px',
+              borderRadius: '50%',
+              border: '1.5px solid #6FD4E1',
+              opacity: 0.4,
             }}
           />
           
-          {/* Content */}
+          {/* Content Card */}
           <div
             style={{
               display: 'flex',
@@ -58,17 +72,22 @@ export default async function Image() {
               textAlign: 'center',
               position: 'relative',
               zIndex: 1,
+              backgroundColor: 'rgba(255, 255, 255, 0.85)',
+              borderRadius: '32px',
+              border: '2px solid #6FD4E1',
+              padding: '40px 60px',
+              boxShadow: '0 25px 50px -12px rgba(8, 145, 178, 0.25)',
             }}
           >
             {/* Logo/Badge */}
             <div
               style={{
-                fontSize: 120,
+                fontSize: 100,
                 fontWeight: 900,
-                background: 'linear-gradient(90deg, #06b6d4, #3b82f6, #a855f7)',
+                background: 'linear-gradient(135deg, #0891b2, #0284c7)',
                 backgroundClip: 'text',
                 color: 'transparent',
-                marginBottom: 20,
+                marginBottom: 10,
               }}
             >
               B
@@ -77,10 +96,11 @@ export default async function Image() {
             {/* Name */}
             <div
               style={{
-                fontSize: 72,
-                fontWeight: 700,
-                color: 'white',
-                marginBottom: 20,
+                fontSize: 64,
+                fontWeight: 800,
+                color: '#0c282d',
+                marginBottom: 12,
+                letterSpacing: '-0.02em',
               }}
             >
               {name}
@@ -89,12 +109,10 @@ export default async function Image() {
             {/* Title */}
             <div
               style={{
-                fontSize: 42,
-                fontWeight: 500,
-                background: 'linear-gradient(90deg, #06b6d4, #3b82f6)',
-                backgroundClip: 'text',
-                color: 'transparent',
-                marginBottom: 30,
+                fontSize: 34,
+                fontWeight: 700,
+                color: '#0891b2',
+                marginBottom: 20,
               }}
             >
               {title}
@@ -103,9 +121,10 @@ export default async function Image() {
             {/* Passions */}
             <div
               style={{
-                fontSize: 32,
-                color: '#94a3b8',
-                marginBottom: 40,
+                fontSize: 26,
+                color: '#2d5f68',
+                marginBottom: 24,
+                fontWeight: 500,
               }}
             >
               {passions}
@@ -114,29 +133,19 @@ export default async function Image() {
             {/* URL */}
             <div
               style={{
-                fontSize: 28,
-                color: '#64748b',
+                fontSize: 24,
+                color: '#0891b2',
                 fontFamily: 'monospace',
+                fontWeight: 700,
+                padding: '6px 20px',
+                borderRadius: '16px',
+                backgroundColor: '#E2F4F3',
+                border: '1px solid #B9E7E6',
               }}
             >
               blimbing.me
             </div>
           </div>
-          
-          {/* Border */}
-          <div
-            style={{
-              position: 'absolute',
-              top: 40,
-              left: 40,
-              right: 40,
-              bottom: 40,
-              border: '2px solid',
-              borderImage: 'linear-gradient(90deg, #06b6d4, #3b82f6, #a855f7) 1',
-              borderRadius: 20,
-              opacity: 0.3,
-            }}
-          />
         </div>
       ),
       {
@@ -151,15 +160,15 @@ export default async function Image() {
       (
         <div
           style={{
-            background: 'linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%)',
+            background: 'linear-gradient(135deg, #E2F4F3 0%, #ffffff 100%)',
             width: '100%',
             height: '100%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 72,
-            fontWeight: 700,
-            color: 'white',
+            fontSize: 64,
+            fontWeight: 800,
+            color: '#0c282d',
           }}
         >
           Fahmi Bahtiar Portfolio

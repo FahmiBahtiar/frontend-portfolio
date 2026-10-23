@@ -98,16 +98,17 @@ export const defaultMetadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico?v=5', sizes: '48x48', type: 'image/x-icon' },
-      { url: '/favicon-16x16.png?v=5', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png?v=5', sizes: '32x32', type: 'image/png' },
-      { url: '/icon-192.png?v=5', sizes: '192x192', type: 'image/png' },
-      { url: '/icon-512.png?v=5', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon.svg?v=6', type: 'image/svg+xml' },
+      { url: '/favicon.ico?v=6', sizes: '48x48', type: 'image/x-icon' },
+      { url: '/favicon-16x16.png?v=6', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png?v=6', sizes: '32x32', type: 'image/png' },
+      { url: '/icon-192.png?v=6', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png?v=6', sizes: '512x512', type: 'image/png' },
     ],
-    shortcut: '/favicon.ico?v=5',
+    shortcut: '/favicon.ico?v=6',
     apple: [
-      { url: '/icon-192.png?v=5', sizes: '192x192', type: 'image/png' },
-      { url: '/icon-512.png?v=5', sizes: '512x512', type: 'image/png' },
+      { url: '/icon-192.png?v=6', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png?v=6', sizes: '512x512', type: 'image/png' },
     ],
   },
   alternates: {
