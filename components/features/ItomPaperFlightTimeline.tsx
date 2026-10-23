@@ -715,7 +715,8 @@ function ManeuveringPaperAirplane({
       const idleFloatY = Math.sin(time * 2.2) * 0.04;
       const idleFloatX = Math.sin(time * 1.4) * 0.05;
 
-      airplaneRef.current.position.y = -0.2 + idleFloatY;
+      // Elevated above the bottom dock with comfortable breathing room!
+      airplaneRef.current.position.y = 0.22 + idleFloatY;
       airplaneRef.current.position.x = idleFloatX;
 
       airplaneRef.current.rotation.x = currentPitch.current * 3.2 + 0.12;
@@ -727,7 +728,7 @@ function ManeuveringPaperAirplane({
   return (
     <group position={[0, 0, 0]}>
       {/* Paper airplane positioned with ample breathing room in camera view */}
-      <group ref={airplaneRef} position={[0, -0.2, 1.8]} scale={1.05}>
+      <group ref={airplaneRef} position={[0, 0.22, 1.8]} scale={1.05}>
         <PaperAirplane color="#fcfbfa" scale={0.92} />
       </group>
     </group>
@@ -816,6 +817,17 @@ export function ItomPaperFlightTimeline({
     return DEFAULT_PARTING_MILESTONES.map((m, idx) => {
       const matched = raw[idx];
       if (!matched) return m;
+      if (idx === 0) {
+        // Milestone 1 is the signature ITom intro hero milestone with avatar on cloud
+        return {
+          ...m,
+          titleLeft: 'FAHMI BAHTIAR',
+          titleRight: '(BLIMBING)',
+          mottoLine1: matched.institution ? `"Elementary School • ${matched.institution}"` : m.mottoLine1,
+          mottoLine2: matched.description || m.mottoLine2,
+          tagBadge: matched.gpa ? `★ ${matched.gpa} (${matched.period})` : m.tagBadge,
+        };
+      }
       return {
         ...m,
         titleLeft: matched.institution ? matched.institution.split(' ').slice(0, 3).join(' ') : m.titleLeft,
