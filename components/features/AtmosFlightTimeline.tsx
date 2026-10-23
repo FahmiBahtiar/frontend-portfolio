@@ -50,7 +50,7 @@ export const DEFAULT_ATMOS_CHECKPOINTS: AtmosCheckpoint[] = [
     highlight: 'Top 10 Student',
     description:
       'Building strong academic foundation and character development. Active in journey and survival club, sparking a lifelong fascination with aviation, mathematics, and exploration.',
-    tProgress: 0.08,
+    tProgress: 0.113,
     coord: [-6.0, 1.4, 4.6],
     color: '#0891b2',
   },
@@ -64,7 +64,7 @@ export const DEFAULT_ATMOS_CHECKPOINTS: AtmosCheckpoint[] = [
     highlight: 'Honor Roll Graduate',
     description:
       'Initiated self-taught programming journey with fundamental algorithms, logic systems, and early software experiments while consistently maintaining academic excellence.',
-    tProgress: 0.30,
+    tProgress: 0.315,
     coord: [-2.8, 2.6, 0.0],
     color: '#059669',
   },
@@ -78,7 +78,7 @@ export const DEFAULT_ATMOS_CHECKPOINTS: AtmosCheckpoint[] = [
     highlight: 'Djarum Foundation Scholar',
     description:
       'Awarded prestigious Djarum Foundation scholarship for intensive full-stack engineering, studying agile paradigms, cloud architectures, and modern web application development.',
-    tProgress: 0.52,
+    tProgress: 0.520,
     coord: [0.5, 3.9, -4.5],
     color: '#d97706',
   },
@@ -92,7 +92,7 @@ export const DEFAULT_ATMOS_CHECKPOINTS: AtmosCheckpoint[] = [
     highlight: 'Software Engineering Major',
     description:
       'Graduated from the renowned creative and tech academy SMK Raden Umar Said. Specialized in backend infrastructure, relational databases, security models, and high-performance APIs.',
-    tProgress: 0.74,
+    tProgress: 0.738,
     coord: [3.4, 4.8, 0.8],
     color: '#7c3aed',
   },
@@ -106,7 +106,7 @@ export const DEFAULT_ATMOS_CHECKPOINTS: AtmosCheckpoint[] = [
     highlight: 'Active • Informatics Engineering',
     description:
       'Pursuing Bachelor Degree in Informatics Engineering with focus on distributed systems, data science, and cloud networking. Merging aviation telemetry with autonomous AI pipelines.',
-    tProgress: 0.94,
+    tProgress: 0.917,
     coord: [6.6, 5.8, -2.8],
     color: '#2563eb',
   },
@@ -512,9 +512,9 @@ function AtmosCameraDirector({
     }
 
     // Smooth cinematic damping (Zero snapping, 60fps buttery float)
-    state.camera.position.x = THREE.MathUtils.damp(state.camera.position.x, targetCamPos.current.x, 3.2, delta);
-    state.camera.position.y = THREE.MathUtils.damp(state.camera.position.y, targetCamPos.current.y, 3.2, delta);
-    state.camera.position.z = THREE.MathUtils.damp(state.camera.position.z, targetCamPos.current.z, 3.2, delta);
+    state.camera.position.x = THREE.MathUtils.damp(state.camera.position.x, targetCamPos.current.x, 4.8, delta);
+    state.camera.position.y = THREE.MathUtils.damp(state.camera.position.y, targetCamPos.current.y, 4.8, delta);
+    state.camera.position.z = THREE.MathUtils.damp(state.camera.position.z, targetCamPos.current.z, 4.8, delta);
 
     // Damp camera look direction
     state.camera.lookAt(targetLookAt.current);
@@ -829,83 +829,77 @@ export function AtmosFlightTimeline({
 
       {/* Editorial Checkpoint Typography Overlay ("Fokus ke Tulisannya") */}
       <div className="relative z-10 p-6 sm:p-10 max-w-md lg:max-w-lg pointer-events-none mt-auto sm:my-auto">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentWpt.id}
-            initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: -12, filter: 'blur(4px)' }}
-            transition={{ duration: 0.45, ease: 'easeOut' }}
-            className="bg-white/85 backdrop-blur-xl border border-white/80 p-6 sm:p-7 rounded-3xl shadow-xl pointer-events-auto"
-          >
-            {/* Sub-label Category Tag */}
-            <div className="flex items-center justify-between gap-3 mb-2.5">
-              <span className="font-mono text-xs font-bold tracking-widest text-[#0891b2] uppercase flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                CHECKPOINT #{currentWpt.order.toString().padStart(2, '0')} • {currentWpt.fixCode}
-              </span>
-              <span className="font-mono text-xs text-[#527d85] font-semibold flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-[#0891b2]" />
-                {currentWpt.period}
-              </span>
-            </div>
+        <div
+          key={currentWpt.id}
+          className="bg-white/95 backdrop-blur-xl border border-white/80 p-6 sm:p-7 rounded-3xl shadow-xl pointer-events-auto transition-all duration-300 transform"
+        >
+          {/* Sub-label Category Tag */}
+          <div className="flex items-center justify-between gap-3 mb-2.5">
+            <span className="font-mono text-xs font-bold tracking-widest text-[#0891b2] uppercase flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              CHECKPOINT #{currentWpt.order.toString().padStart(2, '0')} • {currentWpt.fixCode}
+            </span>
+            <span className="font-mono text-xs text-[#527d85] font-semibold flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5 text-[#0891b2]" />
+              {currentWpt.period}
+            </span>
+          </div>
 
-            {/* Large Bold Editorial Headline */}
-            <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0c282d] tracking-tight leading-tight mb-2">
-              {currentWpt.institution}
-            </h3>
+          {/* Large Bold Editorial Headline */}
+          <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0c282d] tracking-tight leading-tight mb-2">
+            {currentWpt.institution}
+          </h3>
 
-            {/* Degree & Highlight Pill */}
-            <div className="flex items-center gap-2 mb-4 flex-wrap">
-              <span className="font-mono text-sm font-semibold text-[#0891b2]">
-                {currentWpt.degree}
-              </span>
-              <span className="text-[#527d85]">•</span>
-              <span className="inline-flex items-center gap-1 text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#E2F4F3] text-[#0891b2] border border-[#B9E7E6]">
-                <Award className="w-3 h-3" />
-                {currentWpt.highlight}
-              </span>
-            </div>
+          {/* Degree & Highlight Pill */}
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
+            <span className="font-mono text-sm font-semibold text-[#0891b2]">
+              {currentWpt.degree}
+            </span>
+            <span className="text-[#527d85]">•</span>
+            <span className="inline-flex items-center gap-1 text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#E2F4F3] text-[#0891b2] border border-[#B9E7E6]">
+              <Award className="w-3 h-3" />
+              {currentWpt.highlight}
+            </span>
+          </div>
 
-            {/* Full Story Description (Zero Truncation) */}
-            <p className="text-xs sm:text-sm text-[#2d5f68] leading-relaxed mb-5 font-normal">
-              {currentWpt.description}
-            </p>
+          {/* Full Story Description (Zero Truncation) */}
+          <p className="text-xs sm:text-sm text-[#2d5f68] leading-relaxed mb-5 font-normal">
+            {currentWpt.description}
+          </p>
 
-            {/* Interactive Flight Actions */}
-            <div className="flex items-center justify-between gap-3 pt-3 border-t border-[#B9E7E6]/50">
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handlePrev}
-                  className="rounded-xl border-[#B9E7E6] text-[#2d5f68] hover:bg-[#E2F4F3] h-8 px-2.5 font-mono text-xs"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5 mr-0.5" />
-                  Prev
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleNext}
-                  className="rounded-xl border-[#B9E7E6] text-[#2d5f68] hover:bg-[#E2F4F3] h-8 px-2.5 font-mono text-xs"
-                >
-                  Next
-                  <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
-                </Button>
-              </div>
-
+          {/* Interactive Flight Actions */}
+          <div className="flex items-center justify-between gap-3 pt-3 border-t border-[#B9E7E6]/50">
+            <div className="flex items-center gap-2">
               <Button
                 size="sm"
-                onClick={handleLaunchNext}
-                className="bg-[#0891b2] hover:bg-[#0e7490] text-white rounded-xl h-8 px-3.5 font-mono text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
+                variant="outline"
+                onClick={handlePrev}
+                className="rounded-xl border-[#B9E7E6] text-[#2d5f68] hover:bg-[#E2F4F3] h-8 px-2.5 font-mono text-xs"
               >
-                <span>Continue Flight</span>
-                <ChevronRight className="w-3.5 h-3.5" />
+                <ChevronLeft className="w-3.5 h-3.5 mr-0.5" />
+                Prev
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleNext}
+                className="rounded-xl border-[#B9E7E6] text-[#2d5f68] hover:bg-[#E2F4F3] h-8 px-2.5 font-mono text-xs"
+              >
+                Next
+                <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
               </Button>
             </div>
-          </motion.div>
-        </AnimatePresence>
+
+            <Button
+              size="sm"
+              onClick={handleLaunchNext}
+              className="bg-[#0891b2] hover:bg-[#0e7490] text-white rounded-xl h-8 px-3.5 font-mono text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
+            >
+              <span>Continue Flight</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Floating Bottom Flight Controller & Waypoint Quick-Selector */}
