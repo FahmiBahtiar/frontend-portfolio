@@ -186,10 +186,15 @@ function PaperAirplane({
   );
 }
 
-// ── Power-of-2 Card Texture Generator (2048x1024 -> Two 1024x1024 Halves) ───
+// ── Power-of-2 Card Texture Generator (Stateful & Guaranteed Hydration) ──────
 function useFracturedCardTextures(milestone: PartingMilestone) {
-  return useMemo(() => {
-    if (typeof document === 'undefined') return { leftTex: null, rightTex: null };
+  const [textures, setTextures] = useState<{
+    leftTex: THREE.CanvasTexture | null;
+    rightTex: THREE.CanvasTexture | null;
+  }>({ leftTex: null, rightTex: null });
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
 
     const fullW = 2048;
     const fullH = 1024;
@@ -200,7 +205,7 @@ function useFracturedCardTextures(milestone: PartingMilestone) {
     fullCanvas.width = fullW;
     fullCanvas.height = fullH;
     const ctx = fullCanvas.getContext('2d');
-    if (!ctx) return { leftTex: null, rightTex: null };
+    if (!ctx) return;
 
     ctx.clearRect(0, 0, fullW, fullH);
 
@@ -375,8 +380,10 @@ function useFracturedCardTextures(milestone: PartingMilestone) {
     rightTex.generateMipmaps = false;
     rightTex.needsUpdate = true;
 
-    return { leftTex, rightTex };
+    setTextures({ leftTex, rightTex });
   }, [milestone]);
+
+  return textures;
 }
 
 // ── 3D Fractured Milestone Card Component (Pecah / Breaks Apart When Passed!) ─
@@ -626,16 +633,18 @@ function SkyFlightWorld({
   scrollRef: React.MutableRefObject<number>;
 }) {
   const worldGroupRef = useRef<THREE.Group>(null);
+  const [textures, setTextures] = useState<THREE.Texture[]>([]);
 
-  const textures = useMemo(() => {
-    if (typeof window === 'undefined') return [];
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     const loader = new THREE.TextureLoader();
-    return CLOUD_TEXTURES.map((url) => {
+    const loaded = CLOUD_TEXTURES.map((url) => {
       const tex = loader.load(url);
       tex.generateMipmaps = true;
       tex.minFilter = THREE.LinearMipmapLinearFilter;
       return tex;
     });
+    setTextures(loaded);
   }, []);
 
   const cloudList = useMemo(() => {
@@ -657,7 +666,6 @@ function SkyFlightWorld({
     for (let i = 0; i < totalClouds; i++) {
       const seed = i * 23 + 7;
       const side = i % 2 === 0 ? 1 : -1;
-      // Center corridor (|x| < 4.2) is kept clear so clouds NEVER occlude the card!
       const x = side * (4.4 + ((seed * 7) % 10) * 0.65);
       const y = ((seed * 11) % 8.5) - 3.8;
       const z = -((i * 3.6) % 215) - 4;
@@ -856,12 +864,17 @@ export function ItomPaperFlightTimeline({
 }: {
   educationRecords?: Education[];
 }) {
+  const [mounted, setMounted] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const scrollRef = useRef<number>(0);
   const scrollVelocityRef = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [webGLSupported] = useState<boolean>(() => {
     if (typeof window === 'undefined') return true;
@@ -969,6 +982,20 @@ export function ItomPaperFlightTimeline({
   const flightPercentage = Math.round(
     Math.max(0, Math.min(100, (scrollRef.current / 175) * 100))
   );
+
+  if (!mounted) {
+    return (
+      <div
+        className="w-full relative rounded-3xl overflow-hidden border-2 border-[#B9E7E6] shadow-xl min-h-[640px] md:min-h-[720px]"
+        style={{
+          backgroundImage: `url('/textures/paper-texture.webp')`,
+          backgroundColor: '#87CEEB',
+          backgroundBlendMode: 'multiply',
+          backgroundSize: 'cover',
+        }}
+      />
+    );
+  }
 
   return (
     <div
