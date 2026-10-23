@@ -197,15 +197,15 @@ function PaperAirplane({
   );
 }
 
-// ── Ultra-Sharp 4K 3D Card Texture Generator (2048x1200 Anisotropic) ─────────
+// ── Lightweight High-Fidelity 3D Card Texture (1024x600 Retina) ──────────────
 function use3DCardTexture(milestone: MilestoneRecord) {
   const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
-    const canvasW = 2048;
-    const canvasH = 1200;
+    const canvasW = 1024;
+    const canvasH = 600;
 
     const canvas = document.createElement('canvas');
     canvas.width = canvasW;
@@ -216,12 +216,12 @@ function use3DCardTexture(milestone: MilestoneRecord) {
     ctx.clearRect(0, 0, canvasW, canvasH);
 
     // 1. Crisp White Card with Rounded Corners
-    const pad = 24;
+    const pad = 12;
     const cardX = pad;
     const cardY = pad;
     const cardW = canvasW - pad * 2;
     const cardH = canvasH - pad * 2;
-    const r = 44;
+    const r = 22;
 
     // Card white background
     ctx.fillStyle = '#ffffff';
@@ -235,99 +235,99 @@ function use3DCardTexture(milestone: MilestoneRecord) {
 
     // Solid accent card border
     ctx.strokeStyle = milestone.color;
-    ctx.lineWidth = 14;
+    ctx.lineWidth = 7;
     ctx.stroke();
 
     // Top Accent Strip
     ctx.fillStyle = milestone.color;
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(cardX, cardY, cardW, 20, [r, r, 0, 0]);
+      ctx.roundRect(cardX, cardY, cardW, 10, [r, r, 0, 0]);
     } else {
-      ctx.rect(cardX, cardY, cardW, 20);
+      ctx.rect(cardX, cardY, cardW, 10);
     }
     ctx.fill();
 
     // 2. Header Row: Checkpoint Tag & Period
     const cpText = `CHECKPOINT #0${milestone.order} • EDUCATION MILESTONE`;
-    ctx.font = 'bold 36px monospace';
+    ctx.font = 'bold 18px monospace';
     const cpMetrics = ctx.measureText(cpText);
-    const cpW = cpMetrics.width + 60;
+    const cpW = cpMetrics.width + 30;
     ctx.fillStyle = milestone.color + '20';
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(70, 72, cpW, 66, 18);
+      ctx.roundRect(35, 36, cpW, 33, 9);
     } else {
-      ctx.rect(70, 72, cpW, 66);
+      ctx.rect(35, 36, cpW, 33);
     }
     ctx.fill();
     ctx.fillStyle = milestone.color;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(cpText, 100, 105);
+    ctx.fillText(cpText, 50, 52);
 
     // Period Pill
     const yrText = milestone.period;
-    ctx.font = 'bold 36px monospace';
+    ctx.font = 'bold 18px monospace';
     const yrMetrics = ctx.measureText(yrText);
-    const yrW = yrMetrics.width + 60;
-    const yrX = canvasW - 70 - yrW;
+    const yrW = yrMetrics.width + 30;
+    const yrX = canvasW - 35 - yrW;
     ctx.fillStyle = '#f1f5f9';
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(yrX, 72, yrW, 66, 18);
+      ctx.roundRect(yrX, 36, yrW, 33, 9);
     } else {
-      ctx.rect(yrX, 72, yrW, 66);
+      ctx.rect(yrX, 36, yrW, 33);
     }
     ctx.fill();
     ctx.fillStyle = '#334155';
     ctx.textAlign = 'left';
-    ctx.fillText(yrText, yrX + 30, 105);
+    ctx.fillText(yrText, yrX + 15, 52);
 
     // Horizontal dashed divider line
     ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 3;
-    ctx.setLineDash([14, 12]);
+    ctx.lineWidth = 2;
+    ctx.setLineDash([7, 6]);
     ctx.beginPath();
-    ctx.moveTo(70, 172);
-    ctx.lineTo(canvasW - 70, 172);
+    ctx.moveTo(35, 86);
+    ctx.lineTo(canvasW - 35, 86);
     ctx.stroke();
     ctx.setLineDash([]);
 
     // 3. Central Content: Big Bold Heading & Subtitle
     ctx.textAlign = 'center';
-    let instFontSize = 92;
+    let instFontSize = 46;
     ctx.font = `bold ${instFontSize}px "CabinSketch", Impact, sans-serif`;
     let instW = ctx.measureText(milestone.institution).width;
-    while (instW > canvasW - 200 && instFontSize > 48) {
-      instFontSize -= 2;
+    while (instW > canvasW - 100 && instFontSize > 24) {
+      instFontSize -= 1;
       ctx.font = `bold ${instFontSize}px "CabinSketch", Impact, sans-serif`;
       instW = ctx.measureText(milestone.institution).width;
     }
     ctx.fillStyle = '#0c282d';
-    ctx.fillText(milestone.institution, canvasW / 2, 320);
+    ctx.fillText(milestone.institution, canvasW / 2, 160);
 
     // Degree / Major
-    ctx.font = 'bold 56px "CabinSketch", sans-serif';
+    ctx.font = 'bold 28px "CabinSketch", sans-serif';
     ctx.fillStyle = milestone.color;
-    ctx.fillText(milestone.degree, canvasW / 2, 435);
+    ctx.fillText(milestone.degree, canvasW / 2, 218);
 
     // Description text card (inner panel)
-    const descY = 515;
-    const descH = 295;
+    const descY = 258;
+    const descH = 148;
     ctx.fillStyle = '#f8fafc';
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(100, descY, canvasW - 200, descH, 24);
+      ctx.roundRect(50, descY, canvasW - 100, descH, 12);
     } else {
-      ctx.rect(100, descY, canvasW - 200, descH);
+      ctx.rect(50, descY, canvasW - 100, descH);
     }
     ctx.fill();
     ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1;
     ctx.stroke();
 
-    ctx.font = '600 58px sans-serif';
+    ctx.font = '600 29px sans-serif';
     ctx.fillStyle = '#0f172a';
     ctx.textAlign = 'center';
 
@@ -337,7 +337,7 @@ function use3DCardTexture(milestone: MilestoneRecord) {
     let curLine = '';
     for (const w of words) {
       const test = (curLine + ' ' + w).trim();
-      if (ctx.measureText(test).width < canvasW - 280) {
+      if (ctx.measureText(test).width < canvasW - 140) {
         curLine = test;
       } else {
         if (curLine) lines.push(curLine);
@@ -346,7 +346,7 @@ function use3DCardTexture(milestone: MilestoneRecord) {
     }
     if (curLine) lines.push(curLine);
 
-    const lineH = 76;
+    const lineH = 38;
     const startY = descY + (descH - (lines.length - 1) * lineH) / 2;
     lines.forEach((line, idx) => {
       ctx.fillText(line, canvasW / 2, startY + idx * lineH);
@@ -354,34 +354,34 @@ function use3DCardTexture(milestone: MilestoneRecord) {
 
     // 4. Footer Row: Badge & Pass-through Cue
     const badgeText = milestone.badge;
-    ctx.font = 'bold 38px monospace';
+    ctx.font = 'bold 19px monospace';
     const bMetrics = ctx.measureText(badgeText);
-    const bW = bMetrics.width + 68;
+    const bW = bMetrics.width + 34;
     ctx.fillStyle = milestone.color;
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(70, canvasH - 170, bW, 78, 20);
+      ctx.roundRect(35, canvasH - 85, bW, 39, 10);
     } else {
-      ctx.rect(70, canvasH - 170, bW, 78);
+      ctx.rect(35, canvasH - 85, bW, 39);
     }
     ctx.fill();
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
-    ctx.fillText(badgeText, 104, canvasH - 131);
+    ctx.fillText(badgeText, 52, canvasH - 65);
 
     // Right Fly-through cue
     const cueText = 'Scroll or autoplay to fly through →';
-    ctx.font = 'bold 36px monospace';
+    ctx.font = 'bold 18px monospace';
     ctx.fillStyle = '#0891b2';
     ctx.textAlign = 'right';
-    ctx.fillText(cueText, canvasW - 85, canvasH - 131);
+    ctx.fillText(cueText, canvasW - 42, canvasH - 65);
 
-    // Create 3D Texture with Anisotropy for razor-sharp view from afar
+    // Create 3D Texture with Anisotropy for sharp view from afar
     const tex = new THREE.CanvasTexture(canvas);
     tex.generateMipmaps = true;
     tex.minFilter = THREE.LinearMipmapLinearFilter;
     tex.magFilter = THREE.LinearFilter;
-    tex.anisotropy = 16;
+    tex.anisotropy = 4;
     tex.needsUpdate = true;
 
     setTexture(tex);
@@ -662,7 +662,7 @@ function SkyFlightWorld({
   );
 }
 
-// ── Unified Flight Physics & Pacing Controller (Frame-Locked, Silky Smooth) ──
+// ── Unified Flight Physics Controller (Silky Smooth, Gentle Pacing) ─────────
 function FlightPhysicsController({
   scrollRef,
   targetScrollRef,
@@ -683,21 +683,21 @@ function FlightPhysicsController({
   useFrame((_, delta) => {
     const clampedDelta = Math.min(delta, 0.1);
 
-    // Autoplay cruise: gentle 3.2 units per second
+    // Autoplay cruise: calm 2.8 units per second
     if (isPlaying) {
-      targetScrollRef.current += clampedDelta * 3.2;
+      targetScrollRef.current += clampedDelta * 2.8;
       if (targetScrollRef.current > 185) {
         targetScrollRef.current = 0;
         scrollRef.current = 0;
       }
     }
 
-    // Silky-smooth damp interpolation
+    // Silky-smooth damp interpolation (gentle 2.8 lambda for majestic glide)
     const prevScroll = scrollRef.current;
     scrollRef.current = THREE.MathUtils.damp(
       scrollRef.current,
       targetScrollRef.current,
-      3.6, // Silky, majestic damping lambda (soft & gradual)
+      2.8,
       clampedDelta
     );
 
@@ -745,14 +745,14 @@ function ManeuveringPaperAirplane({
 
     const chunkProgress = (((scrollZ % 40) + 40) % 40) / 40;
 
-    let bankAngle = Math.sin(chunkProgress * Math.PI * 2) * 0.16;
-    let pitchAngle = Math.sin(chunkProgress * Math.PI * 4) * 0.06;
+    let bankAngle = Math.sin(chunkProgress * Math.PI * 2) * 0.15;
+    let pitchAngle = Math.sin(chunkProgress * Math.PI * 4) * 0.05;
 
     const velInfluence = Math.max(-0.25, Math.min(0.25, vel * 0.02));
     pitchAngle += velInfluence;
 
-    currentBank.current = THREE.MathUtils.damp(currentBank.current, bankAngle, 4.0, delta);
-    currentPitch.current = THREE.MathUtils.damp(currentPitch.current, pitchAngle, 4.0, delta);
+    currentBank.current = THREE.MathUtils.damp(currentBank.current, bankAngle, 3.8, delta);
+    currentPitch.current = THREE.MathUtils.damp(currentPitch.current, pitchAngle, 3.8, delta);
 
     camera.rotation.z = currentBank.current * 0.45;
     camera.rotation.x = currentPitch.current * 0.6;
@@ -816,7 +816,10 @@ function PaperSvgFallback({
         {milestones.map((m, i) => (
           <button
             key={m.id}
+            type="button"
             onClick={() => onSelect(i)}
+            aria-label={`Jump to Milestone ${m.order}: ${m.institution}`}
+            aria-current={i === selectedIdx ? 'step' : undefined}
             className={`px-3 py-1.5 rounded-xl font-mono text-xs font-semibold transition-all ${
               i === selectedIdx
                 ? 'bg-[#0891b2] text-white shadow-md'
@@ -904,13 +907,14 @@ export function ItomPaperFlightTimeline({
     const container = containerRef.current;
     if (!container) return;
 
-    // 1. Mouse wheel / trackpad: calibrated gentle pacing (0.014 multiplier)
+    // 1. Mouse wheel / trackpad: smooth, measured, normalized pacing
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
-      // Gentle, majestic pacing: 1 notch = ~1.4 units (requires ~28 pleasant scrolls per milestone)
-      const delta = e.deltaY * 0.014;
+      const rawDelta = e.deltaY;
+      const clampedDelta = Math.sign(rawDelta) * Math.min(80, Math.abs(rawDelta));
+      const delta = clampedDelta * 0.012; // Calm, elegant glide
       targetScrollRef.current += delta;
       targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
       setIsPlaying(false);
@@ -932,10 +936,10 @@ export function ItomPaperFlightTimeline({
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!isDragging) return;
-      const dy = lastY - e.clientY; // drag up to advance
+      const dy = lastY - e.clientY;
       lastY = e.clientY;
 
-      targetScrollRef.current += dy * 0.06;
+      targetScrollRef.current += dy * 0.035;
       targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
     };
 
@@ -964,7 +968,7 @@ export function ItomPaperFlightTimeline({
         const dy = touchY - currentY;
         touchY = currentY;
 
-        targetScrollRef.current += dy * 0.05;
+        targetScrollRef.current += dy * 0.035;
         targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
       }
     };
@@ -972,11 +976,11 @@ export function ItomPaperFlightTimeline({
     // 4. Keyboard arrow navigation (discrete step)
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-        targetScrollRef.current += 4.0;
+        targetScrollRef.current += 3.0;
         targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
         setIsPlaying(false);
       } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-        targetScrollRef.current -= 4.0;
+        targetScrollRef.current -= 3.0;
         targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
         setIsPlaying(false);
       }
@@ -1049,7 +1053,7 @@ export function ItomPaperFlightTimeline({
       <div className="relative z-20 px-6 py-4 flex items-center justify-between pointer-events-auto">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-full bg-white/90 border border-black/10 flex items-center justify-center text-[#0c282d] shadow-sm">
-            <Plane className="w-4 h-4 text-[#0891b2]" />
+            <Plane className="w-4 h-4 text-[#0891b2]" aria-hidden="true" />
           </div>
           <div>
             <span className="font-serif font-bold text-sm sm:text-base text-[#0c282d] tracking-wide">
@@ -1077,6 +1081,8 @@ export function ItomPaperFlightTimeline({
             dpr={[1, 1.5]}
             frameloop={isInView ? 'always' : 'never'}
             gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
+            role="img"
+            aria-label="3D Paper Airplane Flight Journey Timeline through education milestones"
           >
             <ambientLight intensity={1.3} color="#ffffff" />
             <directionalLight position={[-4, 8, 6]} intensity={1.5} color="#fffcf5" />
@@ -1120,26 +1126,30 @@ export function ItomPaperFlightTimeline({
             <button
               type="button"
               onClick={() => setIsPlaying(true)}
+              aria-label="Enable Autoplay flight mode"
+              aria-pressed={isPlaying}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all ${
                 isPlaying
                   ? 'bg-[#0891b2] text-white shadow-sm'
                   : 'text-[#2d5f68] hover:text-[#0c282d] hover:bg-white/60'
               }`}
             >
-              <Play className="w-3.5 h-3.5 fill-current" />
+              <Play className="w-3.5 h-3.5 fill-current" aria-hidden="true" />
               <span>AUTOPLAY</span>
             </button>
 
             <button
               type="button"
               onClick={() => setIsPlaying(false)}
+              aria-label="Enable By Scroll flight mode"
+              aria-pressed={!isPlaying}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all ${
                 !isPlaying
                   ? 'bg-[#0891b2] text-white shadow-sm'
                   : 'text-[#2d5f68] hover:text-[#0c282d] hover:bg-white/60'
               }`}
             >
-              <Mouse className="w-3.5 h-3.5" />
+              <Mouse className="w-3.5 h-3.5" aria-hidden="true" />
               <span>BY SCROLL</span>
             </button>
           </div>
@@ -1149,10 +1159,11 @@ export function ItomPaperFlightTimeline({
             size="sm"
             variant="ghost"
             onClick={handleResetDeparture}
+            aria-label="Reset flight to departure"
             className="text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] font-mono text-xs rounded-xl h-8 px-2"
             title="Reset to departure"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
           </Button>
 
           {isPlaying ? (
@@ -1173,7 +1184,10 @@ export function ItomPaperFlightTimeline({
             return (
               <button
                 key={m.id}
+                type="button"
                 onClick={() => handleSelectMilestone(idx)}
+                aria-label={`Jump to Milestone ${m.order}: ${m.institution}`}
+                aria-current={isSelected ? 'step' : undefined}
                 className={`px-3 py-1.5 rounded-xl font-mono text-xs font-semibold whitespace-nowrap transition-all ${
                   isSelected
                     ? 'bg-[#0891b2] text-white shadow-sm'

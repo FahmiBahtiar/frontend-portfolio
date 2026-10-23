@@ -107,8 +107,16 @@ export default function HomePage() {
       // Non-critical: warm Spotify in the background — do NOT block content.
       SpotifyService.getNowPlaying().catch(() => null);
 
-      // Preload all sections into SWR cache to eliminate spinners on scroll
-      preloadAllSections();
+      // Defer preloading below-the-fold sections to idle time so Hero gets 100% network & CPU priority
+      if (typeof window !== 'undefined') {
+        const deferPreload = () => preloadAllSections();
+        const win = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number };
+        if (typeof win.requestIdleCallback === 'function') {
+          win.requestIdleCallback(deferPreload, { timeout: 3500 });
+        } else {
+          setTimeout(deferPreload, 1500);
+        }
+      }
 
       try {
         // Only the hero data gates the loading->content transition.
@@ -156,11 +164,10 @@ export default function HomePage() {
     if (sectionsLoadTimeoutRef.current) {
       clearTimeout(sectionsLoadTimeoutRef.current);
     }
-    setSectionsLoaded(true);
   };
 
   const handleNavigate = (sectionIndex: number) => {
-    // 1. Ensure all sections are fully loaded in DOM to lock layout dimensions
+    // 1. Ensure all sections are mounted in DOM when user navigates via menu
     setSectionsLoaded(true);
 
     const targetSection = sectionRefs.current[sectionIndex];
