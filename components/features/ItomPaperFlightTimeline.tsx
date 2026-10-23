@@ -63,7 +63,7 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
     id: 'm1',
     order: 1,
     fixCode: 'DMK 01',
-    zDistance: -18,
+    zDistance: -20,
     titleLeft: 'FAHMI BAHTIAR',
     titleRight: '(BLIMBING)',
     mottoLine1: '"Elementary School • MI Negeri 1 Demak"',
@@ -76,7 +76,7 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
     id: 'm2',
     order: 2,
     fixCode: 'DMN 02',
-    zDistance: -58,
+    zDistance: -60,
     titleLeft: 'SMP NEGERI 2',
     titleRight: 'DEMAK (2016 – 2019)',
     mottoLine1: '"Junior High School Education"',
@@ -89,7 +89,7 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
     id: 'm3',
     order: 3,
     fixCode: 'BNR 03',
-    zDistance: -98,
+    zDistance: -100,
     titleLeft: 'BINAR ACADEMY',
     titleRight: 'TECH SCHOLAR (2021)',
     mottoLine1: '"Djarum Foundation Scholarship"',
@@ -102,7 +102,7 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
     id: 'm4',
     order: 4,
     fixCode: 'RUS 04',
-    zDistance: -138,
+    zDistance: -140,
     titleLeft: 'SMK RADEN UMAR SAID',
     titleRight: 'SOFTWARE ENG (2019 – 2022)',
     mottoLine1: '"Vocational Academy of Excellence"',
@@ -115,7 +115,7 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
     id: 'm5',
     order: 5,
     fixCode: 'UDN 05',
-    zDistance: -178,
+    zDistance: -180,
     titleLeft: 'DIAN NUSWANTORO',
     titleRight: 'UNIVERSITY (2022 – 2026)',
     mottoLine1: '"Bachelor of Computer Science"',
@@ -338,13 +338,14 @@ function PartingStoryMilestone({
     const distanceZ = scrollZ + milestone.zDistance;
 
     // Visibility cull: hide if far ahead or passed behind
-    groupRef.current.visible = distanceZ > -75 && distanceZ < 25;
+    groupRef.current.visible = distanceZ > -55 && distanceZ < 15;
     if (!groupRef.current.visible) return;
 
     // ── THE ITOM PARTING SPREAD MECHANIC ──────────────────────────────────────
-    // Elements stay together when far away, and SPREAD APART as the plane approaches!
-    const spreadStart = -45;
-    const spreadEnd = -10;
+    // When far away (distanceZ < -16): elements are centered together
+    // As the plane approaches (-16 to -1.5): elements smoothly part to the sides!
+    const spreadStart = -16;
+    const spreadEnd = -1.5;
     let spreadFactor = 0;
 
     if (distanceZ > spreadStart && distanceZ < spreadEnd) {
@@ -355,40 +356,40 @@ function PartingStoryMilestone({
       spreadFactor = 1;
     }
 
-    const maxSpread = 13.5; // lateral distance elements disperse outward
+    const maxSpread = 7.2; // lateral distance elements disperse outward
 
     // Left Title: moves to the left (-X)
     if (leftTitleRef.current) {
-      leftTitleRef.current.position.x = -2.2 - spreadFactor * maxSpread * 0.7;
+      leftTitleRef.current.position.x = -1.4 - spreadFactor * maxSpread * 0.75;
     }
 
     // Right Title: moves to the right (+X)
     if (rightTitleRef.current) {
-      rightTitleRef.current.position.x = 2.4 + spreadFactor * maxSpread * 0.65;
+      rightTitleRef.current.position.x = 1.4 + spreadFactor * maxSpread * 0.7;
     }
 
     // Avatar on Cloud: parts upward and slightly to the left, bobbing gently
     if (avatarMeshRef.current) {
-      const baseY = 3.6;
+      const baseY = 2.6;
       avatarMeshRef.current.position.y =
-        baseY + Math.sin(time * 0.9) * 0.18 + spreadFactor * 2.8;
-      avatarMeshRef.current.position.x = -spreadFactor * maxSpread * 0.35;
+        baseY + Math.sin(time * 0.9) * 0.15 + spreadFactor * 1.8;
+      avatarMeshRef.current.position.x = -spreadFactor * maxSpread * 0.25;
     }
 
     // Subtitle Line 1: spreads right (+X)
     if (motto1Ref.current) {
-      motto1Ref.current.position.x = 1.8 + spreadFactor * maxSpread * 0.7;
+      motto1Ref.current.position.x = 1.2 + spreadFactor * maxSpread * 0.65;
     }
 
     // Subtitle Line 2: spreads left (-X)
     if (motto2Ref.current) {
-      motto2Ref.current.position.x = -1.8 - spreadFactor * maxSpread * 0.6;
+      motto2Ref.current.position.x = -1.2 - spreadFactor * maxSpread * 0.65;
     }
 
-    // Badge: spreads upward and right
+    // Badge: spreads downward and right
     if (badgeRef.current) {
-      badgeRef.current.position.x = 2.0 + spreadFactor * maxSpread * 0.55;
-      badgeRef.current.position.y = -0.9 - spreadFactor * 1.5;
+      badgeRef.current.position.x = 1.2 + spreadFactor * maxSpread * 0.5;
+      badgeRef.current.position.y = -0.9 - spreadFactor * 0.9;
     }
   });
 
@@ -396,8 +397,8 @@ function PartingStoryMilestone({
     <group ref={groupRef} position={[0, 0, milestone.zDistance]}>
       {/* Avatar on Cloud (for Milestone 1, exact ITom reference!) */}
       {milestone.hasAvatar && avatarTexture && (
-        <mesh ref={avatarMeshRef} position={[0, 3.6, 0]}>
-          <planeGeometry args={[4.8, 2.4]} />
+        <mesh ref={avatarMeshRef} position={[0, 2.6, 0]}>
+          <planeGeometry args={[5.2, 2.6]} />
           <meshBasicMaterial
             map={avatarTexture}
             transparent
@@ -409,8 +410,8 @@ function PartingStoryMilestone({
 
       {/* Main Title Left (Spreads Left!) */}
       {titleLeftTex && (
-        <mesh ref={leftTitleRef} position={[-2.2, 2.2, 0.1]}>
-          <planeGeometry args={[5.2, 1.05]} />
+        <mesh ref={leftTitleRef} position={[-1.4, 1.4, 0.1]}>
+          <planeGeometry args={[5.4, 1.1]} />
           <meshBasicMaterial
             map={titleLeftTex}
             transparent
@@ -422,8 +423,8 @@ function PartingStoryMilestone({
 
       {/* Main Title Right (Spreads Right!) */}
       {titleRightTex && (
-        <mesh ref={rightTitleRef} position={[2.4, 1.8, 0.1]}>
-          <planeGeometry args={[4.2, 1.0]} />
+        <mesh ref={rightTitleRef} position={[1.4, 1.1, 0.1]}>
+          <planeGeometry args={[4.4, 1.0]} />
           <meshBasicMaterial
             map={titleRightTex}
             transparent
@@ -435,7 +436,7 @@ function PartingStoryMilestone({
 
       {/* Motto Line 1 (Spreads Right!) */}
       {motto1Tex && (
-        <mesh ref={motto1Ref} position={[1.8, 0.6, 0.1]}>
+        <mesh ref={motto1Ref} position={[1.2, 0.2, 0.1]}>
           <planeGeometry args={[5.2, 0.7]} />
           <meshBasicMaterial
             map={motto1Tex}
@@ -448,7 +449,7 @@ function PartingStoryMilestone({
 
       {/* Motto Line 2 (Spreads Left!) */}
       {motto2Tex && (
-        <mesh ref={motto2Ref} position={[-1.8, 0.0, 0.1]}>
+        <mesh ref={motto2Ref} position={[-1.2, -0.4, 0.1]}>
           <planeGeometry args={[5.4, 0.7]} />
           <meshBasicMaterial
             map={motto2Tex}
@@ -461,7 +462,7 @@ function PartingStoryMilestone({
 
       {/* Honor Tag Badge (Spreads Right/Down!) */}
       {badgeTex && (
-        <mesh ref={badgeRef} position={[2.0, -0.9, 0.1]}>
+        <mesh ref={badgeRef} position={[1.2, -1.0, 0.1]}>
           <planeGeometry args={[4.4, 0.7]} />
           <meshBasicMaterial
             map={badgeTex}
@@ -714,7 +715,7 @@ function ManeuveringPaperAirplane({
       const idleFloatY = Math.sin(time * 2.2) * 0.04;
       const idleFloatX = Math.sin(time * 1.4) * 0.05;
 
-      airplaneRef.current.position.y = -0.6 + idleFloatY;
+      airplaneRef.current.position.y = -0.2 + idleFloatY;
       airplaneRef.current.position.x = idleFloatX;
 
       airplaneRef.current.rotation.x = currentPitch.current * 3.2 + 0.12;
@@ -726,7 +727,7 @@ function ManeuveringPaperAirplane({
   return (
     <group position={[0, 0, 0]}>
       {/* Paper airplane positioned with ample breathing room in camera view */}
-      <group ref={airplaneRef} position={[0, -0.6, 1.2]} scale={1.05}>
+      <group ref={airplaneRef} position={[0, -0.2, 1.8]} scale={1.05}>
         <PaperAirplane color="#fcfbfa" scale={0.92} />
       </group>
     </group>
@@ -790,8 +791,8 @@ export function ItomPaperFlightTimeline({
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Momentum-based scroll system (exact physics from ITom AboutRoom.jsx)
-  const scrollRef = useRef<number>(18); // Start at Milestone 1 (-18 -> scroll = 18)
+  // Momentum-based scroll system: start at 2 (Milestone 1 directly ahead)
+  const scrollRef = useRef<number>(2);
   const scrollVelocityRef = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -855,8 +856,8 @@ export function ItomPaperFlightTimeline({
       // Autoplay cruise
       if (isPlaying) {
         scrollRef.current += delta * 12.0;
-        if (scrollRef.current > 195) {
-          scrollRef.current = 15;
+        if (scrollRef.current > 188) {
+          scrollRef.current = 2;
         }
       }
 
@@ -867,9 +868,9 @@ export function ItomPaperFlightTimeline({
         scrollVelocityRef.current = 0;
       }
 
-      // Bound flight range (Milestone 1 at ~18 to Milestone 5 at ~180)
-      if (scrollRef.current < 5) scrollRef.current = 5;
-      if (scrollRef.current > 200) scrollRef.current = 200;
+      // Bound flight range (Milestone 1 at ~0 to Milestone 5 at ~185)
+      if (scrollRef.current < 0) scrollRef.current = 0;
+      if (scrollRef.current > 190) scrollRef.current = 190;
 
       // Identify closest active milestone
       const currentScroll = scrollRef.current;
@@ -877,7 +878,9 @@ export function ItomPaperFlightTimeline({
       let minDiff = Infinity;
 
       milestones.forEach((m, idx) => {
-        const diff = Math.abs(currentScroll - Math.abs(m.zDistance));
+        // Milestone is in focus when scroll is ~18 units before it passes
+        const targetScroll = Math.abs(m.zDistance) - 18;
+        const diff = Math.abs(currentScroll - targetScroll);
         if (diff < minDiff) {
           minDiff = diff;
           closestIdx = idx;
@@ -897,7 +900,9 @@ export function ItomPaperFlightTimeline({
   const handleSelectMilestone = useCallback(
     (idx: number) => {
       setSelectedIdx(idx);
-      scrollRef.current = Math.abs(milestones[idx].zDistance);
+      // Place plane 18 units before milestone so content is right ahead and parts as you fly
+      const targetScroll = Math.max(0, Math.abs(milestones[idx].zDistance) - 18);
+      scrollRef.current = targetScroll;
       scrollVelocityRef.current = 0;
       setIsPlaying(false);
     },
@@ -906,7 +911,7 @@ export function ItomPaperFlightTimeline({
 
   // Progress percentage (0% to 100%)
   const flightPercentage = Math.round(
-    Math.max(0, Math.min(100, ((scrollRef.current - 15) / (180 - 15)) * 100))
+    Math.max(0, Math.min(100, (scrollRef.current / 165) * 100))
   );
 
   return (
