@@ -381,28 +381,29 @@ function AtmosAircraft({
     <group ref={groupRef}>
       <group ref={meshRef}>
         {/*
-          Orientation:
+          Orientation & Scale:
           jet.glb nose is at local -X, top is at +Y.
           Rotating by +Math.PI/2 (+90 deg) points nose to +Z (forward).
           Top stays at +Y (upright cockpit, wings horizontal).
+          Scaled to 0.062 so the jet is prominent and clearly visible in the sky!
         */}
         <primitive
           object={sceneClone}
-          scale={[0.042, 0.042, 0.042]}
+          scale={[0.062, 0.062, 0.062]}
           rotation={[0, Math.PI / 2, 0]}
         />
 
         {/* Luminous twin contrail ribbons trailing from engines */}
-        <group position={[-0.32, -0.02, -0.75]}>
+        <group position={[-0.45, -0.03, -1.1]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.018, 0.08, 1.6, 8]} />
-            <meshBasicMaterial color="#ffffff" transparent opacity={0.65} />
+            <cylinderGeometry args={[0.025, 0.12, 2.4, 8]} />
+            <meshBasicMaterial color="#ffffff" transparent opacity={0.75} />
           </mesh>
         </group>
-        <group position={[0.32, -0.02, -0.75]}>
+        <group position={[0.45, -0.03, -1.1]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.018, 0.08, 1.6, 8]} />
-            <meshBasicMaterial color="#ffffff" transparent opacity={0.65} />
+            <cylinderGeometry args={[0.025, 0.12, 2.4, 8]} />
+            <meshBasicMaterial color="#ffffff" transparent opacity={0.75} />
           </mesh>
         </group>
       </group>
@@ -460,8 +461,9 @@ function AtmosCameraDirector({
   selectedIdx: number;
   waypoints: AtmosCheckpoint[];
 }) {
-  const targetCamPos = useRef(new THREE.Vector3(0, 5, 12));
-  const targetLookAt = useRef(new THREE.Vector3(0, 2, 0));
+  const isInitialized = useRef(false);
+  const targetCamPos = useRef(new THREE.Vector3());
+  const targetLookAt = useRef(new THREE.Vector3());
 
   useFrame((state, delta) => {
     const clampedProgress = Math.max(0.001, Math.min(0.999, progress));
@@ -470,16 +472,18 @@ function AtmosCameraDirector({
     const side = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
 
     if (isAtCheckpoint) {
-      // ── EDITORIAL FRAMING VIEW ──────────────────────────────────────────────
-      // Focus on typography on left-center while plane banks on right
+      // ── EDITORIAL FRAMING VIEW (ATMOS Style) ────────────────────────────────
+      // Camera positioned so plane soars in upper-right quadrant (NDC x ≈ 0.30, y ≈ 0.20)
+      // leaving the entire left side perfectly framed for the editorial typography card!
       const desiredPos = planePos.clone()
-        .sub(tangent.clone().multiplyScalar(4.2))
-        .add(new THREE.Vector3(0, 1.9, 0))
-        .sub(side.clone().multiplyScalar(2.6));
+        .sub(tangent.clone().multiplyScalar(4.5))
+        .add(new THREE.Vector3(0, 0.1, 0))
+        .sub(side.clone().multiplyScalar(3.6));
 
       const desiredLook = planePos.clone()
-        .add(tangent.clone().multiplyScalar(1.2))
-        .add(new THREE.Vector3(0, 0.3, 0));
+        .add(tangent.clone().multiplyScalar(0.8))
+        .add(new THREE.Vector3(0, -0.6, 0))
+        .sub(side.clone().multiplyScalar(1.2));
 
       targetCamPos.current.copy(desiredPos);
       targetLookAt.current.copy(desiredLook);
@@ -487,15 +491,24 @@ function AtmosCameraDirector({
       // ── CRUISING / FLIGHT CHASE VIEW ────────────────────────────────────────
       // Dynamic follow camera soaring through cloudscapes
       const desiredPos = planePos.clone()
-        .sub(tangent.clone().multiplyScalar(4.6))
-        .add(new THREE.Vector3(0, 1.8, 0))
-        .add(side.clone().multiplyScalar(0.4));
+        .sub(tangent.clone().multiplyScalar(4.4))
+        .add(new THREE.Vector3(0, 1.4, 0))
+        .add(side.clone().multiplyScalar(0.3));
 
       const desiredLook = planePos.clone()
-        .add(tangent.clone().multiplyScalar(2.2));
+        .add(tangent.clone().multiplyScalar(1.8))
+        .add(new THREE.Vector3(0, 0.1, 0));
 
       targetCamPos.current.copy(desiredPos);
       targetLookAt.current.copy(desiredLook);
+    }
+
+    if (!isInitialized.current) {
+      // Immediate snap on first frame to eliminate any startup camera lag
+      state.camera.position.copy(targetCamPos.current);
+      state.camera.lookAt(targetLookAt.current);
+      isInitialized.current = true;
+      return;
     }
 
     // Smooth cinematic damping (Zero snapping, 60fps buttery float)
@@ -728,55 +741,54 @@ export function AtmosFlightTimeline({
         {webGLSupported ? (
           <Canvas
             shadows
-            camera={{ position: [-8, 4, 10], fov: 45, near: 0.1, far: 120 }}
+            camera={{ position: [-11, 2.4, 7.3], fov: 45, near: 0.1, far: 120 }}
             dpr={[1, 2]}
-            gl={{ antialias: true, powerPreference: 'high-performance' }}
+            gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
           >
-            {/* ATMOS Ethereal Sky & Diffuse Lighting */}
-            <color attach="background" args={['#9BBBE1']} />
-            <ambientLight intensity={0.9} color="#D8E8FF" />
+            {/* ATMOS Ethereal Diffuse Atmospheric Lighting */}
+            <ambientLight intensity={1.1} color="#E8F2FF" />
             <directionalLight
               position={[-8, 14, 12]}
-              intensity={1.8}
-              color="#FFF2E0"
+              intensity={2.0}
+              color="#FFF5E8"
               castShadow
             />
-            <directionalLight position={[10, -4, -10]} intensity={0.4} color="#B9E7E6" />
+            <directionalLight position={[10, -4, -10]} intensity={0.5} color="#B9E7E6" />
 
             <Suspense fallback={null}>
               {/* Ethereal Floating Dust Particles */}
               <AtmosphereParticles count={70} />
 
               {/* 3D Sculpted Cumulus Cloud Formations */}
-              {/* Cloud 1: Foreground entrance puff */}
-              <CloudCluster position={[-4.5, 0.2, 5.8]} scale={2.4} seed={1} />
+              {/* Foreground cloud puff for immediate depth */}
+              <CloudCluster position={[-8.8, 0.4, 8.8]} scale={2.8} seed={1} />
 
-              {/* Cloud 2: Soft backdrop behind Checkpoint 01 */}
-              <CloudCluster position={[-7.5, 1.6, 3.2]} scale={3.2} seed={2} />
+              {/* Checkpoint 01 Cradling Cloud Bank (Under & Behind Plane) */}
+              <CloudCluster position={[-5.6, 0.8, 5.8]} scale={3.6} seed={2} />
 
-              {/* Cloud 3: Midground valley turn */}
-              <CloudCluster position={[-3.6, 2.0, 1.2]} scale={2.2} seed={3} />
+              {/* Midground Valley Cloud Puff */}
+              <CloudCluster position={[-3.8, 1.8, 2.0]} scale={2.4} seed={3} />
 
-              {/* Cloud 4: Soft backdrop behind Checkpoint 02 */}
-              <CloudCluster position={[-4.2, 3.2, -1.2]} scale={2.8} seed={4} />
+              {/* Checkpoint 02 Cradling Cloud Bank */}
+              <CloudCluster position={[-2.2, 2.1, 0.6]} scale={3.4} seed={4} />
 
-              {/* Cloud 5: Canyon ascent bank */}
-              <CloudCluster position={[-1.2, 3.4, -3.8]} scale={3.4} seed={5} />
+              {/* Canyon Ascent Cloud Puff */}
+              <CloudCluster position={[-1.0, 3.0, -3.2]} scale={2.8} seed={5} />
 
-              {/* Cloud 6: Golden dawn cloud backdrop behind Checkpoint 03 */}
-              <CloudCluster position={[0.2, 4.6, -6.2]} scale={3.6} seed={6} />
+              {/* Checkpoint 03 Golden Dawn Cloud Bank */}
+              <CloudCluster position={[1.2, 3.4, -4.0]} scale={3.6} seed={6} />
 
-              {/* Cloud 7: Sweeping pass before Checkpoint 04 */}
-              <CloudCluster position={[2.2, 4.0, -0.4]} scale={2.5} seed={7} />
+              {/* Sweeping Pass Cloud Puff */}
+              <CloudCluster position={[2.2, 4.0, -0.6]} scale={2.6} seed={7} />
 
-              {/* Cloud 8: Soft backdrop behind Checkpoint 04 */}
-              <CloudCluster position={[4.6, 5.5, 2.2]} scale={3.1} seed={8} />
+              {/* Checkpoint 04 Cradling Cloud Bank */}
+              <CloudCluster position={[4.2, 4.3, 1.4]} scale={3.4} seed={8} />
 
-              {/* Cloud 9: Summit sea of clouds under Checkpoint 05 */}
-              <CloudCluster position={[6.2, 5.2, -4.6]} scale={3.8} seed={9} />
+              {/* Checkpoint 05 Summit Cloud Bank */}
+              <CloudCluster position={[7.4, 5.2, -2.2]} scale={3.8} seed={9} />
 
               {/* Cloud Carpet: Vast puffy layer below flight level */}
-              <CloudCluster position={[0, -1.8, 0]} scale={[32, 1.6, 28]} seed={10} opacity={0.98} />
+              <CloudCluster position={[0, -1.8, 0]} scale={[34, 1.6, 30]} seed={10} opacity={0.98} />
 
               {/* 3D Waypoint Beacons & Ring Gates */}
               <WaypointBeacons
@@ -812,7 +824,7 @@ export function AtmosFlightTimeline({
       </div>
 
       {/* Editorial Checkpoint Typography Overlay ("Fokus ke Tulisannya") */}
-      <div className="relative z-10 p-6 sm:p-10 max-w-xl pointer-events-none mt-auto sm:my-auto">
+      <div className="relative z-10 p-6 sm:p-10 max-w-md lg:max-w-lg pointer-events-none mt-auto sm:my-auto">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentWpt.id}
