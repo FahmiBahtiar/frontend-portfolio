@@ -2,17 +2,15 @@
 
 import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Edges } from '@react-three/drei';
+import { Edges, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import {
   Play,
   Pause,
   RotateCcw,
   Plane,
-  Sparkles,
   Calendar,
   Award,
-  CheckCircle2,
   ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -43,11 +41,12 @@ const CLOUD_ASPECT_RATIOS: Record<string, number> = {
   'f6e358bc-d27c-41dd-95f4-6787a835c41e.webp': 1.875,
 };
 
-// ── Milestone Structure (Crisp Boarding Pass Card) ──────────────────────────
+// ── Milestone Structure (3D Flight Corridor Cards) ──────────────────────────
 export interface MilestoneRecord {
   id: string;
   order: number;
   fixCode: string;
+  zDistance: number; // 3D world Z coordinate
   targetScroll: number; // Flight progress coordinate
   institution: string;
   degree: string;
@@ -62,6 +61,7 @@ export const DEFAULT_MILESTONES: MilestoneRecord[] = [
     id: 'm1',
     order: 1,
     fixCode: '01 MI',
+    zDistance: -18,
     targetScroll: 0,
     institution: 'MI NEGERI 1 DEMAK',
     degree: 'Elementary School Education',
@@ -75,6 +75,7 @@ export const DEFAULT_MILESTONES: MilestoneRecord[] = [
     id: 'm2',
     order: 2,
     fixCode: '02 SMP',
+    zDistance: -58,
     targetScroll: 40,
     institution: 'SMP NEGERI 2 DEMAK',
     degree: 'Junior High School Education',
@@ -88,6 +89,7 @@ export const DEFAULT_MILESTONES: MilestoneRecord[] = [
     id: 'm3',
     order: 3,
     fixCode: '03 BINAR',
+    zDistance: -98,
     targetScroll: 80,
     institution: 'BINAR ACADEMY',
     degree: 'Tech Scholar • Djarum Foundation',
@@ -101,6 +103,7 @@ export const DEFAULT_MILESTONES: MilestoneRecord[] = [
     id: 'm4',
     order: 4,
     fixCode: '04 SMK',
+    zDistance: -138,
     targetScroll: 120,
     institution: 'SMK RADEN UMAR SAID',
     degree: 'Software Engineering Major',
@@ -114,6 +117,7 @@ export const DEFAULT_MILESTONES: MilestoneRecord[] = [
     id: 'm5',
     order: 5,
     fixCode: '05 DIAN',
+    zDistance: -178,
     targetScroll: 160,
     institution: 'DIAN NUSWANTORO UNIVERSITY',
     degree: 'Bachelor of Computer Science',
@@ -196,6 +200,129 @@ function PaperAirplane({
   );
 }
 
+// ── In-Sky 3D Milestone Boarding Pass Card (Clean 3D Space & Fly-Through) ────
+function InSky3DMilestoneCard({
+  milestone,
+  scrollRef,
+}: {
+  milestone: MilestoneRecord;
+  scrollRef: React.MutableRefObject<number>;
+}) {
+  const cardDivRef = useRef<HTMLDivElement>(null);
+  const groupRef = useRef<THREE.Group>(null);
+
+  useFrame(() => {
+    if (!cardDivRef.current || !groupRef.current) return;
+    const scrollZ = scrollRef.current || 0;
+    // World distance of this milestone relative to the camera (camera is at z=4.2)
+    const worldZ = scrollZ + milestone.zDistance;
+
+    // FADE & PASS-THROUGH DISSOLVE MECHANICS
+    // Objects move from deep -Z towards camera (z=4.2)
+    // Between -55 and -22: Fades in smoothly as you fly closer
+    // Between -22 and -4: Fully visible in the sweet spot!
+    // Between -4 and +1.5: "di tabrak terus tembus gitu aja" -> airplane pierces straight through!
+    let opacity = 0;
+    if (worldZ < -55) {
+      opacity = 0;
+    } else if (worldZ < -22) {
+      opacity = (worldZ - -55) / (-22 - -55);
+    } else if (worldZ <= -4) {
+      opacity = 1;
+    } else if (worldZ <= 1.5) {
+      // Smooth dissolve as airplane penetrates and passes through
+      const t = (worldZ - -4) / 5.5;
+      opacity = Math.max(0, 1 - t * t);
+    } else {
+      opacity = 0;
+    }
+
+    cardDivRef.current.style.opacity = String(opacity);
+    cardDivRef.current.style.display = opacity > 0.01 ? 'flex' : 'none';
+  });
+
+  return (
+    <group ref={groupRef} position={[0, 1.4, milestone.zDistance]}>
+      <Html
+        transform
+        distanceFactor={75}
+        center
+        pointerEvents="auto"
+      >
+        <div
+          ref={cardDivRef}
+          className="w-[560px] rounded-3xl bg-white/95 backdrop-blur-md border-2 p-7 shadow-2xl flex flex-col gap-3.5 select-none transition-opacity duration-75 relative overflow-hidden"
+          style={{
+            borderColor: milestone.color,
+            boxShadow: `0 25px 50px -12px ${milestone.color}35`,
+          }}
+        >
+          {/* Top Accent Strip */}
+          <div
+            className="absolute top-0 left-0 right-0 h-2.5"
+            style={{ backgroundColor: milestone.color }}
+          />
+
+          {/* Header Row: Checkpoint Tag & Period */}
+          <div className="flex items-center justify-between gap-3 pt-1">
+            <Badge
+              className="font-mono text-xs font-bold px-3 py-1 rounded-xl"
+              style={{
+                backgroundColor: `${milestone.color}15`,
+                color: milestone.color,
+                border: `1px solid ${milestone.color}35`,
+              }}
+            >
+              CHECKPOINT #0{milestone.order} • EDUCATION MILESTONE
+            </Badge>
+
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 text-slate-700 font-mono text-xs font-semibold border border-slate-200">
+              <Calendar className="w-3.5 h-3.5 text-slate-500" />
+              <span>{milestone.period}</span>
+            </div>
+          </div>
+
+          {/* Institution Title */}
+          <div>
+            <h2 className="text-3xl font-extrabold text-[#0c282d] tracking-tight mb-1">
+              {milestone.institution}
+            </h2>
+            <p
+              className="text-base font-bold flex items-center gap-2"
+              style={{ color: milestone.color }}
+            >
+              <span>{milestone.degree}</span>
+            </p>
+          </div>
+
+          {/* Description Body Card */}
+          <div className="rounded-2xl bg-slate-50/90 border border-slate-200/80 p-4">
+            <p className="text-sm text-slate-800 leading-relaxed font-normal">
+              {milestone.description}
+            </p>
+          </div>
+
+          {/* Footer Row: Badge & Pass-through indicator */}
+          <div className="flex items-center justify-between gap-3 pt-1 flex-wrap">
+            <Badge
+              className="text-white font-mono text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-sm flex items-center gap-1.5"
+              style={{ backgroundColor: milestone.color }}
+            >
+              <Award className="w-3.5 h-3.5" />
+              <span>{milestone.badge}</span>
+            </Badge>
+
+            <div className="flex items-center gap-1 text-xs font-mono font-semibold text-slate-500">
+              <span>Fly through to continue</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </div>
+          </div>
+        </div>
+      </Html>
+    </group>
+  );
+}
+
 // ── Continuously Floating & Evasive Paper Cloud ──────────────────────────────
 function DriftingPaperCloud({
   position,
@@ -268,10 +395,12 @@ function DriftingPaperCloud({
   );
 }
 
-// ── Infinite Sky World (Clouds + Airplane) ────────────────────────────────────
+// ── Infinite Sky World (Clouds + In-Sky 3D Cards) ─────────────────────────────
 function SkyFlightWorld({
+  milestones,
   scrollRef,
 }: {
+  milestones: MilestoneRecord[];
   scrollRef: React.MutableRefObject<number>;
 }) {
   const worldGroupRef = useRef<THREE.Group>(null);
@@ -361,6 +490,16 @@ function SkyFlightWorld({
 
   return (
     <group ref={worldGroupRef}>
+      {/* 5 In-Sky 3D Milestone Cards (Positioned in 3D Space, Fly-Through!) */}
+      {milestones.map((m) => (
+        <InSky3DMilestoneCard
+          key={m.id}
+          milestone={m}
+          scrollRef={scrollRef}
+        />
+      ))}
+
+      {/* Floating Paper Clouds (Covering Sky, Continuous Drift!) */}
       {textures.length > 0 &&
         cloudList.map((c) => (
           <DriftingPaperCloud
@@ -417,7 +556,8 @@ function ManeuveringPaperAirplane({
       const idleFloatY = Math.sin(time * 2.2) * 0.03;
       const idleFloatX = Math.sin(time * 1.4) * 0.035;
 
-      airplaneRef.current.position.y = -0.42 + idleFloatY;
+      // Positioned comfortably in the lower third with ample clearance!
+      airplaneRef.current.position.y = -0.32 + idleFloatY;
       airplaneRef.current.position.x = idleFloatX;
 
       airplaneRef.current.rotation.x = currentPitch.current * 3.2 + 0.12;
@@ -428,148 +568,59 @@ function ManeuveringPaperAirplane({
 
   return (
     <group position={[0, 0, 0]}>
-      <group ref={airplaneRef} position={[0, -0.42, 1.1]}>
+      <group ref={airplaneRef} position={[0, -0.32, 1.1]}>
         <PaperAirplane color="#fcfbfa" scale={0.55} />
       </group>
     </group>
   );
 }
 
-// ── Interactive Fly-Through Crash Card (Razor Sharp Vector HTML UX) ───────────
-function FlyThroughMilestoneCard({
-  milestone,
-  scroll,
-  onNext,
+// ── 2.5D Fallback for Non-WebGL Environments ─────────────────────────────────
+function PaperSvgFallback({
+  milestones,
+  selectedIdx,
+  onSelect,
 }: {
-  milestone: MilestoneRecord;
-  scroll: number;
-  onNext?: () => void;
+  milestones: MilestoneRecord[];
+  selectedIdx: number;
+  onSelect: (idx: number) => void;
 }) {
-  const rel = scroll - milestone.targetScroll;
-
-  // Determine visibility, scale, and crash penetration progress
-  if (rel < -20 || rel > 26) return null;
-
-  let scale = 1.0;
-  let opacity = 1.0;
-  let isCrashing = false;
-  let crashT = 0;
-
-  if (rel <= 12) {
-    // Approaching smoothly: card scales up from 0.88 to 1.04 as plane flies forward
-    const approachT = Math.max(0, Math.min(1, (rel + 16) / 28));
-    scale = 0.88 + approachT * 0.16;
-    opacity = 1.0;
-  } else if (rel <= 20) {
-    // "di tabrak terus tembus gitu aja" -> Airplane crashes into and pierces right through!
-    isCrashing = true;
-    crashT = (rel - 12) / 8; // 0 to 1
-    // Expands like a portal/gateway as the plane punches through the center!
-    scale = 1.04 + crashT * 0.95; // expands up to 2.0x
-    opacity = Math.max(0, 1 - crashT * 1.3); // dissolves smoothly
-  } else {
-    return null;
-  }
+  const current = milestones[selectedIdx];
 
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center pointer-events-none p-4 sm:p-6 transition-transform duration-75"
-      style={{
-        transform: `translate3d(0, -75px, 0) scale(${scale})`,
-        opacity,
-        willChange: 'transform, opacity',
-      }}
-    >
-      {/* Shockwave Impact Ripple Ring when crashing through */}
-      {isCrashing && (
-        <div
-          className="absolute rounded-full border-4 pointer-events-none animate-ping"
-          style={{
-            borderColor: milestone.color,
-            width: `${160 + crashT * 400}px`,
-            height: `${160 + crashT * 400}px`,
-            opacity: Math.max(0, 0.8 - crashT * 0.8),
-          }}
-        />
-      )}
+    <div className="w-full h-full flex flex-col justify-between p-6 sm:p-10 relative overflow-hidden bg-[#87CEEB]">
+      <div className="relative z-10 max-w-lg bg-white/95 p-6 rounded-2xl border-2 border-dashed border-[#0891b2] shadow-lg">
+        <Badge className="bg-[#E2F4F3] text-[#0891b2] border border-[#B9E7E6] mb-3 font-mono">
+          CHECKPOINT #{current.order.toString().padStart(2, '0')}
+        </Badge>
+        <h2 className="text-3xl font-serif font-bold text-[#0c282d] mb-1">
+          {current.institution}
+        </h2>
+        <p className="text-sm font-semibold text-[#0891b2] mb-3">
+          {current.degree} ({current.period})
+        </p>
+        <p className="text-xs sm:text-sm text-[#2d5f68] leading-relaxed mb-4">
+          {current.description}
+        </p>
+        <Badge className="bg-[#0891b2] text-white font-mono text-xs">
+          {current.badge}
+        </Badge>
+      </div>
 
-      {/* The Master Boarding Pass Card (100% Vector Sharp, High Contrast) */}
-      <div
-        className="w-full max-w-xl rounded-3xl bg-white/95 backdrop-blur-xl border-2 shadow-2xl p-6 sm:p-8 pointer-events-auto flex flex-col gap-4 relative overflow-hidden transition-shadow"
-        style={{
-          borderColor: milestone.color,
-          boxShadow: `0 20px 45px -10px ${milestone.color}25, 0 10px 20px -5px rgba(0,0,0,0.08)`,
-        }}
-      >
-        {/* Top Accent Strip */}
-        <div
-          className="absolute top-0 left-0 right-0 h-2"
-          style={{ backgroundColor: milestone.color }}
-        />
-
-        {/* Header Row: Checkpoint Tag & Period */}
-        <div className="flex items-center justify-between gap-3 pt-1">
-          <Badge
-            className="font-mono text-xs font-bold px-3 py-1 rounded-xl shadow-xs"
-            style={{
-              backgroundColor: `${milestone.color}15`,
-              color: milestone.color,
-              border: `1px solid ${milestone.color}35`,
-            }}
+      <div className="relative z-10 flex items-center gap-2 overflow-x-auto pb-2">
+        {milestones.map((m, i) => (
+          <button
+            key={m.id}
+            onClick={() => onSelect(i)}
+            className={`px-3 py-1.5 rounded-xl font-mono text-xs font-semibold transition-all ${
+              i === selectedIdx
+                ? 'bg-[#0891b2] text-white shadow-md'
+                : 'bg-white/80 text-[#2d5f68] hover:bg-white'
+            }`}
           >
-            CHECKPOINT #0{milestone.order} • EDUCATION MILESTONE
-          </Badge>
-
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 text-slate-700 font-mono text-xs font-semibold border border-slate-200">
-            <Calendar className="w-3.5 h-3.5 text-slate-500" />
-            <span>{milestone.period}</span>
-          </div>
-        </div>
-
-        {/* Institution Title (100% Crisp, Ultra-Sharp Navy Slate Heading) */}
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0c282d] tracking-tight mb-1">
-            {milestone.institution}
-          </h2>
-          <p
-            className="text-base sm:text-lg font-bold flex items-center gap-2"
-            style={{ color: milestone.color }}
-          >
-            <span>{milestone.degree}</span>
-          </p>
-        </div>
-
-        {/* Description Body Card (High-Contrast, Zero Blurriness) */}
-        <div className="rounded-2xl bg-slate-50/90 border border-slate-200/80 p-4 sm:p-5">
-          <p className="text-sm sm:text-base text-slate-800 leading-relaxed font-normal">
-            {milestone.description}
-          </p>
-        </div>
-
-        {/* Footer Row: Badge & Flight Guidance */}
-        <div className="flex items-center justify-between gap-3 pt-1 flex-wrap">
-          <Badge
-            className="text-white font-mono text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-sm flex items-center gap-1.5"
-            style={{ backgroundColor: milestone.color }}
-          >
-            <Award className="w-3.5 h-3.5" />
-            <span>{milestone.badge}</span>
-          </Badge>
-
-          <div className="flex items-center gap-1.5 text-xs font-mono font-semibold text-slate-600">
-            {isCrashing ? (
-              <span className="text-cyan-700 font-bold animate-pulse flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5" />
-                FLYING THROUGH CARD...
-              </span>
-            ) : (
-              <span className="flex items-center gap-1 text-slate-500">
-                Scroll wheel to fly through
-                <ChevronRight className="w-3.5 h-3.5" />
-              </span>
-            )}
-          </div>
-        </div>
+            {m.fixCode}
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -755,9 +806,9 @@ export function ItomPaperFlightTimeline({
         </Badge>
       </div>
 
-      {/* Layer 1: 3D WebGL Canvas (Paper Airplane & Clouds) */}
+      {/* 3D WebGL Canvas Layer (Paper Airplane, Clouds, and 3D Cards in World Space!) */}
       <div className="absolute inset-0 z-0 w-full h-full">
-        {webGLSupported && (
+        {webGLSupported ? (
           <Canvas
             className="w-full h-full"
             style={{ width: '100%', height: '100%', display: 'block' }}
@@ -774,21 +825,21 @@ export function ItomPaperFlightTimeline({
               scrollVelocityRef={scrollVelocityRef}
             />
 
-            <SkyFlightWorld scrollRef={scrollRef} />
+            <SkyFlightWorld
+              milestones={milestones}
+              scrollRef={scrollRef}
+            />
           </Canvas>
+        ) : (
+          <PaperSvgFallback
+            milestones={milestones}
+            selectedIdx={selectedIdx}
+            onSelect={handleSelectMilestone}
+          />
         )}
       </div>
 
-      {/* Layer 2: Fly-Through Milestone Cards (100% Crisp Vector HTML UX) */}
-      {milestones.map((m) => (
-        <FlyThroughMilestoneCard
-          key={m.id}
-          milestone={m}
-          scroll={currentScrollVal}
-        />
-      ))}
-
-      {/* Layer 3: Floating Bottom Flight Controller */}
+      {/* Floating Bottom Flight Controller */}
       <div className="relative z-20 p-4 sm:p-5 m-3 sm:m-4 rounded-2xl bg-white/95 backdrop-blur-md border border-[#B9E7E6] shadow-xl flex flex-col gap-3 pointer-events-auto">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           {/* Autoplay & Reset */}
