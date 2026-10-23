@@ -18,18 +18,18 @@ import { EducationService } from '@/lib/services/education';
 import { Achievement } from '@/lib/types/admin';
 import { FALLBACK_EDUCATION_RECORDS, FALLBACK_ACHIEVEMENTS } from '@/lib/fallback-data';
 
-// WebGL (three.js / R3F) ATMOS-inspired interactive 3D flight journey
-// through surrealist cloudscapes with milestone focus framing.
-const AtmosFlightTimeline = dynamic(
+// WebGL (three.js / R3F) ITOM-inspired interactive 3D paper flight journey
+// with low-poly origami paper airplane, authentic paper clouds, and in-sky story milestones.
+const ItomPaperFlightTimeline = dynamic(
   () =>
-    import('@/components/features/AtmosFlightTimeline').then((m) => ({
-      default: m.AtmosFlightTimeline,
+    import('@/components/features/ItomPaperFlightTimeline').then((m) => ({
+      default: m.ItomPaperFlightTimeline,
     })),
   {
     ssr: false,
     loading: () => (
-      <div className="min-h-[620px] rounded-3xl border border-[#B9E7E6] bg-white/60 animate-pulse flex items-center justify-center font-mono text-xs text-[#527d85]">
-        Launching ATMOS Flight Odyssey...
+      <div className="min-h-[640px] rounded-3xl border border-[#B9E7E6] bg-white/60 animate-pulse flex items-center justify-center font-mono text-xs text-[#527d85]">
+        Launching ITom Paper Airplane Odyssey...
       </div>
     ),
   },
@@ -179,18 +179,18 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
           </p>
         </div>
 
-        {/* ATMOS Surrealist 3D Flight Journey Timeline */}
+        {/* ITom Paper Airplane 3D Infinite Sky Flight Journey */}
         <div className="mb-20 scroll-mt-28">
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
               <Plane className="w-6 h-6 text-[#0891b2]" />
-              <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">ATMOS FLIGHT JOURNEY</h3>
+              <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">ITOM PAPER FLIGHT</h3>
             </div>
             <div className="flex-1 h-px bg-[#B9E7E6]" />
-            <span className="text-[#527d85] font-mono text-sm hidden sm:block">CHRONO ODYSSEY • 2010 → NOW</span>
+            <span className="text-[#527d85] font-mono text-sm hidden sm:block">3D SKY ODYSSEY • 2010 → NOW</span>
           </div>
 
-          <AtmosFlightTimeline educationRecords={educationRecords} />
+          <ItomPaperFlightTimeline educationRecords={educationRecords} />
         </div>
 
         {/* Achievements Section */}
