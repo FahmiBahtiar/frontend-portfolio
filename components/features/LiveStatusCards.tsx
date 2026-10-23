@@ -76,14 +76,25 @@ export function LiveStatusCards() {
   const { data: lanyardRes } = useSWR<LanyardResponse>(
     'https://api.lanyard.rest/v1/users/467600406000697354',
     fetcher,
-    { refreshInterval: 12000, errorRetryCount: 3 }
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: false,
+      dedupingInterval: 15000,
+      errorRetryCount: 2,
+    }
   );
 
-  // 2. Fetch IVAO status via internal proxy API
+  // 2. Fetch IVAO status via internal proxy API (cached at edge for 60s, polled gently every 60s)
   const { data: ivaoData } = useSWR<IvaoResponse>(
     '/api/ivao/status?vid=704291',
     fetcher,
-    { refreshInterval: 30000, errorRetryCount: 3 }
+    {
+      refreshInterval: 60000,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 45000,
+      errorRetryCount: 2,
+    }
   );
 
   const discordData = lanyardRes?.data;
