@@ -115,10 +115,10 @@ export const DEFAULT_PARTING_MILESTONES: PartingMilestone[] = [
   },
 ];
 
-// ── Authentic ITom Low-Poly Origami Paper Airplane (Scale: 0.22 Nimble) ───────
+// ── Authentic ITom Low-Poly Origami Paper Airplane ───────────────────────────
 function PaperAirplane({
   color = '#fcfbfa',
-  scale = 0.22,
+  scale = 0.55,
 }: {
   color?: string;
   scale?: number;
@@ -186,14 +186,15 @@ function PaperAirplane({
   );
 }
 
-// ── Ultra-Sharp 4K Card Texture Generator (Splits into Left & Right Halves) ───
+// ── Power-of-2 Card Texture Generator (2048x1024 -> Two 1024x1024 Halves) ───
 function useFracturedCardTextures(milestone: PartingMilestone) {
   return useMemo(() => {
     if (typeof document === 'undefined') return { leftTex: null, rightTex: null };
 
     const fullW = 2048;
-    const fullH = 1180;
-    const halfW = fullW / 2;
+    const fullH = 1024;
+    const halfW = 1024;
+    const halfH = 1024;
 
     const fullCanvas = document.createElement('canvas');
     fullCanvas.width = fullW;
@@ -211,7 +212,6 @@ function useFracturedCardTextures(milestone: PartingMilestone) {
     const cardH = fullH - pad * 2;
     const r = 40;
 
-    // Card background (pure white for pristine readability)
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
@@ -232,25 +232,23 @@ function useFracturedCardTextures(milestone: PartingMilestone) {
     ctx.stroke();
 
     // 2. Top Header Bar
-    // Left pill: Checkpoint Badge
     const cpText = `CHECKPOINT #0${milestone.order} • EDUCATION MILESTONE`;
     ctx.font = 'bold 34px monospace';
     const cpMetrics = ctx.measureText(cpText);
     const cpW = cpMetrics.width + 56;
-    ctx.fillStyle = milestone.color + '20'; // 12% tint
+    ctx.fillStyle = milestone.color + '20';
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(64, 60, cpW, 64, 16);
+      ctx.roundRect(64, 56, cpW, 60, 16);
     } else {
-      ctx.rect(64, 60, cpW, 64);
+      ctx.rect(64, 56, cpW, 60);
     }
     ctx.fill();
     ctx.fillStyle = milestone.color;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(cpText, 92, 92);
+    ctx.fillText(cpText, 92, 86);
 
-    // Right pill: Period
     const yrText = milestone.period;
     ctx.font = 'bold 34px monospace';
     const yrMetrics = ctx.measureText(yrText);
@@ -259,29 +257,28 @@ function useFracturedCardTextures(milestone: PartingMilestone) {
     ctx.fillStyle = '#f1f5f9';
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(yrX, 60, yrW, 64, 16);
+      ctx.roundRect(yrX, 56, yrW, 60, 16);
     } else {
-      ctx.rect(yrX, 60, yrW, 64);
+      ctx.rect(yrX, 56, yrW, 60);
     }
     ctx.fill();
     ctx.fillStyle = '#334155';
     ctx.textAlign = 'left';
-    ctx.fillText(yrText, yrX + 28, 92);
+    ctx.fillText(yrText, yrX + 28, 86);
 
     // Header divider line (horizontal dashed)
     ctx.strokeStyle = '#e2e8f0';
     ctx.lineWidth = 3;
     ctx.setLineDash([12, 10]);
     ctx.beginPath();
-    ctx.moveTo(64, 160);
-    ctx.lineTo(fullW - 64, 160);
+    ctx.moveTo(64, 145);
+    ctx.lineTo(fullW - 64, 145);
     ctx.stroke();
     ctx.setLineDash([]);
 
     // 3. Central Content
-    // Main Institution Title
     ctx.textAlign = 'center';
-    let instFontSize = 78;
+    let instFontSize = 82;
     ctx.font = `bold ${instFontSize}px "CabinSketch", Impact, sans-serif`;
     let instW = ctx.measureText(milestone.institution).width;
     while (instW > fullW - 180 && instFontSize > 44) {
@@ -290,16 +287,15 @@ function useFracturedCardTextures(milestone: PartingMilestone) {
       instW = ctx.measureText(milestone.institution).width;
     }
     ctx.fillStyle = '#0c282d';
-    ctx.fillText(milestone.institution, fullW / 2, 330);
+    ctx.fillText(milestone.institution, fullW / 2, 290);
 
-    // Degree / Major
-    ctx.font = 'bold 48px "CabinSketch", sans-serif';
+    ctx.font = 'bold 50px "CabinSketch", sans-serif';
     ctx.fillStyle = milestone.color;
-    ctx.fillText(milestone.degree, fullW / 2, 450);
+    ctx.fillText(milestone.degree, fullW / 2, 395);
 
     // Description text card (inner clean panel)
-    const descY = 540;
-    const descH = 260;
+    const descY = 480;
+    const descH = 240;
     ctx.fillStyle = '#f8fafc';
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
@@ -322,13 +318,12 @@ function useFracturedCardTextures(milestone: PartingMilestone) {
     ctx.lineWidth = 3;
     ctx.setLineDash([16, 12]);
     ctx.beginPath();
-    ctx.moveTo(halfW, 40);
-    ctx.lineTo(halfW, fullH - 40);
+    ctx.moveTo(halfW, 30);
+    ctx.lineTo(halfW, fullH - 30);
     ctx.stroke();
     ctx.setLineDash([]);
 
     // 5. Card Footer
-    // Left Achievement Badge
     const badgeText = milestone.badge;
     ctx.font = 'bold 36px monospace';
     const bMetrics = ctx.measureText(badgeText);
@@ -336,49 +331,48 @@ function useFracturedCardTextures(milestone: PartingMilestone) {
     ctx.fillStyle = milestone.color;
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(64, fullH - 170, bW, 76, 18);
+      ctx.roundRect(64, fullH - 150, bW, 72, 18);
     } else {
-      ctx.rect(64, fullH - 170, bW, 76);
+      ctx.rect(64, fullH - 150, bW, 72);
     }
     ctx.fill();
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
-    ctx.fillText(badgeText, 96, fullH - 132);
+    ctx.fillText(badgeText, 96, fullH - 114);
 
-    // Right Verification pill
     const verText = '✓ VERIFIED EDUCATION';
     ctx.font = 'bold 32px monospace';
     ctx.fillStyle = '#059669';
     ctx.textAlign = 'right';
-    ctx.fillText(verText, fullW - 80, fullH - 132);
+    ctx.fillText(verText, fullW - 80, fullH - 114);
 
-    // 6. Split into Left Half and Right Half Textures
+    // 6. Split into Left Half and Right Half Textures (1024x1024 POT)
     const leftCanvas = document.createElement('canvas');
     leftCanvas.width = halfW;
-    leftCanvas.height = fullH;
+    leftCanvas.height = halfH;
     const leftCtx = leftCanvas.getContext('2d');
     if (leftCtx) {
-      leftCtx.drawImage(fullCanvas, 0, 0, halfW, fullH, 0, 0, halfW, fullH);
+      leftCtx.drawImage(fullCanvas, 0, 0, halfW, halfH, 0, 0, halfW, halfH);
     }
 
     const rightCanvas = document.createElement('canvas');
     rightCanvas.width = halfW;
-    rightCanvas.height = fullH;
+    rightCanvas.height = halfH;
     const rightCtx = rightCanvas.getContext('2d');
     if (rightCtx) {
-      rightCtx.drawImage(fullCanvas, halfW, 0, halfW, fullH, 0, 0, halfW, fullH);
+      rightCtx.drawImage(fullCanvas, halfW, 0, halfW, halfH, 0, 0, halfW, halfH);
     }
 
     const leftTex = new THREE.CanvasTexture(leftCanvas);
-    leftTex.generateMipmaps = true;
-    leftTex.minFilter = THREE.LinearMipmapLinearFilter;
+    leftTex.minFilter = THREE.LinearFilter;
     leftTex.magFilter = THREE.LinearFilter;
+    leftTex.generateMipmaps = false;
     leftTex.needsUpdate = true;
 
     const rightTex = new THREE.CanvasTexture(rightCanvas);
-    rightTex.generateMipmaps = true;
-    rightTex.minFilter = THREE.LinearMipmapLinearFilter;
+    rightTex.minFilter = THREE.LinearFilter;
     rightTex.magFilter = THREE.LinearFilter;
+    rightTex.generateMipmaps = false;
     rightTex.needsUpdate = true;
 
     return { leftTex, rightTex };
@@ -401,19 +395,18 @@ function FracturedMilestoneCard({
   const { leftTex, rightTex } = useFracturedCardTextures(milestone);
 
   const cardW = 7.6;
-  const cardH = 4.4;
-  const halfW = cardW / 2; // 3.8
+  const cardH = 3.8;
+  const halfW = 3.8;
   const baseY = 1.8;
 
-  // 6 Procedural Shards around the center break line
   const shards = useMemo(
     () => [
-      { id: 's1', baseX: -0.4, baseY: baseY + 1.2, vx: -2.8, vy: 1.8, vz: 1.5, rotSpeed: 4.5, size: [0.65, 0.45] as [number, number] },
-      { id: 's2', baseX: 0.4, baseY: baseY + 1.1, vx: 2.6, vy: 2.0, vz: -1.2, rotSpeed: -5.0, size: [0.55, 0.5] as [number, number] },
-      { id: 's3', baseX: -0.5, baseY: baseY + 0.1, vx: -3.2, vy: 0.4, vz: 1.8, rotSpeed: -4.2, size: [0.6, 0.4] as [number, number] },
-      { id: 's4', baseX: 0.5, baseY: baseY - 0.1, vx: 3.4, vy: -0.5, vz: -1.5, rotSpeed: 4.8, size: [0.55, 0.45] as [number, number] },
-      { id: 's5', baseX: -0.4, baseY: baseY - 1.2, vx: -2.4, vy: -1.8, vz: 1.2, rotSpeed: 3.8, size: [0.5, 0.4] as [number, number] },
-      { id: 's6', baseX: 0.4, baseY: baseY - 1.1, vx: 2.8, vy: -2.0, vz: -1.4, rotSpeed: -4.4, size: [0.6, 0.35] as [number, number] },
+      { id: 's1', baseX: -0.35, baseY: baseY + 1.0, vx: -2.8, vy: 1.8, vz: 1.5, rotSpeed: 4.5, size: [0.65, 0.45] as [number, number] },
+      { id: 's2', baseX: 0.35, baseY: baseY + 0.9, vx: 2.6, vy: 2.0, vz: -1.2, rotSpeed: -5.0, size: [0.55, 0.5] as [number, number] },
+      { id: 's3', baseX: -0.45, baseY: baseY + 0.1, vx: -3.2, vy: 0.4, vz: 1.8, rotSpeed: -4.2, size: [0.6, 0.4] as [number, number] },
+      { id: 's4', baseX: 0.45, baseY: baseY - 0.1, vx: 3.4, vy: -0.5, vz: -1.5, rotSpeed: 4.8, size: [0.55, 0.45] as [number, number] },
+      { id: 's5', baseX: -0.35, baseY: baseY - 1.0, vx: -2.4, vy: -1.8, vz: 1.2, rotSpeed: 3.8, size: [0.5, 0.4] as [number, number] },
+      { id: 's6', baseX: 0.35, baseY: baseY - 0.9, vx: 2.8, vy: -2.0, vz: -1.4, rotSpeed: -4.4, size: [0.6, 0.35] as [number, number] },
     ],
     [baseY]
   );
@@ -423,13 +416,10 @@ function FracturedMilestoneCard({
     const scrollZ = scrollRef.current || 0;
     const distanceZ = scrollZ + milestone.zDistance;
 
-    // Visibility range
     groupRef.current.visible = distanceZ > -55 && distanceZ < 15;
     if (!groupRef.current.visible) return;
 
     // ── THE DYNAMIC CARD FRACTURE / PECAH MECHANIC ────────────────────────────
-    // When far away (distanceZ < -15): Seamless unified card (spreadFactor = 0)
-    // As plane approaches (-15 to -1.5): The card fractures, shatters, and parts open!
     const fractureStart = -15;
     const fractureEnd = -1.5;
     let spreadFactor = 0;
@@ -437,14 +427,14 @@ function FracturedMilestoneCard({
     if (distanceZ > fractureStart && distanceZ < fractureEnd) {
       spreadFactor = (distanceZ - fractureStart) / (fractureEnd - fractureStart);
       spreadFactor = Math.min(1, Math.max(0, spreadFactor));
-      spreadFactor = spreadFactor * spreadFactor; // ease-in explosion
+      spreadFactor = spreadFactor * spreadFactor;
     } else if (distanceZ >= fractureEnd) {
       spreadFactor = 1;
     }
 
-    const maxSpread = 5.6;
+    const maxSpread = 5.2;
 
-    // Left Half Piece (breaks away left, tilts roll and yaw outward)
+    // Left Half Piece
     if (leftMeshRef.current) {
       leftMeshRef.current.position.x = -halfW / 2 - spreadFactor * maxSpread;
       leftMeshRef.current.position.y = baseY + spreadFactor * 0.7;
@@ -453,7 +443,7 @@ function FracturedMilestoneCard({
       leftMeshRef.current.rotation.y = -spreadFactor * 0.38;
     }
 
-    // Right Half Piece (breaks away right, tilts roll and yaw outward)
+    // Right Half Piece
     if (rightMeshRef.current) {
       rightMeshRef.current.position.x = halfW / 2 + spreadFactor * maxSpread;
       rightMeshRef.current.position.y = baseY - spreadFactor * 0.7;
@@ -476,7 +466,7 @@ function FracturedMilestoneCard({
       });
     }
 
-    // Smooth fade out after plane passes
+    // Fade out after passing
     let fadeOpacity = 1;
     if (distanceZ > 0) {
       fadeOpacity = Math.max(0, 1 - distanceZ / 10);
@@ -519,7 +509,7 @@ function FracturedMilestoneCard({
         </mesh>
       )}
 
-      {/* Floating Shard Pieces (Burst outward when cracked!) */}
+      {/* Floating Shard Pieces */}
       <group ref={shardsGroupRef}>
         {shards.map((s) => (
           <mesh key={s.id} position={[s.baseX, s.baseY, 0]}>
@@ -544,6 +534,7 @@ function DriftingPaperCloud({
   driftAmount = 0.8,
   bobAmount = 0.15,
   timeOffset = 0,
+  isCeiling = false,
   scrollRef,
 }: {
   position: [number, number, number];
@@ -555,6 +546,7 @@ function DriftingPaperCloud({
   driftAmount?: number;
   bobAmount?: number;
   timeOffset?: number;
+  isCeiling?: boolean;
   scrollRef: React.MutableRefObject<number>;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -570,25 +562,26 @@ function DriftingPaperCloud({
     const time = state.clock.elapsedTime;
     const currentScroll = scrollRef.current || 0;
 
-    // World Z position relative to camera
     const worldZ = currentScroll + basePos.current[2];
 
-    // ITom Cloud Evasion: As clouds approach camera, they glide outward to clear flight view
-    const evasionStart = -50;
-    const evasionEnd = -6;
-    let evasionFactor = 0;
+    // ITom Cloud Evasion: Ceiling clouds stay put; corridor clouds evade when close!
+    let evasionX = 0;
+    if (!isCeiling) {
+      const evasionStart = -18;
+      const evasionEnd = -2;
+      let evasionFactor = 0;
 
-    if (worldZ > evasionStart && worldZ < evasionEnd) {
-      evasionFactor = (worldZ - evasionStart) / (evasionEnd - evasionStart);
-      evasionFactor = evasionFactor * evasionFactor * (3 - 2 * evasionFactor);
-    } else if (worldZ >= evasionEnd) {
-      evasionFactor = 1;
+      if (worldZ > evasionStart && worldZ < evasionEnd) {
+        evasionFactor = (worldZ - evasionStart) / (evasionEnd - evasionStart);
+        evasionFactor = evasionFactor * evasionFactor;
+      } else if (worldZ >= evasionEnd) {
+        evasionFactor = 1;
+      }
+
+      const dirX = basePos.current[0] >= 0 ? 1 : -1;
+      evasionX = evasionFactor * 5.0 * dirX;
     }
 
-    const dirX = basePos.current[0] >= 0 ? 1 : -1;
-    const evasionX = evasionFactor * 10.0 * dirX;
-
-    // CONTINUOUS CLOUD DRIFT: Runs always even when the airplane stops!
     const driftX = Math.sin(time * driftSpeed + timeOffset) * driftAmount;
     const driftY = Math.sin(time * driftSpeed * 0.75 + timeOffset + 1.2) * bobAmount;
 
@@ -596,7 +589,6 @@ function DriftingPaperCloud({
     meshRef.current.position.y = basePos.current[1] + driftY;
     meshRef.current.position.z = basePos.current[2];
 
-    // Fade out smoothly once cloud passes behind camera
     if (materialRef.current) {
       if (worldZ > 0) {
         materialRef.current.opacity = Math.max(0, baseOpacity * (1 - worldZ / 10));
@@ -655,6 +647,7 @@ function SkyFlightWorld({
       driftAmount: number;
       bobAmount: number;
       timeOffset: number;
+      isCeiling: boolean;
     }> = [];
 
     // 1. General Sky Clouds (60 clouds across bottom, mid, and sides)
@@ -662,7 +655,7 @@ function SkyFlightWorld({
     for (let i = 0; i < totalClouds; i++) {
       const seed = i * 23 + 7;
       const x = ((seed * 7) % 20) - 10;
-      const y = ((seed * 11) % 9.0) - 4.2; // -4.2 to +4.8
+      const y = ((seed * 11) % 9.0) - 4.2;
       const z = -((i * 3.6) % 215) - 4;
       const texIdx = i % CLOUD_TEXTURES.length;
 
@@ -676,6 +669,7 @@ function SkyFlightWorld({
         driftAmount: 0.5 + ((seed % 6) / 6) * 0.8,
         bobAmount: 0.1 + ((seed % 4) / 4) * 0.18,
         timeOffset: (seed % 10) * 0.628,
+        isCeiling: false,
       });
     }
 
@@ -686,7 +680,7 @@ function SkyFlightWorld({
       const dist = 4.2 - z;
       const factor = 0.64 + ((seed % 5) / 5) * 0.22;
       const y = 0.4 + Math.tan((26 * Math.PI) / 180) * dist * factor;
-      const rawX = ((seed * 5) % 18) - 5.0; // -5.0 to +13.0
+      const rawX = ((seed * 5) % 18) - 5.0;
       const x = rawX * (dist / 16);
       const texIdx = (j * 3) % CLOUD_TEXTURES.length;
       const scale = (1.05 + ((seed % 4) / 4) * 0.55) * (dist / 16);
@@ -701,6 +695,7 @@ function SkyFlightWorld({
         driftAmount: 0.6 + ((seed % 5) / 5) * 0.7,
         bobAmount: 0.12 + ((seed % 3) / 3) * 0.15,
         timeOffset: (seed % 8) * 0.785,
+        isCeiling: true,
       });
     }
 
@@ -738,6 +733,7 @@ function SkyFlightWorld({
             driftAmount={c.driftAmount}
             bobAmount={c.bobAmount}
             timeOffset={c.timeOffset}
+            isCeiling={c.isCeiling}
             scrollRef={scrollRef}
           />
         ))}
@@ -745,7 +741,7 @@ function SkyFlightWorld({
   );
 }
 
-// ── Maneuvering Paper Airplane Cockpit Rig (Camera Pulled Back & Nimble Scale!)
+// ── Maneuvering Paper Airplane Cockpit Rig ────────────────────────────────────
 function ManeuveringPaperAirplane({
   scrollRef,
   scrollVelocityRef,
@@ -781,8 +777,7 @@ function ManeuveringPaperAirplane({
       const idleFloatY = Math.sin(time * 2.2) * 0.03;
       const idleFloatX = Math.sin(time * 1.4) * 0.035;
 
-      // Elevated above the bottom dock with generous breathing room (~130px clearance!)
-      airplaneRef.current.position.y = -0.16 + idleFloatY;
+      airplaneRef.current.position.y = -0.22 + idleFloatY;
       airplaneRef.current.position.x = idleFloatX;
 
       airplaneRef.current.rotation.x = currentPitch.current * 3.2 + 0.12;
@@ -793,9 +788,8 @@ function ManeuveringPaperAirplane({
 
   return (
     <group position={[0, 0, 0]}>
-      {/* Paper airplane with small, nimble origami scale (0.22) & generous clearance */}
-      <group ref={airplaneRef} position={[0, -0.16, 1.1]}>
-        <PaperAirplane color="#fcfbfa" scale={0.22} />
+      <group ref={airplaneRef} position={[0, -0.22, 1.1]}>
+        <PaperAirplane color="#fcfbfa" scale={0.55} />
       </group>
     </group>
   );
@@ -861,7 +855,6 @@ export function ItomPaperFlightTimeline({
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Momentum-based scroll system: start at 0 (Milestone 1 directly ahead at z = -18)
   const scrollRef = useRef<number>(0);
   const scrollVelocityRef = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -876,7 +869,6 @@ export function ItomPaperFlightTimeline({
     }
   });
 
-  // Merge dynamic database records with parting milestones
   const milestones: PartingMilestone[] = useMemo(() => {
     const raw =
       educationRecords && educationRecords.length > 0
@@ -897,7 +889,6 @@ export function ItomPaperFlightTimeline({
     });
   }, [educationRecords]);
 
-  // Handle wheel scrolling over the canvas container (exact ITom velocity delta: e.deltaY * 0.002!)
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -914,7 +905,6 @@ export function ItomPaperFlightTimeline({
     return () => container.removeEventListener('wheel', handleWheel);
   }, []);
 
-  // Momentum & Auto-Flight Animation Loop
   useEffect(() => {
     let animId: number;
     let lastTime = performance.now();
@@ -923,7 +913,6 @@ export function ItomPaperFlightTimeline({
       const delta = (now - lastTime) / 1000;
       lastTime = now;
 
-      // Autoplay cruise: calm, graceful gliding
       if (isPlaying) {
         scrollRef.current += delta * 3.5;
         if (scrollRef.current > 185) {
@@ -931,18 +920,15 @@ export function ItomPaperFlightTimeline({
         }
       }
 
-      // Momentum deceleration
       scrollRef.current += scrollVelocityRef.current * delta * 60;
-      scrollVelocityRef.current *= 0.95; // Friction
+      scrollVelocityRef.current *= 0.95;
       if (Math.abs(scrollVelocityRef.current) < 0.001) {
         scrollVelocityRef.current = 0;
       }
 
-      // Bound flight range (Milestone 1 at ~0 to Milestone 5 at ~180)
       if (scrollRef.current < 0) scrollRef.current = 0;
       if (scrollRef.current > 190) scrollRef.current = 190;
 
-      // Identify closest active milestone
       const currentScroll = scrollRef.current;
       let closestIdx = 0;
       let minDiff = Infinity;
@@ -965,7 +951,6 @@ export function ItomPaperFlightTimeline({
     return () => cancelAnimationFrame(animId);
   }, [isPlaying, milestones]);
 
-  // Navigate to specific milestone
   const handleSelectMilestone = useCallback(
     (idx: number) => {
       setSelectedIdx(idx);
@@ -977,7 +962,6 @@ export function ItomPaperFlightTimeline({
     [milestones]
   );
 
-  // Progress percentage (0% to 100%)
   const flightPercentage = Math.round(
     Math.max(0, Math.min(100, (scrollRef.current / 175) * 100))
   );
@@ -1015,7 +999,7 @@ export function ItomPaperFlightTimeline({
         </Badge>
       </div>
 
-      {/* 3D WebGL Canvas Layer (Zero Suspense, Instant 1ms Mount!) */}
+      {/* 3D WebGL Canvas Layer */}
       <div className="absolute inset-0 z-0 w-full h-full">
         {webGLSupported ? (
           <Canvas
@@ -1025,18 +1009,15 @@ export function ItomPaperFlightTimeline({
             dpr={[1, 2]}
             gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
           >
-            {/* Diffuse Lighting for Paper Craft Aesthetic */}
             <ambientLight intensity={1.3} color="#ffffff" />
             <directionalLight position={[-4, 8, 6]} intensity={1.5} color="#fffcf5" />
             <directionalLight position={[4, -4, -4]} intensity={0.4} color="#87CEEB" />
 
-            {/* Maneuvering Paper Airplane Cockpit Rig */}
             <ManeuveringPaperAirplane
               scrollRef={scrollRef}
               scrollVelocityRef={scrollVelocityRef}
             />
 
-            {/* Infinite Sky World (Full Sky Clouds + Fractured Cards) */}
             <SkyFlightWorld
               milestones={milestones}
               scrollRef={scrollRef}
@@ -1051,7 +1032,7 @@ export function ItomPaperFlightTimeline({
         )}
       </div>
 
-      {/* Floating Bottom Flight Controller & Waypoint Quick-Selector */}
+      {/* Floating Bottom Flight Controller */}
       <div className="relative z-20 p-4 sm:p-5 m-3 sm:m-4 rounded-2xl bg-white/95 backdrop-blur-md border border-[#B9E7E6] shadow-xl flex flex-col gap-3 pointer-events-auto">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           {/* Autoplay & Reset */}
