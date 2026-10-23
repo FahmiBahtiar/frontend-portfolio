@@ -180,7 +180,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
         </div>
 
         {/* ITom Paper Airplane 3D Infinite Sky Flight Journey */}
-        <div className="mb-20 scroll-mt-28">
+        <div className="mb-20 scroll-mt-36 pt-4">
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
               <Plane className="w-6 h-6 text-[#0891b2]" />

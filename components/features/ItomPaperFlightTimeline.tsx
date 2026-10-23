@@ -1016,9 +1016,11 @@ export function ItomPaperFlightTimeline({
       </div>
 
       {/* 3D WebGL Canvas Layer (Zero Suspense, Instant 1ms Mount!) */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 w-full h-full">
         {webGLSupported ? (
           <Canvas
+            className="w-full h-full"
+            style={{ width: '100%', height: '100%', display: 'block' }}
             camera={{ position: [0, 0.4, 4.2], fov: 52, near: 0.1, far: 240 }}
             dpr={[1, 2]}
             gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
