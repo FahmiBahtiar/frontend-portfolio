@@ -216,7 +216,7 @@ function use3DCardTexture(milestone: MilestoneRecord) {
     ctx.clearRect(0, 0, canvasW, canvasH);
 
     // 1. Crisp White Card with Rounded Corners
-    const pad = 28;
+    const pad = 24;
     const cardX = pad;
     const cardY = pad;
     const cardW = canvasW - pad * 2;
@@ -236,11 +236,6 @@ function use3DCardTexture(milestone: MilestoneRecord) {
     // Solid accent card border
     ctx.strokeStyle = milestone.color;
     ctx.lineWidth = 14;
-    ctx.stroke();
-
-    // Inner subtle border
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.05)';
-    ctx.lineWidth = 3;
     ctx.stroke();
 
     // Top Accent Strip
@@ -301,7 +296,7 @@ function use3DCardTexture(milestone: MilestoneRecord) {
 
     // 3. Central Content: Big Bold Heading & Subtitle
     ctx.textAlign = 'center';
-    let instFontSize = 88;
+    let instFontSize = 92;
     ctx.font = `bold ${instFontSize}px "CabinSketch", Impact, sans-serif`;
     let instW = ctx.measureText(milestone.institution).width;
     while (instW > canvasW - 200 && instFontSize > 48) {
@@ -313,29 +308,49 @@ function use3DCardTexture(milestone: MilestoneRecord) {
     ctx.fillText(milestone.institution, canvasW / 2, 320);
 
     // Degree / Major
-    ctx.font = 'bold 54px "CabinSketch", sans-serif';
+    ctx.font = 'bold 56px "CabinSketch", sans-serif';
     ctx.fillStyle = milestone.color;
     ctx.fillText(milestone.degree, canvasW / 2, 435);
 
     // Description text card (inner panel)
-    const descY = 525;
-    const descH = 280;
+    const descY = 515;
+    const descH = 295;
     ctx.fillStyle = '#f8fafc';
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(110, descY, canvasW - 220, descH, 24);
+      ctx.roundRect(100, descY, canvasW - 200, descH, 24);
     } else {
-      ctx.rect(110, descY, canvasW - 220, descH);
+      ctx.rect(100, descY, canvasW - 200, descH);
     }
     ctx.fill();
     ctx.strokeStyle = '#e2e8f0';
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    ctx.font = '500 46px sans-serif';
-    ctx.fillStyle = '#1e293b';
+    ctx.font = '600 58px sans-serif';
+    ctx.fillStyle = '#0f172a';
     ctx.textAlign = 'center';
-    ctx.fillText(milestone.description, canvasW / 2, descY + descH / 2);
+
+    // Word wrap description to 2 comfortable lines
+    const words = milestone.description.split(' ');
+    const lines: string[] = [];
+    let curLine = '';
+    for (const w of words) {
+      const test = (curLine + ' ' + w).trim();
+      if (ctx.measureText(test).width < canvasW - 280) {
+        curLine = test;
+      } else {
+        if (curLine) lines.push(curLine);
+        curLine = w;
+      }
+    }
+    if (curLine) lines.push(curLine);
+
+    const lineH = 76;
+    const startY = descY + (descH - (lines.length - 1) * lineH) / 2;
+    lines.forEach((line, idx) => {
+      ctx.fillText(line, canvasW / 2, startY + idx * lineH);
+    });
 
     // 4. Footer Row: Badge & Pass-through Cue
     const badgeText = milestone.badge;
@@ -387,9 +402,9 @@ function InSky3DMilestoneCardMesh({
   const meshRef = useRef<THREE.Mesh>(null);
   const cardTex = use3DCardTexture(milestone);
 
-  // Proportional 3D world dimensions (8.8 units wide by 5.16 units tall)
-  const cardW = 8.8;
-  const cardH = 5.16;
+  // Proportional 3D world dimensions (11.2 units wide by 6.4 units tall)
+  const cardW = 11.2;
+  const cardH = 6.4;
 
   useFrame(() => {
     if (!groupRef.current || !meshRef.current) return;
@@ -429,7 +444,7 @@ function InSky3DMilestoneCardMesh({
   });
 
   return (
-    <group ref={groupRef} position={[0, 1.4, milestone.zDistance]}>
+    <group ref={groupRef} position={[0, 1.45, milestone.zDistance]}>
       {cardTex && (
         <mesh ref={meshRef}>
           <planeGeometry args={[cardW, cardH]} />
@@ -558,7 +573,7 @@ function SkyFlightWorld({
     for (let i = 0; i < totalClouds; i++) {
       const seed = i * 23 + 7;
       const side = i % 2 === 0 ? 1 : -1;
-      const x = side * (5.0 + ((seed * 7) % 10) * 0.65);
+      const x = side * (5.2 + ((seed * 7) % 10) * 0.65);
       const y = ((seed * 11) % 8.5) - 3.8;
       const z = -((i * 4.2) % 215) - 4;
       const texIdx = i % CLOUD_TEXTURES.length;
