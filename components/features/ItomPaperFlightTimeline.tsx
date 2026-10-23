@@ -475,7 +475,7 @@ function FlyThroughMilestoneCard({
     <div
       className="absolute inset-0 flex items-center justify-center pointer-events-none p-4 sm:p-6 transition-transform duration-75"
       style={{
-        transform: `translate3d(0, -28px, 0) scale(${scale})`,
+        transform: `translate3d(0, -52px, 0) scale(${scale})`,
         opacity,
         willChange: 'transform, opacity',
       }}
