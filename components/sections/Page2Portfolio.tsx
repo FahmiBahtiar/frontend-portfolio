@@ -84,7 +84,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
         </div>
 
         <div
-          className="absolute inset-0 opacity-[0.02] mix-blend-overlay"
+          className="absolute inset-0 opacity-[0.015]"
           style={{
             backgroundImage: GRAIN_SVG,
             backgroundRepeat: 'repeat',

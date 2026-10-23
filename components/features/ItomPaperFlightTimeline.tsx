@@ -409,12 +409,12 @@ function InSky3DMilestoneCardMesh({
   useFrame(() => {
     if (!groupRef.current || !meshRef.current) return;
     const scrollZ = scrollRef.current || 0;
-    // Relative distance of this milestone to the airplane (airplane is at z = 1.1)
     const relDist = scrollZ + milestone.zDistance;
 
     // Visibility range
-    groupRef.current.visible = relDist > -52 && relDist < 6.5;
-    if (!groupRef.current.visible) return;
+    const isVis = relDist > -52 && relDist < 6.5;
+    groupRef.current.visible = isVis;
+    if (!isVis) return;
 
     // Pass-through dissolve mechanic ("di tabrak terus tembus gitu aja")
     let opacity = 1.0;
@@ -426,10 +426,10 @@ function InSky3DMilestoneCardMesh({
       opacity = 1.0;
       scale = 1.0;
     } else if (relDist <= 3.5) {
-      // Piercing straight through!
+      // Piercing straight through
       const t = (relDist - -3) / 6.5; // 0 to 1
-      scale = 1.0 + t * 0.35; // Expands outward smoothly as plane punches through
-      opacity = Math.max(0, 1 - t * t); // Dissolves into the sky
+      scale = 1.0 + t * 0.35;
+      opacity = Math.max(0, 1 - t * t);
     } else {
       opacity = 0;
     }
@@ -457,7 +457,7 @@ function InSky3DMilestoneCardMesh({
   );
 }
 
-// ── Continuously Floating & Evasive Paper Cloud ──────────────────────────────
+// ── Optimized Drifting Paper Cloud (With Distance Culling) ───────────────────
 function DriftingPaperCloud({
   position,
   scale = 1.0,
@@ -491,11 +491,17 @@ function DriftingPaperCloud({
 
   useFrame((state) => {
     if (!meshRef.current) return;
-    const time = state.clock.elapsedTime;
     const currentScroll = scrollRef.current || 0;
-
     const worldZ = currentScroll + basePos.current[2];
 
+    // Distance Culling: Skip matrix & material calculations if outside camera corridor
+    if (worldZ > 8 || worldZ < -155) {
+      if (meshRef.current.visible) meshRef.current.visible = false;
+      return;
+    }
+    if (!meshRef.current.visible) meshRef.current.visible = true;
+
+    const time = state.clock.elapsedTime;
     const driftX = Math.sin(time * driftSpeed + timeOffset) * driftAmount;
     const driftY = Math.sin(time * driftSpeed * 0.75 + timeOffset + 1.2) * bobAmount;
 
@@ -505,9 +511,9 @@ function DriftingPaperCloud({
 
     if (materialRef.current) {
       if (worldZ > 0) {
-        materialRef.current.opacity = Math.max(0, baseOpacity * (1 - worldZ / 10));
-      } else if (worldZ < -160) {
-        materialRef.current.opacity = Math.max(0, baseOpacity * (1 - (-160 - worldZ) / 40));
+        materialRef.current.opacity = Math.max(0, baseOpacity * (1 - worldZ / 8));
+      } else if (worldZ < -130) {
+        materialRef.current.opacity = Math.max(0, baseOpacity * (1 - (-130 - worldZ) / 25));
       } else {
         materialRef.current.opacity = baseOpacity;
       }
@@ -529,7 +535,7 @@ function DriftingPaperCloud({
   );
 }
 
-// ── Infinite Sky World (Clouds + 3D Cards in World Space!) ───────────────────
+// ── Infinite Sky World (Optimized 26-Cloud Layout) ───────────────────────────
 function SkyFlightWorld({
   milestones,
   scrollRef,
@@ -552,6 +558,7 @@ function SkyFlightWorld({
     setTextures(loaded);
   }, []);
 
+  // Optimized cloud collection (16 lateral framing + 10 ceiling clouds)
   const cloudList = useMemo(() => {
     const list: Array<{
       id: string;
@@ -565,50 +572,51 @@ function SkyFlightWorld({
       timeOffset: number;
     }> = [];
 
-    // 1. Clouds on left and right borders (keeping center corridor open)
-    const totalClouds = 50;
-    for (let i = 0; i < totalClouds; i++) {
-      const seed = i * 23 + 7;
+    // 1. Lateral border clouds (keeping center corridor open)
+    const totalLateral = 16;
+    for (let i = 0; i < totalLateral; i++) {
+      const seed = i * 29 + 11;
       const side = i % 2 === 0 ? 1 : -1;
-      const x = side * (5.2 + ((seed * 7) % 10) * 0.65);
-      const y = ((seed * 11) % 8.5) - 3.8;
-      const z = -((i * 4.2) % 215) - 4;
+      const x = side * (5.4 + ((seed * 7) % 8) * 0.55);
+      const y = ((seed * 13) % 7.5) - 3.2;
+      const z = -((i * 12.5) % 190) - 6;
       const texIdx = i % CLOUD_TEXTURES.length;
 
       list.push({
         id: `cloud-${i}`,
         position: [x, y, z],
-        scale: 0.9 + ((seed % 7) / 7) * 0.85,
+        scale: 1.0 + ((seed % 5) / 5) * 0.7,
         texIndex: texIdx,
-        baseOpacity: 0.65 + ((seed % 5) / 5) * 0.3,
-        driftSpeed: 0.3 + ((seed % 4) / 4) * 0.4,
-        driftAmount: 0.4 + ((seed % 6) / 6) * 0.5,
-        bobAmount: 0.1 + ((seed % 4) / 4) * 0.18,
+        baseOpacity: 0.65 + ((seed % 4) / 4) * 0.25,
+        driftSpeed: 0.3 + ((seed % 3) / 3) * 0.35,
+        driftAmount: 0.4 + ((seed % 5) / 5) * 0.45,
+        bobAmount: 0.1 + ((seed % 3) / 3) * 0.15,
         timeOffset: (seed % 10) * 0.628,
       });
     }
 
-    // 2. Upper ceiling clouds (framing the top of the sky)
-    for (let j = 0; j < 24; j++) {
-      const seed = j * 31 + 13;
-      const z = -((j * 9.5) % 210) - 4;
+    // 2. Upper ceiling clouds
+    const totalCeiling = 10;
+    for (let j = 0; j < totalCeiling; j++) {
+      const seed = j * 37 + 17;
+      const z = -((j * 19.0) % 185) - 8;
       const dist = 4.2 - z;
-      const factor = 0.64 + ((seed % 5) / 5) * 0.22;
+      const factor = 0.65 + ((seed % 4) / 4) * 0.2;
       const y = 0.4 + Math.tan((26 * Math.PI) / 180) * dist * factor;
-      const rawX = ((seed * 5) % 20) - 10;
-      const x = rawX * (dist / 16);
+      const rawX = ((seed * 5) % 16) - 8;
+      const x = rawX * (dist / 18);
       const texIdx = (j * 3) % CLOUD_TEXTURES.length;
-      const scale = (1.1 + ((seed % 4) / 4) * 0.55) * (dist / 16);
+      const scale = (1.1 + ((seed % 3) / 3) * 0.45) * (dist / 18);
 
       list.push({
         id: `cloud-top-${j}`,
         position: [x, y, z],
         scale: Math.max(0.9, scale),
         texIndex: texIdx,
-        baseOpacity: 0.75 + ((seed % 4) / 4) * 0.2,
-        driftSpeed: 0.35 + ((seed % 3) / 3) * 0.35,
-        driftAmount: 0.6 + ((seed % 5) / 5) * 0.6,
-        bobAmount: 0.12 + ((seed % 3) / 3) * 0.15,
+        baseOpacity: 0.75 + ((seed % 3) / 3) * 0.15,
+        driftSpeed: 0.32 + ((seed % 3) / 3) * 0.3,
+        driftAmount: 0.5 + ((seed % 4) / 4) * 0.5,
+        bobAmount: 0.1 + ((seed % 3) / 3) * 0.12,
         timeOffset: (seed % 8) * 0.785,
       });
     }
@@ -654,6 +662,69 @@ function SkyFlightWorld({
   );
 }
 
+// ── Unified Flight Physics & Pacing Controller (Frame-Locked, Silky Smooth) ──
+function FlightPhysicsController({
+  scrollRef,
+  targetScrollRef,
+  scrollVelocityRef,
+  isPlaying,
+  milestones,
+  onMilestoneChange,
+}: {
+  scrollRef: React.MutableRefObject<number>;
+  targetScrollRef: React.MutableRefObject<number>;
+  scrollVelocityRef: React.MutableRefObject<number>;
+  isPlaying: boolean;
+  milestones: MilestoneRecord[];
+  onMilestoneChange: (idx: number) => void;
+}) {
+  const lastActiveIdx = useRef(0);
+
+  useFrame((_, delta) => {
+    const clampedDelta = Math.min(delta, 0.1);
+
+    // Autoplay cruise: gentle 3.2 units per second
+    if (isPlaying) {
+      targetScrollRef.current += clampedDelta * 3.2;
+      if (targetScrollRef.current > 185) {
+        targetScrollRef.current = 0;
+        scrollRef.current = 0;
+      }
+    }
+
+    // Silky-smooth damp interpolation
+    const prevScroll = scrollRef.current;
+    scrollRef.current = THREE.MathUtils.damp(
+      scrollRef.current,
+      targetScrollRef.current,
+      3.6, // Silky, majestic damping lambda (soft & gradual)
+      clampedDelta
+    );
+
+    // Smooth velocity for banking & tilt
+    scrollVelocityRef.current = (scrollRef.current - prevScroll) / Math.max(0.001, clampedDelta);
+
+    // Update milestone tab smoothly without spamming state
+    const current = scrollRef.current;
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    for (let i = 0; i < milestones.length; i++) {
+      const diff = Math.abs(current - milestones[i].targetScroll);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = i;
+      }
+    }
+
+    if (closestIdx !== lastActiveIdx.current) {
+      lastActiveIdx.current = closestIdx;
+      onMilestoneChange(closestIdx);
+    }
+  });
+
+  return null;
+}
+
 // ── Maneuvering Paper Airplane Cockpit Rig ────────────────────────────────────
 function ManeuveringPaperAirplane({
   scrollRef,
@@ -674,8 +745,8 @@ function ManeuveringPaperAirplane({
 
     const chunkProgress = (((scrollZ % 40) + 40) % 40) / 40;
 
-    let bankAngle = Math.sin(chunkProgress * Math.PI * 2) * 0.18;
-    let pitchAngle = Math.sin(chunkProgress * Math.PI * 4) * 0.07;
+    let bankAngle = Math.sin(chunkProgress * Math.PI * 2) * 0.16;
+    let pitchAngle = Math.sin(chunkProgress * Math.PI * 4) * 0.06;
 
     const velInfluence = Math.max(-0.25, Math.min(0.25, vel * 0.02));
     pitchAngle += velInfluence;
@@ -767,6 +838,7 @@ export function ItomPaperFlightTimeline({
   educationRecords?: Education[];
 }) {
   const [mounted, setMounted] = useState(false);
+  const [isInView, setIsInView] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -782,6 +854,19 @@ export function ItomPaperFlightTimeline({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Viewport Intersection Observer: Sleeps WebGL when off-screen (0% GPU/CPU when idle on other sections!)
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0, rootMargin: '120px' }
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [mounted]);
 
   const [webGLSupported] = useState<boolean>(() => {
     if (typeof window === 'undefined') return true;
@@ -813,25 +898,25 @@ export function ItomPaperFlightTimeline({
     });
   }, [educationRecords]);
 
-  // ── Silky-Smooth Controlled Scroll & Drag Physics ──────────────────────────
+  // ── Controlled, Perfectly Paced Scroll & Drag Physics ─────────────────────
   useEffect(() => {
     if (!mounted) return;
     const container = containerRef.current;
     if (!container) return;
 
-    // 1. Mouse wheel / trackpad: smooth, measured increment (1 notch = ~3.2 units)
+    // 1. Mouse wheel / trackpad: calibrated gentle pacing (0.014 multiplier)
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
-      // Perfectly measured pacing: not too fast, not too slow
-      const delta = e.deltaY * 0.032;
+      // Gentle, majestic pacing: 1 notch = ~1.4 units (requires ~28 pleasant scrolls per milestone)
+      const delta = e.deltaY * 0.014;
       targetScrollRef.current += delta;
       targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
       setIsPlaying(false);
     };
 
-    // 2. Drag / Touch: 1:1 proportional displacement
+    // 2. Drag / Touch: smooth 1:1 proportional displacement
     let isDragging = false;
     let lastY = 0;
 
@@ -850,7 +935,7 @@ export function ItomPaperFlightTimeline({
       const dy = lastY - e.clientY; // drag up to advance
       lastY = e.clientY;
 
-      targetScrollRef.current += dy * 0.14;
+      targetScrollRef.current += dy * 0.06;
       targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
     };
 
@@ -879,7 +964,7 @@ export function ItomPaperFlightTimeline({
         const dy = touchY - currentY;
         touchY = currentY;
 
-        targetScrollRef.current += dy * 0.12;
+        targetScrollRef.current += dy * 0.05;
         targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
       }
     };
@@ -887,11 +972,11 @@ export function ItomPaperFlightTimeline({
     // 4. Keyboard arrow navigation (discrete step)
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-        targetScrollRef.current += 6.0;
+        targetScrollRef.current += 4.0;
         targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
         setIsPlaying(false);
       } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-        targetScrollRef.current -= 6.0;
+        targetScrollRef.current -= 4.0;
         targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));
         setIsPlaying(false);
       }
@@ -917,58 +1002,6 @@ export function ItomPaperFlightTimeline({
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [mounted]);
-
-  // Animation frame loop with Three.js damp interpolation (buttery smooth glide!)
-  useEffect(() => {
-    let animId: number;
-    let lastTime = performance.now();
-
-    const tick = (now: number) => {
-      const delta = Math.min((now - lastTime) / 1000, 0.1);
-      lastTime = now;
-
-      // Autoplay cruise
-      if (isPlaying) {
-        targetScrollRef.current += delta * 3.8;
-        if (targetScrollRef.current > 185) {
-          targetScrollRef.current = 0;
-          scrollRef.current = 0;
-        }
-      }
-
-      // Smooth damp interpolation towards target (silky smooth, zero sudden jumps)
-      const prevScroll = scrollRef.current;
-      scrollRef.current = THREE.MathUtils.damp(
-        scrollRef.current,
-        targetScrollRef.current,
-        5.2, // damping lambda: perfectly balanced between snappy response and buttery glide
-        delta
-      );
-
-      // Track smooth velocity for banking/pitch effects
-      scrollVelocityRef.current = (scrollRef.current - prevScroll) / Math.max(0.001, delta);
-
-      // Determine closest milestone tab
-      const current = scrollRef.current;
-      let closestIdx = 0;
-      let minDiff = Infinity;
-
-      milestones.forEach((m, idx) => {
-        const diff = Math.abs(current - m.targetScroll);
-        if (diff < minDiff) {
-          minDiff = diff;
-          closestIdx = idx;
-        }
-      });
-
-      setSelectedIdx((prev) => (prev !== closestIdx ? closestIdx : prev));
-
-      animId = requestAnimationFrame(tick);
-    };
-
-    animId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(animId);
-  }, [isPlaying, milestones]);
 
   // Tab click navigation (smoothly glides straight to the target milestone!)
   const handleSelectMilestone = useCallback(
@@ -1034,19 +1067,30 @@ export function ItomPaperFlightTimeline({
         </Badge>
       </div>
 
-      {/* 3D WebGL Canvas Layer (Paper Airplane, Clouds, and 3D Cards in World Space!) */}
+      {/* 3D WebGL Canvas Layer (Frameloop automatically sleeps when off-screen to preserve 0% GPU when idle!) */}
       <div className="absolute inset-0 z-0 w-full h-full cursor-grab active:cursor-grabbing">
         {webGLSupported ? (
           <Canvas
             className="w-full h-full"
             style={{ width: '100%', height: '100%', display: 'block' }}
             camera={{ position: [0, 0.4, 4.2], fov: 52, near: 0.1, far: 240 }}
-            dpr={[1, 2]}
+            dpr={[1, 1.5]}
+            frameloop={isInView ? 'always' : 'never'}
             gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
           >
             <ambientLight intensity={1.3} color="#ffffff" />
             <directionalLight position={[-4, 8, 6]} intensity={1.5} color="#fffcf5" />
             <directionalLight position={[4, -4, -4]} intensity={0.4} color="#87CEEB" />
+
+            {/* Unified Frame-Locked Physics Controller */}
+            <FlightPhysicsController
+              scrollRef={scrollRef}
+              targetScrollRef={targetScrollRef}
+              scrollVelocityRef={scrollVelocityRef}
+              isPlaying={isPlaying}
+              milestones={milestones}
+              onMilestoneChange={setSelectedIdx}
+            />
 
             <ManeuveringPaperAirplane
               scrollRef={scrollRef}

@@ -39,6 +39,54 @@ function cleanText(text?: string): string {
     .replace(/&gt;/g, '>');
 }
 
+// ── Isolated Subtitle Typing Pill (Prevents full Hero re-rendering on every keystroke) ─
+function TypingRolePill({ subtitles, calm }: { subtitles: string[]; calm: boolean }) {
+  const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState(0);
+  const [subtitleCharIndex, setSubtitleCharIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [typedSubtitle, setTypedSubtitle] = useState('');
+
+  useEffect(() => {
+    if (calm) {
+      setTypedSubtitle(subtitles[0] ?? '');
+      return;
+    }
+
+    const currentText = subtitles[currentSubtitleIndex] || '';
+
+    if (!isDeleting) {
+      if (subtitleCharIndex < currentText.length) {
+        const timer = setTimeout(() => {
+          setTypedSubtitle(currentText.slice(0, subtitleCharIndex + 1));
+          setSubtitleCharIndex((prev) => prev + 1);
+        }, 50);
+        return () => clearTimeout(timer);
+      } else {
+        const timer = setTimeout(() => setIsDeleting(true), 2800);
+        return () => clearTimeout(timer);
+      }
+    } else {
+      if (subtitleCharIndex > 0) {
+        const timer = setTimeout(() => {
+          setSubtitleCharIndex((prev) => prev - 1);
+          setTypedSubtitle(currentText.slice(0, subtitleCharIndex - 1));
+        }, 28);
+        return () => clearTimeout(timer);
+      } else {
+        setIsDeleting(false);
+        setCurrentSubtitleIndex((prev) => (prev + 1) % subtitles.length);
+      }
+    }
+  }, [subtitleCharIndex, isDeleting, currentSubtitleIndex, subtitles, calm]);
+
+  return (
+    <span className="text-xs sm:text-sm md:text-base font-mono font-bold text-[#0c282d]">
+      {typedSubtitle}
+      <span className="inline-block w-[2px] h-[1.1em] bg-[#0891b2] ml-1 align-middle animate-pulse" />
+    </span>
+  );
+}
+
 export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLDivElement>(null);
@@ -58,12 +106,7 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
     { refreshInterval: 30000, errorRetryCount: 3, dedupingInterval: 10000 }
   );
 
-  // ---- Subtitle typing rotation ----
-  const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState(0);
-  const [typedSubtitle, setTypedSubtitle] = useState('');
-  const [subtitleCharIndex, setSubtitleCharIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-
+  // Subtitles
   const subtitles = useMemo(() => heroProfile?.titles || ['Software Engineer', 'Data Scientist', 'Backend Developer'], [heroProfile]);
 
   // ---- Orchestrated reveal state ----
@@ -96,9 +139,6 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
     if (!heroProfile || loading) return;
     if (!isReady) {
       setRevealPhase(0);
-      setTypedSubtitle('');
-      setSubtitleCharIndex(0);
-      setIsDeleting(false);
       return;
     }
 
@@ -112,42 +152,6 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
 
     return () => timers.forEach(clearTimeout);
   }, [heroProfile, loading, isReady]);
-
-  // ---- Subtitle typing with delete effect ----
-  useEffect(() => {
-    if (revealPhase < 3) return;
-
-    if (calm) {
-      setTypedSubtitle(subtitles[0] ?? '');
-      return;
-    }
-
-    const currentText = subtitles[currentSubtitleIndex];
-
-    if (!isDeleting) {
-      if (subtitleCharIndex < currentText.length) {
-        const timer = setTimeout(() => {
-          setTypedSubtitle(currentText.slice(0, subtitleCharIndex + 1));
-          setSubtitleCharIndex(prev => prev + 1);
-        }, 40);
-        return () => clearTimeout(timer);
-      } else {
-        const timer = setTimeout(() => setIsDeleting(true), 2500);
-        return () => clearTimeout(timer);
-      }
-    } else {
-      if (subtitleCharIndex > 0) {
-        const timer = setTimeout(() => {
-          setSubtitleCharIndex(prev => prev - 1);
-          setTypedSubtitle(currentText.slice(0, subtitleCharIndex - 1));
-        }, 25);
-        return () => clearTimeout(timer);
-      } else {
-        setIsDeleting(false);
-        setCurrentSubtitleIndex((prev) => (prev + 1) % subtitles.length);
-      }
-    }
-  }, [subtitleCharIndex, isDeleting, currentSubtitleIndex, subtitles, revealPhase, calm]);
 
   // Split name for balanced monumental typography
   const nameLines = useMemo(() => {
@@ -237,7 +241,7 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
 
         {/* Texture Grain */}
         <div
-          className="absolute inset-0 opacity-[0.025] mix-blend-overlay"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage: GRAIN_SVG,
             backgroundRepeat: 'repeat',
@@ -297,14 +301,7 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-xl bg-white/90 border border-[#B9E7E6] shadow-sm">
             <Terminal className="w-3.5 h-3.5 text-[#0891b2]" />
-            <span className="text-xs sm:text-sm md:text-base font-mono font-bold text-[#0c282d]">
-              {typedSubtitle}
-              <motion.span
-                animate={calm ? undefined : { opacity: [1, 0, 1] }}
-                transition={calm ? undefined : { duration: 0.8, repeat: Infinity, ease: 'linear' }}
-                className="inline-block w-[2px] h-[1.1em] bg-[#0891b2] ml-1 align-middle"
-              />
-            </span>
+            <TypingRolePill subtitles={subtitles} calm={calm} />
           </div>
         </motion.div>
 
