@@ -322,27 +322,27 @@ function AtmosAircraft({
         mesh.receiveShadow = true;
 
         if (mesh.name === 'Object_24' || mesh.name === 'Object_39') {
-          // Cockpit & cabin glass: sleek ice-blue gloss
+          // Cockpit & cabin glass: vibrant reflective cyan glass
           mesh.material = new THREE.MeshStandardMaterial({
-            color: '#6FD4E1',
-            roughness: 0.15,
-            metalness: 0.75,
+            color: '#0891b2',
+            roughness: 0.12,
+            metalness: 0.85,
             transparent: true,
-            opacity: 0.9,
+            opacity: 0.95,
           });
         } else if (mesh.name === 'Object_30' || mesh.name === 'Object_31') {
-          // Engine trim & nacelles: pale brushed silver
+          // Engine trim & nacelles: pale brushed silver-aqua
           mesh.material = new THREE.MeshStandardMaterial({
-            color: '#B9E7E6',
-            roughness: 0.35,
-            metalness: 0.45,
+            color: '#6FD4E1',
+            roughness: 0.3,
+            metalness: 0.5,
           });
         } else {
           // Fuselage & wings: pure porcelain white clay finish
           mesh.material = new THREE.MeshStandardMaterial({
             color: '#ffffff',
-            roughness: 0.32,
-            metalness: 0.05,
+            roughness: 0.22,
+            metalness: 0.08,
           });
         }
       }
@@ -385,25 +385,25 @@ function AtmosAircraft({
           jet.glb nose is at local -X, top is at +Y.
           Rotating by +Math.PI/2 (+90 deg) points nose to +Z (forward).
           Top stays at +Y (upright cockpit, wings horizontal).
-          Scaled to 0.062 so the jet is prominent and clearly visible in the sky!
+          Scaled to 0.075 so the porcelain jet is prominent and crisp in the sky!
         */}
         <primitive
           object={sceneClone}
-          scale={[0.062, 0.062, 0.062]}
+          scale={[0.075, 0.075, 0.075]}
           rotation={[0, Math.PI / 2, 0]}
         />
 
         {/* Luminous twin contrail ribbons trailing from engines */}
-        <group position={[-0.45, -0.03, -1.1]}>
+        <group position={[-0.52, -0.04, -1.3]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.025, 0.12, 2.4, 8]} />
-            <meshBasicMaterial color="#ffffff" transparent opacity={0.75} />
+            <cylinderGeometry args={[0.03, 0.14, 2.8, 8]} />
+            <meshBasicMaterial color="#ffffff" transparent opacity={0.8} />
           </mesh>
         </group>
-        <group position={[0.45, -0.03, -1.1]}>
+        <group position={[0.52, -0.04, -1.3]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.025, 0.12, 2.4, 8]} />
-            <meshBasicMaterial color="#ffffff" transparent opacity={0.75} />
+            <cylinderGeometry args={[0.03, 0.14, 2.8, 8]} />
+            <meshBasicMaterial color="#ffffff" transparent opacity={0.8} />
           </mesh>
         </group>
       </group>
@@ -745,50 +745,54 @@ export function AtmosFlightTimeline({
             dpr={[1, 2]}
             gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
           >
-            {/* ATMOS Ethereal Diffuse Atmospheric Lighting */}
-            <ambientLight intensity={1.1} color="#E8F2FF" />
+            {/* ATMOS Signature Diffuse & Lavender Shadow Lighting */}
+            <hemisphereLight args={['#FFFFFF', '#C2CEEE', 1.4]} />
             <directionalLight
-              position={[-8, 14, 12]}
-              intensity={2.0}
+              position={[-6, 12, 10]}
+              intensity={1.8}
               color="#FFF5E8"
               castShadow
             />
-            <directionalLight position={[10, -4, -10]} intensity={0.5} color="#B9E7E6" />
+            <directionalLight position={[10, 2, -6]} intensity={0.6} color="#BFE0F7" />
 
             <Suspense fallback={null}>
               {/* Ethereal Floating Dust Particles */}
               <AtmosphereParticles count={70} />
 
               {/* 3D Sculpted Cumulus Cloud Formations */}
-              {/* Foreground cloud puff for immediate depth */}
-              <CloudCluster position={[-8.8, 0.4, 8.8]} scale={2.8} seed={1} />
-
-              {/* Checkpoint 01 Cradling Cloud Bank (Under & Behind Plane) */}
-              <CloudCluster position={[-5.6, 0.8, 5.8]} scale={3.6} seed={2} />
+              {/* Checkpoint 01 Cradling Cloud Bank (Under & Beside Plane) */}
+              <CloudCluster position={[-5.8, 0.4, 6.2]} scale={3.2} seed={2} />
+              <CloudCluster position={[-4.8, 0.9, 7.2]} scale={2.6} seed={12} />
 
               {/* Midground Valley Cloud Puff */}
               <CloudCluster position={[-3.8, 1.8, 2.0]} scale={2.4} seed={3} />
 
               {/* Checkpoint 02 Cradling Cloud Bank */}
-              <CloudCluster position={[-2.2, 2.1, 0.6]} scale={3.4} seed={4} />
+              <CloudCluster position={[-2.2, 1.8, 0.6]} scale={3.2} seed={4} />
+              <CloudCluster position={[-1.2, 2.2, 1.8]} scale={2.5} seed={14} />
 
               {/* Canyon Ascent Cloud Puff */}
               <CloudCluster position={[-1.0, 3.0, -3.2]} scale={2.8} seed={5} />
 
               {/* Checkpoint 03 Golden Dawn Cloud Bank */}
-              <CloudCluster position={[1.2, 3.4, -4.0]} scale={3.6} seed={6} />
+              <CloudCluster position={[1.2, 3.0, -4.0]} scale={3.4} seed={6} />
+              <CloudCluster position={[2.2, 3.6, -2.6]} scale={2.8} seed={16} />
 
               {/* Sweeping Pass Cloud Puff */}
               <CloudCluster position={[2.2, 4.0, -0.6]} scale={2.6} seed={7} />
 
               {/* Checkpoint 04 Cradling Cloud Bank */}
-              <CloudCluster position={[4.2, 4.3, 1.4]} scale={3.4} seed={8} />
+              <CloudCluster position={[4.2, 4.0, 1.4]} scale={3.2} seed={8} />
+              <CloudCluster position={[5.2, 4.6, 2.8]} scale={2.6} seed={18} />
 
               {/* Checkpoint 05 Summit Cloud Bank */}
-              <CloudCluster position={[7.4, 5.2, -2.2]} scale={3.8} seed={9} />
+              <CloudCluster position={[7.4, 4.8, -2.2]} scale={3.6} seed={9} />
+              <CloudCluster position={[8.4, 5.4, -0.8]} scale={2.8} seed={20} />
 
-              {/* Cloud Carpet: Vast puffy layer below flight level */}
-              <CloudCluster position={[0, -1.8, 0]} scale={[34, 1.6, 30]} seed={10} opacity={0.98} />
+              {/* Distant Low Horizon Cloud Formations (Never Swallows Camera) */}
+              <CloudCluster position={[-6, -2.2, 0]} scale={5.5} seed={22} opacity={0.9} />
+              <CloudCluster position={[0, -2.4, -2]} scale={6.0} seed={24} opacity={0.9} />
+              <CloudCluster position={[6, -2.2, -4]} scale={5.5} seed={26} opacity={0.9} />
 
               {/* 3D Waypoint Beacons & Ring Gates */}
               <WaypointBeacons
