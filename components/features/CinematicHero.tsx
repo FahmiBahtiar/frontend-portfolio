@@ -40,19 +40,17 @@ function cleanText(text?: string): string {
 }
 
 // ── Isolated Subtitle Typing Pill (Prevents full Hero re-rendering on every keystroke) ─
-function TypingRolePill({ subtitles, calm }: { subtitles: string[]; calm: boolean }) {
+function TypingRolePill({ subtitles }: { subtitles: string[] }) {
   const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState(0);
   const [subtitleCharIndex, setSubtitleCharIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [typedSubtitle, setTypedSubtitle] = useState('');
 
   useEffect(() => {
-    if (calm) {
-      setTypedSubtitle(subtitles[0] ?? '');
-      return;
-    }
+    if (!subtitles || subtitles.length === 0) return;
 
-    const currentText = subtitles[currentSubtitleIndex] || '';
+    const safeIndex = currentSubtitleIndex % subtitles.length;
+    const currentText = subtitles[safeIndex] || '';
 
     if (!isDeleting) {
       if (subtitleCharIndex < currentText.length) {
@@ -62,8 +60,10 @@ function TypingRolePill({ subtitles, calm }: { subtitles: string[]; calm: boolea
         }, 50);
         return () => clearTimeout(timer);
       } else {
-        const timer = setTimeout(() => setIsDeleting(true), 2800);
-        return () => clearTimeout(timer);
+        if (subtitles.length > 1) {
+          const timer = setTimeout(() => setIsDeleting(true), 2800);
+          return () => clearTimeout(timer);
+        }
       }
     } else {
       if (subtitleCharIndex > 0) {
@@ -77,7 +77,7 @@ function TypingRolePill({ subtitles, calm }: { subtitles: string[]; calm: boolea
         setCurrentSubtitleIndex((prev) => (prev + 1) % subtitles.length);
       }
     }
-  }, [subtitleCharIndex, isDeleting, currentSubtitleIndex, subtitles, calm]);
+  }, [subtitleCharIndex, isDeleting, currentSubtitleIndex, subtitles]);
 
   return (
     <span className="text-xs sm:text-sm md:text-base font-mono font-bold text-[#0c282d]">
@@ -301,7 +301,7 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-xl bg-white/90 border border-[#B9E7E6] shadow-sm">
             <Terminal className="w-3.5 h-3.5 text-[#0891b2]" />
-            <TypingRolePill subtitles={subtitles} calm={calm} />
+            <TypingRolePill subtitles={subtitles} />
           </div>
         </motion.div>
 
