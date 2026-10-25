@@ -11,12 +11,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import dynamic from 'next/dynamic';
 import { EducationService } from '@/lib/services/education';
 import { Achievement } from '@/lib/types/admin';
 import { FALLBACK_EDUCATION_RECORDS, FALLBACK_ACHIEVEMENTS } from '@/lib/fallback-data';
+import { JourneyScrollStory } from '@/components/features/JourneyScrollStory';
+import { useIsMobile } from '@/components/ui/use-mobile';
 
 // WebGL (three.js / R3F) interactive 3D paper flight journey
 // with low-poly origami paper airplane, paper clouds, and in-sky story milestones.
@@ -40,6 +42,7 @@ interface Page3EducationProps {
 }
 
 export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
+  const isMobile = useIsMobile();
   const [selectedAchievement, setSelectedAchievement] = useState<{
     category: string;
     achievementId: string;
@@ -179,7 +182,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
           </p>
         </div>
 
-        {/* 3D Infinite Sky Flight Journey Timeline */}
+        {/* Journey Flight Timeline (Desktop 3D Odyssey & Mobile Dark Card Scroll) */}
         <div className="mb-20 scroll-mt-36 pt-4">
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
@@ -190,7 +193,37 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
             <span className="text-[#527d85] font-mono text-sm hidden sm:block">3D SKY ODYSSEY • 2010 → NOW</span>
           </div>
 
-          <ItomPaperFlightTimeline educationRecords={educationRecords} />
+          {/* Desktop 3D Canvas Flight Odyssey */}
+          <div className="hidden md:block">
+            {!isMobile && <ItomPaperFlightTimeline educationRecords={educationRecords} />}
+          </div>
+
+          {/* Mobile Dark Card Scroll Story */}
+          <div className="block md:hidden">
+            <Card className="bg-slate-900/80 border border-slate-800/80 mb-6 overflow-hidden shadow-lg">
+              <CardContent className="p-4 bg-slate-900/60">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-slate-800/90 border border-[#6FD4E1]/30 flex items-center justify-center shrink-0 text-[#6FD4E1]">
+                    <MapPin className="w-5 h-5 text-[#6FD4E1]" />
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-semibold mb-0.5">
+                      Scroll to explore
+                    </p>
+                    <p className="text-[#B9E7E6] text-xs font-mono">
+                      The path draws itself as you scroll • Milestones reveal as you reach them
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-slate-800/80 bg-slate-950/90 overflow-hidden shadow-2xl rounded-2xl">
+              <CardContent className="p-5 sm:p-8">
+                <JourneyScrollStory educationRecords={educationRecords} />
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Achievements Section */}

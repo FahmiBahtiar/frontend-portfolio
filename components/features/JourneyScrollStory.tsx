@@ -43,7 +43,7 @@ export function JourneyScrollStory({
   return (
     <div ref={containerRef} className="relative py-4">
       {/* Static spine (dim rail) */}
-      <div className="pointer-events-none absolute top-0 bottom-0 left-5 md:left-1/2 w-px -translate-x-1/2 bg-[#B9E7E6]" />
+      <div className="pointer-events-none absolute top-0 bottom-0 left-5 md:left-1/2 w-px -translate-x-1/2 bg-white/10" />
 
       {/* Progress spine — scales from the top as you scroll */}
       <motion.div
@@ -67,7 +67,7 @@ export function JourneyScrollStory({
         />
       </motion.div>
 
-      <div className="space-y-24 md:space-y-36">
+      <div className="space-y-20 md:space-y-32">
         {waypoints.map((w, i) => (
           <Milestone
             key={w.id}
@@ -91,7 +91,7 @@ function Milestone({
   side: 'left' | 'right';
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { margin: '-45% 0px -45% 0px' });
+  const inView = useInView(ref, { margin: '-25% 0px -25% 0px' });
   const reduce = useReducedMotion();
 
   const isLeft = side === 'left';
@@ -101,7 +101,7 @@ function Milestone({
   return (
     <div
       ref={ref}
-      className="relative pl-16 md:grid md:grid-cols-2 md:gap-x-20 md:pl-0"
+      className="relative pl-14 sm:pl-16 md:grid md:grid-cols-2 md:gap-x-20 md:pl-0"
     >
       {/* Node sitting on the spine */}
       <span className="absolute top-2 left-5 z-10 -translate-x-1/2 md:left-1/2">
@@ -121,8 +121,8 @@ function Milestone({
 
       {/* Milestone card / scene */}
       <motion.div
-        initial={reduce ? false : { opacity: 0, y: 36, x: isLeft ? 24 : -24 }}
-        animate={{ opacity: shown ? 1 : 0.4, y: shown ? 0 : 12, x: 0 }}
+        initial={reduce ? false : { opacity: 0, y: 28, x: isLeft ? 16 : -16 }}
+        animate={{ opacity: shown ? 1 : 0.4, y: shown ? 0 : 10, x: 0 }}
         transition={{ type: 'spring', stiffness: 120, damping: 20, mass: 0.6 }}
         className={`flex flex-col ${
           isLeft
@@ -133,17 +133,17 @@ function Milestone({
         {/* Ghost index — editorial accent */}
         <span
           className="select-none text-6xl font-black leading-none md:text-7xl"
-          style={{ color: w.color, opacity: 0.12 }}
+          style={{ color: w.color, opacity: 0.14 }}
         >
           {num}
         </span>
 
         <div className="mt-3 flex items-center gap-2">
           <span
-            className="rounded-md px-2 py-1 font-mono text-[11px] uppercase tracking-widest"
+            className="rounded-md px-2 py-1 font-mono text-[11px] uppercase tracking-widest font-semibold"
             style={{
               color: w.color,
-              background: `${w.color}14`,
+              background: `${w.color}18`,
               border: `1px solid ${w.color}33`,
             }}
           >
@@ -152,7 +152,7 @@ function Milestone({
           <span className="font-mono text-xs text-slate-400">{w.period}</span>
         </div>
 
-        <h4 className="mt-3 text-xl font-bold text-[#0c282d] md:text-2xl">
+        <h4 className="mt-3 text-xl font-bold text-white md:text-2xl">
           {w.title}
         </h4>
         <p className="mt-1 text-sm font-semibold" style={{ color: w.color }}>
@@ -160,14 +160,14 @@ function Milestone({
         </p>
 
         {w.description && (
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-[#2d5f68]">
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-slate-300/90">
             {w.description}
           </p>
         )}
 
         {w.gpa && (
           <div className="mt-4">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#B9E7E6] bg-[#E2F4F3] px-3 py-1.5 font-mono text-xs text-[#0c282d] font-bold">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-mono text-xs text-slate-300 font-medium">
               <span
                 className="h-1.5 w-1.5 rounded-full"
                 style={{ background: w.color }}

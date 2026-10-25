@@ -26,8 +26,8 @@ export const DEFAULT_EDUCATION: Education[] = [
   { id: '5', degree: 'Bachelor Degree', institution: 'University of Technology', period: '2020-2024', gpa: '3.85 / 4.00', color: 'purple', order: 5, description: 'Specialized in Network Security, Cloud Computing, and Full-Stack Development. Final project: Smart Network Monitoring System using AI/ML.', createdAt: '', updatedAt: '' },
 ];
 
-export const LEVEL_COLORS = ['#6FD4E1', '#8fe0e7', '#B9E7E6', '#E2F4F3', '#FFFFFF'];
-export const SUMMIT_COLOR = '#FFFFFF';
+export const LEVEL_COLORS = ['#22d3ee', '#4ade80', '#f59e0b', '#fb923c', '#a78bfa'];
+export const SUMMIT_COLOR = '#a78bfa';
 
 export function colorForIndex(i: number, n: number): string {
   if (i === n - 1) return SUMMIT_COLOR;
@@ -64,15 +64,26 @@ export function buildWaypoints(educationRecords?: Education[]): Waypoint[] {
     .slice()
     .sort((a, b) => (a.order || 0) - (b.order || 0));
   const n = records.length;
-  return records.map((r, i) => ({
-    id: r.id,
-    badge: badgeForIndex(i, n),
-    title: r.degree,
-    institution: r.institution,
-    period: r.period,
-    description: r.description || '',
-    gpa: r.gpa || '',
-    color: colorForIndex(i, n),
-    altitude: n > 1 ? (i / (n - 1)) * 100 : 100,
-  }));
+  return records.map((r, i) => {
+    let description = r.description || '';
+    if (!description) {
+      if (r.institution.toLowerCase().includes('umar said') || r.degree.toLowerCase().includes('senior')) {
+        description = 'Specialized in backend architectures, microservices, Linux servers, CI/CD, and competitive coding.';
+      } else if (r.institution.toLowerCase().includes('nuswantoro') || r.degree.toLowerCase().includes('bachelor')) {
+        description = 'Advanced computer systems, cloud infrastructure, AI models, and real-time distributed networks.';
+      }
+    }
+
+    return {
+      id: r.id,
+      badge: badgeForIndex(i, n),
+      title: r.degree,
+      institution: r.institution,
+      period: r.period,
+      description,
+      gpa: r.gpa || '',
+      color: colorForIndex(i, n),
+      altitude: n > 1 ? (i / (n - 1)) * 100 : 100,
+    };
+  });
 }
