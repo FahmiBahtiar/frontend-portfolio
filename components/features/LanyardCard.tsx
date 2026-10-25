@@ -180,9 +180,9 @@ export function LanyardCard() {
                 : '0 10px 30px rgba(12,40,45,0.06)',
             }}
           >
-            {/* Aspect Ratio Box (5:7.2 ratio - authentic passport proportions without empty void) */}
+            {/* Aspect Ratio Box (5:7 ratio - authentic passport proportions matching desktop) */}
             <div 
-              className="relative w-full pt-[144%] sm:pt-[140%]" 
+              className="relative w-full pt-[140%]" 
               style={{ 
                 transformStyle: 'preserve-3d', 
                 WebkitTransformStyle: 'preserve-3d',
@@ -210,7 +210,7 @@ export function LanyardCard() {
                     WebkitFontSmoothing: 'antialiased',
                   }}
                 >
-                  <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-[#FFFFFF] via-[#E2F4F3] to-[#B9E7E6] p-4 sm:p-8 md:p-12 flex flex-col items-center justify-between">
+                  <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-[#FFFFFF] via-[#E2F4F3] to-[#B9E7E6] p-5 sm:p-8 md:p-12 flex flex-col items-center justify-between">
                     {/* 3D Glare overlay */}
                     <div
                       className="absolute inset-0 z-20 pointer-events-none rounded-2xl transition-opacity duration-300"
@@ -221,14 +221,14 @@ export function LanyardCard() {
                     />
 
                     {/* Top: Country Name */}
-                    <div className="text-center space-y-1.5 sm:space-y-2 z-10">
-                      <h2 className="text-[#0c282d] font-bold tracking-[0.18em] sm:tracking-[0.25em] md:tracking-[0.35em] lg:tracking-[0.4em] text-xs sm:text-base md:text-2xl lg:text-3xl uppercase">
+                    <div className="text-center space-y-2 z-10">
+                      <h2 className="text-[#0c282d] font-bold tracking-[0.2em] md:tracking-[0.35em] lg:tracking-[0.4em] text-sm sm:text-base md:text-2xl lg:text-3xl uppercase">
                         {lanyardData.serviceName || 'BLIMBING PORTFOLIO'}
                       </h2>
                     </div>
 
                     {/* Center: Garuda-style emblem */}
-                    <div className="flex flex-col items-center justify-center flex-1 -mt-2 sm:-mt-6 md:-mt-8 z-10">
+                    <div className="flex flex-col items-center justify-center flex-1 -mt-4 sm:-mt-6 md:-mt-8 z-10">
                       <motion.div
                         animate={{
                           scale: [1, 1.02, 1],
@@ -237,27 +237,27 @@ export function LanyardCard() {
                         className="relative"
                       >
                         {/* Wings spread effect */}
-                        <div className="absolute -left-12 sm:-left-20 lg:-left-24 top-1/2 -translate-y-1/2 w-10 h-20 sm:w-20 sm:h-28 lg:w-24 lg:h-32 opacity-25">
+                        <div className="absolute -left-16 sm:-left-20 lg:-left-24 top-1/2 -translate-y-1/2 w-14 h-24 sm:w-20 sm:h-28 lg:w-24 lg:h-32 opacity-30">
                           <div className="w-full h-full bg-gradient-to-r from-transparent via-[#6FD4E1]/40 to-transparent rounded-full transform -skew-y-12" />
                         </div>
-                        <div className="absolute -right-12 sm:-right-20 lg:-right-24 top-1/2 -translate-y-1/2 w-10 h-20 sm:w-20 sm:h-28 lg:w-24 lg:h-32 opacity-25">
+                        <div className="absolute -right-16 sm:-right-20 lg:-right-24 top-1/2 -translate-y-1/2 w-14 h-24 sm:w-20 sm:h-28 lg:w-24 lg:h-32 opacity-30">
                           <div className="w-full h-full bg-gradient-to-l from-transparent via-[#6FD4E1]/40 to-transparent rounded-full transform skew-y-12" />
                         </div>
 
                         {/* Main emblem */}
-                        <div className="relative w-24 h-24 sm:w-36 sm:h-36 md:w-52 md:h-52 lg:w-60 lg:h-60 rounded-full border-2 md:border-4 border-[#6FD4E1] bg-white/80 flex items-center justify-center backdrop-blur-sm shadow-md">
-                          <div className="absolute inset-1.5 md:inset-3 rounded-full bg-gradient-to-br from-[#6FD4E1]/15 to-transparent" />
+                        <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-52 md:h-52 lg:w-60 lg:h-60 rounded-full border-2 md:border-4 border-[#6FD4E1] bg-white/80 flex items-center justify-center backdrop-blur-sm shadow-md">
+                          <div className="absolute inset-2 md:inset-3 rounded-full bg-gradient-to-br from-[#6FD4E1]/15 to-transparent" />
                           
-                          <div className="relative flex flex-col items-center gap-1.5 sm:gap-2 md:gap-4 z-10">
-                            <div className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-[#E2F4F3] border-2 border-[#6FD4E1] flex items-center justify-center backdrop-blur-sm shadow-sm">
-                              <Plane className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-[#0891b2]" />
+                          <div className="relative flex flex-col items-center gap-2 md:gap-4 z-10">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-[#E2F4F3] border-2 border-[#6FD4E1] flex items-center justify-center backdrop-blur-sm shadow-sm">
+                              <Plane className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-[#0891b2]" />
                             </div>
-                            <div className="flex gap-2 sm:gap-3 md:gap-5">
-                              <div className="w-7 h-7 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-[#E2F4F3] border-2 border-[#6FD4E1] flex items-center justify-center backdrop-blur-sm shadow-sm">
-                                <Code2 className="w-3.5 h-3.5 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-[#0891b2]" />
+                            <div className="flex gap-3 md:gap-5">
+                              <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-[#E2F4F3] border-2 border-[#6FD4E1] flex items-center justify-center backdrop-blur-sm shadow-sm">
+                                <Code2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-[#0891b2]" />
                               </div>
-                              <div className="w-7 h-7 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-[#E2F4F3] border-2 border-[#6FD4E1] flex items-center justify-center backdrop-blur-sm shadow-sm">
-                                <Mountain className="w-3.5 h-3.5 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-[#0891b2]" />
+                              <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-[#E2F4F3] border-2 border-[#6FD4E1] flex items-center justify-center backdrop-blur-sm shadow-sm">
+                                <Mountain className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-[#0891b2]" />
                               </div>
                             </div>
                           </div>
@@ -265,22 +265,22 @@ export function LanyardCard() {
                       </motion.div>
 
                       {/* Shield/banner below emblem */}
-                      <div className="mt-3 sm:mt-5 md:mt-8 relative text-center space-y-0.5 sm:space-y-1">
-                        <div className="w-28 sm:w-44 md:w-64 lg:w-72 h-0.5 bg-gradient-to-r from-transparent via-[#6FD4E1]/50 to-transparent mx-auto mb-1.5 md:mb-3" />
-                        <p className="text-[#0c282d] text-[11px] sm:text-sm md:text-base font-bold tracking-wider uppercase">
+                      <div className="mt-4 sm:mt-5 md:mt-8 relative text-center space-y-1">
+                        <div className="w-36 sm:w-44 md:w-64 lg:w-72 h-0.5 bg-gradient-to-r from-transparent via-[#6FD4E1]/50 to-transparent mx-auto mb-2 md:mb-3" />
+                        <p className="text-[#0c282d] text-xs sm:text-sm md:text-base font-bold tracking-wider uppercase">
                           {lanyardData.passportLabel || 'SERVICE PASSPORT'}
                         </p>
-                        <p className="text-[#2d5f68] text-[10px] sm:text-xs md:text-sm tracking-wide font-medium">
+                        <p className="text-[#2d5f68] text-[11px] sm:text-xs md:text-sm tracking-wide font-medium">
                           {lanyardData.serviceType || '— PRIVATE PASSPORT —'}
                         </p>
                       </div>
                     </div>
 
                     {/* Bottom: Click to Flip */}
-                    <div className="text-center pb-3 sm:pb-7 z-10">
-                      <div className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-1.5 sm:py-2.5 rounded-xl border border-[#6FD4E1] bg-white text-[#0c282d] shadow-sm hover:bg-[#6FD4E1]/20 transition-all duration-300 group">
-                        <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 text-[#0891b2] group-hover:rotate-180 transition-all duration-500" />
-                        <span className="text-[11px] sm:text-sm md:text-base text-[#0c282d] font-semibold tracking-[0.12em] sm:tracking-[0.15em] uppercase">
+                    <div className="text-center pb-5 sm:pb-7 z-10">
+                      <div className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl border border-[#6FD4E1] bg-white text-[#0c282d] shadow-sm hover:bg-[#6FD4E1]/20 transition-all duration-300 group">
+                        <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0891b2] group-hover:rotate-180 transition-all duration-500" />
+                        <span className="text-xs sm:text-sm md:text-base text-[#0c282d] font-semibold tracking-[0.15em] uppercase">
                           Click To Flip
                         </span>
                       </div>
@@ -300,7 +300,7 @@ export function LanyardCard() {
                     WebkitFontSmoothing: 'antialiased',
                   }}
                 >
-                  <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-[#FFFFFF] via-[#F4FBFB] to-[#E2F4F3] px-3 sm:px-5 md:px-6 lg:px-8 py-2.5 sm:py-3.5 md:py-4 lg:py-5 flex flex-col justify-between antialiased">
+                  <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-[#FFFFFF] via-[#F4FBFB] to-[#E2F4F3] px-4 sm:px-5 md:px-6 lg:px-8 py-2.5 sm:py-3.5 md:py-4 lg:py-5 flex flex-col justify-between antialiased">
                     {/* Watermark background pattern */}
                     <div className="absolute inset-0 opacity-[0.035] pointer-events-none">
                       <div className="grid grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6">
@@ -314,43 +314,43 @@ export function LanyardCard() {
                     </div>
 
                     {/* Header */}
-                    <div className="text-center mb-1 sm:mb-3 pb-1 sm:pb-3 border-b-2 border-[#B9E7E6]/70 z-10">
-                      <div className="flex items-center justify-center gap-1.5 mb-0.5 sm:mb-1">
-                        <Globe className="w-3.5 h-3.5 md:w-5 md:h-5 lg:w-6 lg:h-6 text-[#0891b2]" />
-                        <h3 className="text-[#0c282d] text-[11px] sm:text-base md:text-lg lg:text-xl tracking-[0.12em] sm:tracking-[0.15em] font-bold uppercase">
+                    <div className="text-center mb-1.5 sm:mb-3 pb-1.5 sm:pb-3 border-b-2 border-[#B9E7E6]/70 z-10">
+                      <div className="flex items-center justify-center gap-1.5 mb-1">
+                        <Globe className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-[#0891b2]" />
+                        <h3 className="text-[#0c282d] text-xs sm:text-sm md:text-base lg:text-lg tracking-[0.15em] font-bold uppercase">
                           {lanyardData.serviceName || 'BLIMBING PORTFOLIO'}
                         </h3>
-                        <Globe className="w-3.5 h-3.5 md:w-5 md:h-5 lg:w-6 lg:h-6 text-[#0891b2]" />
+                        <Globe className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-[#0891b2]" />
                       </div>
-                      <p className="text-[#527d85] text-[9px] sm:text-xs md:text-sm lg:text-base tracking-[0.15em] sm:tracking-[0.2em] font-mono font-bold uppercase">
+                      <p className="text-[#527d85] text-[10px] sm:text-xs md:text-sm lg:text-base tracking-[0.2em] font-mono font-bold uppercase">
                         {lanyardData.serviceType || 'SERVICE PASSPORT'}
                       </p>
-                      <div className="mt-0.5 sm:mt-1 flex items-center justify-center gap-2">
-                        <div className="w-6 sm:w-8 h-px bg-[#B9E7E6]" />
-                        <p className="text-[#0891b2] text-[9px] sm:text-xs md:text-sm font-semibold tracking-wider">
+                      <div className="mt-1 flex items-center justify-center gap-2">
+                        <div className="w-8 h-px bg-[#B9E7E6]" />
+                        <p className="text-[#0891b2] text-[10px] sm:text-xs md:text-sm font-semibold tracking-wider">
                           {lanyardData.passportLabel || '— PRIVATE PASSPORT —'}
                         </p>
-                        <div className="w-6 sm:w-8 h-px bg-[#B9E7E6]" />
+                        <div className="w-8 h-px bg-[#B9E7E6]" />
                       </div>
                     </div>
 
-                    {/* Photo and Personal Info Section (Responsive on Mobile) */}
-                    <div className="flex flex-row gap-2.5 sm:gap-4 md:gap-5 lg:gap-6 mb-1.5 sm:mb-3 md:mb-4 z-10">
+                    {/* Photo and Personal Info Section (Exact Desktop Proportions) */}
+                    <div className="flex flex-row gap-3 sm:gap-4 md:gap-5 lg:gap-6 mb-2 sm:mb-4 z-10">
                       {/* Photo - Portrait */}
-                      <div className="flex-shrink-0 w-24 h-32 sm:w-32 sm:h-44 md:w-36 md:h-52 lg:w-48 lg:h-72">
+                      <div className="flex-shrink-0 w-28 h-[148px] sm:w-32 sm:h-44 md:w-36 md:h-52 lg:w-48 lg:h-72">
                         <div className="relative w-full h-full bg-[#E2F4F3] rounded-xl border-2 border-[#B9E7E6] overflow-hidden shadow-md">
                           {lanyardData.avatarUrl ? (
                             <Image
                               src={lanyardData.avatarUrl}
                               alt="Avatar"
                               fill
-                              sizes="(max-width: 640px) 96px, (max-width: 768px) 128px, (max-width: 1024px) 144px, 192px"
+                              sizes="(max-width: 640px) 112px, (max-width: 768px) 128px, (max-width: 1024px) 144px, 192px"
                               className="object-cover"
                               unoptimized
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-[#E2F4F3]">
-                              <User className="w-8 h-8 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 text-[#527d85]" />
+                              <User className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 text-[#527d85]" />
                             </div>
                           )}
                         </div>
@@ -360,56 +360,56 @@ export function LanyardCard() {
                       <div className="flex-1 flex flex-col justify-between py-0.5 sm:py-2">
                         {/* Country Code */}
                         <div>
-                          <p className="text-[#527d85] text-[8px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 tracking-wider font-mono font-bold">
+                          <p className="text-[#527d85] text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 tracking-wider font-mono font-bold">
                             COUNTRY CODE
                           </p>
-                          <p className="text-[#0c282d] text-sm sm:text-lg md:text-xl lg:text-2xl font-black tracking-wide">
+                          <p className="text-[#0c282d] text-base sm:text-lg md:text-xl lg:text-2xl font-black tracking-wide">
                             {lanyardData.countryCode || 'IDN'}
                           </p>
                         </div>
 
                         {/* Passport No */}
                         <div>
-                          <p className="text-[#527d85] text-[8px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 tracking-wider font-mono font-bold">
+                          <p className="text-[#527d85] text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 tracking-wider font-mono font-bold">
                             PASSPORT NO.
                           </p>
-                          <p className="text-[#0891b2] font-mono text-xs sm:text-lg md:text-xl lg:text-2xl font-black tracking-wide">
+                          <p className="text-[#0891b2] font-mono text-base sm:text-lg md:text-xl lg:text-2xl font-black tracking-wide">
                             {lanyardData.passportNo || 'FHM20253333'}
                           </p>
                         </div>
 
                         {/* Surname */}
                         <div>
-                          <p className="text-[#527d85] text-[8px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 tracking-wider font-mono font-bold">
+                          <p className="text-[#527d85] text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 tracking-wider font-mono font-bold">
                             SURNAME/NAMA BELAKANG
                           </p>
-                          <p className="text-[#0c282d] uppercase text-xs sm:text-lg md:text-xl lg:text-2xl font-black tracking-wide">
+                          <p className="text-[#0c282d] uppercase text-base sm:text-lg md:text-xl lg:text-2xl font-black tracking-wide">
                             {lanyardData.surname || 'ADI NUGROHO'}
                           </p>
                         </div>
 
                         {/* Given Names */}
                         <div>
-                          <p className="text-[#527d85] text-[8px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 tracking-wider font-mono font-bold">
+                          <p className="text-[#527d85] text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 tracking-wider font-mono font-bold">
                             GIVEN NAMES/NAMA DEPAN
                           </p>
-                          <p className="text-[#0c282d] uppercase text-xs sm:text-lg md:text-xl lg:text-2xl font-black tracking-wide">
+                          <p className="text-[#0c282d] uppercase text-base sm:text-lg md:text-xl lg:text-2xl font-black tracking-wide">
                             {lanyardData.givenNames || 'FAHMI BAHTIAR'}
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Additional Details Grid (Responsive Layout) */}
-                    <div className="grid grid-cols-2 gap-x-2.5 sm:gap-x-4 md:gap-x-6 gap-y-1 sm:gap-y-3 md:gap-y-4 mb-1 sm:mb-2 border-t-2 border-[#B9E7E6]/70 pt-1.5 sm:pt-4 md:pt-5 z-10">
+                    {/* Additional Details Grid (Exact Desktop Layout & Styling) */}
+                    <div className="grid grid-cols-2 gap-x-3 sm:gap-x-4 md:gap-x-6 gap-y-2 sm:gap-y-3 md:gap-y-4 mb-2 border-t-2 border-[#B9E7E6]/70 pt-2.5 sm:pt-4 md:pt-5 z-10">
                       {/* Nationality */}
                       <div>
-                        <p className="text-[#527d85] text-[8px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
+                        <p className="text-[#527d85] text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
                           NATIONALITY
                         </p>
                         <div className="flex items-center gap-1.5 sm:gap-2">
-                          <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-[#0891b2]" />
-                          <p className="text-[#0c282d] text-xs sm:text-base md:text-lg lg:text-xl font-bold">
+                          <Globe className="w-4 h-4 md:w-5 md:h-5 text-[#0891b2]" />
+                          <p className="text-[#0c282d] text-sm sm:text-base md:text-lg lg:text-xl font-bold">
                             {lanyardData.nationality || 'Indonesia'}
                           </p>
                         </div>
@@ -417,12 +417,12 @@ export function LanyardCard() {
 
                       {/* Date of Birth */}
                       <div>
-                        <p className="text-[#527d85] text-[8px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
+                        <p className="text-[#527d85] text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
                           DATE OF BIRTH
                         </p>
                         <div className="flex items-center gap-1.5 sm:gap-2">
-                          <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-[#0891b2]" />
-                          <p className="text-[#0c282d] text-xs sm:text-base md:text-lg lg:text-xl font-bold">
+                          <Calendar className="w-4 h-4 md:w-5 md:h-5 text-[#0891b2]" />
+                          <p className="text-[#0c282d] text-sm sm:text-base md:text-lg lg:text-xl font-bold">
                             {lanyardData.dateOfBirth || 'Secret'}
                           </p>
                         </div>
@@ -430,12 +430,12 @@ export function LanyardCard() {
 
                       {/* Place of Birth */}
                       <div>
-                        <p className="text-[#527d85] text-[8px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
+                        <p className="text-[#527d85] text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
                           PLACE OF BIRTH
                         </p>
                         <div className="flex items-center gap-1.5 sm:gap-2">
-                          <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-[#0891b2]" />
-                          <p className="text-[#0c282d] text-xs sm:text-base md:text-lg lg:text-xl font-bold">
+                          <MapPin className="w-4 h-4 md:w-5 md:h-5 text-[#0891b2]" />
+                          <p className="text-[#0c282d] text-sm sm:text-base md:text-lg lg:text-xl font-bold">
                             {lanyardData.placeOfBirth || 'Demak, Indonesia'}
                           </p>
                         </div>
@@ -443,52 +443,52 @@ export function LanyardCard() {
 
                       {/* Sex */}
                       <div>
-                        <p className="text-[#527d85] text-[8px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
+                        <p className="text-[#527d85] text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
                           SEX/JENIS KELAMIN
                         </p>
-                        <p className="text-[#0c282d] text-xs sm:text-base md:text-lg lg:text-xl font-black tracking-wide">
+                        <p className="text-[#0c282d] text-sm sm:text-base md:text-lg lg:text-xl font-black tracking-wide">
                           {lanyardData.sex || 'M'} / {(lanyardData.sex === 'M' || !lanyardData.sex) ? 'L' : 'P'}
                         </p>
                       </div>
 
                       {/* Date of Issue */}
                       <div>
-                        <p className="text-[#527d85] text-[8px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
+                        <p className="text-[#527d85] text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
                           DATE OF ISSUE
                         </p>
-                        <p className="text-[#0c282d] text-xs sm:text-base md:text-lg lg:text-xl font-bold">
+                        <p className="text-[#0c282d] text-sm sm:text-base md:text-lg lg:text-xl font-bold">
                           {lanyardData.dateOfIssue || '01 OCT 2025'}
                         </p>
                       </div>
 
                       {/* Date of Expiry */}
                       <div>
-                        <p className="text-[#527d85] text-[8px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
+                        <p className="text-[#527d85] text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
                           DATE OF EXPIRY
                         </p>
-                        <p className="text-rose-600 text-xs sm:text-base md:text-lg lg:text-xl font-black">
+                        <p className="text-rose-600 text-sm sm:text-base md:text-lg lg:text-xl font-black">
                           {lanyardData.dateOfExpiry || 'Nuclear War'}
                         </p>
                       </div>
                     </div>
 
-                    {/* Signature Section - Compact, Proportional & Directly Visible */}
-                    <div className="border-t-2 border-[#B9E7E6]/70 pt-1.5 sm:pt-2.5 px-0.5 sm:px-1 z-10">
-                      <div className="flex items-center justify-between mb-0.5 sm:mb-1">
-                        <p className="text-[#527d85] text-[8px] sm:text-[10px] md:text-xs uppercase tracking-wider font-mono font-bold">
+                    {/* Signature Section */}
+                    <div className="flex-1 flex flex-col border-t-2 border-[#B9E7E6]/70 pt-2 sm:pt-4 md:pt-5 px-1 mt-auto z-10">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-[#527d85] text-[9px] sm:text-[10px] md:text-xs uppercase tracking-wider font-mono font-bold">
                           HOLDER&apos;S SIGNATURE/TANDA TANGAN
                         </p>
-                        <span className="text-[9px] sm:text-[10px] font-mono text-[#0891b2] font-semibold flex items-center gap-1 opacity-75">
+                        <span className="text-[10px] font-mono text-[#0891b2] font-semibold flex items-center gap-1 opacity-70">
                           <RefreshCw className="w-2.5 h-2.5" />
                           <span>Click to flip</span>
                         </span>
                       </div>
-                      <div className="h-10 sm:h-12 md:h-14 border-b-2 border-[#B9E7E6] flex items-center pb-0.5">
+                      <div className="flex-1 border-b-2 border-[#B9E7E6] flex items-end pb-1 min-h-[2.8rem] sm:min-h-[3.5rem] md:min-h-[4rem] lg:min-h-[5rem]">
                         <p 
-                          className="text-[#0c282d] font-thin tracking-wide leading-none -rotate-2 origin-bottom transition-transform hover:rotate-0 whitespace-nowrap" 
+                          className="text-[#0c282d] font-thin tracking-wide leading-none -rotate-3 origin-bottom transition-transform hover:rotate-0 whitespace-nowrap translate-y-[1px]" 
                           style={{ 
                             fontFamily: 'var(--font-dancing-script), cursive', 
-                            fontSize: 'clamp(1.4rem, 3.8vw, 2.8rem)' 
+                            fontSize: 'clamp(1.5rem, 4vw, 4rem)' 
                           }}
                         >
                           {(lanyardData.givenNames || 'fahmi bahtiar').toLowerCase()}
