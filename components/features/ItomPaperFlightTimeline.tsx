@@ -745,7 +745,7 @@ function ManeuveringPaperAirplane({
 
     const chunkProgress = (((scrollZ % 40) + 40) % 40) / 40;
 
-    let bankAngle = Math.sin(chunkProgress * Math.PI * 2) * 0.15;
+    const bankAngle = Math.sin(chunkProgress * Math.PI * 2) * 0.15;
     let pitchAngle = Math.sin(chunkProgress * Math.PI * 4) * 0.05;
 
     const velInfluence = Math.max(-0.25, Math.min(0.25, vel * 0.02));
