@@ -198,19 +198,19 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
             {!isMobile && <ItomPaperFlightTimeline educationRecords={educationRecords} />}
           </div>
 
-          {/* Mobile Dark Card Scroll Story */}
+          {/* Mobile Card Scroll Story (Harmonized with Arctic Ice theme) */}
           <div className="block md:hidden">
-            <Card className="bg-slate-900/80 border border-slate-800/80 mb-6 overflow-hidden shadow-lg">
-              <CardContent className="p-4 bg-slate-900/60">
+            <Card className="bg-white/90 border border-[#B9E7E6] mb-6 overflow-hidden shadow-sm">
+              <CardContent className="p-4 bg-[#E2F4F3]/50">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-slate-800/90 border border-[#6FD4E1]/30 flex items-center justify-center shrink-0 text-[#6FD4E1]">
-                    <MapPin className="w-5 h-5 text-[#6FD4E1]" />
+                  <div className="w-10 h-10 rounded-xl bg-white border border-[#B9E7E6] flex items-center justify-center shrink-0 text-[#0891b2] shadow-sm">
+                    <MapPin className="w-5 h-5 text-[#0891b2]" />
                   </div>
                   <div>
-                    <p className="text-white text-sm font-semibold mb-0.5">
+                    <p className="text-[#0c282d] text-sm font-bold mb-0.5">
                       Scroll to explore
                     </p>
-                    <p className="text-[#B9E7E6] text-xs font-mono">
+                    <p className="text-[#2d5f68] text-xs font-mono">
                       The path draws itself as you scroll • Milestones reveal as you reach them
                     </p>
                   </div>
@@ -218,7 +218,7 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
               </CardContent>
             </Card>
 
-            <Card className="border border-slate-800/80 bg-slate-950/90 overflow-hidden shadow-2xl rounded-2xl">
+            <Card className="border border-[#B9E7E6] bg-white/95 backdrop-blur-sm overflow-hidden shadow-md rounded-2xl">
               <CardContent className="p-5 sm:p-8">
                 <JourneyScrollStory educationRecords={educationRecords} />
               </CardContent>

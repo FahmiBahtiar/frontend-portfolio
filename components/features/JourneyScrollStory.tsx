@@ -43,7 +43,7 @@ export function JourneyScrollStory({
   return (
     <div ref={containerRef} className="relative py-4">
       {/* Static spine (dim rail) */}
-      <div className="pointer-events-none absolute top-0 bottom-0 left-5 md:left-1/2 w-px -translate-x-1/2 bg-white/10" />
+      <div className="pointer-events-none absolute top-0 bottom-0 left-5 md:left-1/2 w-px -translate-x-1/2 bg-[#B9E7E6]" />
 
       {/* Progress spine — scales from the top as you scroll */}
       <motion.div
@@ -59,10 +59,10 @@ export function JourneyScrollStory({
         className="pointer-events-none absolute left-5 md:left-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
       >
         <span
-          className="block h-3 w-3 rounded-full bg-white"
+          className="block h-3.5 w-3.5 rounded-full bg-[#0891b2]"
           style={{
             boxShadow:
-              '0 0 12px 4px rgba(255,255,255,0.7), 0 0 30px 8px rgba(34,211,238,0.45)',
+              '0 0 10px 3px rgba(8,145,178,0.5), 0 0 24px 6px rgba(111,212,225,0.4)',
           }}
         />
       </motion.div>
@@ -107,14 +107,14 @@ function Milestone({
       <span className="absolute top-2 left-5 z-10 -translate-x-1/2 md:left-1/2">
         <motion.span
           aria-hidden
-          animate={{ scale: shown ? 1 : 0.72, opacity: shown ? 1 : 0.55 }}
+          animate={{ scale: shown ? 1 : 0.72, opacity: shown ? 1 : 0.6 }}
           transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-          className="block h-4 w-4 rounded-full"
+          className="block h-4 w-4 rounded-full border-2 border-white"
           style={{
             background: w.color,
             boxShadow: shown
-              ? `0 0 0 4px ${w.color}22, 0 0 22px 4px ${w.color}99`
-              : `0 0 0 3px ${w.color}14`,
+              ? `0 0 0 4px ${w.color}33, 0 0 18px 4px ${w.color}66`
+              : `0 0 0 3px ${w.color}22`,
           }}
         />
       </span>
@@ -133,26 +133,26 @@ function Milestone({
         {/* Ghost index — editorial accent */}
         <span
           className="select-none text-6xl font-black leading-none md:text-7xl"
-          style={{ color: w.color, opacity: 0.14 }}
+          style={{ color: w.color, opacity: 0.12 }}
         >
           {num}
         </span>
 
         <div className="mt-3 flex items-center gap-2">
           <span
-            className="rounded-md px-2 py-1 font-mono text-[11px] uppercase tracking-widest font-semibold"
+            className="rounded-md px-2.5 py-1 font-mono text-[11px] uppercase tracking-widest font-bold"
             style={{
               color: w.color,
-              background: `${w.color}18`,
+              background: `${w.color}14`,
               border: `1px solid ${w.color}33`,
             }}
           >
             {w.badge}
           </span>
-          <span className="font-mono text-xs text-slate-400">{w.period}</span>
+          <span className="font-mono text-xs text-[#527d85] font-medium">{w.period}</span>
         </div>
 
-        <h4 className="mt-3 text-xl font-bold text-white md:text-2xl">
+        <h4 className="mt-3 text-xl font-bold text-[#0c282d] md:text-2xl">
           {w.title}
         </h4>
         <p className="mt-1 text-sm font-semibold" style={{ color: w.color }}>
@@ -160,14 +160,14 @@ function Milestone({
         </p>
 
         {w.description && (
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-slate-300/90">
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-[#2d5f68] font-medium">
             {w.description}
           </p>
         )}
 
         {w.gpa && (
           <div className="mt-4">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-mono text-xs text-slate-300 font-medium">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#B9E7E6] bg-[#E2F4F3] px-3 py-1.5 font-mono text-xs text-[#0c282d] font-bold shadow-sm">
               <span
                 className="h-1.5 w-1.5 rounded-full"
                 style={{ background: w.color }}
