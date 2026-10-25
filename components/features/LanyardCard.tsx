@@ -39,9 +39,7 @@ interface LanyardData {
 }
 
 export function LanyardCard() {
-  const [flipState, setFlipState] = useState<'initial' | 'to-back' | 'to-front'>('initial');
   const [isFlipped, setIsFlipped] = useState(false);
-  const isFlipping = flipState === 'to-back' || flipState === 'to-front';
   const [lanyardData, setLanyardData] = useState<LanyardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,14 +74,8 @@ export function LanyardCard() {
     if (e) {
       e.stopPropagation();
     }
-    if (!isFlipped) {
-      setFlipState('to-back');
-      setIsFlipped(true);
-    } else {
-      setFlipState('to-front');
-      setIsFlipped(false);
-    }
-  }, [isFlipped]);
+    setIsFlipped((prev) => !prev);
+  }, []);
 
   useEffect(() => {
     const API_BASE = API_BASE_URL;
@@ -179,12 +171,8 @@ export function LanyardCard() {
           <div
             className="relative w-full max-w-[380px] xs:max-w-[420px] sm:max-w-[480px] md:max-w-[600px] lg:max-w-[900px]"
             style={{
-              transform: isFlipping
-                ? 'rotateX(0deg) rotateY(0deg)'
-                : `rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
-              transition: isFlipping
-                ? 'transform 0.4s ease-out'
-                : isHovering ? 'transform 0.1s ease-out, box-shadow 0.1s ease-out' : 'transform 0.5s ease-out, box-shadow 0.5s ease-out',
+              transform: `rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
+              transition: isHovering ? 'transform 0.1s ease-out, box-shadow 0.1s ease-out' : 'transform 0.5s ease-out, box-shadow 0.5s ease-out',
               transformStyle: 'preserve-3d',
               WebkitTransformStyle: 'preserve-3d',
               boxShadow: isHovering
@@ -192,41 +180,34 @@ export function LanyardCard() {
                 : '0 10px 30px rgba(12,40,45,0.06)',
             }}
           >
-            {/* Aspect Ratio Box: taller on mobile (162%) so all biographical fields & signature fit comfortably without clipping */}
+            {/* Aspect Ratio Box (5:7.2 ratio - authentic passport proportions without empty void) */}
             <div 
-              className="relative w-full pt-[162%] sm:pt-[140%]" 
+              className="relative w-full pt-[144%] sm:pt-[140%]" 
               style={{ 
                 transformStyle: 'preserve-3d', 
                 WebkitTransformStyle: 'preserve-3d',
-                perspective: '2200px',
               }}
             >
-              {/* Hardware-Accelerated 3D Flip Card */}
+              {/* Hardware-Accelerated 3D Flip Card - Crisp transition without compositor freeze */}
               <div 
-                className={`absolute inset-0 w-full h-full passport-flipper allow-motion ${
-                  flipState === 'to-back'
-                    ? 'passport-flip-to-back'
-                    : flipState === 'to-front'
-                    ? 'passport-flip-to-front'
-                    : ''
-                }`}
+                className="absolute inset-0 w-full h-full will-change-transform"
                 style={{
-                  transform: isFlipped 
-                    ? 'perspective(2200px) rotateY(180deg)' 
-                    : 'perspective(2200px) rotateY(0deg)',
+                  transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
                   transformStyle: 'preserve-3d',
                   WebkitTransformStyle: 'preserve-3d',
+                  transition: 'transform 0.65s cubic-bezier(0.4, 0.0, 0.2, 1)',
                 }}
               >
                 {/* ======================================================== */}
                 {/* FRONT SIDE - PASSPORT COVER (ARCTIC ICE)                  */}
                 {/* ======================================================== */}
                 <div 
-                  className="absolute inset-0 w-full h-full rounded-2xl shadow-xl border-4 border-[#6FD4E1]/50 passport-flipper allow-motion"
+                  className="absolute inset-0 w-full h-full rounded-2xl shadow-xl border-4 border-[#6FD4E1]/50 passport-card-sharp"
                   style={{ 
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
-                    transform: 'rotateY(0deg)',
+                    transform: 'rotateY(0deg) translateZ(1px)',
+                    WebkitFontSmoothing: 'antialiased',
                   }}
                 >
                   <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-[#FFFFFF] via-[#E2F4F3] to-[#B9E7E6] p-4 sm:p-8 md:p-12 flex flex-col items-center justify-between">
@@ -311,14 +292,15 @@ export function LanyardCard() {
                 {/* BACK SIDE - PASSPORT BIOGRAPHICAL DATA PAGE (ARCTIC ICE) */}
                 {/* ======================================================== */}
                 <div 
-                  className="absolute inset-0 w-full h-full rounded-2xl shadow-2xl border-4 border-[#B9E7E6] passport-flipper allow-motion"
+                  className="absolute inset-0 w-full h-full rounded-2xl shadow-2xl border-4 border-[#B9E7E6] passport-card-sharp"
                   style={{ 
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
-                    transform: 'rotateY(180deg)',
+                    transform: 'rotateY(180deg) translateZ(1px)',
+                    WebkitFontSmoothing: 'antialiased',
                   }}
                 >
-                  <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-[#FFFFFF] via-[#F4FBFB] to-[#E2F4F3] px-3 sm:px-5 md:px-6 lg:px-8 py-2 sm:py-3.5 md:py-4 lg:py-5 flex flex-col justify-between">
+                  <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-[#FFFFFF] via-[#F4FBFB] to-[#E2F4F3] px-3 sm:px-5 md:px-6 lg:px-8 py-2.5 sm:py-3.5 md:py-4 lg:py-5 flex flex-col justify-between antialiased">
                     {/* Watermark background pattern */}
                     <div className="absolute inset-0 opacity-[0.035] pointer-events-none">
                       <div className="grid grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6">
@@ -490,23 +472,23 @@ export function LanyardCard() {
                       </div>
                     </div>
 
-                    {/* Signature Section (Authentic Layout with Guaranteed Mobile Visibility) */}
-                    <div className="flex-1 flex flex-col border-t-2 border-[#B9E7E6]/70 pt-1.5 sm:pt-3 md:pt-5 px-0.5 sm:px-1 mt-auto z-10">
+                    {/* Signature Section - Compact, Proportional & Directly Visible */}
+                    <div className="border-t-2 border-[#B9E7E6]/70 pt-1.5 sm:pt-2.5 px-0.5 sm:px-1 z-10">
                       <div className="flex items-center justify-between mb-0.5 sm:mb-1">
                         <p className="text-[#527d85] text-[8px] sm:text-[10px] md:text-xs uppercase tracking-wider font-mono font-bold">
                           HOLDER&apos;S SIGNATURE/TANDA TANGAN
                         </p>
-                        <span className="text-[9px] sm:text-[10px] font-mono text-[#0891b2] font-semibold flex items-center gap-1 opacity-70">
+                        <span className="text-[9px] sm:text-[10px] font-mono text-[#0891b2] font-semibold flex items-center gap-1 opacity-75">
                           <RefreshCw className="w-2.5 h-2.5" />
                           <span>Click to flip</span>
                         </span>
                       </div>
-                      <div className="flex-1 border-b-2 border-[#B9E7E6] flex items-end pb-0.5 sm:pb-1 min-h-[2.4rem] sm:min-h-[3.5rem] md:min-h-[4rem] lg:min-h-[5rem]">
+                      <div className="h-10 sm:h-12 md:h-14 border-b-2 border-[#B9E7E6] flex items-center pb-0.5">
                         <p 
-                          className="text-[#0c282d] font-thin tracking-wide leading-none -rotate-3 origin-bottom transition-transform hover:rotate-0 whitespace-nowrap translate-y-[1px]" 
+                          className="text-[#0c282d] font-thin tracking-wide leading-none -rotate-2 origin-bottom transition-transform hover:rotate-0 whitespace-nowrap" 
                           style={{ 
                             fontFamily: 'var(--font-dancing-script), cursive', 
-                            fontSize: 'clamp(1.35rem, 4vw, 4rem)' 
+                            fontSize: 'clamp(1.4rem, 3.8vw, 2.8rem)' 
                           }}
                         >
                           {(lanyardData.givenNames || 'fahmi bahtiar').toLowerCase()}

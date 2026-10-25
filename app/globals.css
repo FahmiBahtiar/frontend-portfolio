@@ -117,41 +117,10 @@ html.lite-graphics .glass-panel {
   background-color: rgba(255, 255, 255, 0.95) !important;
 }
 
-/* 3D Passport Flip Animation Keyframes - Refined, Contained, & Smooth */
-@keyframes passportFlipToBack {
-  0% {
-    transform: perspective(2200px) rotateY(0deg) scale(1);
-    box-shadow: 0 10px 30px rgba(12, 40, 45, 0.06);
-  }
-  50% {
-    transform: perspective(2200px) rotateY(90deg) scale(0.97);
-    box-shadow: 0 15px 35px rgba(111, 212, 225, 0.2), 0 8px 16px rgba(12, 40, 45, 0.08);
-  }
-  100% {
-    transform: perspective(2200px) rotateY(180deg) scale(1);
-    box-shadow: 0 10px 30px rgba(12, 40, 45, 0.06);
-  }
-}
-
-@keyframes passportFlipToFront {
-  0% {
-    transform: perspective(2200px) rotateY(180deg) scale(1);
-    box-shadow: 0 10px 30px rgba(12, 40, 45, 0.06);
-  }
-  50% {
-    transform: perspective(2200px) rotateY(90deg) scale(0.97);
-    box-shadow: 0 15px 35px rgba(111, 212, 225, 0.2), 0 8px 16px rgba(12, 40, 45, 0.08);
-  }
-  100% {
-    transform: perspective(2200px) rotateY(0deg) scale(1);
-    box-shadow: 0 10px 30px rgba(12, 40, 45, 0.06);
-  }
-}
-
-.passport-flip-to-back {
-  animation: passportFlipToBack 0.75s cubic-bezier(0.4, 0.0, 0.2, 1) forwards !important;
-}
-
-.passport-flip-to-front {
-  animation: passportFlipToFront 0.75s cubic-bezier(0.4, 0.0, 0.2, 1) forwards !important;
+/* 3D Passport Crisp Flip Utilities */
+.passport-card-sharp {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transform: translateZ(0);
 }
