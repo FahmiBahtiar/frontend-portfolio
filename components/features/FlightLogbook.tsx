@@ -14,6 +14,7 @@ import {
   Calendar,
   Award,
   ChevronRight,
+  ChevronDown,
   CloudSun,
   TrendingUp,
   Star,
@@ -105,31 +106,31 @@ export function FlightLogbook() {
         main: '#B9E7E6',
         glow: 'transparent',
         border: 'border-[#6FD4E1]/30',
-        bg: 'bg-slate-900/60'
+        bg: 'bg-[#E2F4F3]/60'
       },
       orange: {
         main: '#E2F4F3',
         glow: 'transparent',
         border: 'border-[#6FD4E1]/30',
-        bg: 'bg-slate-900/60'
+        bg: 'bg-[#E2F4F3]/60'
       },
       cyan: {
         main: '#6FD4E1',
         glow: 'transparent',
         border: 'border-[#6FD4E1]/30',
-        bg: 'bg-slate-900/60'
+        bg: 'bg-[#E2F4F3]/60'
       },
       green: {
         main: '#6FD4E1',
         glow: 'transparent',
         border: 'border-[#6FD4E1]/30',
-        bg: 'bg-slate-900/60'
+        bg: 'bg-[#E2F4F3]/60'
       },
       blue: {
         main: '#B9E7E6',
         glow: 'transparent',
         border: 'border-[#6FD4E1]/30',
-        bg: 'bg-slate-900/60'
+        bg: 'bg-[#E2F4F3]/60'
       }
     };
     return colors[color] || colors.cyan;
@@ -406,11 +407,11 @@ export function FlightLogbook() {
             exit={{ opacity: 0 }}
             className="text-center py-12"
           >
-            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-white/30" />
+            <div className="w-16 h-16 rounded-full bg-[#E2F4F3] flex items-center justify-center mx-auto mb-4 border border-[#B9E7E6]">
+              <Search className="w-8 h-8 text-[#0891b2]" />
             </div>
-            <p className="text-white/50 mb-2">No experiences found</p>
-            <p className="text-white/30 text-sm">Try adjusting your filters or search terms</p>
+            <p className="text-[#0c282d] font-semibold mb-2">No experiences found</p>
+            <p className="text-[#527d85] text-sm">Try adjusting your filters or search terms</p>
           </motion.div>
         ) : (
           <motion.div
@@ -498,13 +499,23 @@ export function FlightLogbook() {
 
             {/* Show More Button for Grid View */}
             {viewMode === 'grid' && filteredEntries.length > (isMobile ? 3 : 6) && (
-              <div className="flex justify-center mt-8">
+              <div className="col-span-1 md:col-span-2 lg:col-span-3 col-span-full flex justify-center pt-6 pb-2 w-full">
                 <Button
                   onClick={() => setShowMore(!showMore)}
                   variant="outline"
-                  className="border-slate-800 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-white font-mono uppercase tracking-wider text-xs rounded-xl"
+                  className="bg-white hover:bg-[#E2F4F3] border border-[#B9E7E6] hover:border-[#6FD4E1] text-[#0c282d] font-mono uppercase tracking-wider text-xs md:text-sm px-6 py-2.5 rounded-xl shadow-sm hover:shadow transition-all group flex items-center gap-2 cursor-pointer"
                 >
-                  {showMore ? 'Show Less' : `Show ${filteredEntries.length - (isMobile ? 3 : 6)} More Experiences`}
+                  {showMore ? (
+                    <>
+                      <ChevronUp className="w-4 h-4 text-[#0891b2] transition-transform group-hover:-translate-y-0.5" />
+                      <span>Show Less</span>
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-4 h-4 text-[#0891b2] transition-transform group-hover:translate-y-0.5" />
+                      <span>Show {filteredEntries.length - (isMobile ? 3 : 6)} More Experiences</span>
+                    </>
+                  )}
                 </Button>
               </div>
             )}
@@ -565,9 +576,9 @@ export function FlightLogbook() {
 
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 justify-end">
-                                  <span className="text-white/50 text-xs truncate">{entry.arrival.status}</span>
-                                  <span className="text-white/70 font-mono truncate">{entry.departure.code}</span>
-                                  <MapPin className="w-3.5 h-3.5 text-orange-400 flex-shrink-0" />
+                                  <span className="text-[#527d85] text-xs truncate">{entry.arrival.status}</span>
+                                  <span className="text-[#0c282d] font-mono truncate">{entry.departure.code}</span>
+                                  <MapPin className="w-3.5 h-3.5 text-[#0891b2] flex-shrink-0" />
                                 </div>
                               </div>
                             </div>
@@ -575,14 +586,10 @@ export function FlightLogbook() {
 
                           <div className="flex-shrink-0">
                             <div
-                              className="px-3 py-2 rounded-xl border text-center"
-                              style={{
-                                background: `linear-gradient(135deg, ${colors.main}20, ${colors.main}10)`,
-                                borderColor: `${colors.main}40`
-                              }}
+                              className="px-3 py-2 rounded-xl border border-[#B9E7E6] bg-[#E2F4F3]/60 text-center"
                             >
-                              <div className="text-xs text-white/50 uppercase tracking-wider mb-1">Duration</div>
-                              <div className="font-mono font-bold" style={{ color: colors.main }}>
+                              <div className="text-xs text-[#527d85] uppercase tracking-wider mb-1">Duration</div>
+                              <div className="font-mono font-bold text-[#0891b2]">
                                 {entry.duration} mo
                               </div>
                             </div>
@@ -593,10 +600,10 @@ export function FlightLogbook() {
                       <div className="p-4 md:p-6">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                           <div className="flex items-center gap-2 text-sm">
-                            <Calendar className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
+                            <Calendar className="w-3.5 h-3.5 text-[#0891b2] flex-shrink-0" />
                             <div className="min-w-0">
-                              <div className="text-white/40 text-xs">Start Date</div>
-                              <div className="text-white/70 text-xs font-mono truncate">
+                              <div className="text-[#527d85] text-xs">Start Date</div>
+                              <div className="text-[#0c282d] text-xs font-mono font-medium truncate">
                                 {entry.departure.date ? new Date(entry.departure.date).toLocaleDateString('en-US', {
                                   month: 'short',
                                   year: 'numeric'
@@ -606,10 +613,10 @@ export function FlightLogbook() {
                           </div>
 
                           <div className="flex items-center gap-2 text-sm">
-                            <Calendar className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
+                            <Calendar className="w-3.5 h-3.5 text-[#0891b2] flex-shrink-0" />
                             <div className="min-w-0">
-                              <div className="text-white/40 text-xs">End Date</div>
-                              <div className="text-white/70 text-xs font-mono truncate">
+                              <div className="text-[#527d85] text-xs">End Date</div>
+                              <div className="text-[#0c282d] text-xs font-mono font-medium truncate">
                                 {entry.arrival.date ? new Date(entry.arrival.date).toLocaleDateString('en-US', {
                                   month: 'short',
                                   year: 'numeric'
@@ -619,18 +626,18 @@ export function FlightLogbook() {
                           </div>
 
                           <div className="flex items-center gap-2 text-sm">
-                            <Award className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
+                            <Award className="w-3.5 h-3.5 text-[#0891b2] flex-shrink-0" />
                             <div className="min-w-0">
-                              <div className="text-white/40 text-xs">Status</div>
-                              <div className="text-white/70 text-xs font-mono truncate">{entry.arrival.status}</div>
+                              <div className="text-[#527d85] text-xs">Status</div>
+                              <div className="text-[#0c282d] text-xs font-mono font-medium truncate">{entry.arrival.status}</div>
                             </div>
                           </div>
 
                           <div className="flex items-center gap-2 text-sm">
-                            <MapPin className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
+                            <MapPin className="w-3.5 h-3.5 text-[#0891b2] flex-shrink-0" />
                             <div className="min-w-0">
-                              <div className="text-white/40 text-xs">Location</div>
-                              <div className="text-white/70 text-xs font-mono truncate">{entry.location}</div>
+                              <div className="text-[#527d85] text-xs">Location</div>
+                              <div className="text-[#0c282d] text-xs font-mono font-medium truncate">{entry.location}</div>
                             </div>
                           </div>
                         </div>
@@ -642,18 +649,13 @@ export function FlightLogbook() {
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
                               transition={{ delay: idx * 0.05 }}
-                              className="px-3 py-1.5 rounded-lg border text-xs font-mono"
-                              style={{
-                                backgroundColor: `${colors.main}15`,
-                                borderColor: `${colors.main}30`,
-                                color: colors.main
-                              }}
+                              className="px-3 py-1.5 rounded-lg border text-xs font-mono bg-[#E2F4F3] border-[#B9E7E6] text-[#0c282d] font-medium"
                             >
                               {member}
                             </motion.span>
                           ))}
                           {entry.crew.length > 6 && (
-                            <span className="text-white/40 text-xs self-center">+{entry.crew.length - 6} more</span>
+                            <span className="text-[#527d85] text-xs self-center">+{entry.crew.length - 6} more</span>
                           )}
                         </div>
                       </div>
@@ -664,24 +666,24 @@ export function FlightLogbook() {
 
                 {/* Show More/Less Button for List View */}
                 {filteredEntries.length > 3 && viewMode === 'list' && (
-                  <div className="flex justify-center pt-4">
+                  <div className="flex justify-center pt-6 pb-2 w-full">
                     {listItemsToShow < filteredEntries.length ? (
                       <Button
                         onClick={() => setListItemsToShow(prev => Math.min(prev + 3, filteredEntries.length))}
                         variant="outline"
-                        className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
+                        className="bg-white hover:bg-[#E2F4F3] border border-[#B9E7E6] hover:border-[#6FD4E1] text-[#0c282d] font-mono uppercase tracking-wider text-xs md:text-sm px-6 py-2.5 rounded-xl shadow-sm hover:shadow transition-all group flex items-center gap-2 cursor-pointer"
                       >
-                        <ChevronRight className="w-4 h-4 mr-2" />
-                        Show More ({filteredEntries.length - listItemsToShow} remaining)
+                        <ChevronDown className="w-4 h-4 text-[#0891b2] transition-transform group-hover:translate-y-0.5" />
+                        <span>Show More ({filteredEntries.length - listItemsToShow} remaining)</span>
                       </Button>
                     ) : (
                       <Button
                         onClick={() => setListItemsToShow(3)}
                         variant="outline"
-                        className="border-orange-500/50 text-orange-400 hover:bg-orange-500/10"
+                        className="bg-white hover:bg-[#E2F4F3] border border-[#B9E7E6] hover:border-[#6FD4E1] text-[#0c282d] font-mono uppercase tracking-wider text-xs md:text-sm px-6 py-2.5 rounded-xl shadow-sm hover:shadow transition-all group flex items-center gap-2 cursor-pointer"
                       >
-                        <ChevronUp className="w-4 h-4 mr-2" />
-                        Show Less
+                        <ChevronUp className="w-4 h-4 text-[#0891b2] transition-transform group-hover:-translate-y-0.5" />
+                        <span>Show Less</span>
                       </Button>
                     )}
                   </div>
