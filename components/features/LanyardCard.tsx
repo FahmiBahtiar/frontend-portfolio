@@ -483,12 +483,12 @@ export function LanyardCard() {
                           <span>Click to flip</span>
                         </span>
                       </div>
-                      <div className="flex-1 border-b-2 border-[#B9E7E6] flex items-end pb-1 min-h-[2.8rem] sm:min-h-[3.5rem] md:min-h-[4rem] lg:min-h-[5rem]">
+                      <div className="flex-1 border-b-2 border-[#B9E7E6] flex items-end pb-0.5 sm:pb-1 min-h-[3.25rem] sm:min-h-[3.75rem] md:min-h-[4rem] lg:min-h-[5rem]">
                         <p 
-                          className="text-[#0c282d] font-thin tracking-wide leading-none -rotate-3 origin-bottom transition-transform hover:rotate-0 whitespace-nowrap translate-y-[1px]" 
+                          className="text-[#0c282d] font-bold tracking-wide leading-none -rotate-2 origin-bottom transition-transform hover:rotate-0 whitespace-nowrap translate-y-[2px]" 
                           style={{ 
                             fontFamily: 'var(--font-dancing-script), cursive', 
-                            fontSize: 'clamp(1.5rem, 4vw, 4rem)' 
+                            fontSize: 'clamp(2.35rem, 6.5vw, 4.25rem)' 
                           }}
                         >
                           {(lanyardData.givenNames || 'fahmi bahtiar').toLowerCase()}
