@@ -8,23 +8,33 @@ import { useSession, signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Logo } from '@/components/ui/logo';
 import {
-  LayoutDashboard,
+  Home,
   User,
   GraduationCap,
   Briefcase,
-  Mail,
+  Radio,
   MessageSquare,
   Settings,
   LogOut,
-  ChevronRight,
   ChevronDown,
   Code2,
-  Mountain,
+  Image as ImageIcon,
   Users,
   Shield,
   PanelLeftClose,
   PanelLeft,
   ExternalLink,
+  ChevronRight,
+  FileText,
+  Share2,
+  CreditCard,
+  Flame,
+  Sparkles,
+  Layers,
+  BookOpen,
+  Trophy,
+  Plane,
+  FolderGit2,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -35,6 +45,7 @@ interface AdminLayoutProps {
 interface SubItem {
   label: string;
   href: string;
+  icon: LucideIcon;
 }
 
 interface NavItem {
@@ -43,6 +54,11 @@ interface NavItem {
   icon: LucideIcon;
   badge?: number;
   subItems?: SubItem[];
+}
+
+interface NavSection {
+  title: string;
+  items: NavItem[];
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
@@ -69,7 +85,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const getInitialExpandedItems = () => {
     const expanded: string[] = [];
     if (pathname?.startsWith('/admin/hero')) expanded.push('Hero Section');
-    if (pathname?.startsWith('/admin/about')) expanded.push('About/Portfolio');
+    if (pathname?.startsWith('/admin/about')) expanded.push('About & Portfolio');
     if (pathname?.startsWith('/admin/education')) expanded.push('Education');
     if (pathname?.startsWith('/admin/projects')) expanded.push('Experience & Projects');
     return expanded;
@@ -108,74 +124,94 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     };
   }, []);
 
-  const navigation: NavItem[] = [
+  const navSections: NavSection[] = [
     {
-      label: 'Dashboard',
-      href: '/admin',
-      icon: LayoutDashboard,
-    },
-    {
-      label: 'Hero Section',
-      href: '/admin/hero',
-      icon: User,
-      subItems: [
-        { label: 'Profile', href: '/admin/hero/profile' },
-        { label: 'Social Links', href: '/admin/hero/social' },
+      title: 'MENU UTAMA',
+      items: [
+        {
+          label: 'Dashboard',
+          href: '/admin',
+          icon: Home,
+        },
       ],
     },
     {
-      label: 'About/Portfolio',
-      href: '/admin/about',
-      icon: Code2,
-      subItems: [
-        { label: 'Lanyard Card', href: '/admin/about/lanyard' },
-        { label: 'Passions', href: '/admin/about/passions' },
-        { label: 'Highlights', href: '/admin/about/highlights' },
-        { label: 'Skills', href: '/admin/about/skills' },
+      title: 'MASTER & KONTEN',
+      items: [
+        {
+          label: 'Hero Section',
+          href: '/admin/hero',
+          icon: User,
+          subItems: [
+            { label: 'Profile Hero', href: '/admin/hero/profile', icon: FileText },
+            { label: 'Social Links', href: '/admin/hero/social', icon: Share2 },
+          ],
+        },
+        {
+          label: 'About & Portfolio',
+          href: '/admin/about',
+          icon: Code2,
+          subItems: [
+            { label: 'Lanyard Card', href: '/admin/about/lanyard', icon: CreditCard },
+            { label: 'Passions', href: '/admin/about/passions', icon: Flame },
+            { label: 'Highlights', href: '/admin/about/highlights', icon: Sparkles },
+            { label: 'Skills Hangar', href: '/admin/about/skills', icon: Layers },
+          ],
+        },
+        {
+          label: 'Education',
+          href: '/admin/education',
+          icon: GraduationCap,
+          subItems: [
+            { label: 'Education Records', href: '/admin/education/records', icon: BookOpen },
+            { label: 'Achievements', href: '/admin/education/achievements', icon: Trophy },
+          ],
+        },
+        {
+          label: 'Experience & Projects',
+          href: '/admin/projects',
+          icon: Briefcase,
+          subItems: [
+            { label: 'Flight Logbook', href: '/admin/projects/logbook', icon: Plane },
+            { label: 'Aircraft Hangar', href: '/admin/projects/hangar', icon: FolderGit2 },
+          ],
+        },
+        {
+          label: 'Mission Gallery',
+          href: '/admin/gallery',
+          icon: ImageIcon,
+        },
       ],
     },
     {
-      label: 'Education',
-      href: '/admin/education',
-      icon: GraduationCap,
-      subItems: [
-        { label: 'Education Records', href: '/admin/education/records' },
-        { label: 'Achievements', href: '/admin/education/achievements' },
+      title: 'KOMUNIKASI & PESAN',
+      items: [
+        {
+          label: 'Contact Channels',
+          href: '/admin/contact',
+          icon: Radio,
+        },
+        {
+          label: 'Visitor Messages',
+          href: '/admin/communication',
+          icon: MessageSquare,
+        },
       ],
     },
     {
-      label: 'Experience & Projects',
-      href: '/admin/projects',
-      icon: Briefcase,
-      subItems: [
-        { label: 'Flight Logbook', href: '/admin/projects/logbook' },
-        { label: 'Aircraft Hangar', href: '/admin/projects/hangar' },
+      title: 'SISTEM & PENGATURAN',
+      items: [
+        {
+          label: 'User Management',
+          href: '/admin/users',
+          icon: Users,
+        },
+        {
+          label: 'System Settings',
+          href: '/admin/settings',
+          icon: Settings,
+        },
       ],
-    },
-    {
-      label: 'Gallery',
-      href: '/admin/gallery',
-      icon: Mountain,
-    },
-    {
-      label: 'Contact',
-      href: '/admin/contact',
-      icon: Mail,
-    },
-    {
-      label: 'Communication',
-      href: '/admin/communication',
-      icon: MessageSquare,
-    },
-    {
-      label: 'Users',
-      href: '/admin/users',
-      icon: Users,
-    },
-    {
-      label: 'Settings',
-      href: '/admin/settings',
-      icon: Settings,
     },
   ];
 
@@ -236,7 +272,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   // Determine sidebar width based on desktop and open state
-  const sidebarWidth = isDesktop ? (isSidebarOpen ? 256 : 72) : 256;
+  const sidebarWidth = isDesktop ? (isSidebarOpen ? 260 : 72) : 260;
 
   return (
     <div className="min-h-screen h-screen bg-[#E2F4F3] text-[#0c282d] overflow-hidden overscroll-behavior-contain">
@@ -244,11 +280,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <motion.aside
         initial={false}
         animate={{
-          x: !isDesktop && !isSidebarOpen ? -256 : 0,
+          x: !isDesktop && !isSidebarOpen ? -260 : 0,
           width: sidebarWidth,
         }}
         transition={{ type: 'spring', damping: 26, stiffness: 220 }}
-        className="fixed left-0 top-0 h-full bg-white/95 backdrop-blur-xl border-r border-[#B9E7E6] shadow-sm flex flex-col flex-shrink-0 z-30 transition-[width] duration-200"
+        className="fixed left-0 top-0 h-full bg-white border-r border-[#B9E7E6] shadow-sm flex flex-col flex-shrink-0 z-30 transition-[width] duration-200"
         style={{ width: `${sidebarWidth}px` }}
         onMouseEnter={() => setHoveredArea('sidebar')}
         onMouseLeave={() => setHoveredArea(null)}
@@ -290,170 +326,181 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Navigation - Scrollable */}
         <nav
-          className={`flex-1 py-4 space-y-1.5 overflow-x-hidden scrollbar-thin scrollbar-thumb-[#B9E7E6] scrollbar-track-transparent ${
+          className={`flex-1 py-3 space-y-4 overflow-x-hidden scrollbar-thin scrollbar-thumb-[#B9E7E6] scrollbar-track-transparent ${
             isSidebarOpen || !isDesktop ? 'px-3' : 'px-2'
           } ${
             hoveredArea === 'sidebar' ? 'overflow-y-auto' : 'overflow-y-hidden'
           }`}
         >
-          {navigation.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item);
-            const hasSubItems = Boolean(item.subItems && item.subItems.length > 0);
-            const isExpanded = expandedItems.includes(item.label);
-
-            // ==================== COLLAPSED MODE (ICON-ONLY) ====================
-            if (!isSidebarOpen && isDesktop) {
-              return (
-                <div
-                  key={item.label}
-                  className="relative flex justify-center py-0.5"
-                  onMouseEnter={(e) => handleItemMouseEnter(item, e)}
-                  onMouseLeave={handleItemMouseLeave}
-                >
-                  {hasSubItems ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        // Open sidebar and expand this item
-                        setIsSidebarOpen(true);
-                        if (!expandedItems.includes(item.label)) {
-                          toggleExpanded(item.label);
-                        }
-                      }}
-                      className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
-                        active
-                          ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
-                          : 'text-[#1e4a52] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
-                      }`}
-                      aria-label={item.label}
-                    >
-                      <Icon className="w-5 h-5" />
-                    </button>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
-                        active
-                          ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
-                          : 'text-[#1e4a52] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
-                      }`}
-                      aria-label={item.label}
-                    >
-                      <Icon className="w-5 h-5" />
-                    </Link>
-                  )}
+          {navSections.map((section, sIndex) => (
+            <div key={section.title} className="space-y-1">
+              {/* Category / Section Header (matches "MENU UTAMA", "MASTER & REFERENSI") */}
+              {isSidebarOpen || !isDesktop ? (
+                <div className="px-3 pt-2 pb-1 text-[11px] font-bold font-mono tracking-wider text-[#527d85] uppercase">
+                  {section.title}
                 </div>
-              );
-            }
+              ) : (
+                sIndex > 0 && (
+                  <div className="my-2 border-t border-[#B9E7E6]/60 w-8 mx-auto" />
+                )
+              )}
 
-            // ==================== EXPANDED MODE (FULL SIDEBAR) ====================
-            return (
-              <div key={item.label} className="space-y-1">
-                {hasSubItems ? (
-                  <button
-                    type="button"
-                    onClick={() => toggleExpanded(item.label)}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                      active
-                        ? 'bg-[#6FD4E1]/20 text-[#0891b2] font-bold'
-                        : 'text-[#1e4a52] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
+              {/* Section Items */}
+              <div className="space-y-1">
+                {section.items.map((item) => {
+                  const Icon = item.icon;
+                  const active = isActive(item);
+                  const hasSubItems = Boolean(item.subItems && item.subItems.length > 0);
+                  const isExpanded = expandedItems.includes(item.label);
+
+                  // ==================== COLLAPSED MODE (ICON-ONLY) ====================
+                  if (!isSidebarOpen && isDesktop) {
+                    return (
                       <div
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-                          active
-                            ? 'bg-[#6FD4E1] text-[#0c282d] shadow-sm'
-                            : 'bg-[#E2F4F3]/60 text-[#1e4a52]'
-                        }`}
+                        key={item.label}
+                        className="relative flex justify-center py-0.5"
+                        onMouseEnter={(e) => handleItemMouseEnter(item, e)}
+                        onMouseLeave={handleItemMouseLeave}
                       >
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <span className="font-semibold text-sm truncate">{item.label}</span>
-                    </div>
-                    <motion.div
-                      animate={{ rotate: isExpanded ? 90 : 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="text-[#527d85]"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </motion.div>
-                  </button>
-                ) : (
-                  <Link
-                    href={item.href}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                      active
-                        ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
-                        : 'text-[#1e4a52] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-                          active
-                            ? 'bg-white text-[#0c282d] shadow-sm'
-                            : 'bg-[#E2F4F3]/60 text-[#1e4a52]'
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <span className="font-semibold text-sm truncate">{item.label}</span>
-                    </div>
-                    {item.badge && (
-                      <span className="bg-[#6FD4E1] text-[#0c282d] font-bold text-xs px-2 py-0.5 rounded-full">
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                )}
-
-                {/* Sub-items with vertical tree connector line */}
-                <AnimatePresence>
-                  {hasSubItems && isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="relative pl-6 ml-4 space-y-1 overflow-hidden"
-                    >
-                      {/* Vertical connector line */}
-                      <div className="absolute left-2.5 top-0 bottom-2.5 w-[1.5px] bg-[#B9E7E6]" />
-
-                      {item.subItems?.map((subItem) => {
-                        const subActive = pathname === subItem.href;
-                        return (
-                          <Link
-                            key={subItem.href}
-                            href={subItem.href}
-                            className={`relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                              subActive
+                        {hasSubItems ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsSidebarOpen(true);
+                              if (!expandedItems.includes(item.label)) {
+                                toggleExpanded(item.label);
+                              }
+                            }}
+                            className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
+                              active
                                 ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
-                                : 'text-[#527d85] hover:bg-[#E2F4F3]/80 hover:text-[#0c282d]'
+                                : 'text-[#1e4a52] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
                             }`}
+                            aria-label={item.label}
                           >
-                            {/* Branch tick */}
-                            <span
-                              className={`w-2.5 h-[1.5px] -ml-3.5 transition-colors ${
-                                subActive ? 'bg-[#0c282d]' : 'bg-[#B9E7E6]'
-                              }`}
-                            />
-                            <span className="truncate">{subItem.label}</span>
+                            <Icon className="w-5 h-5" />
+                          </button>
+                        ) : (
+                          <Link
+                            href={item.href}
+                            className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
+                              active
+                                ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                                : 'text-[#1e4a52] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
+                            }`}
+                            aria-label={item.label}
+                          >
+                            <Icon className="w-5 h-5" />
                           </Link>
-                        );
-                      })}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                        )}
+                      </div>
+                    );
+                  }
+
+                  // ==================== EXPANDED MODE (FULL SIDEBAR) ====================
+                  return (
+                    <div key={item.label} className="space-y-1">
+                      {hasSubItems ? (
+                        <button
+                          type="button"
+                          onClick={() => toggleExpanded(item.label)}
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all ${
+                            isExpanded
+                              ? 'bg-[#E2F4F3]/80 border border-[#B9E7E6]/70 text-[#0c282d] font-bold shadow-xs'
+                              : active
+                              ? 'bg-[#E2F4F3]/40 text-[#0891b2] font-semibold hover:bg-[#E2F4F3]'
+                              : 'text-[#1e4a52] hover:bg-[#E2F4F3]/60 hover:text-[#0c282d]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <Icon className={`w-4 h-4 flex-shrink-0 ${isExpanded ? 'text-[#0891b2]' : 'text-[#527d85]'}`} />
+                            <span className="font-semibold text-sm truncate">{item.label}</span>
+                          </div>
+                          <motion.div
+                            animate={{ rotate: isExpanded ? 0 : -90 }}
+                            transition={{ duration: 0.18 }}
+                            className="text-[#527d85]"
+                          >
+                            <ChevronDown className="w-4 h-4" />
+                          </motion.div>
+                        </button>
+                      ) : (
+                        <Link
+                          href={item.href}
+                          className={`flex items-center justify-between px-3 py-2 rounded-xl transition-all ${
+                            active
+                              ? 'bg-[#0c282d] text-white font-bold shadow-md shadow-[#0c282d]/10'
+                              : 'text-[#1e4a52] hover:bg-[#E2F4F3]/70 hover:text-[#0c282d]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-white' : 'text-[#527d85]'}`} />
+                            <span className="font-semibold text-sm truncate">{item.label}</span>
+                          </div>
+                          {item.badge && (
+                            <span className="bg-[#6FD4E1] text-[#0c282d] font-bold text-xs px-2 py-0.5 rounded-full">
+                              {item.badge}
+                            </span>
+                          )}
+                        </Link>
+                      )}
+
+                      {/* Sub-items with Curved L-shape Tree Connector Lines */}
+                      <AnimatePresence>
+                        {hasSubItems && isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="relative pl-6 ml-3 mt-1 space-y-1 overflow-hidden"
+                          >
+                            {/* Continuous vertical trunk line ending at center of last item */}
+                            <div
+                              className="absolute left-[5px] top-0 w-[1.5px] bg-[#B9E7E6]"
+                              style={{ bottom: '18px' }}
+                            />
+
+                            {item.subItems?.map((subItem) => {
+                              const subActive = pathname === subItem.href;
+                              const SubIcon = subItem.icon;
+
+                              return (
+                                <div key={subItem.href} className="relative flex items-center min-h-[36px]">
+                                  {/* Curved L branch connector: (╰─) */}
+                                  <span className="absolute -left-[19px] top-1/2 -translate-y-full w-3.5 h-3.5 border-b-[1.5px] border-l-[1.5px] border-[#B9E7E6] rounded-bl-lg pointer-events-none" />
+
+                                  <Link
+                                    href={subItem.href}
+                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs transition-all ${
+                                      subActive
+                                        ? 'bg-[#0c282d] text-white font-bold shadow-md shadow-[#0c282d]/10'
+                                        : 'text-[#527d85] hover:bg-[#E2F4F3]/80 hover:text-[#0c282d] font-medium'
+                                    }`}
+                                  >
+                                    <SubIcon
+                                      className={`w-3.5 h-3.5 flex-shrink-0 ${
+                                        subActive ? 'text-white' : 'text-[#527d85]'
+                                      }`}
+                                    />
+                                    <span className="truncate">{subItem.label}</span>
+                                  </Link>
+                                </div>
+                              );
+                            })}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </nav>
 
         {/* User Section - Bottom */}
-        <div className="flex-shrink-0 p-3 border-t border-[#B9E7E6] bg-[#E2F4F3]/40">
+        <div className="flex-shrink-0 p-3 border-t border-[#B9E7E6] bg-[#E2F4F3]/30">
           {status === 'loading' ? (
             <div className="animate-pulse flex items-center justify-center p-2">
               <div className="w-9 h-9 rounded-full bg-[#B9E7E6]" />
@@ -462,7 +509,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             isSidebarOpen || !isDesktop ? (
               // Expanded User Profile
               <>
-                <div className="flex items-center gap-3 mb-2.5 px-1">
+                <div className="flex items-center gap-2.5 mb-2.5 px-1">
                   {session.user.image ? (
                     <Image
                       src={session.user.image}
@@ -548,7 +595,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </div>
       </motion.aside>
 
-      {/* Floating Popout Submenu & Tooltips for Collapsed Mode (Matches User's Mockup) */}
+      {/* Floating Popout Submenu & Tooltips for Collapsed Mode */}
       <AnimatePresence>
         {!isSidebarOpen && isDesktop && popoutItem && (
           <motion.div
@@ -567,8 +614,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             className="pointer-events-auto"
           >
             {popoutItem.item.subItems && popoutItem.item.subItems.length > 0 ? (
-              // Floating Submenu Card (Matching "Income" Popout in Right Panel of Mockup)
-              <div className="w-56 rounded-2xl bg-white/95 backdrop-blur-xl border border-[#B9E7E6] shadow-2xl p-2.5 text-[#0c282d]">
+              // Floating Submenu Card
+              <div className="w-60 rounded-2xl bg-white/95 backdrop-blur-xl border border-[#B9E7E6] shadow-2xl p-2.5 text-[#0c282d]">
                 {/* Header */}
                 <div className="flex items-center gap-2 px-3 py-2 border-b border-[#B9E7E6]/60 mb-1.5">
                   <popoutItem.item.icon className="w-4 h-4 text-[#0891b2]" />
@@ -581,6 +628,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 <div className="space-y-1">
                   {popoutItem.item.subItems.map((sub) => {
                     const subActive = pathname === sub.href;
+                    const SubIcon = sub.icon;
                     return (
                       <Link
                         key={sub.href}
@@ -588,16 +636,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         onClick={() => setPopoutItem(null)}
                         className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                           subActive
-                            ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                            ? 'bg-[#0c282d] text-white font-bold shadow-md shadow-[#0c282d]/10'
                             : 'text-[#1e4a52] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
                         }`}
                       >
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            subActive ? 'bg-[#0c282d]' : 'bg-[#6FD4E1]'
+                        <SubIcon
+                          className={`w-3.5 h-3.5 flex-shrink-0 ${
+                            subActive ? 'text-white' : 'text-[#527d85]'
                           }`}
                         />
-                        <span className="truncate">{subItemLabel(sub.label)}</span>
+                        <span className="truncate">{sub.label}</span>
                       </Link>
                     );
                   })}
@@ -705,8 +753,4 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       </div>
     </div>
   );
-}
-
-function subItemLabel(label: string) {
-  return label;
 }
