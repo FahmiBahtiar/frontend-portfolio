@@ -81,12 +81,26 @@ export default function SettingsPage() {
     const now = Date.now();
     const start = startAtIso ? new Date(startAtIso).getTime() : null;
     const end = endAtIso ? new Date(endAtIso).getTime() : null;
-    const isActive = maintenanceForm.enabled && (!start || now >= start) && (!end || now <= end);
-    const statusLabel = isActive ? 'Active now' : maintenanceForm.enabled ? 'Scheduled' : 'Disabled';
+    const isPastEnd = end !== null ? now > end : false;
+    const isBeforeStart = start !== null ? now < start : false;
+    const isActive = maintenanceForm.enabled && !isBeforeStart && !isPastEnd;
+
+    let statusLabel = 'Disabled';
+    if (maintenanceForm.enabled) {
+      if (isActive) {
+        statusLabel = 'Active now (Visitors see maintenance screen)';
+      } else if (isPastEnd) {
+        statusLabel = 'Expired (End time has passed — Clear schedule to activate)';
+      } else if (isBeforeStart) {
+        statusLabel = 'Scheduled (Starts ' + new Date(startAtIso!).toLocaleString() + ')';
+      }
+    }
 
     return {
       isActive,
       statusLabel,
+      isPastEnd,
+      isBeforeStart,
       startAtIso,
       endAtIso,
     };
@@ -119,13 +133,14 @@ export default function SettingsPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update maintenance settings');
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.message || 'Failed to update maintenance settings');
       }
 
       await mutateMaintenance();
-      setMaintenanceMessage('Maintenance settings updated.');
+      setMaintenanceMessage('Maintenance settings updated successfully.');
     } catch (error) {
-      setMaintenanceError('Failed to update maintenance settings.');
+      setMaintenanceError(error instanceof Error ? error.message : 'Failed to update maintenance settings.');
     } finally {
       setMaintenanceSaving(false);
     }
@@ -397,7 +412,15 @@ export default function SettingsPage() {
                         <Switch
                           checked={maintenanceForm.enabled}
                           onCheckedChange={(checked) => {
-                            setMaintenanceForm((prev) => ({ ...prev, enabled: checked }));
+                            setMaintenanceForm((prev) => {
+                              const endIso = toIsoString(prev.endAt);
+                              const isPast = endIso ? Date.now() > new Date(endIso).getTime() : false;
+                              return {
+                                ...prev,
+                                enabled: checked,
+                                ...(checked && isPast ? { startAt: '', endAt: '' } : {}),
+                              };
+                            });
                             setMaintenanceMessage(null);
                             setMaintenanceError(null);
                           }}
@@ -418,13 +441,13 @@ export default function SettingsPage() {
 
                         <div className="space-y-2">
                           <Label>Status</Label>
-                          <div className="flex items-center gap-2 rounded-md border border-[#B9E7E6] bg-white border border-[#B9E7E6] shadow-sm px-3 py-2 text-sm">
+                          <div className={`flex items-center gap-2 rounded-md border shadow-sm px-3 py-2 text-sm ${maintenancePreview.isActive ? 'bg-emerald-50 border-emerald-300' : maintenancePreview.isPastEnd ? 'bg-amber-50 border-amber-300' : 'bg-white border-[#B9E7E6]'}`}>
                             {maintenancePreview.isActive ? (
-                              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                             ) : (
-                              <AlertTriangle className="h-4 w-4 text-amber-400" />
+                              <AlertTriangle className="h-4 w-4 text-amber-500" />
                             )}
-                            <span className="text-[#0c282d]">{maintenancePreview.statusLabel}</span>
+                            <span className="font-semibold text-[#0c282d]">{maintenancePreview.statusLabel}</span>
                           </div>
                         </div>
                       </div>
@@ -494,7 +517,7 @@ export default function SettingsPage() {
                         <Button
                           onClick={handleMaintenanceSave}
                           disabled={maintenanceSaving}
-                          className="bg-cyan-600 hover:bg-cyan-700 text-[#0c282d]"
+                          className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-sm"
                         >
                           {maintenanceSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                           {maintenanceSaving ? 'Saving...' : 'Update Maintenance'}
@@ -502,12 +525,13 @@ export default function SettingsPage() {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => setMaintenanceForm({ ...maintenanceForm, startAt: '', endAt: '' })}
+                          onClick={() => setMaintenanceForm((prev) => ({ ...prev, startAt: '', endAt: '' }))}
+                          className="border-[#B9E7E6] text-[#0c282d] hover:bg-[#E2F4F3] font-semibold"
                         >
-                          Clear Schedule
+                          Clear Schedule (Activate Immediately)
                         </Button>
-                        {maintenanceMessage && <p className="text-sm text-emerald-400">{maintenanceMessage}</p>}
-                        {maintenanceError && <p className="text-sm text-red-400">{maintenanceError}</p>}
+                        {maintenanceMessage && <p className="text-sm text-emerald-600 font-semibold">{maintenanceMessage}</p>}
+                        {maintenanceError && <p className="text-sm text-red-500 font-semibold">{maintenanceError}</p>}
                       </div>
                     </>
                   )}
