@@ -239,9 +239,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return false;
   };
 
+  const isCollapsed = !isSidebarOpen && isDesktop;
+
   // Hover handlers for collapsed sidebar mode
   const handleItemMouseEnter = (item: NavItem, e: React.MouseEvent<HTMLElement>) => {
-    if (isSidebarOpen || !isDesktop) return;
+    if (!isCollapsed) return;
     if (popoutCloseTimeout.current) {
       clearTimeout(popoutCloseTimeout.current);
     }
@@ -253,7 +255,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   const handleItemMouseLeave = () => {
-    if (isSidebarOpen || !isDesktop) return;
+    if (!isCollapsed) return;
     popoutCloseTimeout.current = setTimeout(() => {
       setPopoutItem(null);
     }, 150);
@@ -276,73 +278,62 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="min-h-screen h-screen bg-[#E2F4F3] text-[#0c282d] overflow-hidden overscroll-behavior-contain">
-      {/* Sidebar */}
-      <motion.aside
-        initial={false}
-        animate={{
-          x: !isDesktop && !isSidebarOpen ? -260 : 0,
-          width: sidebarWidth,
+      {/* Sidebar - Smooth synchronized transition without spring conflict */}
+      <aside
+        className="fixed left-0 top-0 h-full bg-white border-r border-[#B9E7E6] shadow-sm flex flex-col flex-shrink-0 z-30 transition-[width,transform] duration-250 ease-in-out"
+        style={{
+          width: `${sidebarWidth}px`,
+          transform: !isDesktop && !isSidebarOpen ? 'translateX(-100%)' : 'translateX(0)',
         }}
-        transition={{ type: 'spring', damping: 26, stiffness: 220 }}
-        className="fixed left-0 top-0 h-full bg-white border-r border-[#B9E7E6] shadow-sm flex flex-col flex-shrink-0 z-30 transition-[width] duration-200"
-        style={{ width: `${sidebarWidth}px` }}
         onMouseEnter={() => setHoveredArea('sidebar')}
         onMouseLeave={() => setHoveredArea(null)}
       >
-        {/* Logo & Header Section */}
-        <div className="h-16 px-4 border-b border-[#B9E7E6] flex items-center justify-between flex-shrink-0 bg-white">
+        {/* Logo & Header Section - Single clean logo area (NO duplicate toggle button!) */}
+        <div className="h-16 px-4 border-b border-[#B9E7E6] flex items-center flex-shrink-0 bg-white">
           <Link
             href="/admin"
-            className={`flex items-center gap-3 overflow-hidden ${
-              !isSidebarOpen && isDesktop ? 'justify-center w-full' : ''
-            }`}
+            className="flex items-center gap-3 w-full overflow-hidden"
           >
-            <Logo size={36} />
-            {(isSidebarOpen || !isDesktop) && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                className="overflow-hidden min-w-0"
-              >
-                <h1 className="text-[#0c282d] font-bold text-base leading-tight truncate">Admin Panel</h1>
-                <p className="text-[#527d85] text-xs font-semibold truncate">Portfolio CMS</p>
-              </motion.div>
-            )}
-          </Link>
-
-          {/* Quick toggle button on desktop inside expanded sidebar */}
-          {isSidebarOpen && isDesktop && (
-            <button
-              onClick={toggleSidebar}
-              className="p-1.5 rounded-lg text-[#527d85] hover:text-[#0c282d] hover:bg-[#E2F4F3] transition-colors"
-              title="Collapse sidebar"
-              aria-label="Collapse sidebar"
+            <div className="w-9 h-9 flex-shrink-0 flex items-center justify-center">
+              <Logo size={34} />
+            </div>
+            <div
+              className={`min-w-0 transition-all duration-200 overflow-hidden ${
+                isCollapsed ? 'opacity-0 max-w-0 pointer-events-none' : 'opacity-100 max-w-[180px]'
+              }`}
             >
-              <PanelLeftClose className="w-4 h-4" />
-            </button>
-          )}
+              <h1 className="text-[#0c282d] font-bold text-base leading-tight truncate whitespace-nowrap">
+                Admin Panel
+              </h1>
+              <p className="text-[#527d85] text-xs font-semibold truncate whitespace-nowrap">
+                Portfolio CMS
+              </p>
+            </div>
+          </Link>
         </div>
 
         {/* Navigation - Scrollable */}
         <nav
-          className={`flex-1 py-3 space-y-4 overflow-x-hidden scrollbar-thin scrollbar-thumb-[#B9E7E6] scrollbar-track-transparent ${
-            isSidebarOpen || !isDesktop ? 'px-3' : 'px-2'
+          className={`flex-1 py-3 space-y-3 overflow-x-hidden scrollbar-thin scrollbar-thumb-[#B9E7E6] scrollbar-track-transparent ${
+            isCollapsed ? 'px-2' : 'px-3'
           } ${
             hoveredArea === 'sidebar' ? 'overflow-y-auto' : 'overflow-y-hidden'
           }`}
         >
           {navSections.map((section, sIndex) => (
             <div key={section.title} className="space-y-1">
-              {/* Category / Section Header (matches "MENU UTAMA", "MASTER & REFERENSI") */}
-              {isSidebarOpen || !isDesktop ? (
-                <div className="px-3 pt-2 pb-1 text-[11px] font-bold font-mono tracking-wider text-[#527d85] uppercase">
-                  {section.title}
-                </div>
-              ) : (
-                sIndex > 0 && (
-                  <div className="my-2 border-t border-[#B9E7E6]/60 w-8 mx-auto" />
-                )
+              {/* Category / Section Header */}
+              <div
+                className={`transition-all duration-200 overflow-hidden whitespace-nowrap ${
+                  isCollapsed
+                    ? 'opacity-0 h-0 my-0 py-0'
+                    : 'opacity-100 px-3 pt-2 pb-1 text-[11px] font-bold font-mono tracking-wider text-[#527d85] uppercase'
+                }`}
+              >
+                {section.title}
+              </div>
+              {isCollapsed && sIndex > 0 && (
+                <div className="my-2 border-t border-[#B9E7E6]/60 w-8 mx-auto" />
               )}
 
               {/* Section Items */}
@@ -353,91 +344,111 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   const hasSubItems = Boolean(item.subItems && item.subItems.length > 0);
                   const isExpanded = expandedItems.includes(item.label);
 
-                  // ==================== COLLAPSED MODE (ICON-ONLY) ====================
-                  if (!isSidebarOpen && isDesktop) {
-                    return (
-                      <div
-                        key={item.label}
-                        className="relative flex justify-center py-0.5"
-                        onMouseEnter={(e) => handleItemMouseEnter(item, e)}
-                        onMouseLeave={handleItemMouseLeave}
-                      >
-                        {hasSubItems ? (
-                          <button
-                            type="button"
-                            onClick={() => {
+                  return (
+                    <div
+                      key={item.label}
+                      className="relative"
+                      onMouseEnter={(e) => handleItemMouseEnter(item, e)}
+                      onMouseLeave={handleItemMouseLeave}
+                    >
+                      {hasSubItems ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (isCollapsed) {
                               setIsSidebarOpen(true);
                               if (!expandedItems.includes(item.label)) {
                                 toggleExpanded(item.label);
                               }
-                            }}
-                            className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
-                              active
-                                ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
-                                : 'text-[#1e4a52] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
-                            }`}
-                            aria-label={item.label}
-                          >
-                            <Icon className="w-5 h-5" />
-                          </button>
-                        ) : (
-                          <Link
-                            href={item.href}
-                            className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
-                              active
-                                ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
-                                : 'text-[#1e4a52] hover:bg-[#E2F4F3] hover:text-[#0c282d]'
-                            }`}
-                            aria-label={item.label}
-                          >
-                            <Icon className="w-5 h-5" />
-                          </Link>
-                        )}
-                      </div>
-                    );
-                  }
-
-                  // ==================== EXPANDED MODE (FULL SIDEBAR) ====================
-                  return (
-                    <div key={item.label} className="space-y-1">
-                      {hasSubItems ? (
-                        <button
-                          type="button"
-                          onClick={() => toggleExpanded(item.label)}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all ${
-                            isExpanded
+                            } else {
+                              toggleExpanded(item.label);
+                            }
+                          }}
+                          className={`w-full flex items-center rounded-xl transition-all ${
+                            isCollapsed
+                              ? 'justify-center p-2.5 h-11'
+                              : 'justify-between px-3 py-2 h-10'
+                          } ${
+                            !isCollapsed && isExpanded
                               ? 'bg-[#E2F4F3]/80 border border-[#B9E7E6]/70 text-[#0c282d] font-bold shadow-xs'
                               : active
-                              ? 'bg-[#E2F4F3]/40 text-[#0891b2] font-semibold hover:bg-[#E2F4F3]'
+                              ? isCollapsed
+                                ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                                : 'bg-[#E2F4F3]/40 text-[#0891b2] font-semibold hover:bg-[#E2F4F3]'
                               : 'text-[#1e4a52] hover:bg-[#E2F4F3]/60 hover:text-[#0c282d]'
                           }`}
+                          aria-label={item.label}
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <Icon className={`w-4 h-4 flex-shrink-0 ${isExpanded ? 'text-[#0891b2]' : 'text-[#527d85]'}`} />
-                            <span className="font-semibold text-sm truncate">{item.label}</span>
+                            <Icon
+                              className={`w-4 h-4 flex-shrink-0 transition-colors ${
+                                isCollapsed && active
+                                  ? 'text-[#0c282d]'
+                                  : isExpanded
+                                  ? 'text-[#0891b2]'
+                                  : 'text-[#527d85]'
+                              }`}
+                            />
+                            <span
+                              className={`font-semibold text-sm truncate whitespace-nowrap transition-all duration-200 ${
+                                isCollapsed
+                                  ? 'opacity-0 max-w-0 overflow-hidden'
+                                  : 'opacity-100 max-w-[150px]'
+                              }`}
+                            >
+                              {item.label}
+                            </span>
                           </div>
-                          <motion.div
-                            animate={{ rotate: isExpanded ? 0 : -90 }}
-                            transition={{ duration: 0.18 }}
-                            className="text-[#527d85]"
+
+                          <div
+                            className={`text-[#527d85] transition-all duration-200 flex-shrink-0 ${
+                              isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'
+                            }`}
                           >
-                            <ChevronDown className="w-4 h-4" />
-                          </motion.div>
+                            <ChevronDown
+                              className={`w-4 h-4 transition-transform duration-200 ${
+                                isExpanded ? 'rotate-0' : '-rotate-90'
+                              }`}
+                            />
+                          </div>
                         </button>
                       ) : (
                         <Link
                           href={item.href}
-                          className={`flex items-center justify-between px-3 py-2 rounded-xl transition-all ${
+                          className={`w-full flex items-center rounded-xl transition-all ${
+                            isCollapsed
+                              ? 'justify-center p-2.5 h-11'
+                              : 'justify-between px-3 py-2 h-10'
+                          } ${
                             active
-                              ? 'bg-[#0c282d] text-white font-bold shadow-md shadow-[#0c282d]/10'
+                              ? isCollapsed
+                                ? 'bg-[#6FD4E1] text-[#0c282d] font-bold shadow-sm'
+                                : 'bg-[#0c282d] text-white font-bold shadow-md shadow-[#0c282d]/10'
                               : 'text-[#1e4a52] hover:bg-[#E2F4F3]/70 hover:text-[#0c282d]'
                           }`}
+                          aria-label={item.label}
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-white' : 'text-[#527d85]'}`} />
-                            <span className="font-semibold text-sm truncate">{item.label}</span>
+                            <Icon
+                              className={`w-4 h-4 flex-shrink-0 transition-colors ${
+                                active
+                                  ? isCollapsed
+                                    ? 'text-[#0c282d]'
+                                    : 'text-white'
+                                  : 'text-[#527d85]'
+                              }`}
+                            />
+                            <span
+                              className={`font-semibold text-sm truncate whitespace-nowrap transition-all duration-200 ${
+                                isCollapsed
+                                  ? 'opacity-0 max-w-0 overflow-hidden'
+                                  : 'opacity-100 max-w-[150px]'
+                              }`}
+                            >
+                              {item.label}
+                            </span>
                           </div>
-                          {item.badge && (
+                          {item.badge && !isCollapsed && (
                             <span className="bg-[#6FD4E1] text-[#0c282d] font-bold text-xs px-2 py-0.5 rounded-full">
                               {item.badge}
                             </span>
@@ -447,7 +458,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
                       {/* Sub-items with Curved L-shape Tree Connector Lines */}
                       <AnimatePresence>
-                        {hasSubItems && isExpanded && (
+                        {!isCollapsed && hasSubItems && isExpanded && (
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
@@ -466,7 +477,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                               const SubIcon = subItem.icon;
 
                               return (
-                                <div key={subItem.href} className="relative flex items-center min-h-[36px]">
+                                <div
+                                  key={subItem.href}
+                                  className="relative flex items-center min-h-[36px]"
+                                >
                                   {/* Curved L branch connector: (╰─) */}
                                   <span className="absolute -left-[19px] top-1/2 -translate-y-full w-3.5 h-3.5 border-b-[1.5px] border-l-[1.5px] border-[#B9E7E6] rounded-bl-lg pointer-events-none" />
 
@@ -506,67 +520,25 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <div className="w-9 h-9 rounded-full bg-[#B9E7E6]" />
             </div>
           ) : session?.user ? (
-            isSidebarOpen || !isDesktop ? (
-              // Expanded User Profile
-              <>
-                <div className="flex items-center gap-2.5 mb-2.5 px-1">
-                  {session.user.image ? (
-                    <Image
-                      src={session.user.image}
-                      alt={session.user.name || 'User'}
-                      width={36}
-                      height={36}
-                      className="w-9 h-9 rounded-full object-cover border border-[#B9E7E6]"
-                    />
-                  ) : (
-                    <div className="w-9 h-9 rounded-full bg-[#6FD4E1] flex items-center justify-center text-[#0c282d] font-bold shadow-sm text-sm">
-                      {session.user.name
-                        ?.split(' ')
-                        .map((n) => n[0])
-                        .join('')
-                        .toUpperCase()
-                        .slice(0, 2) || 'U'}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[#0c282d] text-xs font-bold truncate">
-                      {session.user.name || 'User'}
-                    </p>
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-[#527d85] text-[11px] truncate capitalize font-medium">
-                        {session.user.role || 'user'}
-                      </p>
-                      {session.user.role === 'admin' && (
-                        <Shield className="w-3 h-3 text-[#0891b2]" />
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => signOut({ callbackUrl: '/admin/login' })}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-red-600 hover:bg-red-500/10 font-bold transition-all text-xs"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Logout</span>
-                </button>
-              </>
-            ) : (
-              // Collapsed User Profile (Icon only)
-              <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col gap-2">
+              <div
+                className={`flex items-center gap-2.5 px-1 ${
+                  isCollapsed ? 'justify-center' : ''
+                }`}
+              >
                 {session.user.image ? (
                   <Image
                     src={session.user.image}
                     alt={session.user.name || 'User'}
                     width={36}
                     height={36}
-                    className="w-9 h-9 rounded-full object-cover border border-[#B9E7E6]"
-                    title={`${session.user.name} (${session.user.role})`}
+                    className="w-9 h-9 rounded-full object-cover border border-[#B9E7E6] flex-shrink-0"
+                    title={isCollapsed ? `${session.user.name} (${session.user.role})` : undefined}
                   />
                 ) : (
                   <div
-                    className="w-9 h-9 rounded-full bg-[#6FD4E1] flex items-center justify-center text-[#0c282d] font-bold shadow-sm text-xs"
-                    title={`${session.user.name} (${session.user.role})`}
+                    className="w-9 h-9 rounded-full bg-[#6FD4E1] flex items-center justify-center text-[#0c282d] font-bold shadow-sm text-sm flex-shrink-0"
+                    title={isCollapsed ? `${session.user.name} (${session.user.role})` : undefined}
                   >
                     {session.user.name
                       ?.split(' ')
@@ -576,28 +548,55 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       .slice(0, 2) || 'U'}
                   </div>
                 )}
-                <button
-                  type="button"
-                  onClick={() => signOut({ callbackUrl: '/admin/login' })}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center text-red-600 hover:bg-red-500/10 transition-colors"
-                  title="Logout"
-                  aria-label="Logout"
+                <div
+                  className={`min-w-0 transition-all duration-200 overflow-hidden ${
+                    isCollapsed ? 'opacity-0 max-w-0' : 'opacity-100 max-w-[140px]'
+                  }`}
                 >
-                  <LogOut className="w-4 h-4" />
-                </button>
+                  <p className="text-[#0c282d] text-xs font-bold truncate whitespace-nowrap">
+                    {session.user.name || 'User'}
+                  </p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-[#527d85] text-[11px] truncate capitalize font-medium whitespace-nowrap">
+                      {session.user.role || 'user'}
+                    </p>
+                    {session.user.role === 'admin' && (
+                      <Shield className="w-3 h-3 text-[#0891b2] flex-shrink-0" />
+                    )}
+                  </div>
+                </div>
               </div>
-            )
+
+              <button
+                type="button"
+                onClick={() => signOut({ callbackUrl: '/admin/login' })}
+                className={`flex items-center justify-center rounded-xl text-red-600 hover:bg-red-500/10 font-bold transition-all ${
+                  isCollapsed ? 'w-9 h-9 mx-auto' : 'w-full gap-2 px-3 py-2 text-xs'
+                }`}
+                title={isCollapsed ? 'Logout' : undefined}
+                aria-label="Logout"
+              >
+                <LogOut className="w-4 h-4 flex-shrink-0" />
+                <span
+                  className={`transition-all duration-200 overflow-hidden whitespace-nowrap ${
+                    isCollapsed ? 'opacity-0 max-w-0' : 'opacity-100'
+                  }`}
+                >
+                  Logout
+                </span>
+              </button>
+            </div>
           ) : (
             <div className="text-center text-[#527d85] text-xs font-medium py-1">
-              {isSidebarOpen ? 'Not logged in' : '—'}
+              {isCollapsed ? '—' : 'Not logged in'}
             </div>
           )}
         </div>
-      </motion.aside>
+      </aside>
 
       {/* Floating Popout Submenu & Tooltips for Collapsed Mode */}
       <AnimatePresence>
-        {!isSidebarOpen && isDesktop && popoutItem && (
+        {isCollapsed && popoutItem && (
           <motion.div
             initial={{ opacity: 0, x: -8, scale: 0.96 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -606,7 +605,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             style={{
               position: 'fixed',
               left: '78px',
-              top: Math.max(12, Math.min(popoutItem.top - 6, (typeof window !== 'undefined' ? window.innerHeight : 800) - 280)),
+              top: Math.max(
+                12,
+                Math.min(
+                  popoutItem.top - 6,
+                  (typeof window !== 'undefined' ? window.innerHeight : 800) - 280
+                )
+              ),
               zIndex: 9999,
             }}
             onMouseEnter={handlePopoutMouseEnter}
@@ -676,21 +681,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         )}
       </AnimatePresence>
 
-      {/* Main Content Wrapper */}
+      {/* Main Content Wrapper - Exactly Synchronized with Sidebar Width Transition */}
       <div
-        className="flex-1 flex flex-col min-w-0 h-full overflow-hidden transition-[margin-left] duration-200 bg-[#E2F4F3]"
+        className="flex-1 flex flex-col min-w-0 h-full overflow-hidden transition-[margin-left] duration-250 ease-in-out bg-[#E2F4F3]"
         style={{
           marginLeft: isDesktop ? `${sidebarWidth}px` : '0',
         }}
       >
-        {/* Header */}
+        {/* Header with single Toggle Button next to Breadcrumbs */}
         <header className="flex-shrink-0 bg-white/95 backdrop-blur-xl border-b border-[#B9E7E6] shadow-sm">
           <div className="flex items-center justify-between px-6 py-3.5">
             <div className="flex items-center gap-3">
-              <motion.button
+              <button
                 onClick={toggleSidebar}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
                 className="p-2 rounded-xl text-[#0c282d] hover:bg-[#E2F4F3] border border-transparent hover:border-[#B9E7E6] transition-all"
                 aria-label={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
                 title={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
@@ -700,7 +703,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 ) : (
                   <PanelLeft className="w-5 h-5 text-[#0c282d]" />
                 )}
-              </motion.button>
+              </button>
 
               {/* Breadcrumbs */}
               <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-[#527d85]">
