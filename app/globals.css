@@ -124,3 +124,25 @@ html.lite-graphics .glass-panel {
   text-rendering: optimizeLegibility;
   transform: translateZ(0);
 }
+
+/* Custom Flight Jet Cursor System */
+@media (hover: hover) and (pointer: fine) {
+  html.flight-cursor-enabled,
+  html.flight-cursor-enabled body,
+  html.flight-cursor-enabled a,
+  html.flight-cursor-enabled button,
+  html.flight-cursor-enabled [role="button"],
+  html.flight-cursor-enabled label,
+  html.flight-cursor-enabled select,
+  html.flight-cursor-enabled summary,
+  html.flight-cursor-enabled input[type="button"],
+  html.flight-cursor-enabled input[type="submit"] {
+    cursor: none !important;
+  }
+
+  html.flight-cursor-enabled input:not([type="button"]):not([type="submit"]),
+  html.flight-cursor-enabled textarea,
+  html.flight-cursor-enabled [contenteditable="true"] {
+    cursor: text !important;
+  }
+}

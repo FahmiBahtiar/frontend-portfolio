@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans, Dancing_Script } from 'next/font/google';
 import "./globals.css";
 import { generateDynamicMetadata, generateStructuredData, serializeJsonLd } from '@/lib/metadata';
 import { WebVitals } from '@/components/features/WebVitals';
+import { FlightCursor } from '@/components/features/FlightCursor';
 import { MotionProvider } from '@/components/providers/MotionProvider';
 import { GraphicsModeProvider } from '@/components/providers/GraphicsModeProvider';
 
@@ -103,6 +104,7 @@ export default async function RootLayout({
         )}
       </head>
       <body suppressHydrationWarning className={`${plusJakartaSans.className} font-sans`} style={{ backgroundColor: '#E2F4F3' }}>
+        <FlightCursor />
         <WebVitals />
         <MotionProvider>
           <GraphicsModeProvider>{children}</GraphicsModeProvider>
