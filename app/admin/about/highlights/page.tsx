@@ -25,7 +25,6 @@ export default function HighlightsPage() {
     icon: '',
     label: '',
     value: '',
-    color: 'cyan' as 'cyan' | 'blue' | 'green' | 'purple' | 'orange' | 'yellow' | 'pink',
     order: 0,
   });
 
@@ -34,7 +33,6 @@ export default function HighlightsPage() {
       icon: highlight.icon,
       label: highlight.label,
       value: highlight.value,
-      color: highlight.color as typeof formData.color,
       order: highlight.order,
     });
     setEditingId(highlight.id);
@@ -62,7 +60,6 @@ export default function HighlightsPage() {
         icon: formData.icon,
         label: formData.label,
         value: formData.value,
-        color: formData.color,
         order: formData.order,
       };
 
@@ -86,7 +83,6 @@ export default function HighlightsPage() {
       icon: '',
       label: '',
       value: '',
-      color: 'cyan',
       order: 0,
     });
     setEditingId(null);
@@ -104,16 +100,6 @@ export default function HighlightsPage() {
       key: 'value',
       label: 'Value',
       render: (highlight: Highlight) => <span className="text-[#0c282d] font-bold">{highlight.value}</span>,
-    },
-    {
-      key: 'color',
-      label: 'Color',
-      render: (highlight: Highlight) => (
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded border border-[#B9E7E6]" style={{ backgroundColor: highlight.color }} />
-          <span className="text-muted-foreground text-xs font-mono">{highlight.color}</span>
-        </div>
-      ),
     },
   ];
 
@@ -152,28 +138,18 @@ export default function HighlightsPage() {
             </CardHeader>
             <CardContent className="pt-6">
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[#0c282d] font-bold">Icon (Emoji)</Label>
-                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] text-xl text-center" placeholder="🚀" />
+                    <Label className="text-[#0c282d] font-bold">Icon (Lucide/Emoji)</Label>
+                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d]" placeholder="GraduationCap, Briefcase..." />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[#0c282d] font-bold">Color (Hex)</Label>
-                    <div className="flex items-center gap-3">
-                      <input type="color" value={formData.color.startsWith('#') ? formData.color : '#06b6d4'} onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })} className="w-12 h-10 rounded-md bg-white border border-[#B9E7E6] cursor-pointer" required />
-                      <Input value={formData.color} onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })} className="flex-1 bg-white border border-[#B9E7E6] text-[#0c282d]" placeholder="#06b6d4 or cyan" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-[#0c282d] font-bold">Label</Label>
-                    <Input value={formData.label} onChange={(e) => setFormData({ ...formData, label: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d]" placeholder="Projects Completed" />
+                    <Input value={formData.label} onChange={(e) => setFormData({ ...formData, label: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d]" placeholder="Education" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[#0c282d] font-bold">Value</Label>
-                    <Input value={formData.value} onChange={(e) => setFormData({ ...formData, value: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d]" placeholder="50" />
+                    <Input value={formData.value} onChange={(e) => setFormData({ ...formData, value: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d]" placeholder="Bachelor's" />
                   </div>
                 </div>
 

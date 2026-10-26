@@ -106,8 +106,8 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
     { refreshInterval: 30000, errorRetryCount: 3, dedupingInterval: 10000 }
   );
 
-  // Subtitles
-  const subtitles = useMemo(() => heroProfile?.titles || ['Software Engineer', 'Data Scientist', 'Backend Developer'], [heroProfile]);
+  // Subtitles directly from API profile
+  const subtitles = useMemo(() => (heroProfile?.titles && heroProfile.titles.length > 0 ? heroProfile.titles : []), [heroProfile]);
 
   // ---- Orchestrated reveal state ----
   const [revealPhase, setRevealPhase] = useState(0);
@@ -153,9 +153,10 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
     return () => timers.forEach(clearTimeout);
   }, [heroProfile, loading, isReady]);
 
-  // Split name for balanced monumental typography
+  // Split name for balanced monumental typography directly from API
   const nameLines = useMemo(() => {
-    const fullName = heroProfile?.name || 'Fahmi Bahtiar Adi Nugroho';
+    const fullName = heroProfile?.name || '';
+    if (!fullName) return [];
     const words = fullName.split(' ');
     if (words.length <= 2) return [fullName];
     const mid = Math.ceil(words.length / 2);
@@ -262,7 +263,7 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-[#B9E7E6] shadow-sm text-xs font-semibold text-[#1e4a52] hover:border-[#6FD4E1] hover:text-[#0c282d] transition-all">
             <Sparkles className="w-3.5 h-3.5 text-[#0891b2]" />
-            <span>&ldquo;{(heroProfile?.badge || "I'm Strong Because I'm Ultraman").replace(/Ultramen/g, 'Ultraman')}&rdquo;</span>
+            <span>&ldquo;{heroProfile?.badge || ''}&rdquo;</span>
           </div>
         </motion.div>
 
@@ -312,8 +313,7 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
           transition={{ duration: 0.55, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
           className="text-[#1e4a52] text-sm sm:text-base max-w-2xl leading-relaxed mb-6 sm:mb-7 font-medium"
         >
-          {heroProfile?.description ||
-            'Backend developer, data scientist and cybersecurity enthusiast with a passion for aviation and mountaineering, building secure, data-driven systems and exploring new heights on and off the ground.'}
+          {heroProfile?.description || ''}
         </motion.p>
 
         {/* Passion / Tech Chips (ALPHA, BRAVO, CHARLIE) - Substantial & Spacious */}
@@ -324,13 +324,9 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
           className="mb-6 sm:mb-7 w-full"
         >
           <div className="flex flex-wrap items-center justify-center gap-3.5 sm:gap-4">
-            {(heroProfile?.techStack || [
-              { callsign: 'ALPHA-01', label: 'Development', icon: 'Code2' },
-              { callsign: 'BRAVO-02', label: 'Aviation', icon: 'Plane' },
-              { callsign: 'CHARLIE-03', label: 'Mountaineer', icon: 'Mountain' },
-            ]).map((item, idx) => {
+            {(heroProfile?.techStack || []).map((item, idx) => {
               const IconComponent = iconMap[item.icon] || Code2;
-              const displayLabel = item.label.toLowerCase() === 'mountainner' ? 'Mountaineer' : item.label;
+              const displayLabel = item.label;
               return (
                 <motion.div
                   key={item.callsign || idx}
@@ -400,7 +396,7 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
                   </span>
                 </div>
                 <h3 className="text-base sm:text-lg font-extrabold text-[#0c282d] leading-snug">
-                  {heroProfile?.status || 'Software Engineer at Pura Group'}
+                  {heroProfile?.status || ''}
                 </h3>
               </div>
               <p className="text-xs sm:text-[13px] text-[#2d5f68] font-semibold mt-3 pt-3 border-t border-[#B9E7E6]/40">
@@ -423,7 +419,7 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
                   </span>
                 </div>
                 <h3 className="text-base sm:text-lg font-extrabold text-[#0c282d] leading-snug">
-                  {heroProfile?.location || 'Semarang, Indonesia'}
+                  {heroProfile?.location || ''}
                 </h3>
               </div>
               <p className="text-xs sm:text-[13px] text-[#2d5f68] font-mono font-semibold mt-3 pt-3 border-t border-[#B9E7E6]/40">

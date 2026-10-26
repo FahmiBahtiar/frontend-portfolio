@@ -13,7 +13,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { Education } from '@/lib/types/admin';
-import { FALLBACK_EDUCATION_RECORDS } from '@/lib/fallback-data';
 
 // ── Cloud Texture Assets ─────────────────────────────────────────────────────
 const CLOUD_TEXTURES = [
@@ -52,79 +51,6 @@ export interface MilestoneRecord {
   badge: string;
   color: string;
 }
-
-export const DEFAULT_MILESTONES: MilestoneRecord[] = [
-  {
-    id: 'm1',
-    order: 1,
-    fixCode: '01 MI',
-    zDistance: -18,
-    targetScroll: 0,
-    institution: 'MI NEGERI 1 DEMAK',
-    degree: 'Elementary School Education',
-    period: '2010 – 2018',
-    description:
-      'Building strong academic foundations, logical thinking, and active leadership in journey & survival club.',
-    badge: '★ Top 10 Student',
-    color: '#0891b2',
-  },
-  {
-    id: 'm2',
-    order: 2,
-    fixCode: '02 SMP',
-    zDistance: -58,
-    targetScroll: 40,
-    institution: 'SMP NEGERI 2 DEMAK',
-    degree: 'Junior High School Education',
-    period: '2016 – 2019',
-    description:
-      'Discovered passion for computer science and started self-taught programming with core algorithms.',
-    badge: '★ Honor Roll Graduate',
-    color: '#059669',
-  },
-  {
-    id: 'm3',
-    order: 3,
-    fixCode: '03 BINAR',
-    zDistance: -98,
-    targetScroll: 80,
-    institution: 'BINAR ACADEMY',
-    degree: 'Tech Scholar • Djarum Foundation',
-    period: '2021',
-    description:
-      'Full-stack software engineering, microservices, agile development workflows, and modern cloud deployment.',
-    badge: '★ Djarum Foundation Scholar',
-    color: '#d97706',
-  },
-  {
-    id: 'm4',
-    order: 4,
-    fixCode: '04 SMK',
-    zDistance: -138,
-    targetScroll: 120,
-    institution: 'SMK RADEN UMAR SAID',
-    degree: 'Software Engineering Major',
-    period: '2019 – 2022',
-    description:
-      'High-performance backend systems, database architecture, network security, and production application development.',
-    badge: '★ Software Engineering Major',
-    color: '#7c3aed',
-  },
-  {
-    id: 'm5',
-    order: 5,
-    fixCode: '05 DIAN',
-    zDistance: -178,
-    targetScroll: 160,
-    institution: 'DIAN NUSWANTORO UNIVERSITY',
-    degree: 'Bachelor of Computer Science',
-    period: '2022 – 2026',
-    description:
-      'Distributed computing, autonomous AI systems, data science, and next-generation cloud infrastructure.',
-    badge: '★ Active • Informatics Engineering',
-    color: '#2563eb',
-  },
-];
 
 // ── Low-Poly Origami Paper Airplane ──────────────────────────────────────────
 function PaperAirplane({
@@ -790,7 +716,8 @@ function PaperSvgFallback({
   selectedIdx: number;
   onSelect: (idx: number) => void;
 }) {
-  const current = milestones[selectedIdx];
+  const current = milestones[selectedIdx] || milestones[0];
+  if (!current) return null;
 
   return (
     <div className="w-full h-full flex flex-col justify-between p-6 sm:p-10 relative overflow-hidden bg-[#87CEEB]">
@@ -882,21 +809,33 @@ export function ItomPaperFlightTimeline({
   });
 
   const milestones: MilestoneRecord[] = useMemo(() => {
-    const raw =
-      educationRecords && educationRecords.length > 0
-        ? educationRecords
-        : FALLBACK_EDUCATION_RECORDS;
+    if (!educationRecords || educationRecords.length === 0) return [];
 
-    return DEFAULT_MILESTONES.map((m, idx) => {
-      const matched = raw[idx];
-      if (!matched) return m;
+    const sorted = [...educationRecords].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const colors = ['#0891b2', '#059669', '#d97706', '#7c3aed', '#0284c7'];
+    const total = sorted.length;
+
+    return sorted.map((record, idx) => {
+      const scrollStep = total > 1 ? 160 / (total - 1) : 0;
+      const targetScroll = idx * scrollStep;
+      const zDistance = -18 - idx * 40;
+      const codePrefix = String(idx + 1).padStart(2, '0');
+      const degreeWords = record.degree ? record.degree.trim().split(/\s+/) : ['STEP'];
+      const codeWord = degreeWords[0] ? degreeWords[0].slice(0, 5).toUpperCase() : 'STEP';
+      const fixCode = `${codePrefix} ${codeWord}`;
+
       return {
-        ...m,
-        institution: matched.institution ? matched.institution.toUpperCase() : m.institution,
-        degree: matched.degree || m.degree,
-        period: matched.period || m.period,
-        description: matched.description || m.description,
-        badge: matched.gpa ? `★ ${matched.gpa}` : m.badge,
+        id: record.id || `m${idx + 1}`,
+        order: record.order ?? idx + 1,
+        fixCode,
+        zDistance,
+        targetScroll,
+        institution: record.institution ? record.institution.toUpperCase() : '',
+        degree: record.degree || '',
+        period: record.period || '',
+        description: record.description || '',
+        badge: record.gpa ? `★ ${record.gpa}` : `★ Milestone ${idx + 1}`,
+        color: colors[idx % colors.length],
       };
     });
   }, [educationRecords]);
@@ -1011,7 +950,9 @@ export function ItomPaperFlightTimeline({
   const handleSelectMilestone = useCallback(
     (idx: number) => {
       setSelectedIdx(idx);
-      targetScrollRef.current = milestones[idx].targetScroll;
+      if (milestones[idx]) {
+        targetScrollRef.current = milestones[idx].targetScroll;
+      }
       setIsPlaying(false);
     },
     [milestones]
@@ -1035,6 +976,14 @@ export function ItomPaperFlightTimeline({
           backgroundSize: 'cover',
         }}
       />
+    );
+  }
+
+  if (milestones.length === 0) {
+    return (
+      <div className="w-full relative rounded-3xl overflow-hidden border border-[#B9E7E6] min-h-[400px] flex items-center justify-center bg-white/70 shadow-sm">
+        <p className="font-mono text-sm text-[#527d85]">No education journey records available.</p>
+      </div>
     );
   }
 

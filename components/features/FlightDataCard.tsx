@@ -18,15 +18,9 @@ interface FlightDataCardProps {
 
 export const FlightDataCard = memo(function FlightDataCard({ 
   onPaginate,
-  photoData = {
-    location: "Mt. Merbabu Summit",
-    coordinates: "7°27'S 110°26'E",
-    altitude: "3142M MSL",
-    date: "2024-08-15",
-    camera: "Sony A7III",
-    heading: "045°"
-  }
+  photoData
 }: FlightDataCardProps) {
+  if (!photoData) return null;
   return (
     <motion.div
       initial={{ y: 50, opacity: 0 }}

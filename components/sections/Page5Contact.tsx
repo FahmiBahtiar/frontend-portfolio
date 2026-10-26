@@ -26,7 +26,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { API_BASE_URL } from '@/lib/config';
-import { FALLBACK_CONTACT_FREQUENCIES } from '@/lib/fallback-data';
 import { LiveStatusCards } from '@/components/features/LiveStatusCards';
 
 interface ContactFrequency {
@@ -213,15 +212,16 @@ function ContactForm() {
 export function Page5Contact({ onNavigate }: Page5ContactProps = {}) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // SWR for automated deduping, caching, and revalidation
+  // SWR for automated deduping, caching, and revalidation directly from API
   const { data: contactData, error, isLoading } = useSWR('/api/contact-info', fetcher, {
     revalidateOnFocus: false,
-    fallbackData: FALLBACK_CONTACT_FREQUENCIES,
   });
 
   const frequencies: ContactFrequency[] = Array.isArray(contactData)
     ? contactData
-    : contactData?.data || FALLBACK_CONTACT_FREQUENCIES;
+    : Array.isArray(contactData?.data)
+      ? contactData.data
+      : [];
 
   const showLoading = isLoading && frequencies.length === 0;
 

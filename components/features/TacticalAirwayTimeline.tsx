@@ -20,7 +20,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { Education } from '@/lib/types/admin';
-import { FALLBACK_EDUCATION_RECORDS } from '@/lib/fallback-data';
 
 // ── Waypoint Telemetry Data ──────────────────────────────────────────────────
 export interface WaypointLeg {
@@ -687,10 +686,7 @@ export function TacticalAirwayTimeline({
 
   // Merge dynamic education records
   const waypoints = useMemo(() => {
-    const raw =
-      educationRecords && educationRecords.length > 0
-        ? educationRecords
-        : FALLBACK_EDUCATION_RECORDS;
+    const raw = educationRecords || [];
 
     return DEFAULT_WAYPOINTS.map((wpt, idx) => {
       const matched = raw[idx];

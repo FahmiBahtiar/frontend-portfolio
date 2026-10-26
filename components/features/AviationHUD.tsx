@@ -15,9 +15,9 @@ interface AviationHUDProps {
 export const AviationHUD = memo(function AviationHUD({ 
   currentIndex, 
   totalImages, 
-  location = "Mt. Merbabu",
-  altitude = "3142M MSL",
-  coordinates = "7°27'S 110°26'E"
+  location = "",
+  altitude = "",
+  coordinates = ""
 }: AviationHUDProps) {
   return (
     <motion.div

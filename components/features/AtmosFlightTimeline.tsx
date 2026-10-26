@@ -22,7 +22,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { Education } from '@/lib/types/admin';
-import { FALLBACK_EDUCATION_RECORDS } from '@/lib/fallback-data';
 
 // ── Checkpoint Milestone Structure ──────────────────────────────────────────
 export interface AtmosCheckpoint {
@@ -603,10 +602,7 @@ export function AtmosFlightTimeline({
 
   // Merge dynamic CMS / database records with rich flight checkpoints
   const waypoints: AtmosCheckpoint[] = useMemo(() => {
-    const raw =
-      educationRecords && educationRecords.length > 0
-        ? educationRecords
-        : FALLBACK_EDUCATION_RECORDS;
+    const raw = educationRecords || [];
 
     return DEFAULT_ATMOS_CHECKPOINTS.map((wpt, idx) => {
       const matched = raw[idx];

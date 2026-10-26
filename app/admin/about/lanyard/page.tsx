@@ -28,9 +28,9 @@ interface LanyardData {
   dateOfIssue: string;
   dateOfExpiry: string;
   avatarUrl?: string;
-  backgroundColor: string;
-  textColor: string;
-  accentColor: string;
+  backgroundColor?: string;
+  textColor?: string;
+  accentColor?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -75,9 +75,6 @@ export default function LanyardCardPage() {
           dateOfIssue: raw.dateOfIssue || '',
           dateOfExpiry: raw.dateOfExpiry || '',
           avatarUrl: raw.avatarUrl,
-          backgroundColor: raw.backgroundColor || '#f5e6d3',
-          textColor: raw.textColor || '#1e3a8a',
-          accentColor: raw.accentColor || '#3b82f6',
           createdAt: raw.createdAt || '',
           updatedAt: raw.updatedAt || '',
         };
@@ -102,9 +99,6 @@ export default function LanyardCardPage() {
         dateOfIssue: '01 OCT 2023',
         dateOfExpiry: '01 OCT 2033',
         avatarUrl: '',
-        backgroundColor: '#f5e6d3',
-        textColor: '#1e3a8a',
-        accentColor: '#3b82f6',
       };
       setFormData(defaultData as LanyardData);
       setOriginalData(defaultData as LanyardData);
@@ -158,9 +152,6 @@ export default function LanyardCardPage() {
       dateOfIssue: formData.dateOfIssue,
       dateOfExpiry: formData.dateOfExpiry,
       avatarUrl: currentAvatarUrl,
-      backgroundColor: formData.backgroundColor,
-      textColor: formData.textColor,
-      accentColor: formData.accentColor,
     };
 
     await saveLanyard(dataToSave);
@@ -425,46 +416,6 @@ export default function LanyardCardPage() {
               </div>
             </CardContent>
           </Card>
-
-          <Card className="bg-white border border-[#B9E7E6] shadow-sm text-[#0c282d]">
-            <CardHeader className="border-b border-[#B9E7E6] pb-4">
-              <CardTitle className="text-lg">Card Design</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label>Background</Label>
-                  <Input
-                    type="color"
-                    value={formData?.backgroundColor ?? '#f5e6d3'}
-                    onChange={(e) => handleChange('backgroundColor', e.target.value)}
-                    disabled={!isEditing}
-                    className="h-12 px-2 cursor-pointer bg-white border border-[#B9E7E6] disabled:opacity-50"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Text</Label>
-                  <Input
-                    type="color"
-                    value={formData?.textColor ?? '#1e3a8a'}
-                    onChange={(e) => handleChange('textColor', e.target.value)}
-                    disabled={!isEditing}
-                    className="h-12 px-2 cursor-pointer bg-white border border-[#B9E7E6] disabled:opacity-50"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Accent</Label>
-                  <Input
-                    type="color"
-                    value={formData?.accentColor ?? '#3b82f6'}
-                    onChange={(e) => handleChange('accentColor', e.target.value)}
-                    disabled={!isEditing}
-                    className="h-12 px-2 cursor-pointer bg-white border border-[#B9E7E6] disabled:opacity-50"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </motion.div>
 
         <div className="space-y-6">
@@ -504,21 +455,20 @@ export default function LanyardCardPage() {
               </CardHeader>
               <CardContent className="pt-6">
                 <div 
-                  className="aspect-[1.6/1] rounded-2xl p-6 shadow-2xl relative overflow-hidden"
-                  style={{ backgroundColor: formData?.backgroundColor || '#f5e6d3', color: formData?.textColor || '#1e3a8a' }}
+                  className="aspect-[1.6/1] rounded-2xl p-6 shadow-xl relative overflow-hidden bg-gradient-to-br from-[#FFFFFF] via-[#E2F4F3] to-[#B9E7E6] text-[#0c282d] border-2 border-[#6FD4E1]"
                 >
                   <div className="text-center mb-4">
                     <div className="flex items-center justify-center gap-3 mb-1">
-                      <Globe className="w-6 h-6" style={{ color: formData?.accentColor }} />
+                      <Globe className="w-6 h-6 text-[#0891b2]" />
                       <p className="text-xs font-bold tracking-wider">{formData?.serviceName}</p>
-                      <Globe className="w-6 h-6" style={{ color: formData?.accentColor }} />
+                      <Globe className="w-6 h-6 text-[#0891b2]" />
                     </div>
                     <p className="text-[10px] font-semibold tracking-wide">{formData?.serviceType}</p>
                     <p className="text-[9px] opacity-70">{formData?.passportLabel}</p>
                   </div>
 
                   <div className="flex gap-4">
-                    <div className="w-24 h-28 bg-white/20 rounded border-2 relative" style={{ borderColor: formData?.accentColor }}>
+                    <div className="w-24 h-28 bg-white/40 rounded border-2 border-[#6FD4E1] relative">
                       {currentAvatarUrl && (
                         <Image src={currentAvatarUrl} alt="Avatar" fill className="object-cover rounded" />
                       )}
@@ -527,7 +477,7 @@ export default function LanyardCardPage() {
                     <div className="flex-1 text-[9px] space-y-1">
                       <div>
                         <p className="opacity-60">TYPE / TIPE</p>
-                        <p className="font-semibold" style={{ color: formData?.accentColor }}>{formData?.type}</p>
+                        <p className="font-semibold text-[#0891b2]">{formData?.type}</p>
                       </div>
                       <div>
                         <p className="opacity-60">COUNTRY CODE</p>

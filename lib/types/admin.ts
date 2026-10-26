@@ -5,8 +5,8 @@ export interface HeroProfile {
   badge: string;
   titles: string[]; // Network & Telecom Student, Building innovative web solutions, Backend Developer
   passions: string; // e.g., "Coding • Aviation • Mountaineering"
-  loginMessage: string;
-  ctaText: string;
+  loginMessage?: string;
+  ctaText?: string;
   techStack: Array<{
     callsign: string;
     label: string;
@@ -14,7 +14,7 @@ export interface HeroProfile {
   }>;
   status: string;
   location: string;
-  flightLevel: string;
+  flightLevel?: string;
   description: string;
   createdAt: string;
   updatedAt: string;
@@ -31,15 +31,24 @@ export interface SocialLink {
 // ==================== ABOUT/PORTFOLIO SECTION ====================
 export interface LanyardData {
   id: string;
-  name: string;
-  photo: string;
-  role: string;
-  organization: string;
-  id_number: string;
-  blood_type: string;
+  serviceName: string;
+  serviceType: string;
+  passportLabel: string;
+  type: string;
+  countryCode: string;
+  passportNo: string;
+  surname: string;
+  givenNames: string;
   nationality: string;
-  location: string;
-  qrData: string;
+  placeOfBirth: string;
+  sex: 'M' | 'F';
+  dateOfBirth: string;
+  dateOfIssue: string;
+  dateOfExpiry: string;
+  avatarUrl?: string;
+  backgroundColor?: string;
+  textColor?: string;
+  accentColor?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -48,16 +57,15 @@ export interface Passion {
   id: string;
   icon: string; // Icon name from lucide-react
   title: string;
-  color: 'cyan' | 'blue' | 'green' | 'purple' | 'orange' | 'yellow' | 'pink';
+  color?: string;
   description: string;
-  // API returns statsLabel/statsValue separately, but interface expects stats object
   stats?: {
     label: string;
     value: string;
   };
-  statsLabel?: string; // Alternative field from API
-  statsValue?: string; // Alternative field from API
-  gradient: string;
+  statsLabel?: string;
+  statsValue?: string;
+  gradient?: string;
   order: number;
 }
 
@@ -66,8 +74,20 @@ export interface Highlight {
   icon: string;
   label: string;
   value: string;
+  color?: string;
+  order: number;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  category: 'Frontend' | 'Backend' | 'Database' | 'DevOps' | 'Tools' | 'Other';
+  proficiency: number;
+  icon?: string;
   color: string;
   order: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface SkillCategory {
@@ -83,7 +103,7 @@ export interface Education {
   institution: string;
   period: string;
   gpa: string;
-  color: 'cyan' | 'orange' | 'green' | 'blue' | 'purple';
+  color?: string;
   description?: string;
   order: number;
   createdAt: string;
@@ -109,25 +129,28 @@ export interface Achievement {
 export interface FlightEntry {
   id: string;
   callsign: string;
+  company: string; // Main display - company/organization name
   departure: {
-    airport: string;
+    roles: string[];
+    highlightedRole: string;
     code: string;
     date: string;
   };
   arrival: {
-    airport: string;
+    status: string;
     code: string;
     date: string;
   };
-  aircraft: string;
-  flightHours: number;
-  altitude: string;
-  weather: string;
-  crew: string[]; // Technologies used
-  remarks: string;
-  achievements: string[];
-  color: 'purple' | 'orange' | 'cyan' | 'green' | 'blue';
+  projectName: string; // Secondary - project or department
+  duration: string; // in months
+  flightHours?: string;
+  crew: string[]; // technologies
+  responsibilities: string[]; // what you did there
+  color: string;
+  location: string;
+  category: string;
   order: number;
+  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }

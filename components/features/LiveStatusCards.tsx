@@ -106,7 +106,7 @@ export function LiveStatusCards() {
 
   // Find custom status and active game/activity
   const customStatusActivity = discordData?.activities?.find((a) => a.type === 4);
-  const customStatusText = customStatusActivity?.state || "I'm Strong Because I'm Ultraman";
+  const customStatusText = customStatusActivity?.state || '';
   
   const gameActivity = discordData?.activities?.find((a) => a.type !== 4 && a.name !== 'Spotify');
 
@@ -198,9 +198,15 @@ export function LiveStatusCards() {
                     JAWA
                   </span>
                 </div>
-                <p className="text-xs text-[#2d5f68] font-medium italic truncate mt-0.5">
-                  &ldquo;{customStatusText}&rdquo;
-                </p>
+                {customStatusText ? (
+                  <p className="text-xs text-[#2d5f68] font-medium italic truncate mt-0.5">
+                    &ldquo;{customStatusText}&rdquo;
+                  </p>
+                ) : (
+                  <p className="text-xs text-[#527d85] font-mono font-medium truncate mt-0.5">
+                    Live Discord Presence
+                  </p>
+                )}
               </div>
             </div>
 

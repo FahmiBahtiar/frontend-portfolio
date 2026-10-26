@@ -8,10 +8,12 @@ import type {
   SocialLink,
   Passion,
   Highlight,
+  Skill,
   LanyardData,
   Education,
   Achievement,
   FlightEntry,
+  HangarItem,
   ContactFrequency,
 } from '@/lib/types/admin';
 
@@ -132,25 +134,23 @@ export async function getHighlightsServer() {
   }
 }
 
-// Skills endpoint belum tersedia di backend
-// Uncomment ketika endpoint sudah dibuat
-// export async function getSkillsServer() {
-//   try {
-//     const response = await serverFetch<any>(
-//       API_CONFIG.ENDPOINTS.SKILLS,
-//       {
-//         next: {
-//           revalidate: 3600,
-//           tags: ['skills'],
-//         },
-//       }
-//     );
-//     return response.data;
-//   } catch (error) {
-//     console.error('Failed to fetch skills:', error);
-//     return [];
-//   }
-// }
+export async function getSkillsServer() {
+  try {
+    const response = await serverFetch<ApiResponse<Skill[]>>(
+      API_CONFIG.PUBLIC_ENDPOINTS.SKILLS,
+      {
+        next: {
+          revalidate: 3600,
+          tags: ['skills'],
+        },
+      }
+    );
+    return response.data ?? [];
+  } catch (error) {
+    console.error('Failed to fetch skills:', error);
+    return [];
+  }
+}
 
 export async function getLanyardServer() {
   try {
@@ -226,31 +226,29 @@ export async function getFlightsServer() {
   }
 }
 
-// Projects endpoint belum tersedia di backend
-// Uncomment ketika endpoint sudah dibuat
-// export async function getProjectsServer() {
-//   try {
-//     const response = await serverFetch<any>(
-//       API_CONFIG.ENDPOINTS.PROJECTS,
-//       {
-//         next: {
-//           revalidate: 3600,
-//           tags: ['projects'],
-//         },
-//       }
-//     );
-//     return response.data;
-//   } catch (error) {
-//     console.error('Failed to fetch projects:', error);
-//     return [];
-//   }
-// }
+export async function getProjectsServer() {
+  try {
+    const response = await serverFetch<ApiResponse<HangarItem[]>>(
+      API_CONFIG.PUBLIC_ENDPOINTS.PROJECTS,
+      {
+        next: {
+          revalidate: 3600,
+          tags: ['projects'],
+        },
+      }
+    );
+    return response.data ?? [];
+  } catch (error) {
+    console.error('Failed to fetch projects:', error);
+    return [];
+  }
+}
 
 // ==================== CONTACT SECTION ====================
 export async function getContactInfoServer() {
   try {
-    const response = await serverFetch<ApiResponse<ContactFrequency[]>>(
-      API_CONFIG.ENDPOINTS.CONTACT,
+    const response = await serverFetch<ApiResponse<ContactFrequency[]> | ContactFrequency[]>(
+      API_CONFIG.PUBLIC_ENDPOINTS.CONTACT,
       {
         next: {
           revalidate: 3600,
@@ -258,10 +256,13 @@ export async function getContactInfoServer() {
         },
       }
     );
-    return response.data;
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response.data ?? [];
   } catch (error) {
     console.error('Failed to fetch contact info:', error);
-    return null;
+    return [];
   }
 }
 
@@ -269,13 +270,13 @@ export async function getContactInfoServer() {
 // Function untuk mendapatkan semua data sekaligus (untuk metadata generation)
 export async function getAllDataForSEO() {
   try {
-    // Hanya fetch endpoint yang tersedia di backend
-    const [hero, social, passions, education] = await Promise.allSettled([
+    const [hero, social, passions, education, projects, skills] = await Promise.allSettled([
       getHeroProfileServer(),
       getSocialLinksServer(),
       getPassionsServer(),
       getEducationRecordsServer(),
-      // getProjectsServer(), // Commented out - endpoint belum ada
+      getProjectsServer(),
+      getSkillsServer(),
     ]);
 
     return {
@@ -283,7 +284,8 @@ export async function getAllDataForSEO() {
       social: social.status === 'fulfilled' ? social.value : [],
       passions: passions.status === 'fulfilled' ? passions.value : [],
       education: education.status === 'fulfilled' ? education.value : [],
-      projects: [], // Empty array untuk sekarang
+      projects: projects.status === 'fulfilled' ? projects.value : [],
+      skills: skills.status === 'fulfilled' ? skills.value : [],
     };
   } catch (error) {
     console.error('Failed to fetch all data for SEO:', error);
@@ -293,6 +295,7 @@ export async function getAllDataForSEO() {
       passions: [],
       education: [],
       projects: [],
+      skills: [],
     };
   }
 }

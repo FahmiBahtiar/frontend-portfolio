@@ -223,7 +223,7 @@ export function LanyardCard() {
                     {/* Top: Country Name */}
                     <div className="text-center space-y-2 z-10">
                       <h2 className="text-[#0c282d] font-bold tracking-[0.2em] md:tracking-[0.35em] lg:tracking-[0.4em] text-sm sm:text-base md:text-2xl lg:text-3xl uppercase">
-                        {lanyardData.serviceName || 'BLIMBING PORTFOLIO'}
+                        {lanyardData.serviceName}
                       </h2>
                     </div>
 
@@ -254,7 +254,7 @@ export function LanyardCard() {
                             </div>
                             <div className="flex gap-3 md:gap-5">
                               <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-[#E2F4F3] border-2 border-[#6FD4E1] flex items-center justify-center backdrop-blur-sm shadow-sm">
-                                <Code2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-[#0891b2]" />
+                              <Code2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-[#0891b2]" />
                               </div>
                               <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 rounded-full bg-[#E2F4F3] border-2 border-[#6FD4E1] flex items-center justify-center backdrop-blur-sm shadow-sm">
                                 <Mountain className="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 lg:w-9 lg:h-9 text-[#0891b2]" />
@@ -268,10 +268,10 @@ export function LanyardCard() {
                       <div className="mt-4 sm:mt-5 md:mt-8 relative text-center space-y-1">
                         <div className="w-36 sm:w-44 md:w-64 lg:w-72 h-0.5 bg-gradient-to-r from-transparent via-[#6FD4E1]/50 to-transparent mx-auto mb-2 md:mb-3" />
                         <p className="text-[#0c282d] text-xs sm:text-sm md:text-base font-bold tracking-wider uppercase">
-                          {lanyardData.passportLabel || 'SERVICE PASSPORT'}
+                          {lanyardData.passportLabel}
                         </p>
                         <p className="text-[#2d5f68] text-[11px] sm:text-xs md:text-sm tracking-wide font-medium">
-                          {lanyardData.serviceType || '— PRIVATE PASSPORT —'}
+                          {lanyardData.serviceType}
                         </p>
                       </div>
                     </div>
@@ -318,17 +318,17 @@ export function LanyardCard() {
                       <div className="flex items-center justify-center gap-1.5 mb-1">
                         <Globe className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-[#0891b2]" />
                         <h3 className="text-[#0c282d] text-xs sm:text-sm md:text-base lg:text-lg tracking-[0.15em] font-bold uppercase">
-                          {lanyardData.serviceName || 'BLIMBING PORTFOLIO'}
+                          {lanyardData.serviceName}
                         </h3>
                         <Globe className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-[#0891b2]" />
                       </div>
                       <p className="text-[#527d85] text-[10px] sm:text-xs md:text-sm lg:text-base tracking-[0.2em] font-mono font-bold uppercase">
-                        {lanyardData.serviceType || 'SERVICE PASSPORT'}
+                        {lanyardData.serviceType}
                       </p>
                       <div className="mt-1 flex items-center justify-center gap-2">
                         <div className="w-8 h-px bg-[#B9E7E6]" />
                         <p className="text-[#0891b2] text-[10px] sm:text-xs md:text-sm font-semibold tracking-wider">
-                          {lanyardData.passportLabel || '— PRIVATE PASSPORT —'}
+                          {lanyardData.passportLabel}
                         </p>
                         <div className="w-8 h-px bg-[#B9E7E6]" />
                       </div>
@@ -364,7 +364,7 @@ export function LanyardCard() {
                             COUNTRY CODE
                           </p>
                           <p className="text-[#0c282d] text-base sm:text-lg md:text-xl lg:text-2xl font-black tracking-wide">
-                            {lanyardData.countryCode || 'IDN'}
+                            {lanyardData.countryCode}
                           </p>
                         </div>
 
@@ -374,7 +374,7 @@ export function LanyardCard() {
                             PASSPORT NO.
                           </p>
                           <p className="text-[#0891b2] font-mono text-base sm:text-lg md:text-xl lg:text-2xl font-black tracking-wide">
-                            {lanyardData.passportNo || 'FHM20253333'}
+                            {lanyardData.passportNo}
                           </p>
                         </div>
 
@@ -384,7 +384,7 @@ export function LanyardCard() {
                             SURNAME/NAMA BELAKANG
                           </p>
                           <p className="text-[#0c282d] uppercase text-base sm:text-lg md:text-xl lg:text-2xl font-black tracking-wide">
-                            {lanyardData.surname || 'ADI NUGROHO'}
+                            {lanyardData.surname}
                           </p>
                         </div>
 
@@ -394,7 +394,7 @@ export function LanyardCard() {
                             GIVEN NAMES/NAMA DEPAN
                           </p>
                           <p className="text-[#0c282d] uppercase text-base sm:text-lg md:text-xl lg:text-2xl font-black tracking-wide">
-                            {lanyardData.givenNames || 'FAHMI BAHTIAR'}
+                            {lanyardData.givenNames}
                           </p>
                         </div>
                       </div>
@@ -410,7 +410,7 @@ export function LanyardCard() {
                         <div className="flex items-center gap-1.5 sm:gap-2">
                           <Globe className="w-4 h-4 md:w-5 md:h-5 text-[#0891b2]" />
                           <p className="text-[#0c282d] text-sm sm:text-base md:text-lg lg:text-xl font-bold">
-                            {lanyardData.nationality || 'Indonesia'}
+                            {lanyardData.nationality}
                           </p>
                         </div>
                       </div>
@@ -423,7 +423,7 @@ export function LanyardCard() {
                         <div className="flex items-center gap-1.5 sm:gap-2">
                           <Calendar className="w-4 h-4 md:w-5 md:h-5 text-[#0891b2]" />
                           <p className="text-[#0c282d] text-sm sm:text-base md:text-lg lg:text-xl font-bold">
-                            {lanyardData.dateOfBirth || 'Secret'}
+                            {lanyardData.dateOfBirth}
                           </p>
                         </div>
                       </div>
@@ -436,7 +436,7 @@ export function LanyardCard() {
                         <div className="flex items-center gap-1.5 sm:gap-2">
                           <MapPin className="w-4 h-4 md:w-5 md:h-5 text-[#0891b2]" />
                           <p className="text-[#0c282d] text-sm sm:text-base md:text-lg lg:text-xl font-bold">
-                            {lanyardData.placeOfBirth || 'Demak, Indonesia'}
+                            {lanyardData.placeOfBirth}
                           </p>
                         </div>
                       </div>
@@ -447,7 +447,7 @@ export function LanyardCard() {
                           SEX/JENIS KELAMIN
                         </p>
                         <p className="text-[#0c282d] text-sm sm:text-base md:text-lg lg:text-xl font-black tracking-wide">
-                          {lanyardData.sex || 'M'} / {(lanyardData.sex === 'M' || !lanyardData.sex) ? 'L' : 'P'}
+                          {lanyardData.sex} / {lanyardData.sex === 'M' ? 'L' : 'P'}
                         </p>
                       </div>
 
@@ -457,7 +457,7 @@ export function LanyardCard() {
                           DATE OF ISSUE
                         </p>
                         <p className="text-[#0c282d] text-sm sm:text-base md:text-lg lg:text-xl font-bold">
-                          {lanyardData.dateOfIssue || '01 OCT 2025'}
+                          {lanyardData.dateOfIssue}
                         </p>
                       </div>
 
@@ -466,8 +466,8 @@ export function LanyardCard() {
                         <p className="text-[#527d85] text-[10px] sm:text-[11px] md:text-xs lg:text-sm uppercase mb-0.5 sm:mb-1 tracking-wider font-mono font-bold">
                           DATE OF EXPIRY
                         </p>
-                        <p className="text-rose-600 text-sm sm:text-base md:text-lg lg:text-xl font-black">
-                          {lanyardData.dateOfExpiry || 'Nuclear War'}
+                        <p className="text-[#0891b2] text-sm sm:text-base md:text-lg lg:text-xl font-bold">
+                          {lanyardData.dateOfExpiry}
                         </p>
                       </div>
                     </div>
@@ -491,7 +491,7 @@ export function LanyardCard() {
                             fontSize: 'clamp(2.35rem, 6.5vw, 4.25rem)' 
                           }}
                         >
-                          {(lanyardData.givenNames || 'fahmi bahtiar').toLowerCase()}
+                          {(lanyardData.givenNames || '').toLowerCase()}
                         </p>
                       </div>
                     </div>

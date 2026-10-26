@@ -16,7 +16,6 @@ import { Button } from '@/components/ui/button';
 import dynamic from 'next/dynamic';
 import { EducationService } from '@/lib/services/education';
 import { Achievement } from '@/lib/types/admin';
-import { FALLBACK_EDUCATION_RECORDS, FALLBACK_ACHIEVEMENTS } from '@/lib/fallback-data';
 import { JourneyScrollStory } from '@/components/features/JourneyScrollStory';
 import { useIsMobile } from '@/components/ui/use-mobile';
 
@@ -48,17 +47,15 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
     achievementId: string;
   } | null>(null);
 
-  // SWR for data fetching with instant fallback to avoid spinner block
+  // SWR for data fetching directly from backend API
   const { data: educationRecords = [], isLoading: isEduLoading, error: eduError } = useSWR(
     'educationRecords',
-    () => EducationService.getEducationRecords(),
-    { fallbackData: FALLBACK_EDUCATION_RECORDS }
+    () => EducationService.getEducationRecords()
   );
 
   const { data: achievements = [], isLoading: isAchLoading, error: achError } = useSWR(
     'achievementsData',
-    () => EducationService.getAchievements(),
-    { fallbackData: FALLBACK_ACHIEVEMENTS }
+    () => EducationService.getAchievements()
   );
 
   const loading = (isEduLoading || isAchLoading) && educationRecords.length === 0;

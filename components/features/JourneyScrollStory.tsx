@@ -35,6 +35,14 @@ export function JourneyScrollStory({
   });
   const cometTop = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
 
+  if (waypoints.length === 0) {
+    return (
+      <div className="py-12 text-center text-[#527d85] font-mono text-sm">
+        No education journey records available.
+      </div>
+    );
+  }
+
   // Spine gradient echoes the journey's own colors, bottom = summit color.
   const spineGradient = `linear-gradient(to bottom, ${waypoints
     .map((w) => w.color)

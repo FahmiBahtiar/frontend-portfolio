@@ -21,12 +21,9 @@ export default function HeroProfilePage() {
     badge: '',
     titles: [],
     passions: '',
-    loginMessage: '',
-    ctaText: '',
     techStack: [],
     status: '',
     location: '',
-    flightLevel: '',
     description: '',
     createdAt: '',
     updatedAt: '',
@@ -56,12 +53,9 @@ export default function HeroProfilePage() {
         badge: formData.badge,
         titles: formData.titles,
         passions: formData.passions,
-        loginMessage: formData.loginMessage,
-        ctaText: formData.ctaText,
         techStack: formData.techStack,
         status: formData.status,
         location: formData.location,
-        flightLevel: formData.flightLevel,
         description: formData.description,
       };
       await HeroService.updateHeroProfile(updateData);
@@ -173,24 +167,12 @@ export default function HeroProfilePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label>Welcome Message</Label>
-                    <Input value={formData.loginMessage} onChange={(e) => setFormData({ ...formData, loginMessage: e.target.value })} required className="bg-white border border-[#B9E7E6]" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>CTA Text</Label>
-                    <Input value={formData.ctaText} onChange={(e) => setFormData({ ...formData, ctaText: e.target.value })} required className="bg-white border border-[#B9E7E6]" />
-                  </div>
-                  <div className="space-y-2">
                     <Label>Status</Label>
                     <Input value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} required className="bg-white border border-[#B9E7E6]" />
                   </div>
                   <div className="space-y-2">
                     <Label>Location</Label>
                     <Input value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required className="bg-white border border-[#B9E7E6]" />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label>Flight Level</Label>
-                    <Input value={formData.flightLevel} onChange={(e) => setFormData({ ...formData, flightLevel: e.target.value })} required className="bg-white border border-[#B9E7E6]" />
                   </div>
                 </div>
 

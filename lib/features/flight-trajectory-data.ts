@@ -17,15 +17,6 @@ export interface Waypoint {
   altitude: number; // 0..100
 }
 
-// ── Fallback data (mirrors the previous timeline) ────────────────────────
-export const DEFAULT_EDUCATION: Education[] = [
-  { id: '1', degree: 'Elementary School', institution: 'SD Negeri 1 Jakarta', period: '2006-2012', gpa: 'Top 10 Student', color: 'cyan', order: 1, description: 'Building strong academic foundation and character development. Active in mathematics and science clubs.', createdAt: '', updatedAt: '' },
-  { id: '2', degree: 'Junior High School', institution: 'SMP Negeri 5 Jakarta', period: '2012-2015', gpa: '9.2 / 10', color: 'green', order: 2, description: 'National Science Olympiad participant. Started programming journey with basic algorithms.', createdAt: '', updatedAt: '' },
-  { id: '3', degree: 'Senior High School', institution: 'SMA Negeri 8 Jakarta', period: '2015-2018', gpa: '92 / 100', color: 'orange', order: 3, description: 'Science major focus on Mathematics & Physics. Won regional robotics competition. Developed first web applications.', createdAt: '', updatedAt: '' },
-  { id: '4', degree: 'Intensive Bootcamp', institution: 'Tech Academy Scholarship', period: '2019-2020', gpa: 'Graduate with Distinction', color: 'orange', order: 4, description: 'Received full scholarship for intensive coding bootcamp. Mastered modern web technologies, agile development, and real-world projects.', createdAt: '', updatedAt: '' },
-  { id: '5', degree: 'Bachelor Degree', institution: 'University of Technology', period: '2020-2024', gpa: '3.85 / 4.00', color: 'purple', order: 5, description: 'Specialized in Network Security, Cloud Computing, and Full-Stack Development. Final project: Smart Network Monitoring System using AI/ML.', createdAt: '', updatedAt: '' },
-];
-
 export const LEVEL_COLORS = ['#0891b2', '#059669', '#d97706', '#6366f1', '#0284c7'];
 export const SUMMIT_COLOR = '#0284c7';
 
@@ -58,29 +49,24 @@ export const DWELL_MS = 5000;
 export const TRAVEL_MS = 2200;
 export const SUMMIT_MS = 3200;
 
-/** Build the ordered waypoint list from education records (or the default set). */
+/** Build the ordered waypoint list from backend API education records. */
 export function buildWaypoints(educationRecords?: Education[]): Waypoint[] {
-  const records = (educationRecords && educationRecords.length > 0 ? educationRecords : DEFAULT_EDUCATION)
+  if (!educationRecords || educationRecords.length === 0) {
+    return [];
+  }
+
+  const records = educationRecords
     .slice()
     .sort((a, b) => (a.order || 0) - (b.order || 0));
   const n = records.length;
   return records.map((r, i) => {
-    let description = r.description || '';
-    if (!description) {
-      if (r.institution.toLowerCase().includes('umar said') || r.degree.toLowerCase().includes('senior')) {
-        description = 'Specialized in backend architectures, microservices, Linux servers, CI/CD, and competitive coding.';
-      } else if (r.institution.toLowerCase().includes('nuswantoro') || r.degree.toLowerCase().includes('bachelor')) {
-        description = 'Advanced computer systems, cloud infrastructure, AI models, and real-time distributed networks.';
-      }
-    }
-
     return {
       id: r.id,
       badge: badgeForIndex(i, n),
       title: r.degree,
       institution: r.institution,
       period: r.period,
-      description,
+      description: r.description || '',
       gpa: r.gpa || '',
       color: colorForIndex(i, n),
       altitude: n > 1 ? (i / (n - 1)) * 100 : 100,

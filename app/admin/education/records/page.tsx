@@ -27,18 +27,9 @@ export default function EducationRecordsPage() {
     institution: '',
     period: '',
     gpa: '',
-    color: 'cyan',
     description: '',
     order: 0,
   });
-
-  const colors = [
-    { value: 'cyan', label: 'Cyan' },
-    { value: 'orange', label: 'Orange' },
-    { value: 'green', label: 'Green' },
-    { value: 'blue', label: 'Blue' },
-    { value: 'purple', label: 'Purple' },
-  ];
 
   const handleCreate = () => {
     setEditingRecord(null);
@@ -47,7 +38,6 @@ export default function EducationRecordsPage() {
       institution: '',
       period: '',
       gpa: '',
-      color: 'cyan',
       description: '',
     });
     setIsFormOpen(true);
@@ -126,13 +116,6 @@ export default function EducationRecordsPage() {
         </span>
       ),
     },
-    {
-      key: 'color',
-      label: 'Theme',
-      render: (item: Education) => (
-        <span className="capitalize text-xs text-muted-foreground">{item.color}</span>
-      ),
-    },
   ];
 
   if (isLoading) {
@@ -181,7 +164,7 @@ export default function EducationRecordsPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-[#0c282d] font-bold">Period</Label>
                     <Input value={formData.period} onChange={(e) => setFormData({ ...formData, period: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="e.g., 2020 - 2024" />
@@ -189,19 +172,6 @@ export default function EducationRecordsPage() {
                   <div className="space-y-2">
                     <Label className="text-[#0c282d] font-bold">GPA/Grade</Label>
                     <Input value={formData.gpa} onChange={(e) => setFormData({ ...formData, gpa: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="e.g., 3.85" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[#0c282d] font-bold">Theme Color</Label>
-                    <select
-                      value={formData.color}
-                      onChange={(e) => setFormData({ ...formData, color: e.target.value as Education['color'] })}
-                      className="w-full h-10 px-3 py-2 rounded-xl bg-white border border-[#B9E7E6] text-sm text-[#0c282d] font-semibold focus:outline-none focus:border-[#6FD4E1] shadow-sm"
-                      required
-                    >
-                      {colors.map((color) => (
-                        <option key={color.value} value={color.value} className="bg-white text-[#0c282d]">{color.label}</option>
-                      ))}
-                    </select>
                   </div>
                 </div>
 

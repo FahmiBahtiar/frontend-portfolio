@@ -53,6 +53,12 @@ export const API_CONFIG = {
     // Experience & Projects Section
     FLIGHTS: '/api/experience/flights',
     PROJECTS: '/api/experience/projects',
+
+    // Contact Section
+    CONTACT: '/contact-info',
+
+    // Gallery Section
+    GALLERY: '/gallery',
   },
 };
 

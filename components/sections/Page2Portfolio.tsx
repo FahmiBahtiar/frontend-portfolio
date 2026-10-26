@@ -8,7 +8,6 @@ import { AboutService } from '@/lib/services/about';
 import { Passion, Highlight } from '@/lib/types/admin';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FALLBACK_PASSIONS, FALLBACK_HIGHLIGHTS } from '@/lib/fallback-data';
 
 interface Page2PortfolioProps {
   onNavigate?: (sectionIndex: number) => void;
@@ -20,13 +19,11 @@ const GRAIN_SVG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='h
 export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
   const { data: passions = [], isLoading: passionsLoading, error: passionsError } = useSWR(
     'passions',
-    () => AboutService.getPassions(),
-    { fallbackData: FALLBACK_PASSIONS }
+    () => AboutService.getPassions()
   );
   const { data: highlights = [], isLoading: highlightsLoading, error: highlightsError } = useSWR(
     'highlights',
-    () => AboutService.getHighlights(),
-    { fallbackData: FALLBACK_HIGHLIGHTS }
+    () => AboutService.getHighlights()
   );
 
   const loading = (passionsLoading || highlightsLoading) && passions.length === 0;

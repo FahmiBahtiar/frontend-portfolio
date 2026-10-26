@@ -22,24 +22,12 @@ export default function PassionsPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const availableColors = [
-    { value: 'cyan', label: 'Cyan', bg: 'bg-cyan-500' },
-    { value: 'blue', label: 'Blue', bg: 'bg-blue-500' },
-    { value: 'green', label: 'Green', bg: 'bg-green-500' },
-    { value: 'purple', label: 'Purple', bg: 'bg-purple-500' },
-    { value: 'orange', label: 'Orange', bg: 'bg-orange-500' },
-    { value: 'yellow', label: 'Yellow', bg: 'bg-yellow-500' },
-    { value: 'pink', label: 'Pink', bg: 'bg-pink-500' },
-  ] as const;
-
   const [formData, setFormData] = useState({
     icon: '',
     title: '',
     description: '',
-    color: 'cyan' as 'cyan' | 'blue' | 'green' | 'purple' | 'orange' | 'yellow' | 'pink',
     statsLabel: '',
     statsValue: '',
-    gradient: '',
     order: 0,
   });
 
@@ -48,10 +36,8 @@ export default function PassionsPage() {
       icon: passion.icon,
       title: passion.title,
       description: passion.description,
-      color: passion.color,
       statsLabel: passion.statsLabel || passion.stats?.label || '',
       statsValue: passion.statsValue || passion.stats?.value || '',
-      gradient: passion.gradient || '',
       order: passion.order,
     });
     setEditingId(passion.id);
@@ -77,10 +63,8 @@ export default function PassionsPage() {
           icon: formData.icon,
           title: formData.title,
           description: formData.description,
-          color: formData.color,
           statsLabel: formData.statsLabel,
           statsValue: formData.statsValue,
-          gradient: formData.gradient,
           order: formData.order,
         };
         await AboutService.updatePassion(editingId, updateData);
@@ -89,10 +73,8 @@ export default function PassionsPage() {
           icon: formData.icon,
           title: formData.title,
           description: formData.description,
-          color: formData.color,
           statsLabel: formData.statsLabel,
           statsValue: formData.statsValue,
-          gradient: formData.gradient,
           order: formData.order,
         };
         await AboutService.createPassion(newPassion);
@@ -112,10 +94,8 @@ export default function PassionsPage() {
       icon: '',
       title: '',
       description: '',
-      color: 'cyan',
       statsLabel: '',
       statsValue: '',
-      gradient: '',
       order: 0,
     });
     setEditingId(null);
@@ -133,16 +113,6 @@ export default function PassionsPage() {
       key: 'description',
       label: 'Description',
       render: (passion: Passion) => <span className="text-muted-foreground text-sm line-clamp-2">{passion.description}</span>,
-    },
-    {
-      key: 'color',
-      label: 'Color',
-      render: (passion: Passion) => (
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded border border-[#B9E7E6]" style={{ backgroundColor: passion.color }} />
-          <span className="text-muted-foreground text-xs font-mono">{passion.color}</span>
-        </div>
-      ),
     },
     {
       key: 'stats',
@@ -193,27 +163,13 @@ export default function PassionsPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[#0c282d] font-bold">Icon (Emoji)</Label>
-                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] text-xl text-center" placeholder="💻" />
+                    <Label className="text-[#0c282d] font-bold">Icon (Lucide Name)</Label>
+                    <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="Code2, Plane, Mountain" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[#0c282d] font-bold">Color</Label>
-                    <select
-                      value={formData.color}
-                      onChange={(e) => setFormData({ ...formData, color: e.target.value as typeof formData.color })}
-                      className="w-full h-10 px-3 py-2 rounded-xl bg-white border border-[#B9E7E6] text-sm text-[#0c282d] font-semibold focus:outline-none focus:border-[#6FD4E1] shadow-sm"
-                      required
-                    >
-                      {availableColors.map((color) => (
-                        <option key={color.value} value={color.value} className="bg-white text-[#0c282d]">{color.label}</option>
-                      ))}
-                    </select>
+                    <Label className="text-[#0c282d] font-bold">Title</Label>
+                    <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="Full Stack Development" />
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-[#0c282d] font-bold">Title</Label>
-                  <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="Full Stack Development" />
                 </div>
 
                 <div className="space-y-2">
@@ -221,7 +177,7 @@ export default function PassionsPage() {
                   <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required rows={3} className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium resize-none" placeholder="Describe your passion..." />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-[#0c282d] font-bold">Stats Label</Label>
                     <Input value={formData.statsLabel} onChange={(e) => setFormData({ ...formData, statsLabel: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="Projects" />
@@ -229,10 +185,6 @@ export default function PassionsPage() {
                   <div className="space-y-2">
                     <Label className="text-[#0c282d] font-bold">Stats Value</Label>
                     <Input value={formData.statsValue} onChange={(e) => setFormData({ ...formData, statsValue: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="50+" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[#0c282d] font-bold">Gradient</Label>
-                    <Input value={formData.gradient} onChange={(e) => setFormData({ ...formData, gradient: e.target.value })} required className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="from-cyan-500 to-blue-500" />
                   </div>
                 </div>
 

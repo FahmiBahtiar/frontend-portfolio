@@ -33,7 +33,6 @@ export default function ContactPage() {
     value: '',
     icon: 'Mail',
     type: 'primary',
-    color: 'from-cyan-500 to-blue-500',
     link: '',
   });
 
@@ -51,14 +50,6 @@ export default function ContactPage() {
     { value: 'Twitter', label: 'Twitter' },
   ];
 
-  const colors = [
-    { value: 'from-cyan-500 to-blue-500', label: 'Cyan to Blue' },
-    { value: 'from-emerald-500 to-teal-500', label: 'Emerald to Teal' },
-    { value: 'from-blue-600 to-blue-400', label: 'Blue' },
-    { value: 'from-purple-600 to-pink-500', label: 'Purple to Pink' },
-    { value: 'from-pink-600 to-orange-500', label: 'Pink to Orange' },
-  ];
-
   const handleCreate = () => {
     setEditingContact(null);
     setFormData({
@@ -67,7 +58,6 @@ export default function ContactPage() {
       value: '',
       icon: 'Mail',
       type: 'primary',
-      color: 'from-cyan-500 to-blue-500',
       link: '',
     });
     setIsFormOpen(true);
@@ -291,33 +281,17 @@ export default function ContactPage() {
                         ))}
                       </select>
                     </div>
+                  </div>
 
-                    <div className="space-y-2">
-                      <Label>Color Gradient</Label>
-                      <select
-                        value={formData.color}
-                        onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                        className="w-full h-10 px-3 py-2 rounded-md bg-white border border-[#B9E7E6] text-sm text-[#0c282d] focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
-                        required
-                      >
-                        {colors.map((color) => (
-                          <option key={color.value} value={color.value} className="bg-white text-[#0c282d]">
-                            {color.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="md:col-span-2 space-y-2">
-                      <Label>Link (Optional)</Label>
-                      <Input
-                        type="url"
-                        value={formData.link || ''}
-                        onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                        className="bg-white border border-[#B9E7E6]"
-                        placeholder="https://..."
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label>Link (Optional)</Label>
+                    <Input
+                      type="url"
+                      value={formData.link || ''}
+                      onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                      className="bg-white border border-[#B9E7E6]"
+                      placeholder="https://..."
+                    />
                   </div>
 
                   <div className="flex justify-end gap-3 pt-4">
