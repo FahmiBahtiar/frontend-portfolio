@@ -4,14 +4,6 @@ import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Compass, ArrowLeft } from 'lucide-react';
 
-const linearEase = (t: number) => t;
-
-const sweepTransition = {
-  duration: 10,
-  repeat: Infinity,
-  ease: linearEase,
-};
-
 export default function NotFoundPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#E2F4F3] via-[#F4FBFA] to-[#E2F4F3] text-[#0c282d] flex flex-col justify-center items-center px-6 py-20 text-center">
