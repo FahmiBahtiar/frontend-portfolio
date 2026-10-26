@@ -221,7 +221,9 @@ export default function AchievementsPage() {
       setIsFormOpen(false);
       setEditingAchievement(null);
     } catch (error) {
-      alert('Failed to save achievement');
+      console.error('Failed to save achievement:', error);
+      const message = error instanceof Error ? error.message : 'Failed to save achievement';
+      alert(message);
     } finally {
       setSaving(false);
     }

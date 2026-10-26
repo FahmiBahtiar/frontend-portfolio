@@ -4,3 +4,11 @@ export async function GET(request: Request) {
   const searchParams = new URL(request.url).searchParams.toString();
   return proxyToBackend('/api/education/achievements', { searchParams });
 }
+
+export async function POST(request: Request) {
+  const body = await request.text();
+  return proxyToBackend('/api/admin/education/achievements', {
+    method: 'POST',
+    body,
+  });
+}
