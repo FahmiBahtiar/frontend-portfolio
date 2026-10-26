@@ -409,7 +409,7 @@ export default function AchievementsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Certificate (Optional)</Label>
+                  <Label>Certificate (Image or PDF - Optional)</Label>
                   <div className="flex gap-2 mb-2">
                     <Button type="button" variant="outline" size="sm" onClick={() => setCertificateUploadMode('url')} className={certificateUploadMode === 'url' ? 'bg-[#6FD4E1] text-[#0c282d] border border-[#B9E7E6] font-bold shadow-sm' : 'bg-white border border-[#B9E7E6] text-[#527d85] hover:bg-[#E2F4F3] hover:text-[#0c282d] font-semibold'}>
                       <LinkIcon className="w-4 h-4 mr-2" /> URL
@@ -420,11 +420,11 @@ export default function AchievementsPage() {
                   </div>
 
                   {certificateUploadMode === 'url' && (
-                    <Input type="url" value={formData.certificateUrl || ''} onChange={(e) => setFormData({ ...formData, certificateUrl: e.target.value })} className="bg-white border border-[#B9E7E6]" placeholder="https://..." />
+                    <Input type="url" value={formData.certificateUrl || ''} onChange={(e) => setFormData({ ...formData, certificateUrl: e.target.value })} className="bg-white border border-[#B9E7E6]" placeholder="https://... (.png, .jpg, .pdf)" />
                   )}
 
                   {certificateUploadMode === 'upload' && (
-                    <ImageUpload key={`upload-${certificateUploadMode}`} value={formData.certificateUrl || ''} onChange={(url) => setFormData({ ...formData, certificateUrl: url })} onUploadStateChange={setIsUploading} label="" description="Upload certificate image" aspectRatio="16/9" />
+                    <ImageUpload key={`upload-${certificateUploadMode}`} value={formData.certificateUrl || ''} onChange={(url) => setFormData({ ...formData, certificateUrl: url })} onUploadStateChange={setIsUploading} label="" description="Upload certificate (Image or PDF)" aspectRatio="16/9" allowPdf={true} />
                   )}
                 </div>
 

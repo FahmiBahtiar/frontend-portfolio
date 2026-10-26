@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 import useSWR, { mutate } from 'swr';
-import { GraduationCap, Award, Code2, Plane, Mountain, Calendar, MapPin, Trophy, Star, CheckCircle2, ExternalLink, Loader2, X, ChevronLeft, type LucideIcon } from 'lucide-react';
+import { GraduationCap, Award, Code2, Plane, Mountain, Calendar, MapPin, Trophy, Star, CheckCircle2, ExternalLink, Loader2, X, ChevronLeft, FileText, type LucideIcon } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -288,7 +288,14 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                       <p className={`font-semibold text-sm mb-1 line-clamp-2 ${isSelected ? 'text-[#0c282d]' : 'text-[#1e4a52]'}`}>
                                         {achievement.title}
                                       </p>
-                                      <p className="text-[#527d85] text-xs font-mono truncate">{achievement.issuer}</p>
+                                      <div className="flex items-center gap-2">
+                                        <p className="text-[#527d85] text-xs font-mono truncate">{achievement.issuer}</p>
+                                        {achievement.certificateUrl && (achievement.certificateUrl.toLowerCase().endsWith('.pdf') || achievement.certificateUrl.includes('.pdf?')) && (
+                                          <span className="px-1.5 py-0.2 rounded bg-[#E2F4F3] border border-[#B9E7E6] text-[#0891b2] font-mono text-[9px] font-bold">
+                                            PDF
+                                          </span>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
                                 </button>
@@ -320,30 +327,70 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
                                     Back to list
                                   </button>
 
-                                  {getSelectedAchievementDetail()?.achievement.certificateUrl ? (
-                                    <>
-                                      <div className="flex-1 relative mb-6 min-h-[300px]">
-                                        <Image
-                                          src={getSelectedAchievementDetail()?.achievement.certificateUrl as string}
-                                          alt={`Certificate: ${getSelectedAchievementDetail()?.achievement.title ?? 'achievement'}`}
-                                          fill
-                                          className="object-contain rounded-xl"
-                                        />
-                                      </div>
-                                      {getSelectedAchievementDetail()?.achievement.credentialUrl && (
-                                        <div className="text-center mt-auto">
-                                          <Button
-                                            variant="outline"
-                                            className="border-[#6FD4E1] text-[#0c282d] hover:bg-[#6FD4E1]/20 font-bold"
-                                            onClick={() => window.open(getSelectedAchievementDetail()?.achievement.credentialUrl, '_blank')}
-                                          >
-                                            <ExternalLink className="w-4 h-4 mr-2 text-[#0891b2]" />
-                                            Verify Credential
-                                          </Button>
+                                  {(() => {
+                                    const certUrl = getSelectedAchievementDetail()?.achievement.certificateUrl;
+                                    if (!certUrl) return null;
+
+                                    const isPdf = Boolean(certUrl.toLowerCase().endsWith('.pdf') || certUrl.includes('.pdf?'));
+                                    const isCloudinaryPdf = isPdf && Boolean(certUrl.includes('res.cloudinary.com'));
+                                    // In Cloudinary, requesting page 1 as .jpg renders the PDF identical to an image!
+                                    const displayImageSrc = isCloudinaryPdf ? certUrl.replace(/\.pdf(\?.*)?$/i, '.jpg$1') : certUrl;
+
+                                    return (
+                                      <>
+                                        <div className="flex-1 relative mb-6 min-h-[300px]">
+                                          {isPdf && !isCloudinaryPdf ? (
+                                            <div className="w-full h-full min-h-[300px] rounded-xl overflow-hidden border border-[#B9E7E6] bg-white shadow-xs">
+                                              <object
+                                                data={`${certUrl}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
+                                                type="application/pdf"
+                                                className="w-full h-full min-h-[300px] rounded-xl"
+                                              >
+                                                <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center">
+                                                  <FileText className="w-12 h-12 text-[#0891b2] mb-3" />
+                                                  <p className="font-bold text-[#0c282d] text-base mb-1">PDF Certificate</p>
+                                                  <p className="text-xs text-[#527d85]">Click below to open and verify the certificate document.</p>
+                                                </div>
+                                              </object>
+                                            </div>
+                                          ) : (
+                                            <div className="relative w-full h-full min-h-[300px]">
+                                              <Image
+                                                src={displayImageSrc}
+                                                alt={`Certificate: ${getSelectedAchievementDetail()?.achievement.title ?? 'achievement'}`}
+                                                fill
+                                                className="object-contain rounded-xl"
+                                              />
+                                            </div>
+                                          )}
                                         </div>
-                                      )}
-                                    </>
-                                  ) : (
+
+                                        <div className="flex items-center justify-center gap-3 mt-auto flex-wrap">
+                                          {isPdf && (
+                                            <Button
+                                              variant="outline"
+                                              className="border-[#0891b2] text-[#0891b2] hover:bg-[#E2F4F3] font-bold"
+                                              onClick={() => window.open(certUrl, '_blank')}
+                                            >
+                                              <FileText className="w-4 h-4 mr-2" />
+                                              Open PDF Certificate
+                                            </Button>
+                                          )}
+
+                                          {getSelectedAchievementDetail()?.achievement.credentialUrl && (
+                                            <Button
+                                              variant="outline"
+                                              className="border-[#6FD4E1] text-[#0c282d] hover:bg-[#6FD4E1]/20 font-bold"
+                                              onClick={() => window.open(getSelectedAchievementDetail()?.achievement.credentialUrl, '_blank')}
+                                            >
+                                              <ExternalLink className="w-4 h-4 mr-2 text-[#0891b2]" />
+                                              Verify Credential
+                                            </Button>
+                                          )}
+                                        </div>
+                                      </>
+                                    );
+                                  })() || (
                                     <div className="flex-1 flex flex-col items-center justify-center text-center">
                                       <div className="w-24 h-24 rounded-2xl bg-[#E2F4F3] border border-[#B9E7E6] flex items-center justify-center mb-8 rotate-3 shadow-sm">
                                         <Award className="w-12 h-12 text-[#0891b2]" />

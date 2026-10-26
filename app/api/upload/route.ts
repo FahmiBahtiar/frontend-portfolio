@@ -13,9 +13,14 @@ export async function POST(request: NextRequest) {
   }
 
   // Client-side pre-checks (the backend re-validates by magic bytes + auth).
-  if (!file.type.startsWith('image/')) {
+  const isImageOrPdf =
+    file.type.startsWith('image/') ||
+    file.type === 'application/pdf' ||
+    file.name.toLowerCase().endsWith('.pdf');
+
+  if (!isImageOrPdf) {
     return NextResponse.json(
-      { success: false, message: 'File must be an image' },
+      { success: false, message: 'File must be an image or a PDF document' },
       { status: 400 },
     );
   }
