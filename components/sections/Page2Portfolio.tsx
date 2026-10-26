@@ -218,7 +218,7 @@ export function Page2Portfolio({ onNavigate }: Page2PortfolioProps = {}) {
                   {passions.map((passion, index) => {
                     const Icon = getIcon(passion.icon);
                     const statsData = getStatsData(passion);
-                    const cleanTitle = passion.title.replace(/Developerr/g, 'Developer');
+                    const cleanTitle = passion.title;
                     
                     return (
                       <motion.div
