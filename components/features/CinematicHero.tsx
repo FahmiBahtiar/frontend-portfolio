@@ -97,7 +97,7 @@ export function CinematicHero({ onNavigate, isReady = true }: CinematicHeroProps
   const { data: heroProfile, isLoading: loading } = useSWR(
     'heroProfile',
     () => HeroService.getHeroProfile(),
-    { errorRetryCount: 3, errorRetryInterval: 1000 }
+    { errorRetryCount: 3, errorRetryInterval: 1000, revalidateOnMount: true, revalidateOnFocus: true }
   );
 
   const { data: spotifyData, isLoading: spotifyLoading } = useSWR(

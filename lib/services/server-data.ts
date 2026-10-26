@@ -67,7 +67,7 @@ export async function getHeroProfileServer() {
       API_CONFIG.PUBLIC_ENDPOINTS.HERO_PROFILE,
       {
         next: {
-          revalidate: 3600, // Cache 1 jam
+          revalidate: 60, // Short cache to reflect updates promptly
           tags: ['hero-profile'],
         },
       }
@@ -85,7 +85,7 @@ export async function getSocialLinksServer() {
       API_CONFIG.PUBLIC_ENDPOINTS.HERO_SOCIAL,
       {
         next: {
-          revalidate: 3600, // Cache 1 jam
+          revalidate: 60,
           tags: ['social-links'],
         },
       }
