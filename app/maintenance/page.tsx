@@ -1,6 +1,17 @@
+import type { Metadata } from 'next';
 import { CalendarClock, Mail, Wrench, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/config';
+
+export const metadata: Metadata = {
+  title: 'Under Maintenance | Fahmi Bahtiar',
+  description: 'System is currently undergoing scheduled infrastructure upgrades.',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+};
 
 const BACKEND_URL = API_BASE_URL;
 

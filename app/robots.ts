@@ -10,12 +10,24 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/admin/', '/_next/', '/assets/private/'],
+        disallow: [
+          '/api/',
+          '/admin',
+          '/admin/',
+          '/maintenance',
+          '/_next/',
+          '/assets/private/',
+        ],
       },
       {
         userAgent: 'Googlebot',
         allow: '/',
-        disallow: ['/api/', '/admin/'],
+        disallow: [
+          '/api/',
+          '/admin',
+          '/admin/',
+          '/maintenance',
+        ],
       },
       {
         userAgent: 'Googlebot-Image',
