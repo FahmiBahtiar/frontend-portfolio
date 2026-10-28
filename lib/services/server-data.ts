@@ -1,7 +1,7 @@
 // Server-side data fetching service untuk SEO optimization
 // File ini hanya digunakan di Server Components (tidak di client-side)
 
-import { API_CONFIG } from '@/lib/api';
+import { API_CONFIG } from '../api';
 import type {
   ApiResponse,
   HeroProfile,
@@ -15,7 +15,7 @@ import type {
   FlightEntry,
   HangarItem,
   ContactFrequency,
-} from '@/lib/types/admin';
+} from '../types/admin';
 
 // Extend cache options untuk Next.js 15
 interface FetchOptions extends RequestInit {
@@ -270,13 +270,15 @@ export async function getContactInfoServer() {
 // Function untuk mendapatkan semua data sekaligus (untuk metadata generation)
 export async function getAllDataForSEO() {
   try {
-    const [hero, social, passions, education, projects, skills] = await Promise.allSettled([
+    const [hero, social, passions, education, projects, skills, achievements, flights] = await Promise.allSettled([
       getHeroProfileServer(),
       getSocialLinksServer(),
       getPassionsServer(),
       getEducationRecordsServer(),
       getProjectsServer(),
       getSkillsServer(),
+      getAchievementsServer(),
+      getFlightsServer(),
     ]);
 
     return {
@@ -286,6 +288,8 @@ export async function getAllDataForSEO() {
       education: education.status === 'fulfilled' ? education.value : [],
       projects: projects.status === 'fulfilled' ? projects.value : [],
       skills: skills.status === 'fulfilled' ? skills.value : [],
+      achievements: achievements.status === 'fulfilled' ? achievements.value : [],
+      flights: flights.status === 'fulfilled' ? flights.value : [],
     };
   } catch (error) {
     console.error('Failed to fetch all data for SEO:', error);
@@ -296,6 +300,8 @@ export async function getAllDataForSEO() {
       education: [],
       projects: [],
       skills: [],
+      achievements: [],
+      flights: [],
     };
   }
 }

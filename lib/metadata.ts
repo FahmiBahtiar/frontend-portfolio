@@ -1,8 +1,8 @@
 // Dynamic Metadata Generator untuk SEO
 import { Metadata } from 'next';
 import { getAllDataForSEO } from './services/server-data';
-import { SITE_URL } from '@/lib/config';
-import type { Passion, SocialLink, Education, HeroProfile } from '@/lib/types/admin';
+import { SITE_URL } from './config';
+import type { Passion, SocialLink, Education, HeroProfile, Achievement, FlightEntry } from './types/admin';
 
 // Hero data as consumed for JSON-LD: the schema reads an optional `photo`
 // field that the API may include beyond the base HeroProfile type.
@@ -125,7 +125,7 @@ export async function generateDynamicMetadata(): Promise<Metadata> {
       return defaultMetadata;
     }
 
-    const { hero, passions, education, projects } = data;
+    const { hero, passions, education, projects, achievements = [], flights = [] } = data;
     
     // Build title dari data
     const title = hero.name || 'Fahmi Bahtiar';
@@ -140,9 +140,15 @@ export async function generateDynamicMetadata(): Promise<Metadata> {
     // Build keywords
     const skillKeywords = hero.techStack?.map((tech) => tech.label.toLowerCase()) || [];
     const passionKeywords = passions.map((p: Passion) => p.title.toLowerCase());
+    const certKeywords = achievements.map((ach: Achievement) => ach.title.toLowerCase());
+    const issuerKeywords = achievements.map((ach: Achievement) => ach.issuer.toLowerCase());
+    const companyKeywords = flights.map((f: FlightEntry) => f.company.toLowerCase());
     const keywords = [
       ...skillKeywords,
       ...passionKeywords,
+      ...certKeywords,
+      ...issuerKeywords,
+      ...companyKeywords,
       'backend developer',
       'fullstack developer',
       'portfolio',
@@ -186,7 +192,7 @@ export async function generateStructuredData() {
       return null;
     }
 
-    const { social, education, projects } = data;
+    const { social, education, projects, achievements = [], flights = [] } = data;
     const hero = data.hero as SEOHero;
 
     // Person Schema
@@ -207,6 +213,34 @@ export async function generateStructuredData() {
         endDate: edu.endDate,
       })),
       knowsAbout: hero.techStack?.map((tech) => tech.label) || [],
+      ...(flights.length > 0
+        ? {
+            worksFor: flights
+              .filter((f: FlightEntry) => Boolean(f.company))
+              .map((f: FlightEntry) => ({
+                '@type': 'Organization',
+                name: f.company,
+              })),
+          }
+        : {}),
+      ...(achievements.length > 0
+        ? {
+            hasCredential: achievements.map((ach: Achievement) => ({
+              '@type': 'EducationalOccupationalCredential',
+              name: ach.title,
+              credentialCategory: ach.category === 'aviation' ? 'Aviation Credential' : 'Certificate',
+              recognizedBy: {
+                '@type': 'Organization',
+                name: ach.issuer,
+              },
+              ...(ach.credentialUrl || ach.certificateUrl
+                ? { url: ach.credentialUrl || ach.certificateUrl }
+                : {}),
+              ...(ach.description ? { description: ach.description } : {}),
+              ...(ach.date ? { dateCreated: ach.date } : {}),
+            })),
+          }
+        : {}),
     };
 
     // Website Schema
@@ -258,11 +292,39 @@ export async function generateStructuredData() {
       })),
     } : null;
 
+    // Credentials / Achievements Schema (ItemList)
+    const credentialsSchema = achievements.length > 0 ? {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Certifications and Credentials',
+      description: 'Licenses, certifications, and awards earned by Fahmi Bahtiar Adi Nugroho',
+      numberOfItems: achievements.length,
+      itemListElement: achievements.map((ach: Achievement, index: number) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'EducationalOccupationalCredential',
+          name: ach.title,
+          credentialCategory: ach.category === 'aviation' ? 'Aviation Credential' : 'Certificate',
+          recognizedBy: {
+            '@type': 'Organization',
+            name: ach.issuer,
+          },
+          ...(ach.credentialUrl || ach.certificateUrl
+            ? { url: ach.credentialUrl || ach.certificateUrl }
+            : {}),
+          ...(ach.description ? { description: ach.description } : {}),
+          ...(ach.date ? { dateCreated: ach.date } : {}),
+        },
+      })),
+    } : null;
+
     return {
       personSchema,
       websiteSchema,
       profilePageSchema,
       portfolioSchema: portfolioSchema || undefined,
+      credentialsSchema: credentialsSchema || undefined,
     };
   } catch (error) {
     console.error('Error generating structured data:', error);

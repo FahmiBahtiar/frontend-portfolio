@@ -100,6 +100,15 @@ export default async function RootLayout({
                 }}
               />
             )}
+            {structuredData.credentialsSchema && (
+              <script
+                type="application/ld+json"
+                nonce={nonce}
+                dangerouslySetInnerHTML={{
+                  __html: serializeJsonLd(structuredData.credentialsSchema),
+                }}
+              />
+            )}
           </>
         )}
       </head>
