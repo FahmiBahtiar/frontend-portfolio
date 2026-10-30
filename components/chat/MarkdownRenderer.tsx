@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { ExternalLink } from 'lucide-react';
+import { extractLinkTokens } from '@/lib/chat/chat-helpers';
 
 interface MarkdownRendererProps {
   content: string;
@@ -8,13 +10,13 @@ interface MarkdownRendererProps {
 
 /**
  * Lightweight, safe, zero-dependency Markdown renderer for chat messages.
- * Formats bold, italics, inline code, bullet lists, and paragraphs cleanly
- * adhering to the Arctic Ice palette.
+ * Formats bold, italics, inline code, clickable links/emails/URLs, bullet lists,
+ * and paragraphs cleanly adhering to the Arctic Ice palette.
  */
 export function MarkdownRenderer({ content }: MarkdownRendererProps) {
   if (!content) return null;
 
-  // Split text into blocks by double newline (or single if bullet list)
+  // Split text into blocks by line
   const lines = content.split('\n');
   const elements: React.ReactNode[] = [];
   let currentList: { type: 'ul' | 'ol'; items: string[] } | null = null;
@@ -58,7 +60,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
       continue;
     }
 
-    // Bullet List (- or *)
+    // Bullet List (- or * or •)
     const bulletMatch = trimmed.match(/^[-*•]\s+(.*)$/);
     if (bulletMatch) {
       if (currentList && currentList.type !== 'ul') {
@@ -115,7 +117,34 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
 }
 
 /**
- * Parses inline markdown: **bold**, *italic*, `code`, and plain text.
+ * Renders text and automatically transforms links/emails/URLs into styled clickable anchors.
+ */
+function renderLinks(text: string, prefixKey: string | number): React.ReactNode[] {
+  const tokens = extractLinkTokens(text);
+  return tokens.map((token, i) => {
+    const key = `${prefixKey}-link-${i}`;
+    if (token.type === 'link' && token.href) {
+      return (
+        <a
+          key={key}
+          href={token.href}
+          target={token.isExternal ? '_blank' : undefined}
+          rel={token.isExternal ? 'noopener noreferrer' : undefined}
+          className="inline-flex items-center gap-0.5 font-medium text-[#0284c7] hover:text-[#0369a1] underline decoration-[#6FD4E1]/80 hover:decoration-[#0284c7] underline-offset-2 transition-colors cursor-pointer break-all"
+        >
+          <span>{token.content}</span>
+          {token.isExternal && (
+            <ExternalLink className="w-2.5 h-2.5 inline-block opacity-70 shrink-0 ml-0.5" />
+          )}
+        </a>
+      );
+    }
+    return token.content;
+  });
+}
+
+/**
+ * Parses inline markdown: **bold**, *italic*, `code`, and links.
  */
 function renderInline(text: string): React.ReactNode[] {
   // Regex splitting by bold (**...**), italic (*...* or _..._), and code (`...`)
@@ -129,7 +158,7 @@ function renderInline(text: string): React.ReactNode[] {
     if (seg.startsWith('**') && seg.endsWith('**') && seg.length >= 4) {
       parts.push(
         <strong key={idx} className="font-semibold text-[#0c282d]">
-          {seg.slice(2, -2)}
+          {renderLinks(seg.slice(2, -2), `b-${idx}`)}
         </strong>
       );
     } else if (
@@ -138,7 +167,7 @@ function renderInline(text: string): React.ReactNode[] {
     ) {
       parts.push(
         <em key={idx} className="italic text-[#2d5a63]">
-          {seg.slice(1, -1)}
+          {renderLinks(seg.slice(1, -1), `i-${idx}`)}
         </em>
       );
     } else if (seg.startsWith('`') && seg.endsWith('`') && seg.length >= 2) {
@@ -151,7 +180,7 @@ function renderInline(text: string): React.ReactNode[] {
         </code>
       );
     } else {
-      parts.push(seg);
+      parts.push(...renderLinks(seg, `t-${idx}`));
     }
   });
 
