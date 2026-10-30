@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, MotionConfig } from 'motion/react';
 import { MessageSquare, X, RotateCcw, Bot, Sparkles, ExternalLink } from 'lucide-react';
 import { useChatbot } from '@/lib/hooks/useChatbot';
 import { ChatMessageList } from './ChatMessageList';
@@ -21,8 +21,9 @@ export function ChatWidget() {
   } = useChatbot();
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
-      {/* Expandable Chat Window */}
+    <MotionConfig reducedMotion="never">
+      <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end allow-motion">
+        {/* Expandable Chat Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -186,5 +187,6 @@ export function ChatWidget() {
         </motion.button>
       </div>
     </div>
-  );
+  </MotionConfig>
+);
 }

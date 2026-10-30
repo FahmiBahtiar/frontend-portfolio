@@ -25,7 +25,7 @@ export function AnimatedRobot({ className = '', size = 32, glow = true }: Animat
         repeat: Infinity,
         ease: 'easeInOut',
       }}
-      className={`relative inline-flex items-center justify-center select-none ${className}`}
+      className={`relative inline-flex items-center justify-center select-none allow-motion keep-gfx ${className}`}
       style={{ width: size, height: size }}
     >
       <svg
