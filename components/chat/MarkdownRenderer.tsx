@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
-import { extractLinkTokens } from '@/lib/chat/chat-helpers';
+import { parseInlineContent, ParsedInlineNode } from '@/lib/chat/chat-helpers';
 
 interface MarkdownRendererProps {
   content: string;
@@ -117,72 +117,58 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
 }
 
 /**
- * Renders text and automatically transforms links/emails/URLs into styled clickable anchors.
+ * Recursively renders a parsed inline node into React elements.
  */
-function renderLinks(text: string, prefixKey: string | number): React.ReactNode[] {
-  const tokens = extractLinkTokens(text);
-  return tokens.map((token, i) => {
-    const key = `${prefixKey}-link-${i}`;
-    if (token.type === 'link' && token.href) {
+function renderNode(node: ParsedInlineNode, key: string | number): React.ReactNode {
+  switch (node.type) {
+    case 'code':
+      return (
+        <code
+          key={key}
+          className="bg-[#B9E7E6]/40 px-1 py-0.5 rounded text-[11px] font-mono text-[#0c282d]"
+        >
+          {node.content}
+        </code>
+      );
+    case 'bold':
+      return (
+        <strong key={key} className="font-semibold text-[#0c282d]">
+          {node.children && node.children.length > 0
+            ? node.children.map((c, i) => renderNode(c, `${key}-b-${i}`))
+            : node.content}
+        </strong>
+      );
+    case 'italic':
+      return (
+        <em key={key} className="italic text-[#2d5a63]">
+          {node.content}
+        </em>
+      );
+    case 'link':
       return (
         <a
           key={key}
-          href={token.href}
-          target={token.isExternal ? '_blank' : undefined}
-          rel={token.isExternal ? 'noopener noreferrer' : undefined}
+          href={node.href}
+          target={node.isExternal ? '_blank' : undefined}
+          rel={node.isExternal ? 'noopener noreferrer' : undefined}
           className="inline-flex items-center gap-0.5 font-medium text-[#0284c7] hover:text-[#0369a1] underline decoration-[#6FD4E1]/80 hover:decoration-[#0284c7] underline-offset-2 transition-colors cursor-pointer break-all"
         >
-          <span>{token.content}</span>
-          {token.isExternal && (
+          <span>{node.content}</span>
+          {node.isExternal && (
             <ExternalLink className="w-2.5 h-2.5 inline-block opacity-70 shrink-0 ml-0.5" />
           )}
         </a>
       );
-    }
-    return token.content;
-  });
+    case 'text':
+    default:
+      return node.content;
+  }
 }
 
 /**
- * Parses inline markdown: **bold**, *italic*, `code`, and links.
+ * Parses inline markdown: **bold**, *italic*, `code`, and links without breaking underscores.
  */
 function renderInline(text: string): React.ReactNode[] {
-  // Regex splitting by bold (**...**), italic (*...* or _..._), and code (`...`)
-  const parts: React.ReactNode[] = [];
-  const regex = /(\*\*.*?\*\*|\*.*?\*|`.*?`|_.*?_)/g;
-  const segments = text.split(regex);
-
-  segments.forEach((seg, idx) => {
-    if (!seg) return;
-
-    if (seg.startsWith('**') && seg.endsWith('**') && seg.length >= 4) {
-      parts.push(
-        <strong key={idx} className="font-semibold text-[#0c282d]">
-          {renderLinks(seg.slice(2, -2), `b-${idx}`)}
-        </strong>
-      );
-    } else if (
-      (seg.startsWith('*') && seg.endsWith('*') && seg.length >= 2) ||
-      (seg.startsWith('_') && seg.endsWith('_') && seg.length >= 2)
-    ) {
-      parts.push(
-        <em key={idx} className="italic text-[#2d5a63]">
-          {renderLinks(seg.slice(1, -1), `i-${idx}`)}
-        </em>
-      );
-    } else if (seg.startsWith('`') && seg.endsWith('`') && seg.length >= 2) {
-      parts.push(
-        <code
-          key={idx}
-          className="bg-[#B9E7E6]/40 px-1 py-0.5 rounded text-[11px] font-mono text-[#0c282d]"
-        >
-          {seg.slice(1, -1)}
-        </code>
-      );
-    } else {
-      parts.push(...renderLinks(seg, `t-${idx}`));
-    }
-  });
-
-  return parts;
+  const nodes = parseInlineContent(text);
+  return nodes.map((node, idx) => renderNode(node, idx));
 }

@@ -4,6 +4,7 @@ import {
   parseSseStreamChunk,
   formatSafeLinkHref,
   extractLinkTokens,
+  parseInlineContent,
 } from './chat-helpers';
 
 describe('chat-helpers', () => {
@@ -153,6 +154,64 @@ describe('chat-helpers', () => {
       expect(tokens).toEqual([
         { type: 'text', content: 'Klik ' },
         { type: 'text', content: 'Disini' },
+      ]);
+    });
+  });
+
+  describe('parseInlineContent & underscore preservation', () => {
+    it('preserves handles with underscores without triggering italics', () => {
+      const nodes = parseInlineContent('Instagram: @fhm_bhtr.an');
+      expect(nodes).toEqual([
+        { type: 'text', content: 'Instagram: @fhm_bhtr.an' },
+      ]);
+    });
+
+    it('preserves URLs and markdown links containing underscores', () => {
+      const nodes = parseInlineContent(
+        'IG: [@fhm_bhtr.an](https://instagram.com/fhm_bhtr.an)'
+      );
+      expect(nodes).toEqual([
+        { type: 'text', content: 'IG: ' },
+        {
+          type: 'link',
+          content: '@fhm_bhtr.an',
+          href: 'https://instagram.com/fhm_bhtr.an',
+          isExternal: true,
+        },
+      ]);
+    });
+
+    it('preserves trailing underscores like blimbing_', () => {
+      const nodes = parseInlineContent('Discord: blimbing_');
+      expect(nodes).toEqual([
+        { type: 'text', content: 'Discord: blimbing_' },
+      ]);
+    });
+
+    it('correctly handles bold around usernames with underscores', () => {
+      const nodes = parseInlineContent('**@fhm_bhtr.an**');
+      expect(nodes).toEqual([
+        {
+          type: 'bold',
+          content: '@fhm_bhtr.an',
+          children: [{ type: 'text', content: '@fhm_bhtr.an' }],
+        },
+      ]);
+    });
+
+    it('allows legitimate markdown italics with asterisks or bounded underscores', () => {
+      const asteriskNodes = parseInlineContent('Ini *miring* ya');
+      expect(asteriskNodes).toEqual([
+        { type: 'text', content: 'Ini ' },
+        { type: 'italic', content: 'miring' },
+        { type: 'text', content: ' ya' },
+      ]);
+
+      const underscoreNodes = parseInlineContent('Ini _miring_ ya');
+      expect(underscoreNodes).toEqual([
+        { type: 'text', content: 'Ini ' },
+        { type: 'italic', content: 'miring' },
+        { type: 'text', content: ' ya' },
       ]);
     });
   });
