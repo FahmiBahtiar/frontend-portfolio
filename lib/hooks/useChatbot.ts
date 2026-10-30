@@ -117,13 +117,33 @@ export function useChatbot() {
         ]);
 
         let accumulatedContent = '';
+        let sseBuffer = '';
 
         while (true) {
           const { done, value } = await reader.read();
-          if (done) break;
+          if (done) {
+            if (sseBuffer.trim().length > 0) {
+              const remainingEvents = parseSseStreamChunk(sseBuffer);
+              for (const ev of remainingEvents) {
+                if (ev.type === 'chunk' && ev.text) {
+                  accumulatedContent += ev.text;
+                }
+              }
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId ? { ...msg, content: accumulatedContent } : msg
+                )
+              );
+            }
+            break;
+          }
 
-          const chunkText = decoder.decode(value, { stream: true });
-          const events = parseSseStreamChunk(chunkText);
+          sseBuffer += decoder.decode(value, { stream: true });
+          const lines = sseBuffer.split('\n');
+          // Retain last partial line in buffer
+          sseBuffer = lines.pop() || '';
+
+          const events = parseSseStreamChunk(lines.join('\n'));
 
           for (const ev of events) {
             if (ev.type === 'session' && ev.sessionId) {

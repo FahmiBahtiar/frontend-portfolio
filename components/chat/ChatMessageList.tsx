@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bot, User, Sparkles } from 'lucide-react';
 import type { ChatMessage } from '@/lib/hooks/useChatbot';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface ChatMessageListProps {
   messages: ChatMessage[];
@@ -72,13 +73,17 @@ export function ChatMessageList({ messages, isLoading }: ChatMessageListProps) {
               </div>
 
               <div
-                className={`max-w-[78%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed shadow-xs ${
+                className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed shadow-xs ${
                   isUser
                     ? 'bg-[#0c282d] text-white rounded-tr-none'
-                    : 'bg-white/90 text-[#0c282d] border border-[#B9E7E6] rounded-tl-none backdrop-blur-xs'
+                    : 'bg-white/95 text-[#0c282d] border border-[#B9E7E6] rounded-tl-none backdrop-blur-xs'
                 }`}
               >
-                <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                {isUser ? (
+                  <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                ) : (
+                  <MarkdownRenderer content={msg.content} />
+                )}
               </div>
             </motion.div>
           );
