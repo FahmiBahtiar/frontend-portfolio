@@ -7,6 +7,7 @@ import { WebVitals } from '@/components/features/WebVitals';
 import { FlightCursor } from '@/components/features/FlightCursor';
 import { MotionProvider } from '@/components/providers/MotionProvider';
 import { GraphicsModeProvider } from '@/components/providers/GraphicsModeProvider';
+import { ChatWidgetWrapper } from '@/components/chat/ChatWidgetWrapper';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -108,6 +109,7 @@ export default async function RootLayout({
         <WebVitals />
         <MotionProvider>
           <GraphicsModeProvider>{children}</GraphicsModeProvider>
+          <ChatWidgetWrapper />
         </MotionProvider>
       </body>
     </html>
