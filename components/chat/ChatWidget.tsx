@@ -110,21 +110,39 @@ export function ChatWidget() {
         <AnimatePresence>
           {!isOpen && (
             <motion.div
-              initial={{ opacity: 0, x: 12, scale: 0.95 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 12, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
+              initial={{ opacity: 0, x: 14, scale: 0.9 }}
+              animate={{
+                opacity: 1,
+                x: 0,
+                scale: 1,
+                y: [0, -3, 0],
+              }}
+              exit={{ opacity: 0, x: 14, scale: 0.9 }}
+              transition={{
+                y: { duration: 3.2, repeat: Infinity, ease: 'easeInOut' },
+                duration: 0.25,
+              }}
+              whileHover={{ scale: 1.04, y: -3 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => setIsOpen(true)}
               className="flex items-center gap-2.5 pl-3.5 pr-4 py-2 rounded-full bg-white/95 border border-[#6FD4E1]/50 backdrop-blur-md shadow-lg hover:shadow-xl cursor-pointer transition-all hover:border-[#6FD4E1] group select-none"
             >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
+              <motion.span
+                animate={{ rotate: [0, 18, -10, 18, -4, 0] }}
+                transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 2, ease: 'easeInOut' }}
+                className="text-sm select-none origin-bottom-right"
+              >
+                👋
+              </motion.span>
               <div className="flex flex-col text-left">
                 <span className="text-xs font-bold text-[#0c282d] flex items-center gap-1 group-hover:text-[#0891b2] transition-colors">
                   Mochi
-                  <Sparkles className="w-3 h-3 text-[#2d5a63]" />
+                  <motion.span
+                    animate={{ rotate: [0, 20, -20, 0], scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                  >
+                    <Sparkles className="w-3 h-3 text-[#2d5a63]" />
+                  </motion.span>
                 </span>
                 <span className="text-[10px] text-[#2d5a63] font-medium leading-none mt-0.5">
                   asisten pribadi fahmi
@@ -135,10 +153,10 @@ export function ChatWidget() {
         </AnimatePresence>
 
         <motion.button
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.94 }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
           onClick={() => setIsOpen(!isOpen)}
-          className="w-13 h-13 rounded-full bg-[#0c282d] hover:bg-[#163e46] text-[#6FD4E1] flex items-center justify-center shadow-xl border border-[#6FD4E1]/40 cursor-pointer transition-colors relative"
+          className="w-13 h-13 rounded-full bg-[#0c282d] hover:bg-[#163e46] text-[#6FD4E1] flex items-center justify-center shadow-xl border border-[#6FD4E1]/40 cursor-pointer transition-all relative overflow-hidden"
           aria-label={isOpen ? 'Tutup Chatbot' : 'Buka Chatbot Mochi'}
         >
           <AnimatePresence mode="wait">
@@ -161,11 +179,7 @@ export function ChatWidget() {
                 transition={{ duration: 0.15 }}
                 className="relative flex items-center justify-center"
               >
-                <AnimatedRobot size={32} />
-                <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6FD4E1] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#6FD4E1]" />
-                </span>
+                <AnimatedRobot size={34} />
               </motion.div>
             )}
           </AnimatePresence>
