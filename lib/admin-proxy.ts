@@ -145,9 +145,9 @@ export async function proxyMultipartToBackend(
  */
 export async function proxyInternal(
   backendPath: string,
-  init: { method?: string; body?: BodyInit | null } = {},
+  init: { method?: string; body?: BodyInit | null; role?: 'admin' } = {},
 ): Promise<NextResponse> {
-  const gate = await requireAdmin();
+  const gate = await requireAdmin({ role: init.role });
   if (!gate.ok) return gate.response;
 
   let token: string;

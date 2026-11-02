@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Upload, X, Image as ImageIcon, Loader2, FileText, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
+import { safeExternalUrl } from '@/lib/safe-url';
 
 interface ImageUploadProps {
   value?: string;
@@ -164,9 +165,9 @@ export function ImageUpload({
                 <span className="text-[11px] text-[#527d85] truncate max-w-[220px] mb-2 font-mono">
                   {preview.startsWith('data:') ? 'Document Loaded' : preview}
                 </span>
-                {!preview.startsWith('data:') && (
+                {!preview.startsWith('data:') && safeExternalUrl(preview) && (
                   <a
-                    href={preview}
+                    href={safeExternalUrl(preview)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white border border-[#B9E7E6] text-xs font-bold text-[#0891b2] hover:bg-[#E2F4F3] transition-colors"

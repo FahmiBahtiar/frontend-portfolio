@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { proxyMultipartToBackend } from '@/lib/admin-proxy';
+import { proxyMultipartToBackend, requireAdmin } from '@/lib/admin-proxy';
 
 export async function POST(request: NextRequest) {
-  const data = await request.formData();
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
+
+  let data: FormData;
+  try {
+    data = await request.formData();
+  } catch {
+    return NextResponse.json(
+      { success: false, message: 'Invalid form data' },
+      { status: 400 },
+    );
+  }
   const file = data.get('file') as File | null;
 
   if (!file) {

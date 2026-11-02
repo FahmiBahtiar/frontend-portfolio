@@ -9,5 +9,6 @@ export async function GET(
   const { email } = await params;
   return proxyInternal(
     `/api/admin/auth/users/check/${encodeURIComponent(email)}`,
+    { role: 'admin' },
   );
 }

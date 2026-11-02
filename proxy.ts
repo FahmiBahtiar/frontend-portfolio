@@ -110,7 +110,7 @@ export async function proxy(request: NextRequest) {
 
   // Protect admin API routes at the edge (defense in depth — each route handler
   // also gates via requireAdmin()). Return 401 JSON, not an HTML redirect.
-  if (pathname.startsWith('/api/admin')) {
+  if (pathname.startsWith('/api/admin') || pathname === '/api/upload') {
     const session = await auth();
     if (!session?.user?.email) {
       return withCsp(

@@ -28,6 +28,7 @@ import {
   Plus
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/config';
+import { safeExternalUrl } from '@/lib/safe-url';
 
 type CategoryType = 'github';
 
@@ -498,9 +499,9 @@ export function AircraftHangar() {
                       )}
 
                       {/* Action Button (GitHub only) */}
-                      {selectedItem.url && (
+                      {safeExternalUrl(selectedItem.url) && (
                         <a
-                          href={selectedItem.url}
+                          href={safeExternalUrl(selectedItem.url)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="block w-full py-3 rounded-xl border border-[#6FD4E1] bg-[#6FD4E1] text-[#0c282d] hover:bg-[#B9E7E6] transition-all text-center font-mono uppercase tracking-wider text-sm font-bold shadow-sm"

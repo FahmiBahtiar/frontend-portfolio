@@ -1,0 +1,14 @@
+services:
+  frontend-portfolio:
+    build: .
+    image: frontend-portfolio:latest
+    container_name: frontend-portfolio
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    mem_limit: 300m
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    env_file:
+      - .env

@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { safeExternalUrl } from '@/lib/safe-url';
 
 export default function SocialLinksPage() {
   const { data: socialLinks = [], mutate, isLoading, error } = useSWR('social-links', () => HeroService.getSocialLinks());
@@ -130,17 +131,24 @@ export default function SocialLinksPage() {
     {
       key: 'url',
       label: 'URL',
-      render: (item: SocialLink) => (
-        <a
-          href={item.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-cyan-400 hover:text-cyan-300 hover:underline text-sm truncate max-w-[200px] block"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {item.url}
-        </a>
-      ),
+      render: (item: SocialLink) => {
+        const safeUrl = safeExternalUrl(item.url);
+        return safeUrl ? (
+          <a
+            href={safeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-cyan-400 hover:text-cyan-300 hover:underline text-sm truncate max-w-[200px] block"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {item.url}
+          </a>
+        ) : (
+          <span className="text-muted-foreground text-sm truncate max-w-[200px] block">
+            {item.url}
+          </span>
+        );
+      },
     },
     {
       key: 'order',
