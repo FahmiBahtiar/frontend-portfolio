@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { API_BASE_URL } from '@/lib/config';
+import { INTERNAL_API_URL } from '@/lib/config';
 
-const BACKEND_URL = API_BASE_URL;
+const BACKEND_URL = INTERNAL_API_URL;
 
 export async function GET() {
   try {

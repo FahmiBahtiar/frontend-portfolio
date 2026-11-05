@@ -9,6 +9,10 @@
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
+/** Server-side internal API URL for server-to-server calls (falls back to API_BASE_URL). */
+export const INTERNAL_API_URL =
+  process.env.INTERNAL_API_URL || API_BASE_URL;
+
 /** Public site origin (used for SEO: canonical, sitemap, robots, metadata). */
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || 'https://blimbing.me';

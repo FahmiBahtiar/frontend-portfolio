@@ -1,8 +1,10 @@
 // API Configuration
-import { API_BASE_URL } from '@/lib/config';
+import { API_BASE_URL, INTERNAL_API_URL } from '@/lib/config';
 
 export const API_CONFIG = {
-  BASE_URL: API_BASE_URL,
+  get BASE_URL() {
+    return typeof window === 'undefined' ? INTERNAL_API_URL : API_BASE_URL;
+  },
   TIMEOUT: 8000, // 8 seconds — enough for cold start
 
   // Admin (authenticated write) endpoints. Used for POST/PUT/DELETE that go

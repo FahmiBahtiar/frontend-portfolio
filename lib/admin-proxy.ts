@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { mintUserToken, mintInternalToken } from '@/lib/backend-auth';
-import { API_BASE_URL } from '@/lib/config';
+import { API_BASE_URL, INTERNAL_API_URL } from '@/lib/config';
 
-const BACKEND_URL = API_BASE_URL;
+const BACKEND_URL = INTERNAL_API_URL;
 
 export interface AdminSession {
   email: string;

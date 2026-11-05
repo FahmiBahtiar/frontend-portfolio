@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { API_BASE_URL } from '@/lib/config';
+import { INTERNAL_API_URL } from '@/lib/config';
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     // In a real implementation, you might want to check file modification times
 
     // You can also get this from your backend API
-    const backendUrl = API_BASE_URL;
+    const backendUrl = INTERNAL_API_URL;
 
     try {
       // Try to get from backend first

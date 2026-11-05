@@ -1,10 +1,50 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from '@/lib/auth';
-import { API_BASE_URL } from '@/lib/config';
+import { API_BASE_URL, INTERNAL_API_URL } from '@/lib/config';
 
-const BACKEND_URL = API_BASE_URL;
+const BACKEND_URL = INTERNAL_API_URL;
 const PUBLIC_FILE = /\.(.*)$/;
+
+// In-memory cache for maintenance check to avoid blocking fetch on every request
+let maintenanceCache: { isActive: boolean; expiresAt: number } | null = null;
+const MAINTENANCE_CACHE_TTL_MS = 20_000; // 20s TTL
+
+async function checkMaintenanceStatus(): Promise<boolean> {
+  const now = Date.now();
+  if (maintenanceCache && maintenanceCache.expiresAt > now) {
+    return maintenanceCache.isActive;
+  }
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/maintenance`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Fast timeout so middleware never hangs
+      signal: AbortSignal.timeout(1500),
+    });
+
+    if (response.ok) {
+      const payload = await response.json();
+      const isActive = Boolean(payload?.data?.isActive);
+      maintenanceCache = {
+        isActive,
+        expiresAt: now + MAINTENANCE_CACHE_TTL_MS,
+      };
+      return isActive;
+    }
+  } catch {
+    // Fail open to avoid blocking traffic if maintenance check fails
+  }
+
+  if (maintenanceCache) {
+    maintenanceCache.expiresAt = now + 5000;
+    return maintenanceCache.isActive;
+  }
+
+  return false;
+}
 
 const shouldSkipMaintenance = (pathname: string) =>
   pathname.startsWith('/admin') ||
@@ -81,30 +121,13 @@ export async function proxy(request: NextRequest) {
   }
 
   if (!shouldSkipMaintenance(pathname)) {
-    try {
-      const response = await fetch(`${BACKEND_URL}/maintenance`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        cache: 'no-store',
-        // Don't let a slow/unreachable backend block TTFB for every public request.
-        signal: AbortSignal.timeout(2000),
-      });
-
-      if (response.ok) {
-        const payload = await response.json();
-        const settings = payload?.data;
-
-        if (settings?.isActive) {
-          const url = request.nextUrl.clone();
-          url.pathname = '/maintenance';
-          return withCsp(
-            NextResponse.rewrite(url, { request: { headers: requestHeaders } }),
-          );
-        }
-      }
-    } catch {
-      // Fail open to avoid blocking traffic if maintenance check fails.
+    const isMaintenance = await checkMaintenanceStatus();
+    if (isMaintenance) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/maintenance';
+      return withCsp(
+        NextResponse.rewrite(url, { request: { headers: requestHeaders } }),
+      );
     }
   }
 
@@ -169,7 +192,7 @@ async function logRequestToBackend(request: NextRequest, startTime: number) {
     };
 
     // Use fetch with timeout and don't wait for response
-    fetch(`${API_BASE_URL}/logger/frontend`, {
+    fetch(`${BACKEND_URL}/logger/frontend`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
