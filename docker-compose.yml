@@ -12,6 +12,8 @@ services:
       - 8.8.8.8
     env_file:
       - .env
+    environment:
+      - INTERNAL_API_URL=http://backend-portfolio:3001
     networks:
       - default
       - backend_net
