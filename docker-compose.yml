@@ -12,3 +12,12 @@ services:
       - 8.8.8.8
     env_file:
       - .env
+    networks:
+      - default
+      - backend_net
+
+networks:
+  default:
+  backend_net:
+    name: backend-portfolio_default
+    external: true
