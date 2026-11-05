@@ -56,6 +56,24 @@ const shouldSkipMaintenance = (pathname: string) =>
   pathname.startsWith('/favicon') ||
   PUBLIC_FILE.test(pathname);
 
+const isMonitoringProbe = (request: NextRequest): boolean => {
+  const ua = request.headers.get('user-agent') || '';
+  if (
+    /Blimbing-StatusPage|Uptime-Kuma|UptimeRobot|Better\s?Uptime|Pingdom|StatusCake|healthcheck|monitoring/i.test(
+      ua,
+    )
+  ) {
+    return true;
+  }
+  if (
+    request.headers.has('x-monitoring-check') ||
+    request.headers.has('x-uptime-check')
+  ) {
+    return true;
+  }
+  return false;
+};
+
 const isProd = process.env.NODE_ENV === 'production';
 
 /**
@@ -109,11 +127,12 @@ export async function proxy(request: NextRequest, event?: NextFetchEvent) {
   const forward = () =>
     withCsp(NextResponse.next({ request: { headers: requestHeaders } }));
 
-  // Skip logging for internal API routes and auth endpoints
+  // Skip logging for internal API routes, auth endpoints, and monitoring probes
   const shouldSkipLogging = 
     pathname.startsWith('/api/auth') ||        // NextAuth endpoints (session, signin, signout, etc)
     pathname.startsWith('/api/_next') ||       // Next.js internal APIs
-    pathname === '/api/logger/frontend';       // Our own logger endpoint
+    pathname === '/api/logger/frontend' ||     // Our own logger endpoint
+    isMonitoringProbe(request);                // Status page & uptime probes
 
   // Only log if not in skip list
   if (!shouldSkipLogging) {
