@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import type { NextRequest, NextFetchEvent } from 'next/server';
 import { auth } from '@/lib/auth';
 import { API_BASE_URL, INTERNAL_API_URL } from '@/lib/config';
 
@@ -85,7 +85,7 @@ function buildCsp(nonce: string): string {
   ].join('; ');
 }
 
-export async function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest, event?: NextFetchEvent) {
   const { pathname } = request.nextUrl;
   const startTime = Date.now();
 
@@ -117,7 +117,12 @@ export async function proxy(request: NextRequest) {
 
   // Only log if not in skip list
   if (!shouldSkipLogging) {
-    logRequestToBackend(request, startTime).catch(console.error);
+    const logPromise = logRequestToBackend(request, startTime);
+    if (event?.waitUntil) {
+      event.waitUntil(logPromise);
+    } else {
+      logPromise.catch((err) => console.error('[proxy logger error]', err));
+    }
   }
 
   if (!shouldSkipMaintenance(pathname)) {
@@ -164,12 +169,16 @@ async function logRequestToBackend(request: NextRequest, startTime: number) {
     
     // Get client IP
     const ip =
+      request.headers.get('cf-connecting-ip') ||
       request.headers.get('x-forwarded-for')?.split(',')[0] ||
       request.headers.get('x-real-ip') ||
       'Unknown';
 
-    // Get country from Vercel headers
-    const country = request.headers.get('x-vercel-ip-country') || undefined;
+    // Get country from Cloudflare or Vercel headers
+    const country =
+      request.headers.get('cf-ipcountry') ||
+      request.headers.get('x-vercel-ip-country') ||
+      undefined;
 
     // Parse query parameters
     const url = new URL(request.url);
@@ -191,16 +200,14 @@ async function logRequestToBackend(request: NextRequest, startTime: number) {
       query: Object.keys(query).length > 0 ? query : undefined,
     };
 
-    // Use fetch with timeout and don't wait for response
-    fetch(`${BACKEND_URL}/logger/frontend`, {
+    // Await fetch so promise settles cleanly in event.waitUntil
+    await fetch(`${BACKEND_URL}/logger/frontend`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(logData),
       signal: AbortSignal.timeout(5000), // 5 second timeout
-    }).catch(() => {
-      // Silently fail - don't block the request if logging fails
     });
   } catch (error) {
     // Silently fail - logging should never break the app
