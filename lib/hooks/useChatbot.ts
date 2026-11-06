@@ -161,11 +161,13 @@ export function useChatbot() {
             }
           }
         }
-      } catch (err: any) {
-        if (err.name === 'AbortError') {
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === 'AbortError') {
           return;
         }
-        setError(err.message || 'Terjadi kesalahan saat memproses chat.');
+        const errorMsg =
+          err instanceof Error ? err.message : 'Terjadi kesalahan saat memproses chat.';
+        setError(errorMsg);
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === assistantMsgId && !msg.content

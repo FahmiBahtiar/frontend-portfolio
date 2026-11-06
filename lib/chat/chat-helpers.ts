@@ -39,8 +39,15 @@ export function sanitizeChatInput(raw: string): SanitizeResult {
   };
 }
 
-export function parseSseStreamChunk(rawChunk: string): Array<Record<string, any>> {
-  const events: Array<Record<string, any>> = [];
+export interface SseStreamEvent {
+  type?: string;
+  sessionId?: string;
+  text?: string;
+  [key: string]: unknown;
+}
+
+export function parseSseStreamChunk(rawChunk: string): SseStreamEvent[] {
+  const events: SseStreamEvent[] = [];
   const lines = rawChunk.split('\n');
 
   for (const line of lines) {
