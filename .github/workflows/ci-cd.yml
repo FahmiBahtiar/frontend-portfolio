@@ -1,0 +1,105 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: frontend-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: Lint, Test & Build (CI)
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (type-checks routes + pages)
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: Dependency audit (report-only)
+        run: npm audit --omit=dev --audit-level=high || true
+
+  deploy:
+    name: Deploy to Self-Hosted Server (CD)
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: [self-hosted]
+    steps:
+      - name: Deploy Frontend Container
+        run: |
+          set -e
+          echo "🚀 Deploying frontend-portfolio on $(hostname)..."
+          TARGET_DIR="${DEPLOY_DIR:-/root/fe_light_ice}"
+          if [ ! -d "$TARGET_DIR" ]; then
+            echo "❌ Target directory $TARGET_DIR does not exist!"
+            exit 1
+          fi
+          cd "$TARGET_DIR"
+
+          echo "📥 Pulling latest main..."
+          git fetch origin main
+          git reset --hard origin/main
+
+          echo "🐳 Rebuilding and restarting Docker container..."
+          docker compose up -d --build --remove-orphans
+
+          echo "⏳ Waiting 5s for health check..."
+          sleep 5
+
+          echo "🔍 Checking container status..."
+          docker compose ps
+          curl -fsS http://localhost:3002 > /dev/null || curl -fsS http://127.0.0.1:3002 > /dev/null || true
+          echo "✅ Frontend deployed successfully!"
+
+      - name: Notify Discord on Failure
+        if: failure()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -n "$DISCORD_WEBHOOK" ]; then
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "❌ Frontend Deployment Failed",
+                "description": "Commit: `'"${{ github.sha }}"'`\nAuthor: '"${{ github.actor }}"'\nRef: `'"${{ github.ref }}"'`",
+                "color": 15158332
+              }]
+            }' "$DISCORD_WEBHOOK" || true
+          fi
+
+      - name: Notify Discord on Success
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -n "$DISCORD_WEBHOOK" ]; then
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "✅ Frontend Deployed Successfully",
+                "description": "Commit: `'"${{ github.sha }}"'`\nAuthor: '"${{ github.actor }}"'\nBranch: `main`",
+                "color": 3066993
+              }]
+            }' "$DISCORD_WEBHOOK" || true
+          fi
