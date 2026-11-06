@@ -49,8 +49,11 @@ jobs:
     runs-on: [self-hosted]
     steps:
       - name: Deploy Frontend Container
+        env:
+          HOME: /root
         run: |
           set -e
+          export HOME=/root
           echo "🚀 Deploying frontend-portfolio on $(hostname)..."
           TARGET_DIR="${DEPLOY_DIR:-/root/fe_light_ice}"
           if [ ! -d "$TARGET_DIR" ]; then
@@ -60,6 +63,7 @@ jobs:
           cd "$TARGET_DIR"
 
           echo "📥 Pulling latest main..."
+          git config --global --add safe.directory "$TARGET_DIR" || true
           git fetch origin main
           git reset --hard origin/main
 
