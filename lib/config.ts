@@ -7,7 +7,10 @@
 
 /** Base URL of the NestJS backend API. */
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === 'production'
+    ? 'https://api.blimbing.me'
+    : 'http://localhost:3001');
 
 /** Server-side internal API URL for server-to-server calls (falls back to API_BASE_URL). */
 export const INTERNAL_API_URL =

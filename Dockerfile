@@ -8,8 +8,12 @@ RUN npm ci
 
 COPY . .
 
+ARG NEXT_PUBLIC_API_URL="https://api.blimbing.me"
+ARG NEXT_PUBLIC_SITE_URL="https://blimbing.me"
 ENV NEXT_TELEMETRY_DISABLED=1 \
-    NODE_ENV=production
+    NODE_ENV=production \
+    NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+    NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 
 RUN npm run build
 

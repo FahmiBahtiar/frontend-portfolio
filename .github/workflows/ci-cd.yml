@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NEXT_TELEMETRY_DISABLED: '1'
+      NEXT_PUBLIC_API_URL: 'https://api.blimbing.me'
+      NEXT_PUBLIC_SITE_URL: 'https://blimbing.me'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

@@ -1,6 +1,10 @@
 services:
   frontend-portfolio:
-    build: .
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_API_URL: https://api.blimbing.me
+        NEXT_PUBLIC_SITE_URL: https://blimbing.me
     image: frontend-portfolio:latest
     container_name: frontend-portfolio
     restart: unless-stopped
