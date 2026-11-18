@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import useSWR from 'swr';
 import { Plane, Plus, Trash2, Save, Clock, MapPin, X, Star, GripVertical, Loader2 } from 'lucide-react';
 import { DeleteDialog } from '@/components/admin/DeleteDialog';
+import { calculateDurationInMonths, getDisplayDuration } from '@/lib/experience/duration';
 import {
   DndContext,
   closestCenter,
@@ -173,13 +174,27 @@ export default function FlightLogbookPage() {
   const openSourceProjects = flights.filter(f => f.category === 'Open Source').length;
 
   const handleEdit = (flight: FlightEntry) => {
+    const isOngoing = flight.isActive || flight.arrival?.status === 'In Progress';
+    const hasNoEndDate = !flight.arrival?.date || flight.arrival?.date === '0001-01-01';
+
+    let duration = flight.duration;
+    if (isOngoing && hasNoEndDate && flight.departure?.date) {
+      const autoDur = calculateDurationInMonths(flight.departure.date, '', true, flight.arrival?.status);
+      if (autoDur > 0) {
+        duration = autoDur.toString();
+      }
+    }
+
     setFormData({
       callsign: flight.callsign,
       company: flight.company,
       departure: flight.departure,
-      arrival: flight.arrival,
+      arrival: {
+        ...flight.arrival,
+        date: flight.arrival?.date === '0001-01-01' ? '' : (flight.arrival?.date || ''),
+      },
       projectName: flight.projectName,
-      duration: flight.duration,
+      duration,
       crew: flight.crew,
       responsibilities: flight.responsibilities,
       color: flight.color,
@@ -191,6 +206,27 @@ export default function FlightLogbookPage() {
     setEditingId(flight.id);
     setIsFormOpen(true);
   };
+
+  // Auto-calculate duration from departure date to now when active with no end date
+  useEffect(() => {
+    const isOngoing = formData.isActive || formData.arrival.status === 'In Progress';
+    const hasNoEndDate = !formData.arrival.date || formData.arrival.date === '0001-01-01';
+
+    if (isOngoing && hasNoEndDate && formData.departure.date) {
+      const autoDuration = calculateDurationInMonths(
+        formData.departure.date,
+        '',
+        true,
+        formData.arrival.status
+      );
+      if (autoDuration > 0) {
+        const autoStr = autoDuration.toString();
+        if (formData.duration !== autoStr) {
+          setFormData((prev: typeof formData) => ({ ...prev, duration: autoStr }));
+        }
+      }
+    }
+  }, [formData.departure.date, formData.arrival.date, formData.arrival.status, formData.isActive]);
 
   const handleDelete = async () => {
     if (deleteId) {
@@ -266,10 +302,20 @@ export default function FlightLogbookPage() {
       return;
     }
 
+    // Auto-calculate duration if active and no end date
+    let duration = formData.duration;
+    if (isOngoing && (!formData.arrival.date || formData.arrival.date === '0001-01-01') && formData.departure.date) {
+      const autoDur = calculateDurationInMonths(formData.departure.date, '', true, formData.arrival.status);
+      if (autoDur > 0) {
+        duration = autoDur.toString();
+      }
+    }
+
     setSaving(true);
     try {
       const flightData = {
         ...formData,
+        duration: duration || formData.duration || '1',
         company: formData.company.trim(),
         projectName: formData.projectName.trim(),
         location,
@@ -567,8 +613,28 @@ export default function FlightLogbookPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[#0c282d] font-bold">Duration (months)</Label>
-                    <Input type="number" step="1" value={formData.duration} onChange={(e) => setFormData({ ...formData, duration: e.target.value })} className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium" placeholder="6" required />
+                    <div className="flex items-center justify-between">
+                      <Label className="text-[#0c282d] font-bold">Duration (months)</Label>
+                      {(formData.isActive || formData.arrival.status === 'In Progress') && (!formData.arrival.date || formData.arrival.date === '0001-01-01') && formData.departure.date && (
+                        <span className="text-xs font-semibold text-[#0891b2] bg-[#E2F4F3] border border-[#B9E7E6] px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                          ⚡ Otomatis ({formData.duration || 0} bln)
+                        </span>
+                      )}
+                    </div>
+                    <Input
+                      type="number"
+                      step="1"
+                      value={formData.duration}
+                      onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                      className="bg-white border border-[#B9E7E6] text-[#0c282d] font-medium"
+                      placeholder="6"
+                      required
+                    />
+                    {(formData.isActive || formData.arrival.status === 'In Progress') && (!formData.arrival.date || formData.arrival.date === '0001-01-01') && (
+                      <p className="text-xs text-[#527d85] font-medium">
+                        Dihitung otomatis dari tanggal mulai ({formData.departure.date || '-'}) sampai saat ini.
+                      </p>
+                    )}
                   </div>
                   <div className="flex items-center space-x-2 pt-6">
                     <Checkbox 
@@ -738,7 +804,12 @@ function SortableFlightItem({ flight, onEdit, onDelete, onToggleActive }: Sortab
           
           <div className="min-w-0">
             <div className="text-xs text-[#527d85] font-semibold mb-1">Duration</div>
-            <p className="text-sm text-[#0c282d] font-bold">{flight.duration} mos</p>
+            <p className="text-sm text-[#0c282d] font-bold">
+              {getDisplayDuration(flight)} mos
+              {(flight.isActive || flight.arrival?.status === 'In Progress') && (!flight.arrival?.date || flight.arrival?.date === '0001-01-01') && (
+                <span className="ml-1 text-[11px] text-[#0891b2] font-semibold">(Aktif)</span>
+              )}
+            </p>
           </div>
           
           <div className="min-w-0">

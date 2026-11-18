@@ -29,6 +29,7 @@ import {
   ChevronUp
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/config';
+import { getDisplayDuration, getDisplayEndDate } from '@/lib/experience/duration';
 
 interface FlightEntry {
   id: string;
@@ -460,7 +461,7 @@ export function FlightLogbook() {
                   <div className="grid grid-cols-2 gap-2 mb-3 text-xs">
                     <div className="flex items-center gap-1">
                       <Clock className="w-3 h-3 text-[#527d85]" />
-                      <span className="text-[#2d5f68] font-medium">{entry.duration} mo</span>
+                      <span className="text-[#2d5f68] font-medium">{getDisplayDuration(entry)} mo</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <MapPin className="w-3 h-3 text-[#527d85]" />
@@ -590,7 +591,7 @@ export function FlightLogbook() {
                             >
                               <div className="text-xs text-[#527d85] uppercase tracking-wider mb-1">Duration</div>
                               <div className="font-mono font-bold text-[#0891b2]">
-                                {entry.duration} mo
+                                {getDisplayDuration(entry)} mo
                               </div>
                             </div>
                           </div>
@@ -617,10 +618,7 @@ export function FlightLogbook() {
                             <div className="min-w-0">
                               <div className="text-[#527d85] text-xs">End Date</div>
                               <div className="text-[#0c282d] text-xs font-mono font-medium truncate">
-                                {entry.arrival.date ? new Date(entry.arrival.date).toLocaleDateString('en-US', {
-                                  month: 'short',
-                                  year: 'numeric'
-                                }) : 'N/A'}
+                                {getDisplayEndDate(entry.arrival, entry.isActive)}
                               </div>
                             </div>
                           </div>
@@ -762,7 +760,7 @@ export function FlightLogbook() {
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                               <div className="p-3 rounded-lg bg-[#E2F4F3]/50 border border-[#B9E7E6]">
                                 <div className="text-[#527d85] text-xs uppercase tracking-wider mb-1 font-bold">Duration</div>
-                                <div className="text-[#0c282d] font-mono font-bold">{entry.duration} months</div>
+                                <div className="text-[#0c282d] font-mono font-bold">{getDisplayDuration(entry)} months</div>
                               </div>
                               <div className="p-3 rounded-lg bg-[#E2F4F3]/50 border border-[#B9E7E6]">
                                 <div className="text-[#527d85] text-xs uppercase tracking-wider mb-1 font-bold">Status</div>
@@ -870,7 +868,7 @@ export function FlightLogbook() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="p-4 rounded-xl bg-[#E2F4F3]/50 border border-[#B9E7E6]">
             <div className="text-3xl text-[#0c282d] mb-1 font-mono font-bold">
-              {flightEntries.reduce((sum, entry) => sum + parseInt(entry.duration), 0)}+
+              {flightEntries.reduce((sum, entry) => sum + parseInt(getDisplayDuration(entry) || '0', 10), 0)}+
             </div>
             <div className="text-xs text-[#527d85] uppercase tracking-wider font-mono font-bold">Total Months</div>
           </div>
