@@ -23,6 +23,7 @@ export const API_CONFIG = {
     // Education Section
     EDUCATION: '/api/admin/education',
     ACHIEVEMENTS: '/api/admin/education/achievements',
+    PUBLICATIONS: '/api/admin/education/publications',
 
     // Experience & Projects Section
     FLIGHTS: '/api/admin/experience/flights',
@@ -51,6 +52,7 @@ export const API_CONFIG = {
     // Education Section
     EDUCATION: '/api/education',
     ACHIEVEMENTS: '/api/education/achievements',
+    PUBLICATIONS: '/api/education/publications',
 
     // Experience & Projects Section
     FLIGHTS: '/api/experience/flights',

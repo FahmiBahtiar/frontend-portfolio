@@ -165,6 +165,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           subItems: [
             { label: 'Education Records', href: '/admin/education/records', icon: BookOpen },
             { label: 'Achievements', href: '/admin/education/achievements', icon: Trophy },
+            { label: 'Publications', href: '/admin/education/publications', icon: FileText },
           ],
         },
         {

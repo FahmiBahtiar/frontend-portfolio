@@ -12,6 +12,7 @@ import type {
   LanyardData,
   Education,
   Achievement,
+  Publication,
   FlightEntry,
   HangarItem,
   ContactFrequency,
@@ -203,6 +204,24 @@ export async function getAchievementsServer() {
     return response.data ?? [];
   } catch (error) {
     console.error('Failed to fetch achievements:', error);
+    return [];
+  }
+}
+
+export async function getPublicationsServer() {
+  try {
+    const response = await serverFetch<ApiResponse<Publication[]>>(
+      API_CONFIG.PUBLIC_ENDPOINTS.PUBLICATIONS,
+      {
+        next: {
+          revalidate: 3600,
+          tags: ['publications'],
+        },
+      }
+    );
+    return response.data ?? [];
+  } catch (error) {
+    console.error('Failed to fetch publications:', error);
     return [];
   }
 }

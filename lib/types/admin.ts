@@ -125,6 +125,32 @@ export interface Achievement {
   updatedAt: string;
 }
 
+export interface Publication {
+  id: string;
+  title: string;
+  authors: string[];
+  journal: string;
+  volumeIssue?: string;
+  pages?: string;
+  year: number;
+  publishedDate?: string;
+  doi?: string;
+  url?: string;
+  pdfUrl?: string;
+  publisher?: string;
+  accreditation?: string;
+  abstract?: string;
+  metrics?: Record<string, string>;
+  tags?: string[];
+  isFeatured: boolean;
+  order: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type CreatePublicationInput = Omit<Publication, 'id' | 'createdAt' | 'updatedAt'>;
+export type UpdatePublicationInput = Partial<CreatePublicationInput>;
+
 // ==================== EXPERIENCE & PROJECTS SECTION ====================
 export interface FlightEntry {
   id: string;

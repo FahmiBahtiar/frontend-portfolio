@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 import useSWR, { mutate } from 'swr';
-import { GraduationCap, Award, Code2, Plane, Mountain, Calendar, MapPin, Trophy, Star, CheckCircle2, ExternalLink, Loader2, X, ChevronLeft, FileText, type LucideIcon } from 'lucide-react';
+import { GraduationCap, Award, Code2, Plane, Mountain, Calendar, MapPin, Trophy, Star, CheckCircle2, ExternalLink, Loader2, X, ChevronLeft, FileText, BookOpen, Sparkles, Users, type LucideIcon } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -58,6 +58,11 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
     () => EducationService.getAchievements()
   );
 
+  const { data: publications = [] } = useSWR(
+    'publicationsData',
+    () => EducationService.getPublications()
+  );
+
   const loading = (isEduLoading || isAchLoading) && educationRecords.length === 0;
   const error = eduError || achError ? 'Failed to load education data' : null;
 
@@ -66,6 +71,9 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'achievements_updated') {
         mutate('achievementsData');
+      }
+      if (e.key === 'publications_updated') {
+        mutate('publicationsData');
       }
     };
 
@@ -431,6 +439,142 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
             })}
           </Accordion>
         </div>
+
+        {/* Section 3: Scientific Publications & Research */}
+        {publications.length > 0 && (
+          <div className="mt-20 scroll-mt-36 pt-4">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center gap-3">
+                <BookOpen className="w-6 h-6 text-[#0891b2]" />
+                <h3 className="text-[#0c282d] font-mono font-bold tracking-wider">SCIENTIFIC PUBLICATIONS & RESEARCH</h3>
+              </div>
+              <div className="flex-1 h-px bg-[#B9E7E6]" />
+              <span className="text-[#527d85] font-mono text-sm hidden sm:block">PEER-REVIEWED PAPERS</span>
+            </div>
+
+            <div className="space-y-6">
+              {publications.map((pub) => (
+                <Card
+                  key={pub.id}
+                  className="overflow-hidden border border-[#B9E7E6] bg-white/95 hover:border-[#6FD4E1] shadow-sm hover:shadow-md transition-all rounded-2xl"
+                >
+                  <div className="p-6 md:p-8">
+                    {/* Badges / Header Metadata */}
+                    <div className="flex flex-wrap items-center gap-2 mb-4">
+                      <span className="px-3 py-1 rounded-full text-xs font-bold font-mono uppercase tracking-wider bg-[#E2F4F3] border border-[#6FD4E1] text-[#0891b2] shadow-xs flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-[#0891b2]" />
+                        Peer-Reviewed Journal
+                      </span>
+                      {pub.accreditation && (
+                        <span className="px-3 py-1 rounded-full text-xs font-bold font-mono uppercase tracking-wider bg-emerald-50 border border-emerald-200 text-emerald-800">
+                          {pub.accreditation}
+                        </span>
+                      )}
+                      <span className="px-3 py-1 rounded-full text-xs font-mono font-bold text-[#527d85] bg-[#E2F4F3]/50 border border-[#B9E7E6]">
+                        {pub.year}
+                      </span>
+                    </div>
+
+                    {/* Title & Journal */}
+                    <h4 className="text-xl md:text-2xl font-bold text-[#0c282d] mb-3 leading-snug">
+                      {pub.title}
+                    </h4>
+
+                    {/* Authors & Publisher */}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm mb-6 text-[#527d85]">
+                      <div className="flex items-center gap-1.5">
+                        <Users className="w-4 h-4 text-[#0891b2] shrink-0" />
+                        <span>
+                          {pub.authors.map((author, idx) => (
+                            <span key={idx}>
+                              <span className={author.includes('Fahmi') ? 'font-bold text-[#0c282d] underline decoration-[#6FD4E1]' : 'text-[#2d5f68]'}>
+                                {author}
+                              </span>
+                              {idx < pub.authors.length - 1 ? ', ' : ''}
+                            </span>
+                          ))}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <BookOpen className="w-4 h-4 text-[#0891b2] shrink-0" />
+                        <span className="italic font-medium text-[#0c282d]">{pub.journal}</span>
+                        {pub.volumeIssue && <span className="font-mono text-xs">({pub.volumeIssue})</span>}
+                      </div>
+                    </div>
+
+                    {/* Key Performance Metrics HUD */}
+                    {pub.metrics && Object.keys(pub.metrics).length > 0 && (
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                        {Object.entries(pub.metrics).map(([key, val], idx) => (
+                          <div key={idx} className="p-3.5 rounded-xl bg-[#E2F4F3]/60 border border-[#B9E7E6]">
+                            <div className="text-xl md:text-2xl font-mono font-bold text-[#0891b2] tracking-tight">{val}</div>
+                            <div className="text-[11px] font-mono uppercase tracking-wider text-[#527d85] font-semibold mt-0.5">
+                              {key.replace(/_/g, ' ')}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Abstract / Summary */}
+                    {pub.abstract && (
+                      <div className="mb-6 p-4 rounded-xl bg-[#E2F4F3]/30 border border-[#B9E7E6]/70 text-xs sm:text-sm text-[#2d5a63] leading-relaxed">
+                        <span className="font-bold text-[#0c282d]">Abstract: </span>
+                        {pub.abstract}
+                      </div>
+                    )}
+
+                    {/* Tags & Action Buttons */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-[#B9E7E6]/70">
+                      <div className="flex flex-wrap gap-1.5">
+                        {pub.tags?.map((tag, idx) => (
+                          <span key={idx} className="px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-[#E2F4F3] border border-[#B9E7E6] text-[#0c282d]">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center gap-3 flex-wrap">
+                        {pub.doi && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-[#0891b2] text-[#0891b2] hover:bg-[#E2F4F3] font-bold shadow-xs text-xs"
+                            onClick={() => window.open(pub.doi?.startsWith('http') ? pub.doi : `https://doi.org/${pub.doi}`, '_blank')}
+                          >
+                            <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                            DOI Paper
+                          </Button>
+                        )}
+                        {pub.url && !pub.doi && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-[#0891b2] text-[#0891b2] hover:bg-[#E2F4F3] font-bold shadow-xs text-xs"
+                            onClick={() => window.open(pub.url, '_blank')}
+                          >
+                            <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                            View Article
+                          </Button>
+                        )}
+                        {pub.pdfUrl && (
+                          <Button
+                            size="sm"
+                            className="bg-[#6FD4E1] hover:bg-[#B9E7E6] text-[#0c282d] font-bold shadow-xs text-xs"
+                            onClick={() => window.open(pub.pdfUrl, '_blank')}
+                          >
+                            <FileText className="w-3.5 h-3.5 mr-1.5 text-[#0c282d]" />
+                            Download PDF
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

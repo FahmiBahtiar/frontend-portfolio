@@ -1,5 +1,5 @@
 import { apiRequest, API_CONFIG, ApiResponse, ApiError } from '@/lib/api';
-import { Education, Achievement } from '@/lib/types/admin';
+import { Education, Achievement, Publication } from '@/lib/types/admin';
 
 // Raw achievement payload from the API, which may use either camelCase or
 // snake_case for some fields. Normalized to `Achievement` in getAchievements().
@@ -122,6 +122,57 @@ export class EducationService {
   static async deleteAchievement(id: string): Promise<void> {
     await apiRequest(
       `${API_CONFIG.ENDPOINTS.ACHIEVEMENTS}/${id}`,
+      {
+        method: 'DELETE',
+      }
+    );
+  }
+
+  // Publications API
+  static async getPublications(): Promise<Publication[]> {
+    try {
+      const response = await apiRequest<ApiResponse<Publication[]>>(
+        API_CONFIG.PUBLIC_ENDPOINTS.PUBLICATIONS
+      );
+      return response.data || [];
+    } catch (error) {
+      console.warn('Failed to fetch publications:', error);
+      return [];
+    }
+  }
+
+  static async createPublication(publication: Omit<Publication, 'id' | 'createdAt' | 'updatedAt'>): Promise<Publication> {
+    const response = await apiRequest<ApiResponse<Publication>>(
+      API_CONFIG.ENDPOINTS.PUBLICATIONS,
+      {
+        method: 'POST',
+        body: JSON.stringify(publication),
+      }
+    );
+    return response.data;
+  }
+
+  static async updatePublication(id: string, publication: Partial<Publication>): Promise<Publication | null> {
+    try {
+      const response = await apiRequest<ApiResponse<Publication>>(
+        `${API_CONFIG.ENDPOINTS.PUBLICATIONS}/${id}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify(publication),
+        }
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  static async deletePublication(id: string): Promise<void> {
+    await apiRequest(
+      `${API_CONFIG.ENDPOINTS.PUBLICATIONS}/${id}`,
       {
         method: 'DELETE',
       }
