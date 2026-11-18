@@ -231,22 +231,20 @@ export class EducationService {
     return response.data;
   }
 
-  static async updatePublication(id: string, publication: Partial<Publication>): Promise<Publication | null> {
-    try {
-      const response = await apiRequest<ApiResponse<Publication>>(
-        `${API_CONFIG.ENDPOINTS.PUBLICATIONS}/${id}`,
-        {
-          method: 'PUT',
-          body: JSON.stringify(publication),
-        }
-      );
-      return response.data;
-    } catch (error) {
-      if (error instanceof ApiError && error.status === 404) {
-        return null;
+  static async updatePublication(id: string, publication: Partial<Publication>): Promise<Publication> {
+    const updateData = Object.fromEntries(
+      Object.entries(publication).filter(([key]) =>
+        !['id', 'createdAt', 'updatedAt', '__v'].includes(key)
+      )
+    );
+    const response = await apiRequest<ApiResponse<Publication>>(
+      `${API_CONFIG.ENDPOINTS.PUBLICATIONS}/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(updateData),
       }
-      throw error;
-    }
+    );
+    return response.data;
   }
 
   static async deletePublication(id: string): Promise<void> {
