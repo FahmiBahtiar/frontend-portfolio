@@ -914,6 +914,7 @@ export function ItomPaperFlightTimeline({
 
     // 4. Keyboard arrow navigation (discrete step)
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
         targetScrollRef.current += 3.0;
         targetScrollRef.current = Math.max(0, Math.min(185, targetScrollRef.current));

@@ -145,6 +145,7 @@ export function useChatbot() {
 
           const events = parseSseStreamChunk(lines.join('\n'));
 
+          let hasNewChunk = false;
           for (const ev of events) {
             if (ev.type === 'session' && ev.sessionId) {
               setSessionId(ev.sessionId);
@@ -153,12 +154,16 @@ export function useChatbot() {
               }
             } else if (ev.type === 'chunk' && ev.text) {
               accumulatedContent += ev.text;
-              setMessages((prev) =>
-                prev.map((msg) =>
-                  msg.id === assistantMsgId ? { ...msg, content: accumulatedContent } : msg
-                )
-              );
+              hasNewChunk = true;
             }
+          }
+
+          if (hasNewChunk) {
+            setMessages((prev: ChatMessage[]) =>
+              prev.map((msg: ChatMessage) =>
+                msg.id === assistantMsgId ? { ...msg, content: accumulatedContent } : msg
+              )
+            );
           }
         }
       } catch (err: unknown) {

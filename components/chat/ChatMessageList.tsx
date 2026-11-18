@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Bot, User, Sparkles } from 'lucide-react';
+import { motion } from 'motion/react';
+import { User } from 'lucide-react';
 import type { ChatMessage } from '@/lib/hooks/useChatbot';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { AnimatedRobot } from './AnimatedRobot';
@@ -13,10 +13,14 @@ interface ChatMessageListProps {
 }
 
 export function ChatMessageList({ messages, isLoading }: ChatMessageListProps) {
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // Directly set container scrollTop to avoid window scroll-chaining and browser animation conflicts
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = scrollContainerRef.current;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
   }, [messages, isLoading]);
 
   const activeMessages = messages.filter((msg) => msg.content.trim().length > 0);
@@ -25,7 +29,10 @@ export function ChatMessageList({ messages, isLoading }: ChatMessageListProps) {
     isLoading && (!lastMessage || lastMessage.role === 'user' || !lastMessage.content);
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-3.5 scrollbar-thin scrollbar-thumb-[#6FD4E1]/40">
+    <div
+      ref={scrollContainerRef}
+      className="flex-1 overflow-y-auto p-4 space-y-3.5 scrollbar-thin scrollbar-thumb-[#6FD4E1]/40 overscroll-contain"
+    >
       {activeMessages.length === 0 && !isWaitingForFirstChunk ? (
         <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
           <div className="w-14 h-14 rounded-2xl bg-[#6FD4E1]/20 flex items-center justify-center text-[#0c282d] shadow-sm">
@@ -61,11 +68,8 @@ export function ChatMessageList({ messages, isLoading }: ChatMessageListProps) {
         activeMessages.map((msg) => {
           const isUser = msg.role === 'user';
           return (
-            <motion.div
+            <div
               key={msg.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
               className={`flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
             >
               <div
@@ -91,19 +95,13 @@ export function ChatMessageList({ messages, isLoading }: ChatMessageListProps) {
                   <MarkdownRenderer content={msg.content} />
                 )}
               </div>
-            </motion.div>
+            </div>
           );
         })
       )}
 
       {isWaitingForFirstChunk && (
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
-          className="flex items-start gap-2.5"
-        >
+        <div className="flex items-start gap-2.5">
           <div className="w-7 h-7 rounded-full bg-[#0c282d] text-[#6FD4E1] border border-[#6FD4E1]/40 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
             <AnimatedRobot size={20} glow={false} />
           </div>
@@ -118,10 +116,8 @@ export function ChatMessageList({ messages, isLoading }: ChatMessageListProps) {
               style={{ animationDelay: '0.4s' }}
             />
           </div>
-        </motion.div>
+        </div>
       )}
-
-      <div ref={bottomRef} />
     </div>
   );
 }

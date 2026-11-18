@@ -13,7 +13,7 @@ interface MarkdownRendererProps {
  * Formats bold, italics, inline code, clickable links/emails/URLs, bullet lists,
  * and paragraphs cleanly adhering to the Arctic Ice palette.
  */
-export function MarkdownRenderer({ content }: MarkdownRendererProps) {
+export const MarkdownRenderer = React.memo(function MarkdownRenderer({ content }: MarkdownRendererProps) {
   if (!content) return null;
 
   // Split text into blocks by line
@@ -114,7 +114,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
   flushList();
 
   return <div className="space-y-1 text-xs text-[#0c282d] break-words">{elements}</div>;
-}
+});
 
 /**
  * Recursively renders a parsed inline node into React elements.

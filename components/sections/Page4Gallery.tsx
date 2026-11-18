@@ -75,6 +75,7 @@ export function PageGallery() {
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.key === 'ArrowLeft') handlePaginate(-1);
       if (e.key === 'ArrowRight') handlePaginate(1);
     };

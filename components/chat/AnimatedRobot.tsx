@@ -14,6 +14,37 @@ interface AnimatedRobotProps {
  * glowing bouncy antenna, and a cute waving hand.
  */
 export function AnimatedRobot({ className = '', size = 32, glow = true }: AnimatedRobotProps) {
+  // Ultra-lightweight static render for small avatars in chat bubbles to prevent dozens of concurrent JS animation loops
+  if (!glow && size <= 24) {
+    return (
+      <div
+        className={`relative inline-flex items-center justify-center select-none ${className}`}
+        style={{ width: size, height: size }}
+      >
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 42 42"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <line x1="21" y1="11" x2="21" y2="4.5" stroke="#6FD4E1" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="21" cy="4.5" r="3" fill="#6FD4E1" />
+          <circle cx="20" cy="3.5" r="1" fill="#FFFFFF" opacity="0.9" />
+          <rect x="5.5" y="16.5" width="3" height="8" rx="1.5" fill="#6FD4E1" />
+          <rect x="33.5" y="16.5" width="3" height="8" rx="1.5" fill="#6FD4E1" />
+          <rect x="7.5" y="10.5" width="27" height="21" rx="7.5" fill="#0c282d" stroke="#6FD4E1" strokeWidth="1.75" />
+          <rect x="10.5" y="13.5" width="21" height="13.5" rx="4.5" fill="#143c44" />
+          <rect x="13.5" y="17.5" width="4.5" height="5.5" rx="2" fill="#6FD4E1" />
+          <circle cx="15.5" cy="19" r="1" fill="#FFFFFF" />
+          <rect x="24" y="17.5" width="4.5" height="5.5" rx="2" fill="#6FD4E1" />
+          <circle cx="26" cy="19" r="1" fill="#FFFFFF" />
+          <path d="M19 23.5C19.5 24.2 20.2 24.6 21 24.6C21.8 24.6 22.5 24.2 23 23.5" stroke="#6FD4E1" strokeWidth="1.4" strokeLinecap="round" />
+        </svg>
+      </div>
+    );
+  }
+
   return (
     <motion.div
       animate={{
