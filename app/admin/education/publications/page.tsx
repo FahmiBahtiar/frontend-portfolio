@@ -172,9 +172,38 @@ export default function PublicationsAdminPage() {
       };
 
       if (editingId) {
+        const optimisticPub: Publication = {
+          id: editingId,
+          title: payload.title,
+          authors: payload.authors,
+          journal: payload.journal,
+          volumeIssue: payload.volumeIssue,
+          pages: payload.pages,
+          year: payload.year,
+          publishedDate: payload.publishedDate,
+          doi: payload.doi,
+          url: payload.url,
+          pdfUrl: payload.pdfUrl,
+          publisher: payload.publisher,
+          accreditation: payload.accreditation,
+          abstract: payload.abstract,
+          metrics: payload.metrics,
+          tags: payload.tags,
+          isFeatured: payload.isFeatured,
+          order: payload.order,
+          updatedAt: new Date().toISOString(),
+        };
+        const updatedList = publications.map((p: Publication) =>
+          p.id === editingId ? optimisticPub : p
+        );
+        mutate(updatedList, false);
+        handleReset();
+
         await EducationService.updatePublication(editingId, payload);
       } else {
-        await EducationService.createPublication(payload);
+        const newPub = await EducationService.createPublication(payload);
+        mutate([...publications, newPub], false);
+        handleReset();
       }
 
       // Signal public page to revalidate via storage event
@@ -182,11 +211,11 @@ export default function PublicationsAdminPage() {
         window.localStorage.setItem('publications_updated', Date.now().toString());
       }
 
-      await mutate();
-      handleReset();
+      mutate();
     } catch (err: unknown) {
       console.error('Error saving publication:', err);
       alert('Gagal menyimpan data publikasi. Silakan periksa kembali.');
+      mutate();
     } finally {
       setSaving(false);
     }
@@ -194,17 +223,20 @@ export default function PublicationsAdminPage() {
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
+    const idToDelete = deleteTarget.id;
+    setDeleteTarget(null);
+    mutate(publications.filter((p: Publication) => p.id !== idToDelete), false);
+
     try {
-      await EducationService.deletePublication(deleteTarget.id);
+      await EducationService.deletePublication(idToDelete);
       if (typeof window !== 'undefined') {
         window.localStorage.setItem('publications_updated', Date.now().toString());
       }
-      await mutate();
+      mutate();
     } catch (err) {
       console.error('Error deleting publication:', err);
       alert('Gagal menghapus publikasi.');
-    } finally {
-      setDeleteTarget(null);
+      mutate();
     }
   };
 

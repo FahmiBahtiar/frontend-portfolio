@@ -365,7 +365,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                               toggleExpanded(item.label);
                             }
                           }}
-                          className={`w-full flex items-center rounded-xl transition-all ${
+                          className={`w-full flex items-center rounded-xl transition-all active:scale-[0.98] ${
                             isCollapsed
                               ? 'justify-center p-2.5 h-11'
                               : 'justify-between px-3 py-2 h-10'
@@ -416,7 +416,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       ) : (
                         <Link
                           href={item.href}
-                          className={`w-full flex items-center rounded-xl transition-all ${
+                          className={`w-full flex items-center rounded-xl transition-all active:scale-[0.98] ${
                             isCollapsed
                               ? 'justify-center p-2.5 h-11'
                               : 'justify-between px-3 py-2 h-10'
@@ -487,7 +487,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
                                   <Link
                                     href={subItem.href}
-                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs transition-all ${
+                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs transition-all active:scale-[0.98] ${
                                       subActive
                                         ? 'bg-[#0c282d] text-white font-bold shadow-md shadow-[#0c282d]/10'
                                         : 'text-[#527d85] hover:bg-[#E2F4F3]/80 hover:text-[#0c282d] font-medium'
