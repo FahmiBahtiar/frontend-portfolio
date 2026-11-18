@@ -5,7 +5,7 @@ export const API_CONFIG = {
   get BASE_URL() {
     return typeof window === 'undefined' ? INTERNAL_API_URL : API_BASE_URL;
   },
-  TIMEOUT: 8000, // 8 seconds — enough for cold start
+  TIMEOUT: 15000, // 15 seconds — resilient against cold start or transient latency
 
   // Admin (authenticated write) endpoints. Used for POST/PUT/DELETE that go
   // straight to the backend. Reads are served from PUBLIC_ENDPOINTS below.

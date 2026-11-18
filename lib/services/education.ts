@@ -22,14 +22,88 @@ interface RawAchievement {
   updated_at?: string;
 }
 
+export const DEFAULT_EDUCATION_RECORDS: Education[] = [
+  {
+    id: 'c6de5eac-280b-420d-a48f-31bb5d36e729',
+    degree: 'Elementary School',
+    institution: 'MI Negeri 1 Demak',
+    period: '2010 - 2018',
+    gpa: 'Complete',
+    color: 'cyan',
+    description:
+      'Building strong academic foundation and character development. Active in journey and survival club.',
+    order: 1,
+    createdAt: '2025-11-27T08:22:27.00131+00:00',
+    updatedAt: '2026-10-22T08:54:12.408707+00:00',
+  },
+  {
+    id: '03e13fb8-0688-4df4-b2fc-7f287b8ddabb',
+    degree: 'Junior High School',
+    institution: 'SMP Negeri 2 Demak',
+    period: '2016 - 2019',
+    gpa: 'Complete',
+    color: 'green',
+    description: 'Started programming journey with basic algorithms.',
+    order: 2,
+    createdAt: '2025-11-27T08:22:27.00131+00:00',
+    updatedAt: '2026-05-05T19:37:29.522938+00:00',
+  },
+  {
+    id: '12495985-a7eb-4fd9-a7d2-273c9d7028db',
+    degree: 'Djarum Foundation Scholarship',
+    institution: 'Binar Academy',
+    period: '2021 - 2021',
+    gpa: 'Complete',
+    color: 'orange',
+    description: 'Focus on Computer Science',
+    order: 3,
+    createdAt: '2025-11-27T08:22:27.00131+00:00',
+    updatedAt: '2026-05-05T19:37:24.072611+00:00',
+  },
+  {
+    id: '41f518cd-38da-4d95-8314-5c943a55d10e',
+    degree: 'Senior High School',
+    institution: 'SMK Raden Umar Said',
+    period: '2019 - 2022',
+    gpa: 'Complete',
+    color: 'purple',
+    description:
+      'Specialized in backend architectures, microservices, Linux servers, CI/CD, and competitive coding.',
+    order: 4,
+    createdAt: '2025-11-27T08:22:27.00131+00:00',
+    updatedAt: '2026-10-26T05:51:03.17089+00:00',
+  },
+  {
+    id: '691a3904-f1ba-440d-a650-f77e17c495c2',
+    degree: 'Bachelor Degree',
+    institution: 'Dian Nuswantoro University',
+    period: '2022 - 2026',
+    gpa: 'Complete',
+    color: 'blue',
+    description:
+      'Advanced computer systems, cloud infrastructure, AI models, and real-time distributed networks.',
+    order: 5,
+    createdAt: '2025-11-27T08:22:27.00131+00:00',
+    updatedAt: '2026-10-26T05:51:03.957264+00:00',
+  },
+];
+
 // Education Section API Services
 export class EducationService {
   // Education Records API
   static async getEducationRecords(): Promise<Education[]> {
-    const response = await apiRequest<ApiResponse<Education[]>>(
-      `${API_CONFIG.PUBLIC_ENDPOINTS.EDUCATION}/records`
-    );
-    return response.data;
+    try {
+      const response = await apiRequest<ApiResponse<Education[]>>(
+        `${API_CONFIG.PUBLIC_ENDPOINTS.EDUCATION}/records`
+      );
+      if (response && Array.isArray(response.data) && response.data.length > 0) {
+        return response.data;
+      }
+      return DEFAULT_EDUCATION_RECORDS;
+    } catch (error) {
+      console.warn('Failed to fetch education records, serving defaults:', error);
+      return DEFAULT_EDUCATION_RECORDS;
+    }
   }
 
   static async createEducationRecord(education: Omit<Education, 'id' | 'createdAt' | 'updatedAt'>): Promise<Education> {
@@ -70,24 +144,29 @@ export class EducationService {
 
   // Achievements API
   static async getAchievements(): Promise<Achievement[]> {
-    const response = await apiRequest<ApiResponse<RawAchievement[]>>(
-      API_CONFIG.PUBLIC_ENDPOINTS.ACHIEVEMENTS
-    );
-    // Map snake_case to camelCase for frontend compatibility
-    return (response.data || []).map((raw) => ({
-      id: raw.id,
-      category: raw.category,
-      title: raw.title,
-      issuer: raw.issuer,
-      date: raw.date,
-      icon: raw.icon,
-      description: raw.description,
-      certificateUrl: raw.certificateUrl || raw.certificate_url,
-      credentialUrl: raw.credentialUrl || raw.credential_url,
-      order: raw.order,
-      createdAt: raw.createdAt || raw.created_at || '',
-      updatedAt: raw.updatedAt || raw.updated_at || '',
-    }));
+    try {
+      const response = await apiRequest<ApiResponse<RawAchievement[]>>(
+        API_CONFIG.PUBLIC_ENDPOINTS.ACHIEVEMENTS
+      );
+      // Map snake_case to camelCase for frontend compatibility
+      return (response.data || []).map((raw) => ({
+        id: raw.id,
+        category: raw.category,
+        title: raw.title,
+        issuer: raw.issuer,
+        date: raw.date,
+        icon: raw.icon,
+        description: raw.description,
+        certificateUrl: raw.certificateUrl || raw.certificate_url,
+        credentialUrl: raw.credentialUrl || raw.credential_url,
+        order: raw.order,
+        createdAt: raw.createdAt || raw.created_at || '',
+        updatedAt: raw.updatedAt || raw.updated_at || '',
+      }));
+    } catch (error) {
+      console.warn('Failed to fetch achievements, returning empty list:', error);
+      return [];
+    }
   }
 
   static async createAchievement(achievement: Omit<Achievement, 'id' | 'createdAt' | 'updatedAt'>): Promise<Achievement> {

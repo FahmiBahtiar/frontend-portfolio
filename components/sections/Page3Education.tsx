@@ -64,7 +64,10 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
   );
 
   const loading = (isEduLoading || isAchLoading) && educationRecords.length === 0;
-  const error = eduError || achError ? 'Failed to load education data' : null;
+  const error =
+    (eduError || achError) && educationRecords.length === 0 && achievements.length === 0
+      ? 'Failed to load education data'
+      : null;
 
   // Listen for data updates from admin panel via local storage
   useEffect(() => {
@@ -167,7 +170,17 @@ export function Page3Education({ onNavigate }: Page3EducationProps = {}) {
             <X className="w-8 h-8 text-red-400" />
           </div>
           <p className="text-red-400 mb-4 font-mono">{error}</p>
-          <Button variant="outline" onClick={() => mutate('educationRecords')}>Retry Link</Button>
+          <Button
+            variant="outline"
+            className="border-[#0891b2] text-[#0891b2] hover:bg-[#E2F4F3] font-bold"
+            onClick={() => {
+              mutate('educationRecords');
+              mutate('achievementsData');
+              mutate('publicationsData');
+            }}
+          >
+            Retry Link
+          </Button>
         </div>
       </div>
     );
